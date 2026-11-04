@@ -63,11 +63,15 @@ Ver `proposal.md` — Why. O que molda o desenho:
    _Descartado:_ um valor sentinela em `comprovacao` — dado de controle escondido em campo de
    texto livre.
 
-4. **As três rotas do arquivo espelham `/criacoes/{id}/arquivo`**, sob
-   `/v1/eu/missoes/{id}/desbloqueio/comprovacao`: `POST` abre a sessão de envio retomável com a
-   origem de quem vai enviar, `PATCH` confirma, `GET` serve os bytes. Os tetos e a lista de MIME
-   são os de `criacoes_originais/regra.py`, extraídos para onde as duas os leiam em vez de
-   duplicados. _Descartado:_ bytes inline na submissão, que o núcleo fatia escolheu para a
+4. **As três rotas do arquivo espelham `/criacoes/{id}/arquivo`**, mas **não** no mesmo
+   caminho. A escrita é do Guerreiro(a) e fica sob `/v1/eu/missoes/{id}/desbloqueio/comprovacao`
+   — `POST` abre a sessão de envio retomável com a origem de quem vai enviar, `PATCH` confirma.
+   A **leitura** é também do Mestre autor, que não cabe em `/eu/`, e por isso toma a forma da
+   rota do julgamento, por missão e Guerreiro(a):
+   `GET /v1/missoes/{id}/desbloqueios/{id_do_guerreiro}/comprovacao` — é por ela que a bancada
+   da fatia 27 alcança a entrega. Os tetos e a lista de MIME são os de
+   `criacoes_originais/regra.py`, extraídos para `armazenamento/limites.py`, onde as duas os
+   leem em vez de duplicados. _Descartado:_ bytes inline na submissão, que o núcleo fatia escolheu para a
    produção da missão — ali a foto é pequena e vai ao OCR na hora; aqui a forma aceita pode ser
    vídeo, e 200 MB não passam em corpo de requisição.
 

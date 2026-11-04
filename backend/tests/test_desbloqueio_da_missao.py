@@ -2245,3 +2245,116 @@ def test_bancada_do_mestre_traz_o_criterio_e_a_entrega(
     assert linha["criterio_de_aceite"] == ("Em foto ou vídeo não deve aparecer o rosto da criança.")
     assert linha["comprovacao_entregue"]["forma"] == "video"
     assert linha["comprovacao_entregue"]["tem_arquivo"] is True
+
+
+def test_envio_da_comprovacao_recusa_formato_fora_da_lista(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-91`: a comprovação lê a mesma lista fechada de MIME da criação
+    original, de `armazenamento.limites` — a recusa é 422 e nomeia a lista."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio/comprovacao",
+        json={"tipo_mime": "image/gif", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+    assert "MP4, WebM, JPG, PNG, WebP, MP3 e PDF" in resposta.text
+
+
+def test_envio_da_comprovacao_recusa_tamanho_acima_do_teto_dizendo_o_teto(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-91`: o teto é o mesmo da criação original, por tipo — 200 MB no
+    vídeo —, e a recusa é o 413 de `ArquivoAcimaDoTeto`, dizendo o limite."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio/comprovacao",
+        json={"tipo_mime": "video/mp4", "tamanho_declarado": 201 * 1024 * 1024},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 413
+    assert "200 MB" in resposta.text
+
+
+def test_envio_da_comprovacao_e_recusado_na_entrega_presencial(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RN-05-51`: quem escolheu entregar ao Mestre no encontro não tem arquivo
+    a enviar — exatamente um dos dois."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "video",
+    )
+    cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={"entrega_presencial": True},
+        headers=cabecalhos,
+    )
+
+    resposta = cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio/comprovacao",
+        json={"tipo_mime": "video/mp4", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_percurso_devolve_a_comprovacao_entregue_ao_proprio_guerreiro(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-93`: ao voltar à missão, a leitura do percurso traz a entrega, de
+    modo que a tela a reapresente em lugar de um formulário vazio."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "texto",
+    )
+    cliente.post(
+        f"/v1/eu/missoes/{missao.id}/desbloqueio",
+        json={"comprovacao": "Montei com tampinhas."},
+        headers=cabecalhos,
+    )
+
+    leitura = cliente.get(
+        f"/v1/eu/trilhas/{missao.trilha_id}/missoes/{missao.posicao}", headers=cabecalhos
+    )
+
+    assert leitura.status_code == 200
+    corpo = leitura.json()
+    assert corpo["comprovacao_entregue"]["comprovacao"] == "Montei com tampinhas."
+    assert corpo["desafio_de_desbloqueio"]["criterio_de_aceite"] == (
+        "Em foto ou vídeo não deve aparecer o rosto da criança."
+    )

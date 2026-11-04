@@ -71,8 +71,10 @@ Nenhuma. A fatia amplia capacidades existentes.
   `rotas.py` (entrada da submissão e as três rotas do arquivo).
 - **Contratos**: `POST /v1/eu/missoes/{id}/desbloqueio` passa a exigir a comprovação no prático
   — **BREAKING** para quem submete prático com o corpo de hoje, e os dois clientes são as Apps
-  01 e 05, que entram na mesma change. Nascem `POST`, `PATCH` e `GET` de
-  `/v1/eu/missoes/{id}/desbloqueio/comprovacao`.
+  01 e 05, que entram na mesma change. Nascem `POST` e `PATCH` de
+  `/v1/eu/missoes/{id}/desbloqueio/comprovacao`, que são do Guerreiro(a), e
+  `GET /v1/missoes/{id}/desbloqueios/{id_do_guerreiro}/comprovacao`, que serve também o Mestre
+  autor e por isso não cabe em `/eu/`.
 - **Dados**: migração Alembic, colunas anuláveis em `desbloqueio_da_missao`. **Sem _backfill_**:
   o desbloqueio prático gravado antes desta change segue valendo sem comprovação, como a
   fatia 26 fixou para os três campos do Mestre.
