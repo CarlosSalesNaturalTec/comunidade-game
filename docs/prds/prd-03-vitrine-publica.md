@@ -274,6 +274,8 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RF-03-57` | Apoiador sem aporte homologado não aparece na vitrine                                                                                                   | essencial  |
 | `RF-03-66` | Card de Apoiador com menos de 10 moedas exibe o avatar padrão do projeto na mesma moldura                                                               | essencial  |
 | `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                                                          | essencial  |
+| `RF-03-84` | Portfólio reúne as duas fontes do acervo em uma lista: comprovações aprovadas do prático e criação da culminância                                       | essencial  |
+| `RF-03-85` | Cada linha abre a produção na própria linha — imagem, áudio, vídeo, texto, link externo ou arquivo                                                      | essencial  |
 | `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                                                   | essencial  |
 | `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                                                    | essencial  |
 | `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta                                             | essencial  |
@@ -399,6 +401,9 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RN-03-28` | O dado publicado não substitui indicador oficial, e a vitrine diz isso ao gestor                                                                        | 7                      | 03 §8       |
 | `RN-03-18` | Aporte é exibido em moedas da plataforma, nunca em reais                                                                                                | 16                     | 04 §1       |
 | `RN-03-40` | A linha do Apoiador exibe o total em moedas, e nenhuma lista pública ordena, classifica, compara nem oferece ordenação de Apoiadores por valor aportado | 21                     | 14 §9       |
+| `RN-03-41` | Item do acervo só vai a público com aprovação do Mestre — criação validada, ou comprovação cumprida e publicável — além da autorização do responsável   | 5, 12                  | 11 §§2.2, 5 |
+| `RN-03-42` | A produção das atividades da missão é guardada e nunca é item do acervo público: não tem ato de aprovação                                               | 5                      | 11 §2.2     |
+| `RN-03-43` | O título é o curto do Mestre na comprovação e o nome da trilha na criação da culminância, que a linha não repete                                        | 5                      | 11 §8.2     |
 | `RN-03-19` | A etiqueta ODS é descritiva, agregada por comunidade e ciclo, nunca por Guerreiro(a)                                                                    | 20                     | 11 §2.1     |
 | `RN-03-20` | O ODS 18 é citado como adoção voluntária do Brasil, não como objetivo da ONU                                                                            | 20                     | 04 §4       |
 | `RN-03-21` | A vitrine não veicula publicidade nem patrocínio no Ciclo 01                                                                                            | —                      | 04 §2       |
@@ -454,29 +459,37 @@ Derivações e imutabilidade:
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo único — e consome
 **apenas rotas públicas, sem token**. As rotas de avaliação e entrega são da App 03 (PRD-02).
 
-| Método | Rota                                 | Autenticação | Descrição                                                                             |
-| ------ | ------------------------------------ | ------------ | ------------------------------------------------------------------------------------- |
-| GET    | `/v1/vitrine/guerreiros`             | pública      | Cartas dos Guerreiros e Guerreiras com divulgação autorizada; a vitrine não a consome |
-| GET    | `/v1/vitrine/guerreiros/{nick}`      | pública      | Página pública por nick exato                                                         |
-| GET    | `/v1/vitrine/mestres`                | pública      | Lista e páginas de Mestres, com os comprobatórios                                     |
-| GET    | `/v1/vitrine/apoiadores`             | pública      | Lista e páginas de Apoiadores, com aportes em moedas                                  |
-| GET    | `/v1/vitrine/poderes`                | pública      | Poderes, trilhas e Mestres de cada um                                                 |
-| GET    | `/v1/vitrine/batalhas`               | pública      | Batalhas, resultados e estatísticas de partida                                        |
-| GET    | `/v1/vitrine/criacoes`               | pública      | Portfólio de criações originais autorizadas                                           |
-| GET    | `/v1/vitrine/rankings`               | pública      | Rankings por pontos regulares, só de quem autorizou                                   |
-| GET    | `/v1/vitrine/conteudo-institucional` | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA                             |
-| GET    | `/v1/comunidades`                    | pública      | Comunidades com indicadores agregados (PRD-08)                                        |
-| GET    | `/v1/comunidades/{id}/series`        | pública      | Séries históricas agregadas até o bairro, com metodologia                             |
-| GET    | `/v1/vitrine/ods/cobertura`          | pública      | Cobertura agregada de todas as comunidades do ciclo                                   |
-| GET    | `/v1/vitrine/necessidades`           | pública      | Necessidades de recurso em aberto (PRD-07)                                            |
-| POST   | `/v1/solicitacoes-de-participacao`   | pública      | Registra pedido de inclusão como Mestre ou Apoiador                                   |
-| POST   | `/v1/solicitacoes-de-dados`          | pública      | Registra pedido do conjunto de dados                                                  |
-| POST   | `/v1/solicitacoes-de-chave`          | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor                            |
-| POST   | `/v1/chaves/{id}/url`                | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias                             |
-| POST   | `/v1/assistente-do-desenvolvedor`    | pública      | Pergunta ao assistente, sobre a documentação e o repositório                          |
+| Método | Rota                                    | Autenticação | Descrição                                                                             |
+| ------ | --------------------------------------- | ------------ | ------------------------------------------------------------------------------------- |
+| GET    | `/v1/vitrine/guerreiros`                | pública      | Cartas dos Guerreiros e Guerreiras com divulgação autorizada; a vitrine não a consome |
+| GET    | `/v1/vitrine/guerreiros/{nick}`         | pública      | Página pública por nick exato                                                         |
+| GET    | `/v1/vitrine/mestres`                   | pública      | Lista e páginas de Mestres, com os comprobatórios                                     |
+| GET    | `/v1/vitrine/apoiadores`                | pública      | Lista e páginas de Apoiadores, com aportes em moedas                                  |
+| GET    | `/v1/vitrine/poderes`                   | pública      | Poderes, trilhas e Mestres de cada um                                                 |
+| GET    | `/v1/vitrine/batalhas`                  | pública      | Batalhas, resultados e estatísticas de partida                                        |
+| GET    | `/v1/vitrine/criacoes`                  | pública      | Acervo público: criações da culminância e comprovações aprovadas                      |
+| GET    | `/v1/vitrine/criacoes/{id}/arquivo`     | pública      | Bytes da produção de uma criação da culminância                                       |
+| GET    | `/v1/vitrine/comprovacoes/{id}/arquivo` | pública      | Bytes da comprovação aprovada de um desafio prático                                   |
+| GET    | `/v1/vitrine/rankings`                  | pública      | Rankings por pontos regulares, só de quem autorizou                                   |
+| GET    | `/v1/vitrine/conteudo-institucional`    | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA                             |
+| GET    | `/v1/comunidades`                       | pública      | Comunidades com indicadores agregados (PRD-08)                                        |
+| GET    | `/v1/comunidades/{id}/series`           | pública      | Séries históricas agregadas até o bairro, com metodologia                             |
+| GET    | `/v1/vitrine/ods/cobertura`             | pública      | Cobertura agregada de todas as comunidades do ciclo                                   |
+| GET    | `/v1/vitrine/necessidades`              | pública      | Necessidades de recurso em aberto (PRD-07)                                            |
+| POST   | `/v1/solicitacoes-de-participacao`      | pública      | Registra pedido de inclusão como Mestre ou Apoiador                                   |
+| POST   | `/v1/solicitacoes-de-dados`             | pública      | Registra pedido do conjunto de dados                                                  |
+| POST   | `/v1/solicitacoes-de-chave`             | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor                            |
+| POST   | `/v1/chaves/{id}/url`                   | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias                             |
+| POST   | `/v1/assistente-do-desenvolvedor`       | pública      | Pergunta ao assistente, sobre a documentação e o repositório                          |
 
 Nenhuma rota desta aplicação aceita ou devolve preferência de visitante: não há parâmetro de
 favorito, de perfil ou de sessão anônima.
+
+`/v1/vitrine/criacoes` serve as **duas** fontes do acervo numa só lista, com a paginação por
+cursor percorrendo as duas; cada item declara a fonte, para que a linha saiba qual rota de
+bytes alcança a produção dele. As duas rotas de bytes recusam em **404 em todos os casos** —
+item inexistente, sem aprovação do Mestre ou de quem não tem autorização vigente —, para não
+virarem oráculo sobre quais crianças têm divulgação autorizada.
 
 A cobertura de ODS de uma comunidade sai pela rota agregada, filtrada pela comunidade: não há
 rota por comunidade, e o ciclo é o rótulo corrente declarado na implantação (decisão do
@@ -554,6 +567,12 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   diz que a vitrine não lista quem está cadastrado.
 - Clicar numa linha abre a página individual daquele personagem, em endereço próprio; no
   portfólio, é o **nick do autor** que abre a página dele.
+- A linha do portfólio traz o **título** em destaque, e acioná-lo **abre a produção na própria
+  linha** — sem endereço novo e sem sair da seção; fechar devolve a linha ao estado recolhido.
+- O portfólio traz as **duas fontes** — comprovação aprovada do prático e criação da
+  culminância —, e a produção das **atividades** da missão não aparece em nenhuma delas.
+- Produção que o núcleo não serve é dita em **linguagem simples**, sem revelar o motivo da
+  recusa, e a linha segue exibindo título, data, trilha e autoria.
 - Mestres, apoiadores e comunidades aparecem em ordem alfabética, e o portfólio abre pela
   criação mais recente.
 - A lista de apoiadores exibe o total em moedas de cada um, **sem posição e sem qualquer
@@ -632,9 +651,11 @@ entidade e não como contrato.
 
 ## 14. Pendências que permanecem
 
-- **Título da criação original**: o `RF-03-08` pede título, trilha, data e autoria no portfólio,
-  e título não existe no modelo da criação original. O portfólio saiu com trilha, data e
-  autoria, e o requisito fica parcial até a decisão. Consta do documento 09.
+Nenhuma.
+
+O **título da criação original** saiu da lista: o título passou a existir — curto e declarado
+pelo Mestre no desafio prático, e o nome da trilha na criação da culminância —, e o `RF-03-08`
+deixou de ser parcial (decisões do fundador de 2026-11-03 e 2026-11-04, documento 09).
 
 O **texto final da nota de transparência sobre IA** saiu da lista: o rascunho semeado com a
 fatia 5 virou o texto final por decisão do fundador de 2026-10-14, junto dos textos de "Quem
@@ -649,26 +670,27 @@ IA apontando para ela.
 
 ## 15. Rastreabilidade
 
-| Requisito                           | Origem                                                                    |
-| ----------------------------------- | ------------------------------------------------------------------------- |
-| `RF-03-01` a `RF-03-14`             | 03 §8 (vitrine), 11 §§8.1, 8.2 (cartas e páginas) e 03 §12                |
-| `RF-03-82`, `RF-03-83`, `RN-03-40`  | 03 §8 (lista de registros e paginação) e 11 §8.2 (a linha resume a carta) |
-| `RF-03-55` a `RF-03-57`, `RF-03-66` | 11 §8.2 (card, moldura e piso do avatar) e 04 §2 (aporte)                 |
-| `RF-03-15` a `RF-03-21`             | 02 §1 (série e granularidade) e 11 §8.3 (representação visual)            |
-| `RF-03-22` a `RF-03-24`             | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)                 |
-| `RF-03-25` e `RF-03-26`             | 03 §8 (três recortes de leitura)                                          |
-| `RF-03-27` a `RF-03-31`             | 02 §1 (solicitação de participação, dados mínimos e prazo)                |
-| `RF-03-32` a `RF-03-34`             | 03 §12.3 (entrega sob solicitação aprovada)                               |
-| `RF-03-35` a `RF-03-37`             | 03 §8 (proteção das rotas públicas)                                       |
-| `RN-03-34` e `RN-03-35`             | 03 §8 (origem em memória e chave sem freio)                               |
-| `RF-03-38` a `RF-03-44`             | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)               |
-| `RF-03-78`                          | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)                          |
-| `RF-03-79` e `RF-03-80`             | 11 §8.2 (identificação do adulto e efetividade agregada)                  |
-| `RF-03-45` a `RF-03-49`             | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15              |
-| `RF-03-50` e `RF-03-51`             | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)                        |
-| `RF-03-52` e `RF-03-53`             | 03 §12 (aviso de coleta e área detalhada)                                 |
-| `RF-03-58` a `RF-03-62`             | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)                    |
-| `RF-03-63` a `RF-03-65`             | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)                 |
-| `RF-03-67` a `RF-03-72`             | 03 §8 (Área do Desenvolvedor e assistente) e 03 §1 (Gemini)               |
-| `RF-03-73` a `RF-03-77`             | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
-| `RF-03-81`, `RN-03-38`, `RN-03-39`  | 03 §8 (abertura, recorte do corpus e freio do assistente)                 |
+| Requisito                                       | Origem                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `RF-03-01` a `RF-03-14`                         | 03 §8 (vitrine), 11 §§8.1, 8.2 (cartas e páginas) e 03 §12                |
+| `RF-03-82`, `RF-03-83`, `RN-03-40`              | 03 §8 (lista de registros e paginação) e 11 §8.2 (a linha resume a carta) |
+| `RF-03-55` a `RF-03-57`, `RF-03-66`             | 11 §8.2 (card, moldura e piso do avatar) e 04 §2 (aporte)                 |
+| `RF-03-15` a `RF-03-21`                         | 02 §1 (série e granularidade) e 11 §8.3 (representação visual)            |
+| `RF-03-22` a `RF-03-24`                         | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)                 |
+| `RF-03-25` e `RF-03-26`                         | 03 §8 (três recortes de leitura)                                          |
+| `RF-03-27` a `RF-03-31`                         | 02 §1 (solicitação de participação, dados mínimos e prazo)                |
+| `RF-03-32` a `RF-03-34`                         | 03 §12.3 (entrega sob solicitação aprovada)                               |
+| `RF-03-35` a `RF-03-37`                         | 03 §8 (proteção das rotas públicas)                                       |
+| `RN-03-34` e `RN-03-35`                         | 03 §8 (origem em memória e chave sem freio)                               |
+| `RF-03-38` a `RF-03-44`                         | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)               |
+| `RF-03-78`                                      | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)                          |
+| `RF-03-79` e `RF-03-80`                         | 11 §8.2 (identificação do adulto e efetividade agregada)                  |
+| `RF-03-45` a `RF-03-49`                         | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15              |
+| `RF-03-50` e `RF-03-51`                         | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)                        |
+| `RF-03-52` e `RF-03-53`                         | 03 §12 (aviso de coleta e área detalhada)                                 |
+| `RF-03-58` a `RF-03-62`                         | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)                    |
+| `RF-03-63` a `RF-03-65`                         | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)                 |
+| `RF-03-67` a `RF-03-72`                         | 03 §8 (Área do Desenvolvedor e assistente) e 03 §1 (Gemini)               |
+| `RF-03-73` a `RF-03-77`                         | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
+| `RF-03-81`, `RN-03-38`, `RN-03-39`              | 03 §8 (abertura, recorte do corpus e freio do assistente)                 |
+| `RF-03-84`, `RF-03-85`, `RN-03-41` a `RN-03-43` | 11 §§2.2, 5, 8.2 (o acervo, os dois vereditos e a linha) e 02 §4          |

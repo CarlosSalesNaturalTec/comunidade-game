@@ -264,6 +264,49 @@ textarea {
   margin-inline-end: var(--espaco-8);
 }
 
+.cg-portfolio__trilha {
+  color: var(--cor-texto-secundario);
+}
+
+/* A produção do acervo **abre na própria linha** (`RF-03-85`): o acionável
+ * é texto, e o que abre entra abaixo dele, em bloco próprio. Nada aqui
+ * anima: o conteúdo é legível sem movimento, que é o piso de
+ * acessibilidade do PRD-03 §10. */
+.cg-acervo__abrir,
+.cg-acervo__fechar,
+.cg-acervo__saida {
+  display: inline-block;
+  margin-block-start: var(--espaco-8);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--cor-acao);
+  font: inherit;
+  text-align: start;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cg-acervo__producao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  margin-block-start: var(--espaco-8);
+}
+
+/* O corpo do texto entregue pela criança: preserva a quebra de linha que
+ * ela escreveu, e nunca estoura a linha da lista. */
+.cg-acervo__texto {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cg-acervo__indisponivel {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}
+
 .cg-poderes__item {
   padding-bottom: var(--espaco-8);
   border-bottom: 1px solid var(--cor-separador);

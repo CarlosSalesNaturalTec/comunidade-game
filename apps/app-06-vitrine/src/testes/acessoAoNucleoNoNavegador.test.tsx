@@ -104,6 +104,12 @@ describe("a configuração de acesso ao núcleo alcança as seções no navegado
       "/v1/vitrine/criacoes": {
         itens: [
           {
+            id: "c-1",
+            fonte: "criacao_original",
+            // Na criação da culminância o título **é** o nome da trilha
+            // (`RN-03-43`).
+            titulo: "Trilha do Vento",
+            tipo: "texto",
             trilha_id: "t-2",
             trilha: "Trilha do Vento",
             validada_em: "2026-08-01T10:00:00Z",

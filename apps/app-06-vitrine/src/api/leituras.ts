@@ -1,4 +1,5 @@
-import { lerDoNucleo } from "./nucleo";
+import { lerArquivoDoNucleo } from "comum/api";
+import { configurarAcessoUmaVez, lerDoNucleo } from "./nucleo";
 
 // As leituras públicas que esta fatia consome. Todas passam por
 // `lerDoNucleo`, que leva a chave da aplicação e **nenhuma** credencial de
@@ -61,13 +62,40 @@ export interface AutorPublico {
   nick: string;
 }
 
-/** O portfólio do `RF-03-08`: trilha, data e autoria por nick. **Sem
- * título** — a criação original não tem esse campo no modelo. */
+/** As **duas** fontes do acervo público (documento 99 §6, invariante 5): a
+ * criação da culminância e a comprovação aprovada do desafio prático. */
+export type FonteDoAcervo = "criacao_original" | "comprovacao_do_pratico";
+
+/** Os seis tipos de produção, iguais nas duas fontes. */
+export type TipoDeProducao =
+  | "texto"
+  | "imagem"
+  | "audio"
+  | "video"
+  | "link_externo"
+  | "arquivo";
+
+/** A linha do acervo do `RF-03-08`: **título**, trilha, data e autoria por
+ * nick, mais o que a abertura da produção exige — `id`, `fonte` e `tipo`
+ * (`RF-03-84`, `RF-03-85`).
+ *
+ * O título é o curto que o Mestre declarou no desafio, na comprovação, e o
+ * nome da trilha, na criação da culminância, que não tem campo de título
+ * (`RN-03-43`). `trilha` vem nas duas, e é a linha que decide não repetir o
+ * nome quando ele já é o título — o núcleo não esconde campo de terceiro
+ * (design — decisão 4).
+ *
+ * `producao` traz o corpo do texto e o endereço do link externo; nos quatro
+ * tipos de mídia é nula, e os bytes saem pela rota de arquivo da fonte. */
 export interface CriacaoPublica {
+  id: string;
+  fonte: FonteDoAcervo;
+  titulo: string;
+  tipo: TipoDeProducao | null;
   trilha_id: string;
   trilha: string;
   validada_em: string;
-  producao: string;
+  producao: string | null;
   autores: AutorPublico[];
 }
 
@@ -148,12 +176,22 @@ export function obterGuerreiroPorNick(nick: string): Promise<GuerreiroPublico> {
   return lerDoNucleo<GuerreiroPublico>(`/v1/vitrine/guerreiros/${encodeURIComponent(nick)}`);
 }
 
-/** O portfólio, da criação validada mais recentemente para a mais antiga —
- * a ordem é do núcleo (`RF-03-83`). */
+/** O acervo, do item aprovado mais recentemente para o mais antigo, com as
+ * duas fontes na mesma lista — a ordem é do núcleo (`RF-03-83`,
+ * `RF-03-84`). */
 export function listarCriacoes(cursor: string | null = null) {
   return lerDoNucleo<PaginaDoNucleo<CriacaoPublica>>(
     `/v1/vitrine/criacoes${paginaDe(cursor)}`,
   );
+}
+
+/** Os bytes da produção de um item do acervo, pela rota de arquivo da fonte
+ * dele. Vai por `lerArquivoDoNucleo` porque nenhuma rota sob `/v1` aceita
+ * `<img src>` direto: a chave da aplicação exige cabeçalho (`RF-03-85`). */
+export function lerArquivoDoAcervo(item: { id: string; fonte: FonteDoAcervo }): Promise<Blob> {
+  configurarAcessoUmaVez();
+  const recorte = item.fonte === "criacao_original" ? "criacoes" : "comprovacoes";
+  return lerArquivoDoNucleo(`/v1/vitrine/${recorte}/${encodeURIComponent(item.id)}/arquivo`);
 }
 
 export function listarRanking(cursor: string | null = null) {
