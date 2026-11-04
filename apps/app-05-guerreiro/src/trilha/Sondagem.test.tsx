@@ -28,6 +28,9 @@ describe("sondagem", () => {
             missaoId="sondagem-1"
             desafio={{
               tipo: "quiz",
+              desafio_pratico_forma_de_comprovacao: null,
+              desafio_pratico_criterio_de_aceite: null,
+              desafio_pratico_titulo_curto: null,
               enunciado: null,
               perguntas: [
                 {
@@ -63,6 +66,7 @@ describe("sondagem", () => {
       aguardando_mestre: false,
       acertos: 0,
       total: 1,
+      comprovacao_entregue: null,
     });
     const aoResponder = vi.fn();
 
@@ -73,6 +77,9 @@ describe("sondagem", () => {
             missaoId="sondagem-1"
             desafio={{
               tipo: "quiz",
+              desafio_pratico_forma_de_comprovacao: null,
+              desafio_pratico_criterio_de_aceite: null,
+              desafio_pratico_titulo_curto: null,
               enunciado: null,
               perguntas: [
                 {

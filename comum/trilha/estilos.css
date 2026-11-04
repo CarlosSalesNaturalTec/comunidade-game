@@ -20,3 +20,70 @@
 .cg-trilha__grupo > * + * {
   margin-block-start: var(--espaco-16);
 }
+
+/* A entrega da comprovação do desafio prático (`RF-05-91`, `RF-05-92`,
+ * `RN-05-51`). Nenhuma cor literal: tudo sai dos tokens, para o tema escuro
+ * vir de graça. */
+.cg-trilha__entrega-do-pratico > * + *,
+.cg-trilha__entrega-feita > * + * {
+  margin-block-start: var(--espaco-16);
+}
+
+/* O critério que o Mestre escreveu é o que a criança precisa cumprir, e por
+ * isso tem destaque de bloco — não é nota de pé de tela. */
+.cg-trilha__criterio {
+  border-inline-start: 4px solid var(--cor-borda);
+  padding-inline-start: var(--espaco-12);
+}
+
+.cg-trilha__criterio h4 {
+  margin-block-end: var(--espaco-4);
+}
+
+/* O aviso da mídia guardada vem **antes** do controle de entrega, discreto e
+ * sem bloquear a tela, com acesso à área detalhada — o molde do aviso de
+ * coleta da App 05 (`RF-05-92`, PRD-05 §11). */
+.cg-trilha__aviso-da-midia {
+  color: var(--cor-texto-secundario);
+  font-size: 0.875rem;
+}
+
+.cg-trilha__aviso-da-midia-botao {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.cg-trilha__aviso-da-midia-detalhe {
+  margin-block-start: var(--espaco-8);
+}
+
+.cg-trilha__arquivo-da-comprovacao {
+  display: block;
+}
+
+.cg-trilha__arquivo-da-comprovacao input {
+  display: block;
+  margin-block-start: var(--espaco-8);
+}
+
+/* A entrega no encontro é caminho, não castigo: fica separada do controle
+ * principal por uma linha muda, sem nenhuma marca de erro (`RN-05-51`). */
+.cg-trilha__entrega-no-encontro {
+  border-block-start: 1px solid var(--cor-separador);
+  margin-block-start: var(--espaco-24);
+  padding-block-start: var(--espaco-16);
+}
+
+.cg-trilha__entrega-no-encontro p {
+  color: var(--cor-texto-secundario);
+  margin-block-end: var(--espaco-8);
+}
+
+.cg-trilha__comprovacao-entregue {
+  white-space: pre-wrap;
+}

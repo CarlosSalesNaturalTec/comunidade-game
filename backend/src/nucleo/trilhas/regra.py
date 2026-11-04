@@ -5,6 +5,12 @@ from datetime import datetime, timedelta
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from ..armazenamento.limites import (
+    FORMATOS_ACEITOS_EM_TEXTO,
+    FORMATOS_DE_ENVIO_ACEITOS,
+    formatar_mb,
+    teto_do_tipo_de_producao,
+)
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..aulas.modelo import Aula
 from ..coletas.modelo import DesafioDeColeta
@@ -1410,6 +1416,8 @@ def submeter_desafio_de_desbloqueio(
     guerreiro: Persona,
     missao: Missao | None,
     respostas: list[dict] | None = None,
+    comprovacao: str | None = None,
+    entrega_presencial: bool = False,
 ) -> ResultadoDaSubmissaoDoDesbloqueio:
     """Só o Guerreiro(a) inscrito na trilha submete — sem inscrição, 422
     (`RN-05-20`, `RN-05-06`, documento 11 §2.2). No quiz, a submissão traz a
@@ -1418,9 +1426,11 @@ def submeter_desafio_de_desbloqueio(
     `RN-05-45`). A **missão de sondagem** é exceção — abre a trilha ao ser
     respondida, acertando ou não (`RN-05-46`), porque mede de onde o
     Guerreiro(a) parte. No prático, grava a declaração do Guerreiro(a),
-    aguardando o Mestre autor julgar. **Toda tentativa fica gravada**, a que
-    passa e a que não passa (`RN-05-47`). Em nenhum caso o desbloqueio
-    credita ponto (`RN-05-06`) — quem credita é sempre o Resultado.
+    aguardando o Mestre autor julgar, e com ela a **comprovação** na forma que
+    o Mestre autor aceitou (`RF-05-91`) ou a escolha de **entregar ao Mestre no
+    encontro** (`RN-05-51`). **Toda tentativa fica gravada**, a que passa e a
+    que não passa (`RN-05-47`). Em nenhum caso o desbloqueio credita ponto
+    (`RN-05-06`) — quem credita é sempre o Resultado.
     """
     if missao is None:
         raise NaoEncontrado(mensagem="Missão não encontrada.")
@@ -1436,9 +1446,29 @@ def submeter_desafio_de_desbloqueio(
         .first()
     )
     if existente is not None:
+        # Enquanto o Mestre não julgou, entregar de novo **substitui** o que
+        # estava, em vez de criar segundo registro — como a criação original já
+        # faz antes da validação (`RN-05-52`). Já julgado, a resposta segue
+        # sendo a situação dele, sem tocar no que está gravado.
+        if (
+            missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico
+            and existente.aprovado is None
+        ):
+            texto, presencial = _conferir_comprovacao_do_pratico(
+                missao, comprovacao=comprovacao, entrega_presencial=entrega_presencial
+            )
+            _substituir_comprovacao(existente, texto=texto, presencial=presencial)
+            sessao.flush()
         return ResultadoDaSubmissaoDoDesbloqueio(aprovado=existente.aprovado, desbloqueio=existente)
 
     if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
+        # No quiz o corte de acertos é o critério, e o núcleo o afere sozinho:
+        # não há comprovação a entregar nem a julgar (`RF-05-91`).
+        if comprovacao is not None or entrega_presencial:
+            raise ErroDeValidacao(
+                mensagem="O quiz não recebe comprovação: o critério dele é o corte de acertos.",
+                campo="comprovacao",
+            )
         perguntas = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
         if not perguntas:
             raise ErroDeValidacao(
@@ -1473,13 +1503,244 @@ def submeter_desafio_de_desbloqueio(
             aprovado=True, desbloqueio=desbloqueio, acertos=acertos, total=len(perguntas)
         )
 
+    texto, presencial = _conferir_comprovacao_do_pratico(
+        missao, comprovacao=comprovacao, entrega_presencial=entrega_presencial
+    )
     _gravar_submissao(
         sessao, guerreiro_id=guerreiro.id, missao_id=missao.id, perguntas=[], escolhas={}, acertos=0
     )
-    desbloqueio = DesbloqueioDaMissao(guerreiro_id=guerreiro.id, missao_id=missao.id, aprovado=None)
+    desbloqueio = DesbloqueioDaMissao(
+        guerreiro_id=guerreiro.id,
+        missao_id=missao.id,
+        aprovado=None,
+        comprovacao=texto,
+        entrega_presencial=presencial,
+    )
     sessao.add(desbloqueio)
     sessao.flush()
     return ResultadoDaSubmissaoDoDesbloqueio(aprovado=None, desbloqueio=desbloqueio)
+
+
+_FORMAS_DE_COMPROVACAO_EM_TEXTO = frozenset(
+    {TipoDeProducaoDaCriacaoOriginal.texto, TipoDeProducaoDaCriacaoOriginal.link_externo}
+)
+
+
+def _conferir_comprovacao_do_pratico(
+    missao: Missao, *, comprovacao: str | None, entrega_presencial: bool
+) -> tuple[str | None, bool]:
+    """Confere o que o Guerreiro(a) entregou contra a forma que o Mestre autor
+    declarou aceitar — a forma vem da **missão**, nunca do corpo da submissão,
+    porque `RN-09-50` a fez ser uma só justamente para não haver escolha na
+    ponta (`RF-05-91`, design — decisão 2).
+
+    Exatamente um entre a comprovação e a entrega presencial é preenchido
+    (`RN-05-51`, design — decisão 3). Na forma **texto** ou **link externo** o
+    corpo vem na própria declaração; nas quatro formas de **mídia** a
+    declaração nasce sem arquivo e o recebe pela sessão de envio, como a criação
+    original (design — decisão 4), e por isso mandar corpo nelas é 422.
+
+    Prático declarado **antes** desta regra não tem forma aceita: a declaração
+    segue valendo sem comprovação, porque não há forma contra a qual exigi-la
+    (design — decisão 7).
+    """
+    texto = comprovacao.strip() if comprovacao is not None else None
+
+    if entrega_presencial:
+        if texto:
+            raise ErroDeValidacao(
+                mensagem="Escolha entregar pelo aparelho ou entregar ao Mestre no encontro, "
+                "não as duas.",
+                campo="entrega_presencial",
+            )
+        return None, True
+
+    forma = missao.desafio_pratico_forma_de_comprovacao
+    if forma is None:
+        if texto:
+            raise ErroDeValidacao(
+                mensagem="Este desafio prático ainda não declarou que forma de comprovação "
+                "aceita; o Mestre autor precisa declará-la.",
+                campo="comprovacao",
+            )
+        return None, False
+
+    if forma in _FORMAS_DE_COMPROVACAO_EM_TEXTO:
+        if not texto:
+            raise ErroDeValidacao(
+                mensagem=(
+                    "Este desafio aceita comprovação em texto e exige o que você escreveu."
+                    if forma == TipoDeProducaoDaCriacaoOriginal.texto
+                    else "Este desafio aceita comprovação em link e exige o endereço."
+                ),
+                campo="comprovacao",
+            )
+        return texto, False
+
+    if texto:
+        raise ErroDeValidacao(
+            mensagem=f"Este desafio aceita comprovação em {forma.value}, que vai pelo envio do "
+            "arquivo, não escrita na declaração.",
+            campo="comprovacao",
+        )
+    return None, False
+
+
+def _substituir_comprovacao(
+    desbloqueio: DesbloqueioDaMissao, *, texto: str | None, presencial: bool
+) -> None:
+    """A entrega nova apaga a anterior inteira — o corpo e a mídia —, para que
+    não sobre arquivo de uma entrega que o Mestre não vai mais julgar
+    (`RN-05-52`)."""
+    desbloqueio.comprovacao = texto
+    desbloqueio.entrega_presencial = presencial
+    desbloqueio.comprovacao_referencia = None
+    desbloqueio.comprovacao_tamanho = None
+    desbloqueio.comprovacao_tipo_do_arquivo = None
+
+
+def _referencia_da_comprovacao(desbloqueio: DesbloqueioDaMissao) -> str:
+    return f"desbloqueios-praticos/{desbloqueio.id}/comprovacao"
+
+
+def _conferir_envio_da_comprovacao(
+    sessao: Session, desbloqueio: DesbloqueioDaMissao | None, operador: Persona
+) -> DesbloqueioDaMissao:
+    """Quem envia é quem declarou, e só enquanto o Mestre não julgou: depois do
+    julgamento a entrega está encerrada, e a reprovada nem existe mais
+    (`RF-05-91`, `RN-05-52`)."""
+    if desbloqueio is None:
+        raise NaoEncontrado(mensagem="Declaração de desafio prático não encontrada.")
+    if desbloqueio.guerreiro_id != operador.id:
+        raise PermissaoNegada(
+            mensagem="A comprovação é enviada por quem declarou que cumpriu o desafio."
+        )
+    if desbloqueio.aprovado is not None:
+        raise ErroDeValidacao(
+            mensagem="Esta declaração já foi julgada; a comprovação não muda mais.",
+            campo="comprovacao",
+        )
+    if desbloqueio.entrega_presencial:
+        raise ErroDeValidacao(
+            mensagem="Esta declaração escolheu a entrega ao Mestre no encontro; não há arquivo "
+            "a enviar.",
+            campo="comprovacao",
+        )
+    missao = sessao.get(Missao, desbloqueio.missao_id)
+    forma = missao.desafio_pratico_forma_de_comprovacao
+    if forma is None or forma in _FORMAS_DE_COMPROVACAO_EM_TEXTO:
+        raise ErroDeValidacao(
+            mensagem="A comprovação deste desafio não é arquivo.", campo="comprovacao"
+        )
+    return desbloqueio
+
+
+def abrir_envio_da_comprovacao(
+    sessao: Session,
+    desbloqueio: DesbloqueioDaMissao | None,
+    *,
+    operador: Persona,
+    tipo_mime: str | None,
+    tamanho_declarado: int | None,
+    armazenamento: PortaDeArmazenamento,
+    origem: str | None = None,
+) -> str:
+    """Espelha `criacoes_originais.regra.abrir_envio_da_criacao`: confere quem
+    envia, o formato e o teto antes de abrir a sessão, e repassa a `origem` ao
+    armazenamento, que é outra origem e só aceita sabendo de onde vem
+    (`RF-05-91`, `RF-09-19`, design — decisão 4)."""
+    desbloqueio = _conferir_envio_da_comprovacao(sessao, desbloqueio, operador)
+    missao = sessao.get(Missao, desbloqueio.missao_id)
+
+    if tipo_mime not in FORMATOS_DE_ENVIO_ACEITOS:
+        raise ErroDeValidacao(
+            mensagem=f"Formato '{tipo_mime}' não aceito. A lista aceita é "
+            f"{FORMATOS_ACEITOS_EM_TEXTO}.",
+            campo="tipo_mime",
+        )
+    if tamanho_declarado is None or tamanho_declarado <= 0:
+        raise ErroDeValidacao(
+            mensagem="Envio exige o tamanho declarado do arquivo.", campo="tamanho_declarado"
+        )
+
+    teto = teto_do_tipo_de_producao(missao.desafio_pratico_forma_de_comprovacao)
+    if tamanho_declarado > teto:
+        raise ArquivoAcimaDoTeto(
+            mensagem=f"O arquivo tem {formatar_mb(tamanho_declarado)} e o limite para este tipo "
+            f"de comprovação é {formatar_mb(teto)}."
+        )
+
+    return armazenamento.abrir_sessao(
+        referencia=_referencia_da_comprovacao(desbloqueio),
+        tipo_mime=tipo_mime,
+        tamanho_declarado=tamanho_declarado,
+        origem=origem,
+    )
+
+
+def confirmar_envio_da_comprovacao(
+    sessao: Session,
+    desbloqueio: DesbloqueioDaMissao | None,
+    *,
+    operador: Persona,
+    armazenamento: PortaDeArmazenamento,
+) -> DesbloqueioDaMissao:
+    """Só grava a referência depois de o armazenamento confirmar o tamanho
+    real: até aqui a comprovação não serve bytes (`RF-05-91`, design —
+    decisão 4)."""
+    desbloqueio = _conferir_envio_da_comprovacao(sessao, desbloqueio, operador)
+    missao = sessao.get(Missao, desbloqueio.missao_id)
+
+    envio = armazenamento.consultar_envio(referencia=_referencia_da_comprovacao(desbloqueio))
+    if envio is None:
+        raise ErroDeValidacao(mensagem="O envio ainda não foi concluído.", campo="arquivo")
+
+    teto = teto_do_tipo_de_producao(missao.desafio_pratico_forma_de_comprovacao)
+    if envio.tamanho > teto:
+        raise ArquivoAcimaDoTeto(
+            mensagem=f"O arquivo enviado tem {formatar_mb(envio.tamanho)} e o limite para este "
+            f"tipo de comprovação é {formatar_mb(teto)}."
+        )
+
+    desbloqueio.comprovacao_referencia = _referencia_da_comprovacao(desbloqueio)
+    desbloqueio.comprovacao_tamanho = envio.tamanho
+    desbloqueio.comprovacao_tipo_do_arquivo = envio.tipo_mime
+    sessao.flush()
+    return desbloqueio
+
+
+@dataclass
+class ArquivoDaComprovacao:
+    bytes_do_arquivo: bytes
+    tipo_mime: str
+
+
+def ler_arquivo_da_comprovacao(
+    sessao: Session,
+    desbloqueio: DesbloqueioDaMissao | None,
+    *,
+    operador: Persona,
+    armazenamento: PortaDeArmazenamento,
+) -> ArquivoDaComprovacao:
+    """Os bytes vão a **quem entregou** e ao **Mestre autor** da trilha: a ele
+    porque é quem julga, a ela porque foi avisada de que a mídia fica guardada
+    (`RF-05-93`, decisão do fundador de 2026-11-04). Quem grava entrega também
+    quem lê — foi o defeito *write-only* da criação original que ensinou
+    (`RF-01-78`)."""
+    if desbloqueio is None:
+        raise NaoEncontrado(mensagem="Declaração de desafio prático não encontrada.")
+    missao = sessao.get(Missao, desbloqueio.missao_id)
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    if desbloqueio.guerreiro_id != operador.id and trilha.autor_id != operador.id:
+        raise PermissaoNegada(
+            mensagem="A comprovação é servida a quem a entregou e ao Mestre autor da trilha."
+        )
+    if desbloqueio.comprovacao_referencia is None:
+        raise NaoEncontrado(mensagem="Esta declaração não tem arquivo de comprovação.")
+    return ArquivoDaComprovacao(
+        bytes_do_arquivo=armazenamento.ler(referencia=desbloqueio.comprovacao_referencia),
+        tipo_mime=desbloqueio.comprovacao_tipo_do_arquivo or "application/octet-stream",
+    )
 
 
 def _conferir_respostas_do_quiz(

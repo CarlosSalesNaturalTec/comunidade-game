@@ -45,9 +45,11 @@ from .modelo import (
     Trilha,
 )
 from .regra import (
+    abrir_envio_da_comprovacao,
     abrir_envio_da_imagem_da_pergunta,
     acrescentar_pergunta_do_desbloqueio,
     atividade_vigente,
+    confirmar_envio_da_comprovacao,
     confirmar_envio_da_imagem_da_pergunta,
     consultar_inscricoes_do_guerreiro,
     consultar_progresso,
@@ -65,6 +67,7 @@ from .regra import (
     fatos_da_atividade,
     inscrever_na_trilha,
     julgar_desafio_pratico,
+    ler_arquivo_da_comprovacao,
     ler_imagem_da_pergunta,
     listar_desbloqueios_praticos_pendentes,
     obter_proxima_missao,
@@ -883,6 +886,44 @@ class DesafioDeDesbloqueioSaida(BaseModel):
     titulo_curto: str | None = None
 
 
+class ComprovacaoDoPraticoSaida(BaseModel):
+    """O que ficou gravado da entrega, para a tela reencontrá-la sem segunda
+    chamada: ao voltar à missão ela reapresenta o que foi entregue, em vez de
+    um formulário vazio (`RF-05-93`)."""
+
+    forma: TipoDeProducaoDaCriacaoOriginal | None = None
+    comprovacao: str | None = None
+    entrega_presencial: bool = False
+    tem_arquivo: bool = False
+
+
+def _obter_desbloqueio_do_guerreiro(
+    sessao_bd: Session, *, id_da_missao: uuid.UUID, guerreiro_id: uuid.UUID
+) -> DesbloqueioDaMissao | None:
+    return (
+        sessao_bd.query(DesbloqueioDaMissao)
+        .filter_by(missao_id=id_da_missao, guerreiro_id=guerreiro_id)
+        .first()
+    )
+
+
+def _saida_da_comprovacao(
+    missao: Missao, desbloqueio: DesbloqueioDaMissao | None
+) -> ComprovacaoDoPraticoSaida | None:
+    """`None` é "não há declaração de prático aqui" — dito e não suposto, como
+    a leitura da culminância ensinou (`RF-05-93`)."""
+    if desbloqueio is None:
+        return None
+    if missao.tipo_do_desafio_de_desbloqueio != TipoDeDesafioDeDesbloqueio.pratico:
+        return None
+    return ComprovacaoDoPraticoSaida(
+        forma=missao.desafio_pratico_forma_de_comprovacao,
+        comprovacao=desbloqueio.comprovacao,
+        entrega_presencial=bool(desbloqueio.entrega_presencial),
+        tem_arquivo=desbloqueio.comprovacao_referencia is not None,
+    )
+
+
 class MissaoNoPercursoSaida(BaseModel):
     id: uuid.UUID
     titulo: str
@@ -894,6 +935,10 @@ class MissaoNoPercursoSaida(BaseModel):
     aguardando_mestre: bool
     motivo_do_bloqueio: str | None
     desafio_de_desbloqueio: DesafioDeDesbloqueioSaida | None
+    # A entrega que o próprio Guerreiro(a) já fez: ao voltar à missão a tela
+    # reapresenta o que ele entregou, em vez de um formulário vazio — a lição
+    # das quatro linhas de conserto do bloco do PRD-09 (`RF-05-93`).
+    comprovacao_entregue: ComprovacaoDoPraticoSaida | None = None
 
 
 def _saida_do_desafio_de_desbloqueio(
@@ -942,6 +987,12 @@ def obter_missao_no_percurso_rota(
         aguardando_mestre=item.aguardando_mestre,
         motivo_do_bloqueio=item.motivo_do_bloqueio,
         desafio_de_desbloqueio=_saida_do_desafio_de_desbloqueio(sessao_bd, item.missao),
+        comprovacao_entregue=_saida_da_comprovacao(
+            item.missao,
+            _obter_desbloqueio_do_guerreiro(
+                sessao_bd, id_da_missao=item.missao.id, guerreiro_id=contexto.persona_id
+            ),
+        ),
     )
 
 
@@ -1201,8 +1252,13 @@ class SubmeterDesafioDeDesbloqueioEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     # O quiz vai de uma vez, com a resposta de todas as perguntas
-    # (`RF-05-89`); o prático não tem o que responder.
+    # (`RF-05-89`); o prático traz a **comprovação** na forma que o Mestre
+    # autor aceitou (`RF-05-91`), ou a escolha de entregá-la ao Mestre no
+    # encontro (`RN-05-51`). Nas quatro formas de mídia o corpo não vem aqui:
+    # a declaração nasce sem arquivo e o recebe pelas rotas de envio.
     respostas: list[RespostaDoDesbloqueioEntrada] | None = None
+    comprovacao: str | None = None
+    entrega_presencial: bool = False
 
 
 class SubmeterDesafioDeDesbloqueioSaida(BaseModel):
@@ -1210,6 +1266,7 @@ class SubmeterDesafioDeDesbloqueioSaida(BaseModel):
     aguardando_mestre: bool
     acertos: int
     total: int
+    comprovacao_entregue: ComprovacaoDoPraticoSaida | None = None
 
 
 @roteador.post("/eu/missoes/{id_da_missao}/desbloqueio", status_code=201)
@@ -1233,6 +1290,8 @@ def submeter_desafio_de_desbloqueio_rota(
         respostas=[resposta.model_dump() for resposta in entrada.respostas]
         if entrada.respostas is not None
         else None,
+        comprovacao=entrada.comprovacao,
+        entrega_presencial=entrada.entrega_presencial,
     )
     sessao_bd.commit()
     return SubmeterDesafioDeDesbloqueioSaida(
@@ -1240,7 +1299,96 @@ def submeter_desafio_de_desbloqueio_rota(
         aguardando_mestre=resultado.aprovado is None,
         acertos=resultado.acertos,
         total=resultado.total,
+        comprovacao_entregue=_saida_da_comprovacao(missao, resultado.desbloqueio),
     )
+
+
+class AbrirEnvioDaComprovacaoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    tipo_mime: str
+    tamanho_declarado: int
+
+
+class AbrirEnvioDaComprovacaoSaida(BaseModel):
+    endereco_da_sessao: str
+
+
+@roteador.post("/eu/missoes/{id_da_missao}/desbloqueio/comprovacao", status_code=201)
+def abrir_envio_da_comprovacao_rota(
+    id_da_missao: uuid.UUID,
+    entrada: AbrirEnvioDaComprovacaoEntrada,
+    requisicao: Request,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> AbrirEnvioDaComprovacaoSaida:
+    """`RF-05-91`: abre a sessão retomável da comprovação em mídia, no molde
+    de `/criacoes/{id}/arquivo`. Quem envia, os formatos e o teto são de
+    `abrir_envio_da_comprovacao`; os bytes nunca passam por aqui."""
+    _exigir_guerreiro(contexto)
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    desbloqueio = _obter_desbloqueio_do_guerreiro(
+        sessao_bd, id_da_missao=id_da_missao, guerreiro_id=contexto.persona_id
+    )
+    # A origem de quem vai enviar os bytes vai com a abertura da sessão: o
+    # envio parte do navegador e o armazenamento é outra origem, que só o
+    # aceita sabendo de onde vem (`RF-09-19`).
+    endereco = abrir_envio_da_comprovacao(
+        sessao_bd,
+        desbloqueio,
+        operador=operador,
+        tipo_mime=entrada.tipo_mime,
+        tamanho_declarado=entrada.tamanho_declarado,
+        armazenamento=armazenamento,
+        origem=requisicao.headers.get("Origin"),
+    )
+    sessao_bd.commit()
+    return AbrirEnvioDaComprovacaoSaida(endereco_da_sessao=endereco)
+
+
+@roteador.patch("/eu/missoes/{id_da_missao}/desbloqueio/comprovacao")
+def confirmar_envio_da_comprovacao_rota(
+    id_da_missao: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> ComprovacaoDoPraticoSaida:
+    """Confirma o envio encerrado pelo cliente — só agora a comprovação serve
+    bytes, depois de o armazenamento apurar o tamanho real (`RF-05-91`)."""
+    _exigir_guerreiro(contexto)
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    desbloqueio = _obter_desbloqueio_do_guerreiro(
+        sessao_bd, id_da_missao=id_da_missao, guerreiro_id=contexto.persona_id
+    )
+    desbloqueio = confirmar_envio_da_comprovacao(
+        sessao_bd, desbloqueio, operador=operador, armazenamento=armazenamento
+    )
+    sessao_bd.commit()
+    missao = _obter_missao(sessao_bd, id_da_missao)
+    return _saida_da_comprovacao(missao, desbloqueio)
+
+
+@roteador.get("/missoes/{id_da_missao}/desbloqueios/{id_do_guerreiro}/comprovacao")
+def ler_comprovacao_do_pratico_rota(
+    id_da_missao: uuid.UUID,
+    id_do_guerreiro: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """`RF-05-93`: os bytes da comprovação, a quem a entregou e ao Mestre autor
+    da trilha. A rota é a mesma forma do julgamento — por missão e Guerreiro(a)
+    —, porque é por ela que a bancada do Mestre alcança a entrega. A
+    autorização e o 404 sem mídia são de `ler_arquivo_da_comprovacao`."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    desbloqueio = _obter_desbloqueio_do_guerreiro(
+        sessao_bd, id_da_missao=id_da_missao, guerreiro_id=id_do_guerreiro
+    )
+    arquivo = ler_arquivo_da_comprovacao(
+        sessao_bd, desbloqueio, operador=operador, armazenamento=armazenamento
+    )
+    return Response(content=arquivo.bytes_do_arquivo, media_type=arquivo.tipo_mime)
 
 
 class DesbloqueioPendenteSaida(BaseModel):
@@ -1250,6 +1398,12 @@ class DesbloqueioPendenteSaida(BaseModel):
     missao_id: uuid.UUID
     missao_titulo: str
     momento: str
+    # A entrega vem com a pendência: sem ela o Mestre julga às cegas, e
+    # devolvê-la aqui é o que deixa a bancada pronta para a fatia 27
+    # (`RF-05-93`). Os bytes ficam na rota própria — listagem não serve
+    # arquivo.
+    criterio_de_aceite: str | None = None
+    comprovacao_entregue: ComprovacaoDoPraticoSaida | None = None
 
 
 @roteador.get("/missoes/desbloqueios-pendentes")
@@ -1273,6 +1427,8 @@ def listar_desbloqueios_pendentes_rota(
                 missao_id=pendente.missao_id,
                 missao_titulo=missao.titulo,
                 momento=pendente.momento.isoformat(),
+                criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
+                comprovacao_entregue=_saida_da_comprovacao(missao, pendente),
             )
         )
     return saida

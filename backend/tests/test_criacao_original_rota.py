@@ -466,3 +466,61 @@ def test_criacao_com_envio_nao_confirmado_responde_404(
     resposta = cliente.get(f"/v1/criacoes/{criacao_id}/arquivo", headers=cabecalhos)
 
     assert resposta.status_code == 404
+
+
+def test_envio_da_criacao_recusa_formato_fora_da_lista(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    """A lista fechada de formatos saiu de `criacoes_originais.regra` para
+    `armazenamento.limites`, de onde a comprovação do prático também a lê: a
+    recusa e a mensagem seguem as de antes da extração (`RF-05-91`)."""
+    guerreiro = criar_persona(Papel.guerreiro)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    culminancia = criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+
+    criacao_id = cliente.post(
+        f"/v1/culminancias/{culminancia.id}/criacoes",
+        json={"tipo": "imagem"},
+        headers=cabecalhos,
+    ).json()["id"]
+
+    resposta = cliente.post(
+        f"/v1/criacoes/{criacao_id}/arquivo",
+        json={"tipo_mime": "image/gif", "tamanho_declarado": 10},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+    assert "MP4, WebM, JPG, PNG, WebP, MP3 e PDF" in resposta.text
+
+
+def test_envio_da_criacao_recusa_tamanho_acima_do_teto_dizendo_o_teto(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_culminancia
+):
+    """O teto por tipo também saiu para `armazenamento.limites` — 20 MB fora
+    do vídeo —, e a recusa continua sendo o 413 de `ArquivoAcimaDoTeto`, com a
+    mensagem dizendo o limite (`RF-05-91`)."""
+    guerreiro = criar_persona(Papel.guerreiro)
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    culminancia = criar_culminancia(trilha, mestre, modalidade=ModalidadeDaCulminancia.individual)
+    chave, _ = criar_chave()
+    cabecalhos = _cabecalhos(chave, criar_sessao_de_teste, guerreiro)
+
+    criacao_id = cliente.post(
+        f"/v1/culminancias/{culminancia.id}/criacoes",
+        json={"tipo": "imagem"},
+        headers=cabecalhos,
+    ).json()["id"]
+
+    resposta = cliente.post(
+        f"/v1/criacoes/{criacao_id}/arquivo",
+        json={"tipo_mime": "image/png", "tamanho_declarado": 21 * 1024 * 1024},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 413
+    assert "20 MB" in resposta.text

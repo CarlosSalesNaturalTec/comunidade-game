@@ -293,6 +293,20 @@ class DesbloqueioDaMissao(Base):
     Mestre autor julga (`julgado_por_id`). Julgado que não passou, a linha é
     apagada para que o Guerreiro(a) declare de novo, sem limite e sem
     punição (`RN-05-20`) — nada aqui é reprovação persistida.
+
+    No prático, a declaração carrega a **comprovação** na forma que o Mestre
+    autor aceitou (`RF-05-91`): `comprovacao` guarda o corpo do tipo texto ou
+    o endereço do tipo link externo, e `comprovacao_referencia`,
+    `comprovacao_tamanho` e `comprovacao_tipo_do_arquivo` guardam o arquivo
+    dos quatro tipos de mídia, preenchidos só quando o envio conclui —
+    espelhando `CriacaoOriginal` (design — decisões 1 e 4). `entrega_presencial`
+    é a alternativa de quem não entrega pelo aparelho, e é coluna própria
+    justamente para que "não entregou" e "vai entregar no encontro" não fiquem
+    indistinguíveis (`RN-05-51`, design — decisão 3): **exatamente um** entre
+    a comprovação e ela é preenchido. A comprovação é dado **desta** linha, e
+    por isso o apagamento do julgamento reprovado a leva junto, sem limpeza
+    própria (`RN-05-52`). Coluna anulável e sem *backfill*: o prático declarado
+    antes desta regra segue valendo sem comprovação (design — decisão 7).
     """
 
     __tablename__ = "desbloqueio_da_missao"
@@ -307,6 +321,11 @@ class DesbloqueioDaMissao(Base):
     julgado_por_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("persona.id"), nullable=True
     )
+    comprovacao: Mapped[str | None] = mapped_column(Text, nullable=True)
+    comprovacao_referencia: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    comprovacao_tamanho: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    comprovacao_tipo_do_arquivo: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    entrega_presencial: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
     __table_args__ = (
         UniqueConstraint(

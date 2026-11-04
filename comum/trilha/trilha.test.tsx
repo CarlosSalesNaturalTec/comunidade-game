@@ -18,6 +18,9 @@ import { Missao } from "./Missao";
 const CHAVE_DE_SESSAO = "comum:teste-trilha";
 
 const QUIZ: trilhaApi.DesafioDeDesbloqueio = {
+  desafio_pratico_forma_de_comprovacao: null,
+  desafio_pratico_criterio_de_aceite: null,
+  desafio_pratico_titulo_curto: null,
   tipo: "quiz",
   enunciado: null,
   perguntas: [
@@ -31,6 +34,31 @@ const QUIZ: trilhaApi.DesafioDeDesbloqueio = {
   ],
 };
 
+const PRATICO_SEM_FORMA: trilhaApi.DesafioDeDesbloqueio = {
+  tipo: "pratico",
+  enunciado: "Monte o robô.",
+  perguntas: null,
+  desafio_pratico_forma_de_comprovacao: null,
+  desafio_pratico_criterio_de_aceite: null,
+  desafio_pratico_titulo_curto: null,
+};
+
+// O prático desta fatia: forma aceita, critério e título curto declarados pelo
+// Mestre autor (`RF-09-129` a `RF-09-131`).
+const PRATICO_EM_VIDEO: trilhaApi.DesafioDeDesbloqueio = {
+  tipo: "pratico",
+  enunciado: "Monte o robô e grave um vídeo.",
+  perguntas: null,
+  desafio_pratico_forma_de_comprovacao: "video",
+  desafio_pratico_criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
+  desafio_pratico_titulo_curto: "Robô de sucata",
+};
+
+const PRATICO_EM_TEXTO: trilhaApi.DesafioDeDesbloqueio = {
+  ...PRATICO_EM_VIDEO,
+  desafio_pratico_forma_de_comprovacao: "texto",
+};
+
 function pergunta(id: string, ordem: number, enunciado: string) {
   return {
     id,
@@ -42,6 +70,9 @@ function pergunta(id: string, ordem: number, enunciado: string) {
 }
 
 const QUIZ_DE_TRES: trilhaApi.DesafioDeDesbloqueio = {
+  desafio_pratico_forma_de_comprovacao: null,
+  desafio_pratico_criterio_de_aceite: null,
+  desafio_pratico_titulo_curto: null,
   tipo: "quiz",
   enunciado: null,
   perguntas: [
@@ -62,6 +93,7 @@ const MISSAO_ABERTA: trilhaApi.MissaoNoPercurso = {
   aguardando_mestre: false,
   motivo_do_bloqueio: null,
   desafio_de_desbloqueio: null,
+  comprovacao_entregue: null,
 };
 
 const PODER: trilhaApi.PoderPublico = {
@@ -188,6 +220,7 @@ describe("a submissão do desbloqueio é ato opcional do desafio", () => {
       aguardando_mestre: false,
       acertos: 1,
       total: 1,
+      comprovacao_entregue: null,
     });
     const aoDesbloquear = vi.fn();
 
@@ -271,6 +304,7 @@ describe("a entrega individual da produção é ato opcional da missão", () => 
           desbloqueada: false,
           e_proxima: true,
           desafio_de_desbloqueio: QUIZ,
+          comprovacao_entregue: null,
         }}
         missaoPublica={publica}
         aoDesbloquear={vi.fn()}
@@ -342,6 +376,7 @@ describe("o desafio de desbloqueio sai uma pergunta por vez", () => {
       aguardando_mestre: false,
       acertos: 3,
       total: 3,
+      comprovacao_entregue: null,
     });
 
     await renderizar(
@@ -460,14 +495,18 @@ describe("o desafio de desbloqueio sai uma pergunta por vez", () => {
   });
 
   it("o desafio por declaração não espera resposta e segue disponível", async () => {
-    const submeter = vi
-      .spyOn(trilhaApi, "submeterDesafioDeDesbloqueio")
-      .mockResolvedValue({ aprovado: null, aguardando_mestre: true, acertos: 0, total: 0 });
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: null,
+      aguardando_mestre: true,
+      acertos: 0,
+      total: 0,
+      comprovacao_entregue: null,
+    });
 
     await renderizar(
       <DesafioDeDesbloqueio
         missaoId="missao-1"
-        desafio={{ tipo: "pratico", enunciado: "Monte o robô.", perguntas: null }}
+        desafio={PRATICO_SEM_FORMA}
         aoDesbloquear={vi.fn()}
         submissaoLigada
       />,
@@ -736,6 +775,7 @@ describe("a tela da missão se divide em quatro grupos", () => {
               desbloqueada: false,
               e_proxima: true,
               desafio_de_desbloqueio: QUIZ,
+              comprovacao_entregue: null,
             }
           : {
               ...MISSAO_ABERTA,
@@ -971,6 +1011,9 @@ function LigarNarracao() {
 }
 
 const QUIZ_COM_IMAGEM: trilhaApi.DesafioDeDesbloqueio = {
+  desafio_pratico_forma_de_comprovacao: null,
+  desafio_pratico_criterio_de_aceite: null,
+  desafio_pratico_titulo_curto: null,
   tipo: "quiz",
   enunciado: null,
   perguntas: [
@@ -1125,6 +1168,7 @@ describe("o ato da missão só aparece depois do último conteúdo", () => {
     desbloqueada: false,
     e_proxima: true,
     desafio_de_desbloqueio: QUIZ,
+    comprovacao_entregue: null,
   };
 
   function oDesafioEstaEmTela() {
@@ -1499,5 +1543,221 @@ describe("a recompensa conquistada entra antes da próxima missão", () => {
     await usuario.click(await screen.findByRole("button", { name: "Avançar" }));
 
     expect(screen.getByLabelText("Recompensa conquistada")).toBeInTheDocument();
+  });
+});
+
+// A entrega da comprovação do desafio prático (`RF-05-91`, `RF-05-92`,
+// `RF-05-93`, `RN-05-51`), na tela que as Apps 01 e 05 compartilham.
+describe("a entrega da comprovação do prático", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    sessionStorage.clear();
+  });
+
+  it("apresenta o critério e a forma aceita antes do controle de entrega", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_VIDEO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+
+    const secao = screen.getByRole("region", { name: "Desafio de desbloqueio" });
+    const textos = secao.textContent ?? "";
+    expect(textos).toContain("Não deve aparecer o rosto da criança, só a produção.");
+    expect(textos).toContain("entregue um vídeo");
+    // O título curto é da vitrine, não da tela do desafio.
+    expect(textos).not.toContain("Robô de sucata");
+  });
+
+  it("não oferece seletor de forma: ela é uma e já está declarada", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_VIDEO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
+  it("avisa que a mídia fica guardada antes da entrega, com acesso ao detalhe", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_VIDEO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    expect(screen.getByText(/fica guardado/i)).toBeInTheDocument();
+    const saberMais = screen.getByRole("button", { name: /saber mais/i });
+    await usuario.click(saberMais);
+    expect(screen.getByText(/aparece na vitrine com o seu nick/i)).toBeInTheDocument();
+  });
+
+  it("mantém o controle indisponível enquanto a comprovação não está preenchida", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_TEXTO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    expect(screen.getByRole("button", { name: /já cumpri/i })).toBeDisabled();
+
+    await usuario.type(screen.getByRole("textbox"), "Montei com tampinhas.");
+    expect(screen.getByRole("button", { name: /já cumpri/i })).toBeEnabled();
+  });
+
+  it("leva o corpo escrito na declaração, na forma texto", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: null,
+      aguardando_mestre: true,
+      acertos: 0,
+      total: 0,
+      comprovacao_entregue: {
+        forma: "texto",
+        comprovacao: "Montei com tampinhas.",
+        entrega_presencial: false,
+        tem_arquivo: false,
+      },
+    });
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_TEXTO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    await usuario.type(screen.getByRole("textbox"), "Montei com tampinhas.");
+    await usuario.click(screen.getByRole("button", { name: /já cumpri/i }));
+
+    expect(submeter).toHaveBeenCalledWith("missao-1", null, expect.any(String), {
+      comprovacao: "Montei com tampinhas.",
+    });
+  });
+
+  it("oferece entregar ao Mestre no encontro, sem tratá-lo como falha", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: null,
+      aguardando_mestre: true,
+      acertos: 0,
+      total: 0,
+      comprovacao_entregue: {
+        forma: "video",
+        comprovacao: null,
+        entrega_presencial: true,
+        tem_arquivo: false,
+      },
+    });
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_VIDEO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    const alternativa = screen.getByRole("button", {
+      name: /entregar ao mestre no encontro/i,
+    });
+    expect(alternativa).toBeEnabled();
+    await usuario.click(alternativa);
+
+    expect(submeter).toHaveBeenCalledWith("missao-1", null, expect.any(String), {
+      entrega_presencial: true,
+    });
+    expect(
+      screen.getByText(/vai entregar a sua produção ao Mestre no encontro/i),
+    ).toBeInTheDocument();
+    // Nenhuma marca de erro ou de desistência.
+    expect(screen.queryByText(/não foi dessa vez/i)).not.toBeInTheDocument();
+  });
+
+  it("reapresenta a comprovação entregue em lugar de um formulário vazio", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_TEXTO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+        comprovacaoEntregue={{
+          forma: "texto",
+          comprovacao: "Montei com tampinhas.",
+          entrega_presencial: false,
+          tem_arquivo: false,
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Montei com tampinhas.")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /já cumpri/i })).not.toBeInTheDocument();
+  });
+
+  it("diz que o arquivo foi enviado quando a entrega tem mídia", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_VIDEO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+        comprovacaoEntregue={{
+          forma: "video",
+          comprovacao: null,
+          entrega_presencial: false,
+          tem_arquivo: true,
+        }}
+      />,
+    );
+
+    expect(screen.getByText(/arquivo foi enviado e está guardado/i)).toBeInTheDocument();
+  });
+
+  it("no prático sem forma declarada o controle segue disponível, sem campo algum", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_SEM_FORMA}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /já cumpri/i })).toBeEnabled();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /entregar ao mestre no encontro/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("desligada a submissão, o critério segue à vista e não há controle de entrega", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_EM_VIDEO}
+        aoDesbloquear={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText("Não deve aparecer o rosto da criança, só a produção."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /já cumpri/i })).not.toBeInTheDocument();
   });
 });

@@ -19,6 +19,9 @@ function pergunta(
 
 const QUIZ_DE_DUAS: trilhaApi.DesafioDeDesbloqueio = {
   tipo: "quiz",
+  desafio_pratico_forma_de_comprovacao: null,
+  desafio_pratico_criterio_de_aceite: null,
+  desafio_pratico_titulo_curto: null,
   enunciado: null,
   perguntas: [pergunta("p1", "Quanto é 1 + 1?"), pergunta("p2", "Quanto é 2 + 2?", null, 2)],
 };
@@ -57,6 +60,7 @@ describe("desafio de desbloqueio", () => {
       aguardando_mestre: false,
       acertos: 2,
       total: 2,
+      comprovacao_entregue: null,
     });
     const aoDesbloquear = await renderizar(QUIZ_DE_DUAS);
     const usuario = userEvent.setup();
@@ -98,6 +102,7 @@ describe("desafio de desbloqueio", () => {
       aguardando_mestre: false,
       acertos: 1,
       total: 2,
+      comprovacao_entregue: null,
     });
     await renderizar(QUIZ_DE_DUAS);
     const usuario = userEvent.setup();
@@ -118,9 +123,13 @@ describe("desafio de desbloqueio", () => {
       aguardando_mestre: true,
       acertos: 0,
       total: 0,
+      comprovacao_entregue: null,
     });
     await renderizar({
       tipo: "pratico",
+      desafio_pratico_forma_de_comprovacao: null,
+      desafio_pratico_criterio_de_aceite: null,
+      desafio_pratico_titulo_curto: null,
       enunciado: "Monte o robô e mostre ao Mestre.",
       perguntas: null,
     });
@@ -136,6 +145,9 @@ describe("desafio de desbloqueio", () => {
 describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
   const QUIZ_COM_IMAGEM: trilhaApi.DesafioDeDesbloqueio = {
     tipo: "quiz",
+    desafio_pratico_forma_de_comprovacao: null,
+    desafio_pratico_criterio_de_aceite: null,
+    desafio_pratico_titulo_curto: null,
     enunciado: null,
     perguntas: [
       pergunta("p1", "Quanto é 1 + 1?"),
@@ -186,6 +198,7 @@ describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
       aguardando_mestre: false,
       acertos: 2,
       total: 2,
+      comprovacao_entregue: null,
     });
 
     await renderizar(QUIZ_COM_IMAGEM);
@@ -199,5 +212,68 @@ describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
     await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
 
     expect(submeter).toHaveBeenCalledTimes(1);
+  });
+});
+
+// A App 05 entrega a comprovação pela tela da trilha, pelo componente comum e
+// sem reimplementação própria (`RF-05-91`, `RF-05-92`, `RN-05-51`).
+describe("a entrega da comprovação do prático na App 05", () => {
+  const PRATICO_EM_VIDEO: trilhaApi.DesafioDeDesbloqueio = {
+    tipo: "pratico",
+    enunciado: "Monte o robô e grave um vídeo.",
+    perguntas: null,
+    desafio_pratico_forma_de_comprovacao: "video",
+    desafio_pratico_criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
+    desafio_pratico_titulo_curto: "Robô de sucata",
+  };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    sessionStorage.clear();
+  });
+
+  it("apresenta o critério, o aviso da mídia guardada e a alternativa presencial", async () => {
+    await renderizar(PRATICO_EM_VIDEO);
+
+    expect(
+      screen.getByText("Não deve aparecer o rosto da criança, só a produção."),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/fica guardado/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /entregar ao mestre no encontro/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("não declara que cumpriu antes de a comprovação estar escolhida", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio");
+    await renderizar(PRATICO_EM_VIDEO);
+
+    expect(screen.getByRole("button", { name: /já cumpri/i })).toBeDisabled();
+    expect(submeter).not.toHaveBeenCalled();
+  });
+
+  it("a entrega no encontro segue pela mesma rota, sem mídia", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio").mockResolvedValue({
+      aprovado: null,
+      aguardando_mestre: true,
+      acertos: 0,
+      total: 0,
+      comprovacao_entregue: {
+        forma: "video",
+        comprovacao: null,
+        entrega_presencial: true,
+        tem_arquivo: false,
+      },
+    });
+    await renderizar(PRATICO_EM_VIDEO);
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      screen.getByRole("button", { name: /entregar ao mestre no encontro/i }),
+    );
+
+    expect(submeter).toHaveBeenCalledWith("missao-1", null, "token-do-guerreiro", {
+      entrega_presencial: true,
+    });
   });
 });

@@ -138,17 +138,22 @@ function ArquivoDeApoio({ conteudoId, token }: { conteudoId: string; token: stri
 }
 
 // O **ato** da missão: a sondagem, que abre a trilha ao ser respondida, ou o
-// desafio de desbloqueio, que abre a missão seguinte. Um só dos dois, e
-// nenhum deles enquanto o Mestre não julgar o prático já declarado
+// desafio de desbloqueio, que abre a missão seguinte. Um só dos dois
 // (`RF-05-13`, `RF-05-14`, `RF-05-89`).
+//
+// Enquanto o Mestre não julga o prático já declarado, o ato **não desaparece**:
+// ele passa a apresentar a **entrega** que o Guerreiro(a) fez, e não um
+// formulário vazio — quem foi avisado de que a mídia fica guardada precisa
+// reencontrar o que entregou (`RF-05-93`). Na sondagem e no quiz, que o núcleo
+// afere na hora, não há entrega a reapresentar, e o ato segue saindo da tela.
 function AtoDaMissao({
   missao,
   aoDesbloquear,
   submissaoDoDesbloqueioLigada,
 }: Pick<Props, "missao" | "aoDesbloquear" | "submissaoDoDesbloqueioLigada">) {
-  if (!missao.e_proxima || missao.aguardando_mestre || !missao.desafio_de_desbloqueio) {
-    return null;
-  }
+  if (!missao.e_proxima || !missao.desafio_de_desbloqueio) return null;
+  const ehPratico = missao.desafio_de_desbloqueio.tipo === "pratico";
+  if (missao.aguardando_mestre && !ehPratico) return null;
   return missao.e_sondagem ? (
     <Sondagem
       missaoId={missao.id}
@@ -162,6 +167,7 @@ function AtoDaMissao({
       desafio={missao.desafio_de_desbloqueio}
       aoDesbloquear={aoDesbloquear}
       submissaoLigada={submissaoDoDesbloqueioLigada}
+      comprovacaoEntregue={missao.comprovacao_entregue}
     />
   );
 }
