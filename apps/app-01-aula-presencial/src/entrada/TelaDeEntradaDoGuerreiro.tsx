@@ -19,6 +19,7 @@ import {
   FundoDeComunidade,
   Moldura,
   PalcoDoPersonagem,
+  Visor,
 } from "comum/react";
 import { useRef, useState } from "react";
 import { registrarPresenca } from "../api/presencas";
@@ -26,7 +27,7 @@ import {
   abrirSessaoPorReconhecimento,
   confirmarSessaoDeGuerreiro,
 } from "../api/sessoesDeGuerreiro";
-import { Visor } from "../captura/Visor";
+import { fraseDoLaco } from "../captura/frasesDoLaco";
 import { enfileirarPresenca } from "../fila/filaDePresenca";
 import {
   conferirPinNoAparelho,
@@ -524,7 +525,7 @@ export function TelaDeEntradaDoGuerreiro({
           isto, o visor congela em "Pessoa confirmada." e fica ao lado da recusa do
           núcleo, como se a tela se contradissesse (`RF-04-64`, `RN-04-34`, design —
           decisão 1). É o mesmo condicionamento da `TelaDeCaptura` e da bancada. */}
-      <Visor lugar={lugarDoVisor} estado={emAndamento ? estadoDoLaco : null} />
+      <Visor lugar={lugarDoVisor} frase={fraseDoLaco(emAndamento ? estadoDoLaco : null)} />
       <Botao
         onClick={tentarReconhecimento}
         desabilitado={emAndamento || nick.trim().length === 0}

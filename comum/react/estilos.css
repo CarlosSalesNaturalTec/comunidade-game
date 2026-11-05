@@ -828,3 +828,44 @@
   fill: var(--cor-ponto);
   stroke: var(--cor-ponto-contorno);
 }
+
+/* `Visor` — o espelho ao vivo da câmera das telas de reconhecimento, nas Apps
+ * 01 e 05. O módulo de biometria anexa o vídeo dentro do lugar que a tela
+ * empresta, e o lugar vazio não ocupa espaço: assim ele já existe no DOM antes
+ * de o preparo terminar, sem corrida entre renderização e acoplamento
+ * (`RF-04-64`, `RF-05-95`).
+ *
+ * A imagem capturada nunca aparece aqui: o que se vê é o fluxo ao vivo, e ele
+ * some com a câmera (`RN-04-34`, `RN-05-53`, documento 99 §6 invariante 12).
+ *
+ * A classe `.cg-visor` veste o elemento de vídeo que o `comum/biometria` cria
+ * — é ele que fixa esse nome. A regra mora aqui, e não no `index.css` de uma
+ * aplicação, porque as duas que abrem câmera dependem dela. */
+.cg-visor-moldura {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+  padding: 0 var(--espaco-16);
+}
+
+.cg-visor-lugar:empty {
+  display: none;
+}
+
+/* Espelhado na horizontal: quem se move para a direita se vê ir para a
+ * direita, como num espelho de verdade. O teto de altura e o `object-fit`
+ * existem para o vídeo não impor a própria dimensão ao resto da tela no
+ * celular modesto do documento 03 §3.2. */
+.cg-visor {
+  width: 100%;
+  max-height: 40vh;
+  border-radius: var(--raio-campo);
+  background: var(--cor-separador);
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.cg-visor-estado {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+}

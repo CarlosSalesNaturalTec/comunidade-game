@@ -43,3 +43,4 @@ export { Tabela } from "./Tabela";
 export type { CamadaDoTerritorio } from "./TerritorioDaComunidade";
 export { TerritorioDaComunidade } from "./TerritorioDaComunidade";
 export { TrioDeEstrelas } from "./TrioDeEstrelas";
+export { Visor } from "./Visor";

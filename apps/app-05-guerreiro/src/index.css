@@ -70,6 +70,15 @@ textarea {
   gap: var(--espaco-8);
 }
 
+/* Orientação sobre luz e enquadramento, junto do visor. É frase **fixa**: a
+ * aplicação não mede luminância nem julga distância, e quem julga o
+ * enquadramento é quem se vê no espelho (`RF-05-96`, documento 03 §3.3). */
+.cg-entrada__orientacao {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--escala-0875);
+}
+
 .cg-area-do-guerreiro {
   display: flex;
   flex-direction: column;
