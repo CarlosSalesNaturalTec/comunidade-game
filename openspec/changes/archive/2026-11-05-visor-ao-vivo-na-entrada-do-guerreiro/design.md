@@ -58,9 +58,9 @@ ninguém pediu nada, e a pré-carga dos modelos da fatia 9 continua sendo só mo
 _Descartado:_ um passo "deixe eu me ver" antes do Entrar — mais gentil, mas inventa tela e
 antecipa a câmera.
 
-**4. Redação proposta, a confirmar pelo fundador.** Não é regra de produto; é a redação que o
-`RF-05-95` e o `RF-05-96` pedem em linguagem de criança, e fica aqui para ser aprovada ou
-trocada antes do `apply`:
+**4. Redação aprovada pelo fundador em 2026-11-05, sem troca.** Não é regra de produto; é a
+redação que o `RF-05-95` e o `RF-05-96` pedem em linguagem de criança. Foi rascunhada aqui,
+implementada como está e aprovada:
 
 | Situação | Frase proposta |
 | --- | --- |
