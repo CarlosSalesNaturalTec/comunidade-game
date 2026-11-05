@@ -1030,6 +1030,13 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   ela, e lançamento gravado não se edita nem se remove. A tela diz **quantos fatos seguem
   apontando** antes de confirmar. O estado vivo é tratado: a remoção **zera a escolha corrente**
   das equipes, e é recusada enquanto houver **partida de quiz aberta** sobre a atividade.
+- **A missão se corrige, se move e se exclui**, só pelo Mestre autor e em qualquer situação
+  da trilha. Corrige título, nível de dificuldade, obrigatoriedade, etapa do ciclo e sondagem;
+  move-se trocando a posição com a vizinha, e a sondagem não sai da primeira. Excluir
+  **carimba**: a missão sai da leitura, as seguintes sobem uma posição, e o pendente dela —
+  entregas a julgar, recompensa de marco, desafio extra — segue visível ao Mestre. O ato que
+  deixa trilha publicada sem sondagem ou sem desafio de coleta é aceito e **despublica a
+  trilha**, com motivo gerado pelo núcleo; a tela avisa antes de confirmar.
 - **Imagem da pergunta do desafio de desbloqueio:** opcional, uma por pergunta, **até 1 MB
   cada**, nos mesmos formatos de imagem da lista fechada abaixo. O teto é menor que os do
   conteúdo porque o quiz é lido no aparelho do Guerreiro(a), muitas vezes em rede fraca.
