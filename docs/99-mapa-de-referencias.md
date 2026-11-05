@@ -34,26 +34,27 @@ repetem a regra completa** — repetição é o defeito que esta documentação 
 
 ## 2. Papel e dependência dos documentos
 
-| Doc   | Tipo                                 | Depende de             | Alimenta         |
-| ----- | ------------------------------------ | ---------------------- | ---------------- |
-| index | Índice (home do site)                | —                      | —                |
-| 01    | Normativo (fundação)                 | —                      | 02, 03, 12, 13   |
-| 02    | Normativo (conceito)                 | 01                     | 03, 05, 08, 11   |
-| 03    | Normativo (técnico)                  | 02                     | 08               |
-| 04    | Normativo (econômico)                | 02                     | 08, 12           |
-| 05    | Normativo (operação)                 | 02, 04                 | 08, 10           |
-| 06    | Normativo (conteúdo)                 | 02                     | 03 §4, 08, 10    |
-| 07    | Normativo (conteúdo)                 | 02, 06                 | 08, 10           |
-| 08    | **Derivado** — requisitos            | 01–07, 11, 14          | PRDs a gerar     |
-| 09    | Pauta                                | todos                  | 08               |
-| 10    | Normativo (case)                     | 02–08, 11              | 08, 09           |
-| 11    | Normativo (motor)                    | 02                     | 08               |
-| 12    | **Derivado** — comunicação           | 01, 02, 04, 05, 10, 14 | —                |
-| 13    | Normativo (conduta)                  | 01, 02                 | 05               |
-| 14    | Normativo (apoio)                    | 02, 04, 11             | 08, 12           |
-| 15    | Normativo (visual)                   | 01, 02, 03, 11         | `prds/`          |
-| 16    | **Derivado** — operação              | 02–05, 11, 13, 14      | —                |
-| prds/ | **Derivado** — requisitos de produto | 08, 01–07, 11, 13–15   | `openspec/` (§9) |
+| Doc     | Tipo                                            | Depende de             | Alimenta         |
+| ------- | ----------------------------------------------- | ---------------------- | ---------------- |
+| index   | Índice (home do site)                           | —                      | —                |
+| 01      | Normativo (fundação)                            | —                      | 02, 03, 12, 13   |
+| 02      | Normativo (conceito)                            | 01                     | 03, 05, 08, 11   |
+| 03      | Normativo (técnico)                             | 02                     | 08               |
+| 04      | Normativo (econômico)                           | 02                     | 08, 12           |
+| 05      | Normativo (operação)                            | 02, 04                 | 08, 10           |
+| 06      | Normativo (conteúdo)                            | 02                     | 03 §4, 08, 10    |
+| 07      | Normativo (conteúdo)                            | 02, 06                 | 08, 10           |
+| 08      | **Derivado** — requisitos                       | 01–07, 11, 14          | PRDs a gerar     |
+| 09      | Pauta                                           | todos                  | 08               |
+| 10      | Normativo (case)                                | 02–08, 11              | 08, 09           |
+| 11      | Normativo (motor)                               | 02                     | 08               |
+| 12      | **Derivado** — comunicação                      | 01, 02, 04, 05, 10, 14 | —                |
+| 13      | Normativo (conduta)                             | 01, 02                 | 05               |
+| 14      | Normativo (apoio)                               | 02, 04, 11             | 08, 12           |
+| 15      | Normativo (visual)                              | 01, 02, 03, 11         | `prds/`          |
+| 16      | **Derivado** — operação                         | 02–05, 11, 13, 14      | —                |
+| prds/   | **Derivado** — requisitos de produto            | 08, 01–07, 11, 13–15   | `openspec/` (§9) |
+| termos/ | **Derivado** — rascunho `[Proposta]` dos termos | 03                     | 09               |
 
 **Divisão 02 × 11 (a confusão mais provável):** o doc 02 define **o que são** os elementos
 do jogo; o doc 11 define **como eles se ligam e quanto valem**. Tabelas de pontuação,
