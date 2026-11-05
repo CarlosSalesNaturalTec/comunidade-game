@@ -42,8 +42,9 @@ Nenhuma.
 ## Impact
 
 - **Backend**: `backend/src/nucleo/aulas/rotas.py` (`listar_agenda_rota`); testes em
-  `backend/tests/test_aula_rota.py`. Nenhuma migração.
-- **App 03**: `apps/app-03-gestao/src/agenda/api.ts`, `TelaDaAgenda.tsx` e `agenda.test.tsx`.
+  `backend/tests/test_aula.py`. Nenhuma migração.
+- **App 03**: `apps/app-03-gestao/src/agenda/api.ts`, `TelaDaAgenda.tsx`, `agenda.test.tsx` e
+  `api.test.ts` (novo).
 - **Sem impacto** em `GET /v1/aulas/vigentes` (App 01 e painel do dia), que já exclui a
   cancelada, nem no cancelamento.
 - **Docs**: linha nova em "Já decididos" do documento 09 §1; nenhum PRD muda de texto — nenhum
