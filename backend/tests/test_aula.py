@@ -925,6 +925,172 @@ def test_filtro_de_periodo_recorta_a_agenda(
     assert str(fora.id) not in ids
 
 
+def _ler_agenda(cliente, chave, token, **params):
+    return cliente.get(
+        "/v1/aulas",
+        params=params,
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+
+def _aula_em(criar_aula, admin, comunidade, ponto, horas: float, situacao=None, sessao=None):
+    inicio = datetime.now(UTC) + timedelta(hours=horas)
+    aula = criar_aula(
+        admin,
+        comunidade,
+        ponto_de_apoio=ponto,
+        inicio_em=inicio,
+        fim_em=inicio + timedelta(hours=1),
+    )
+    if situacao is not None:
+        aula.situacao = situacao
+        aula.cancelamento_motivo = "Aula de teste."
+        sessao.commit()
+    return aula
+
+
+def test_cancelada_fica_fora_da_agenda_por_padrao(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_ponto_de_apoio,
+    sessao,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto = criar_ponto_de_apoio(admin, comunidade)
+    prevista = _aula_em(criar_aula, admin, comunidade, ponto, 24)
+    cancelada = _aula_em(criar_aula, admin, comunidade, ponto, 48, SituacaoDaAula.cancelada, sessao)
+    token, _ = criar_sessao_de_teste(admin)
+
+    padrao = _ler_agenda(cliente, chave, token, comunidade=str(comunidade.id))
+    assert padrao.status_code == 200
+    assert [item["id"] for item in padrao.json()["itens"]] == [str(prevista.id)]
+
+    com_canceladas = _ler_agenda(
+        cliente, chave, token, comunidade=str(comunidade.id), incluir_canceladas="true"
+    )
+    assert com_canceladas.status_code == 200
+    itens = {item["id"]: item for item in com_canceladas.json()["itens"]}
+    assert set(itens) == {str(prevista.id), str(cancelada.id)}
+    assert itens[str(cancelada.id)]["cancelamento_motivo"] == "Aula de teste."
+
+
+def test_valor_invalido_no_filtro_de_canceladas_e_recusado(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = _ler_agenda(
+        cliente, chave, token, comunidade=str(comunidade.id), incluir_canceladas="talvez"
+    )
+
+    assert resposta.status_code == 422
+    assert "incluir_canceladas" in resposta.text
+
+
+def test_muitas_canceladas_antigas_nao_escondem_a_proxima_aula(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_ponto_de_apoio,
+    sessao,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto = criar_ponto_de_apoio(admin, comunidade)
+    for indice in range(26):
+        _aula_em(
+            criar_aula,
+            admin,
+            comunidade,
+            ponto,
+            -24 * (30 - indice),
+            SituacaoDaAula.cancelada,
+            sessao,
+        )
+    prevista = _aula_em(criar_aula, admin, comunidade, ponto, 24)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = _ler_agenda(cliente, chave, token, comunidade=str(comunidade.id))
+
+    assert resposta.status_code == 200
+    assert [item["id"] for item in resposta.json()["itens"]] == [str(prevista.id)]
+
+
+def test_proximas_aulas_vem_antes_das_ja_terminadas(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_ponto_de_apoio,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto = criar_ponto_de_apoio(admin, comunidade)
+    antiga = _aula_em(criar_aula, admin, comunidade, ponto, -72)
+    distante = _aula_em(criar_aula, admin, comunidade, ponto, 72)
+    recente = _aula_em(criar_aula, admin, comunidade, ponto, -24)
+    em_curso = _aula_em(criar_aula, admin, comunidade, ponto, -0.5)
+    proxima = _aula_em(criar_aula, admin, comunidade, ponto, 24)
+    token, _ = criar_sessao_de_teste(admin)
+
+    resposta = _ler_agenda(cliente, chave, token, comunidade=str(comunidade.id))
+
+    assert resposta.status_code == 200
+    assert [item["id"] for item in resposta.json()["itens"]] == [
+        str(aula.id) for aula in (em_curso, proxima, distante, recente, antiga)
+    ]
+
+
+def test_paginacao_atravessa_os_dois_grupos_sem_repetir_nem_pular(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_ponto_de_apoio,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    comunidade = criar_comunidade()
+    ponto = criar_ponto_de_apoio(admin, comunidade)
+    por_vir = [_aula_em(criar_aula, admin, comunidade, ponto, 24 * dia) for dia in (1, 2, 3)]
+    terminadas = [_aula_em(criar_aula, admin, comunidade, ponto, -24 * dia) for dia in (1, 2, 3)]
+    token, _ = criar_sessao_de_teste(admin)
+
+    lidos: list[str] = []
+    cursor = None
+    while True:
+        params = {"comunidade": str(comunidade.id), "tamanho": "2"}
+        if cursor:
+            params["cursor"] = cursor
+        resposta = _ler_agenda(cliente, chave, token, **params)
+        assert resposta.status_code == 200
+        corpo = resposta.json()
+        lidos.extend(item["id"] for item in corpo["itens"])
+        cursor = corpo["proximo_cursor"]
+        if cursor is None:
+            break
+
+    assert lidos == [str(aula.id) for aula in (*por_vir, *terminadas)]
+
+
 def test_aplicacao_sem_persona_le_as_vigentes_pela_rota(
     cliente, criar_chave, criar_persona, criar_comunidade, criar_aula
 ):

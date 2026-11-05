@@ -28,6 +28,9 @@ export interface FiltroDeAgenda {
   comunidadeId?: string;
   periodoInicio?: string;
   periodoFim?: string;
+  // A cancelada só vem quando pedida — desmarcado, o núcleo não a devolve
+  // (`RF-02-12`, documento 09 §1, "Agenda sem canceladas e pelas próximas aulas").
+  incluirCanceladas?: boolean;
 }
 
 // Admin declara a comunidade, sempre; o Mestre a tem derivada do próprio
@@ -40,6 +43,7 @@ export function listarAgenda(
   if (filtro.comunidadeId) parametros.set("comunidade", filtro.comunidadeId);
   if (filtro.periodoInicio) parametros.set("periodo_inicio", filtro.periodoInicio);
   if (filtro.periodoFim) parametros.set("periodo_fim", filtro.periodoFim);
+  if (filtro.incluirCanceladas) parametros.set("incluir_canceladas", "true");
   const consulta = parametros.toString();
   return chamarNucleo<ListaDeAulas>(`/v1/aulas${consulta ? `?${consulta}` : ""}`, { token });
 }
