@@ -54,6 +54,7 @@ from .regra import (
     consultar_inscricoes_do_guerreiro,
     consultar_progresso,
     corrigir_atividade,
+    corrigir_missao,
     corrigir_pergunta_do_desbloqueio,
     criar_atividade,
     criar_missao,
@@ -70,6 +71,7 @@ from .regra import (
     ler_arquivo_da_comprovacao,
     ler_imagem_da_pergunta,
     listar_desbloqueios_praticos_pendentes,
+    mover_missao,
     obter_proxima_missao,
     perguntas_do_desbloqueio,
     perguntas_do_desbloqueio_por_missao,
@@ -550,6 +552,87 @@ def criar_missao_rota(
     )
     sessao_bd.commit()
     return _saida_da_missao(missao, etiquetas=_etiquetas_da_missao(sessao_bd, missao))
+
+
+class CorrigirMissaoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    titulo: str | None = None
+    nivel_de_dificuldade: int | None = None
+    obrigatoria: bool | None = None
+    etapa_do_ciclo: str | None = None
+    e_sondagem: bool | None = None
+    """Cinco campos, todos opcionais: o que não vier conserva o valor gravado.
+    Não há `posicao` — com o `extra="forbid"`, mandá-la responde **422** pelo
+    próprio contrato; a posição muda só pela ordem (design — decisão 2)."""
+
+
+class CorrecaoDaMissaoSaida(BaseModel):
+    missao: MissaoSaida
+    situacao_da_trilha: SituacaoDaTrilha
+    motivo_da_situacao: str | None
+
+
+@roteador.patch("/missoes/{id_da_missao}")
+def corrigir_missao_rota(
+    id_da_missao: uuid.UUID,
+    entrada: CorrigirMissaoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> CorrecaoDaMissaoSaida:
+    """`RF-09-136`, `RN-09-56`, `RN-09-59`: a autoria estrita, as recusas e a
+    despublicação pela sondagem desmarcada são de `corrigir_missao`. A
+    resposta traz a situação da trilha, para a tela saber se ela saiu do ar
+    (design — decisão 7)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    missao = corrigir_missao(
+        sessao_bd,
+        operador=operador,
+        missao=sessao_bd.get(Missao, id_da_missao),
+        campos=entrada.model_dump(exclude_unset=True),
+    )
+    trilha = sessao_bd.get(Trilha, missao.trilha_id)
+    sessao_bd.commit()
+    return CorrecaoDaMissaoSaida(
+        missao=_saida_da_missao(missao, etiquetas=_etiquetas_da_missao(sessao_bd, missao)),
+        situacao_da_trilha=trilha.situacao,
+        motivo_da_situacao=trilha.motivo_da_situacao,
+    )
+
+
+class MoverMissaoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    direcao: str
+
+
+class MovimentoDaMissaoSaida(BaseModel):
+    missoes: list[MissaoSaida]
+
+
+@roteador.post("/missoes/{id_da_missao}/ordem")
+def mover_missao_rota(
+    id_da_missao: uuid.UUID,
+    entrada: MoverMissaoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> MovimentoDaMissaoSaida:
+    """`RF-09-137`, `RN-09-57`: troca a posição com a vizinha e devolve as
+    duas missões que trocaram (design — decisões 3 a 5 e 7)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    trocadas = mover_missao(
+        sessao_bd,
+        operador=operador,
+        missao=sessao_bd.get(Missao, id_da_missao),
+        direcao=entrada.direcao,
+    )
+    sessao_bd.commit()
+    return MovimentoDaMissaoSaida(
+        missoes=[
+            _saida_da_missao(missao, etiquetas=_etiquetas_da_missao(sessao_bd, missao))
+            for missao in trocadas
+        ]
+    )
 
 
 class CriarAtividadeEntrada(BaseModel):

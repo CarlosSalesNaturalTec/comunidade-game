@@ -598,7 +598,7 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | DELETE | `/v1/atividades/{id}`                                     | Mestre       | Carimba a atividade; partida de quiz aberta impede a remoção                                                           |
 | GET    | `/v1/atividades/{id}/fatos`                               | Mestre       | Quantos fatos já apontam para a atividade, antes de confirmar remoção                                                  |
 | PATCH  | `/v1/missoes/{id}`                                        | Mestre       | Corrige título, dificuldade, obrigatoriedade, etapa e sondagem; despublica se quebrar trava                            |
-| POST   | `/v1/missoes/{id}/movimento`                              | Mestre       | Troca a posição da missão com a vizinha, para cima ou para baixo                                                       |
+| POST   | `/v1/missoes/{id}/ordem`                                  | Mestre       | Troca a posição da missão com a vizinha, para cima ou para baixo                                                       |
 | DELETE | `/v1/missoes/{id}`                                        | Mestre       | Carimba a missão e sobe as seguintes; despublica se quebrar trava                                                      |
 | POST   | `/v1/missoes/{id}/desbloqueio`                            | Mestre       | Define o quiz ou desafio que abre a missão seguinte; no prático, com forma, critério e título curto                    |
 | POST   | `/v1/missoes/{id}/perguntas-do-desbloqueio`               | Mestre       | Acrescenta uma pergunta ao quiz, sem tocar nas demais                                                                  |

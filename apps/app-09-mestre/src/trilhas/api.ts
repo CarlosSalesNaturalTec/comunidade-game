@@ -253,6 +253,51 @@ export function criarMissao(
   });
 }
 
+// Os cinco campos são opcionais: o que não vier conserva o valor gravado. A
+// posição não está aqui — muda só por `moverMissao` (`RF-09-136`).
+export interface CorrigirMissaoEntrada {
+  titulo?: string;
+  nivel_de_dificuldade?: number;
+  obrigatoria?: boolean;
+  etapa_do_ciclo?: EtapaDoCiclo;
+  e_sondagem?: boolean;
+}
+
+// A correção diz a situação da trilha depois dela: desmarcar a sondagem de
+// trilha publicada a tira do ar no mesmo ato (`RN-09-59`).
+export interface CorrecaoDaMissao {
+  missao: MissaoDaTrilha;
+  situacao_da_trilha: string;
+  motivo_da_situacao: string | null;
+}
+
+export function corrigirMissao(
+  idDaMissao: string,
+  entrada: CorrigirMissaoEntrada,
+  token: string,
+): Promise<CorrecaoDaMissao> {
+  return chamarNucleo<CorrecaoDaMissao>(`/v1/missoes/${idDaMissao}`, {
+    metodo: "PATCH",
+    corpo: entrada,
+    token,
+  });
+}
+
+// Troca a posição com a vizinha da sequência da trilha e devolve as duas que
+// trocaram; o extremo e a sondagem são recusados pelo núcleo (`RF-09-137`,
+// `RN-09-57`).
+export function moverMissao(
+  idDaMissao: string,
+  direcao: DirecaoDoMovimento,
+  token: string,
+): Promise<{ missoes: MissaoDaTrilha[] }> {
+  return chamarNucleo<{ missoes: MissaoDaTrilha[] }>(`/v1/missoes/${idDaMissao}/ordem`, {
+    metodo: "POST",
+    corpo: { direcao },
+    token,
+  });
+}
+
 export interface CriarAtividadeEntrada {
   titulo: string;
   descricao?: string;

@@ -4228,3 +4228,186 @@ describe("declaração do prático (RF-09-129, RF-09-130, RF-09-131, RN-09-50, R
     expect(within(preVisualizacao).getByText(CRITERIO_DE_ACEITE)).toBeInTheDocument();
   });
 });
+
+describe("correção e movimento da missão (RF-09-136, RF-09-137, RF-09-139)", () => {
+  async function abrirTrilha(dados: TrilhaDoMestre) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([dados]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      minhasTurmas({ itens: [aula()] }),
+    );
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await screen.findByLabelText("Missões da trilha");
+    return usuario;
+  }
+
+  function linhaDa(titulo: string): HTMLElement {
+    const item = within(screen.getByLabelText("Missões da trilha"))
+      .getByText(titulo, { selector: ".lista-de-missoes__titulo" })
+      .closest("li");
+    if (!item) throw new Error(`Linha de ${titulo} não encontrada`);
+    return item as HTMLElement;
+  }
+
+  function correcao(
+    missaoCorrigida: MissaoDaTrilha,
+    situacao = "rascunho",
+    motivo: string | null = null,
+  ): trilhasApi.CorrecaoDaMissao {
+    return {
+      missao: missaoCorrigida,
+      situacao_da_trilha: situacao,
+      motivo_da_situacao: motivo,
+    };
+  }
+
+  it("corrige o título pela linha da missão, sem oferecer a posição", async () => {
+    const corrigir = vi
+      .spyOn(trilhasApi, "corrigirMissao")
+      .mockResolvedValue(correcao(missao({ titulo: "Título certo" })));
+    const usuario = await abrirTrilha(trilha({ missoes: [missao()] }));
+
+    await usuario.click(
+      within(linhaDa("Primeira missão")).getByRole("button", { name: /corrigir missão/i }),
+    );
+    const formulario = screen.getByRole("form", { name: /corrigir a missão/i });
+    expect(within(formulario).getByLabelText(/^título$/i)).toHaveValue("Primeira missão");
+    expect(within(formulario).queryByLabelText(/posição/i)).not.toBeInTheDocument();
+
+    await usuario.clear(within(formulario).getByLabelText(/^título$/i));
+    await usuario.type(within(formulario).getByLabelText(/^título$/i), "Título certo");
+    await usuario.click(within(formulario).getByRole("button", { name: /gravar correção/i }));
+
+    await waitFor(() =>
+      expect(corrigir).toHaveBeenCalledWith(
+        "missao-1",
+        expect.objectContaining({ titulo: "Título certo" }),
+        "token-do-mestre",
+      ),
+    );
+    expect(await screen.findByText("Título certo")).toBeInTheDocument();
+  });
+
+  it("a correção da etapa leva a missão para a página da etapa nova", async () => {
+    vi.spyOn(trilhasApi, "corrigirMissao").mockResolvedValue(
+      correcao(missao({ etapa_do_ciclo: "marcos" })),
+    );
+    const usuario = await abrirTrilha(trilha({ missoes: [missao()] }));
+
+    await usuario.click(
+      within(linhaDa("Primeira missão")).getByRole("button", { name: /corrigir missão/i }),
+    );
+    await usuario.selectOptions(screen.getByLabelText(/etapa do ciclo/i), "marcos");
+    await usuario.click(screen.getByRole("button", { name: /gravar correção/i }));
+
+    await waitFor(() => expect(screen.queryByText("Primeira missão")).not.toBeInTheDocument());
+    await usuario.click(screen.getByRole("button", { name: /^marcos \(1\)$/i }));
+    expect(await screen.findByText("Primeira missão")).toBeInTheDocument();
+  });
+
+  it("subir reordena a lista pela ordem que o núcleo gravou", async () => {
+    const primeira = missao({ id: "m1", titulo: "Primeira missão", posicao: 1 });
+    const segunda = missao({ id: "m2", titulo: "Segunda missão", posicao: 2 });
+    const mover = vi.spyOn(trilhasApi, "moverMissao").mockResolvedValue({
+      missoes: [
+        { ...segunda, posicao: 1 },
+        { ...primeira, posicao: 2 },
+      ],
+    });
+    const usuario = await abrirTrilha(trilha({ missoes: [primeira, segunda] }));
+
+    await usuario.click(
+      within(linhaDa("Segunda missão")).getByRole("button", { name: /^subir$/i }),
+    );
+
+    await waitFor(() => expect(mover).toHaveBeenCalledWith("m2", "cima", "token-do-mestre"));
+    await waitFor(() => {
+      const titulos = within(screen.getByLabelText("Missões da trilha"))
+        .getAllByText(/^(Primeira|Segunda) missão$/, { selector: ".lista-de-missoes__titulo" })
+        .map((elemento) => elemento.textContent);
+      expect(titulos).toEqual(["Segunda missão", "Primeira missão"]);
+    });
+  });
+
+  it("a recusa do movimento aparece com o motivo do núcleo", async () => {
+    vi.spyOn(trilhasApi, "moverMissao").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "validacao",
+        mensagem: "A missão de sondagem abre a trilha e fica na primeira posição.",
+        campo: "direcao",
+      }),
+    );
+    const usuario = await abrirTrilha(
+      trilha({ missoes: [missao({ e_sondagem: true, titulo: "Sondagem" })] }),
+    );
+
+    await usuario.click(
+      within(linhaDa("Sondagem")).getByRole("button", { name: /^descer$/i }),
+    );
+
+    expect(
+      await screen.findByText(
+        /a missão de sondagem abre a trilha e fica na primeira posição/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("avisa antes de desmarcar a sondagem da trilha publicada, e desistir não grava", async () => {
+    const motivo =
+      'A correção da missão "Sondagem" deixou a trilha sem a missão de sondagem. Corrija e publique de novo.';
+    const corrigir = vi
+      .spyOn(trilhasApi, "corrigirMissao")
+      .mockResolvedValue(
+        correcao(missao({ titulo: "Sondagem", e_sondagem: false }), "despublicada", motivo),
+      );
+    const usuario = await abrirTrilha(
+      trilha({
+        situacao: "publicada",
+        missoes: [missao({ titulo: "Sondagem", e_sondagem: true })],
+      }),
+    );
+
+    await usuario.click(
+      within(linhaDa("Sondagem")).getByRole("button", { name: /corrigir missão/i }),
+    );
+    await usuario.click(screen.getByLabelText(/missão de sondagem que abre a trilha/i));
+    await usuario.click(screen.getByRole("button", { name: /gravar correção/i }));
+
+    expect(await screen.findByText(/sai do ar ao gravar/i)).toBeInTheDocument();
+    expect(corrigir).not.toHaveBeenCalled();
+
+    await usuario.click(screen.getByRole("button", { name: /voltar sem gravar/i }));
+    expect(corrigir).not.toHaveBeenCalled();
+
+    await usuario.click(screen.getByRole("button", { name: /gravar correção/i }));
+    await usuario.click(
+      await screen.findByRole("button", { name: /confirmar e tirar a trilha do ar/i }),
+    );
+
+    await waitFor(() => expect(corrigir).toHaveBeenCalledTimes(1));
+    expect(await screen.findByText(motivo)).toBeInTheDocument();
+    expect(screen.queryByText(/admin/i)).not.toBeInTheDocument();
+  });
+
+  it("a correção comum de trilha publicada não pede confirmação", async () => {
+    const corrigir = vi
+      .spyOn(trilhasApi, "corrigirMissao")
+      .mockResolvedValue(correcao(missao({ nivel_de_dificuldade: 3 }), "publicada"));
+    const usuario = await abrirTrilha(trilha({ situacao: "publicada", missoes: [missao()] }));
+
+    await usuario.click(
+      within(linhaDa("Primeira missão")).getByRole("button", { name: /corrigir missão/i }),
+    );
+    await usuario.click(screen.getByRole("button", { name: /gravar correção/i }));
+
+    await waitFor(() => expect(corrigir).toHaveBeenCalledTimes(1));
+    expect(screen.queryByText(/sai do ar ao gravar/i)).not.toBeInTheDocument();
+  });
+});
