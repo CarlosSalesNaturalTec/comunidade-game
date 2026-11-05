@@ -219,6 +219,8 @@ Mestre no encontro, e quem quer propor uma melhoria também.
 | `RF-05-06` | Nenhuma imagem de Guerreiro(a) é armazenada no aparelho compartilhado                                                                                                                                                     | essencial  |
 | `RF-05-07` | Troca de sessão entre dois Guerreiros e Guerreiras acontece sem reiniciar a aplicação                                                                                                                                     | essencial  |
 | `RF-05-90` | Verificada a câmera do aparelho, a entrada **carrega os modelos de biometria ao fundo**, sem bloquear o campo do nick, apresenta o andamento por modelo carregado e diz, sem interromper, quando não consegue carregá-los | essencial  |
+| `RF-05-95` | Pedida a entrada, a tela apresenta o **visor ao vivo** da câmera e diz, em linguagem de criança, se ainda não achou o rosto, se achou e está confirmando, e se confirmou; a imagem capturada nunca volta à tela           | essencial  |
+| `RF-05-96` | A entrada traz frase **fixa** de orientação sobre luz e enquadramento, junto do visor, sem medir luminância nem julgar a distância do rosto                                                                               | essencial  |
 
 ### 6.2 Guia da trilha e progressão
 
@@ -403,6 +405,7 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-50` | A recompensa conquistada é avisada **uma vez**: a ciência é do Guerreiro(a) no núcleo, nunca do aparelho, e no prático só depois do julgamento do Mestre autor                                | —                      | 15 §9            |
 | `RN-05-51` | A comprovação é exigida para declarar que cumpriu o prático, e quem não entrega pelo aparelho **entrega ao Mestre no encontro**: a declaração vale sem mídia e nunca faz perder a missão      | —                      | 02 §4            |
 | `RN-05-52` | Entrega nova antes do julgamento substitui a anterior, corpo e mídia; julgada que não cumpriu, a declaração e a comprovação permanecem, com o motivo, e entregar de novo reabre a mesma linha | —                      | 11 §2.2          |
+| `RN-05-53` | O visor ao vivo da câmera é permitido na entrada; o quadro capturado nunca volta à tela, antes ou depois do descritor, e a câmera só acende depois de a entrada ser pedida                    | 12                     | 03 §3.3          |
 
 `RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
 Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
@@ -575,7 +578,11 @@ do Ciclo 02** (§3.2).
   aplicação não os recebe. O registro de coleta do território **é despersonalizado, não
   apagado**, e o texto da
   área detalhada diz isso em linguagem simples.
-- **Nenhuma imagem real é exibida** em qualquer tela — a representação é sempre por avatar.
+- **Nenhuma imagem real representa o Guerreiro(a)** em tela alguma — a representação é
+  sempre por avatar, e de outra criança não aparece nem imagem nem nome civil. O **visor
+  ao vivo** da câmera é outra coisa, e é permitido: mostra a pessoa a si mesma enquanto a
+  entrada confere o rosto, nada guarda e nada reexibe. O que nunca volta à tela é o
+  **quadro capturado** (invariante 12).
 - **Nenhum dado pessoal de terceiros** aparece: das outras crianças, só avatar, nick e posição
   no ranking.
 - A **pontuação negativa** é dado sensível: o Guerreiro(a) vê a sua, com o motivo, e ela nunca
@@ -682,6 +689,8 @@ coletores distintos no recorte publicado (documento 02 §1).
 | `RN-05-48`              | 03 §1 (erro declarado pelo núcleo chega como ele é)                                                                                 |
 | `RF-05-90`              | 03 §3.4 (modelos ao fundo em aparelho modesto) e 15 §5 (estado sem depender de cor)                                                 |
 | `RN-05-49`              | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                                     |
+| `RF-05-95` e `RF-05-96` | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida) e 15 §5, aplicando à App 05 o que o `RF-04-64` já exige da App 01           |
+| `RN-05-53`              | 03 §3.3 e o invariante 12 do doc 99, que distingue o visor do quadro capturado                                                      |
 | `RN-05-50`              | 15 §9 (o trio de estrelas e a exceção da grandeza ponto), servindo o `RF-05-45`                                                     |
 | `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                                               |
 | `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                                   |

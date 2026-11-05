@@ -7,10 +7,10 @@ import {
   prepararCaptura,
   provarVivacidade,
 } from "comum/biometria";
-import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
+import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura, Visor } from "comum/react";
 import { useEffect, useRef, useState } from "react";
 import { enviarDescritor } from "../api/descritor";
-import { Visor } from "../captura/Visor";
+import { fraseDoLaco } from "../captura/frasesDoLaco";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
 
 interface Props {
@@ -110,7 +110,10 @@ export function TelaDeCaptura({
         subtitulo="Olhe para a câmera. A fotografia não sai deste aparelho."
         acao={{ rotulo: "Voltar ao início", aoAcionar: aoVoltar }}
       />
-      <Visor lugar={lugarDoVisor} estado={estado === "capturando" ? estadoDoLaco : null} />
+      <Visor
+        lugar={lugarDoVisor}
+        frase={fraseDoLaco(estado === "capturando" ? estadoDoLaco : null)}
+      />
       {estado === "preparando" && <EstadoDaLista>Preparando a câmera…</EstadoDaLista>}
       {estado === "falha_de_preparo" && (
         <Aviso tipo="erro">

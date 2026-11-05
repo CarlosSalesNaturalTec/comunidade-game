@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao } from "comum/autenticacao";
@@ -619,5 +619,165 @@ describe("o responsável abre a sessão em casa", () => {
     const alerta = await screen.findByText(/não foi possível confirmar esse nick/i);
     expect(alerta).toBeVisible();
     expect(alerta.textContent).not.toMatch(/não é sua|de outra|alheia/i);
+  });
+});
+
+// `RF-05-95`, `RF-05-96`, `RF-05-57`, `RN-05-49` e `RN-05-53`: a entrada
+// mostrava a câmera a ninguém. A criança apertava Entrar e ficava até 15 s
+// diante de "Reconhecendo…", com a câmera acesa e invisível, para receber ao
+// fim a frase do rosto bem posicionado — sem nunca ter tido como saber qual
+// posicionamento era o certo.
+describe("visor ao vivo na entrada", () => {
+  function entrarComNick() {
+    return vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+  }
+
+  // A câmera **não** acende ao abrir a tela: o `RN-05-49` a reserva ao momento
+  // em que alguém pede algo, e a pré-carga que corre aqui carrega modelo só.
+  it("a tela abre sem câmera acesa e com o lugar do visor vazio", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+
+    const { container } = renderizar();
+
+    await screen.findByLabelText(/nick/i);
+    expect(biometriaModulo.prepararCaptura).not.toHaveBeenCalled();
+    expect(biometriaModulo.acoplarEspelho).not.toHaveBeenCalled();
+    expect(container.querySelector(".cg-visor-lugar")?.childElementCount).toBe(0);
+  });
+
+  // O espelho é acoplado no lugar que a tela empresta, e só depois do toque:
+  // é o `acoplarEspelho` que anexa o vídeo, e a tela nunca vê quadro nem pixel.
+  it("o visor aparece depois do Entrar, no lugar que a tela empresta", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    entrarComNick();
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+
+    const { container } = renderizar();
+    const usuario = userEvent.setup();
+
+    await usuario.type(await screen.findByLabelText(/nick/i), "Zeferina_da_Mata");
+    // Só agora o lugar existe no DOM: a tela começa em `verificandoCamera`.
+    const lugar = container.querySelector(".cg-visor-lugar");
+    expect(lugar).not.toBeNull();
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    await vi.waitFor(() => expect(biometriaModulo.prepararCaptura).toHaveBeenCalled());
+    expect(biometriaModulo.acoplarEspelho).toHaveBeenCalledWith(lugar);
+  });
+
+  // O retorno é **abstrato** e em linguagem de criança de 6 anos: diz o que o
+  // laço está vendo, nunca mostra a imagem. As frases da App 01 são de quem
+  // opera a bancada e não serviriam aqui.
+  it("diz as três situações do laço em linguagem de criança", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    let anunciar: ((estado: biometriaModulo.EstadoDaVivacidade) => void) | undefined;
+    const { promessa, resolver } = (() => {
+      let resolver!: (valor: boolean) => void;
+      const promessa = new Promise<boolean>((cumprir) => {
+        resolver = cumprir;
+      });
+      return { promessa, resolver };
+    })();
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockImplementation((aoMudarEstado) => {
+      anunciar = aoMudarEstado;
+      return promessa;
+    });
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    entrarComNick();
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(await screen.findByLabelText(/nick/i), "Zeferina_da_Mata");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+    await vi.waitFor(() => expect(anunciar).toBeDefined());
+
+    act(() => anunciar?.("procurando_rosto"));
+    expect(await screen.findByText(/ainda não achei você/i)).toBeInTheDocument();
+
+    act(() => anunciar?.("rosto_encontrado"));
+    expect(await screen.findByText(/achei você/i)).toBeInTheDocument();
+
+    act(() => anunciar?.("vivacidade_confirmada"));
+    expect(await screen.findByText(/pronto, é você/i)).toBeInTheDocument();
+
+    // Nenhum termo técnico, nome de biblioteca nem código de erro chega à
+    // criança (`RF-05-02`).
+    expect(screen.queryByText(/vivacidade|descritor|human|webgl/i)).toBeNull();
+
+    resolver(false);
+  });
+
+  // A orientação é frase **fixa**: a aplicação não mede luminância nem julga
+  // distância, porque limiar de luz que ninguém mediu não entra aqui.
+  it("orienta sobre luz e enquadramento, e avisa o que faz com a imagem", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+
+    renderizar();
+
+    await screen.findByLabelText(/nick/i);
+    expect(screen.getByText(/fique de frente para uma janela ou uma luz/i)).toBeVisible();
+    expect(screen.getByText(/se estiver muito escuro/i)).toBeVisible();
+    expect(screen.getByText(/só para você se ver/i)).toBeVisible();
+    expect(screen.getByText(/não sai deste aparelho/i)).toBeVisible();
+  });
+
+  // O quadro capturado nunca volta à tela, antes ou depois do descritor: o
+  // visor some com a câmera (invariante 12).
+  it("o quadro capturado não volta à tela depois do descritor", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
+    const encerrar = vi.spyOn(biometriaModulo, "encerrarCaptura");
+    entrarComNick();
+    vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+
+    const { container } = renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(await screen.findByLabelText(/nick/i), "Zeferina_da_Mata");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    await vi.waitFor(() => expect(encerrar).toHaveBeenCalled());
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("canvas")).toBeNull();
+  });
+
+  // `RN-05-48`, que lista "preparo do aparelho": câmera que não abre é outra
+  // coisa que não rosto que não confere. Antes desta fatia caía no `catch`
+  // genérico e saía vestida da frase do rosto, culpando a criança pelo
+  // posicionamento quando ninguém chegou a apresentar rosto algum.
+  it("câmera que não abre não vira rosto que não confere", async () => {
+    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "prepararCaptura").mockRejectedValue(
+      new biometriaModulo.ErroDePreparoDaCaptura("câmera não abriu"),
+    );
+    const provar = vi.spyOn(biometriaModulo, "provarVivacidade");
+
+    renderizar();
+    const usuario = userEvent.setup();
+    await usuario.type(await screen.findByLabelText(/nick/i), "Zeferina_da_Mata");
+    await usuario.click(screen.getByRole("button", { name: /entrar/i }));
+
+    expect(await screen.findByText(/não consegui ligar a câmera/i)).toBeVisible();
+    // A frase do rosto não aparece, e o caminho do adulto segue oferecido.
+    expect(screen.queryByText(/não foi possível reconhecer/i)).toBeNull();
+    expect(
+      screen.getByRole("button", { name: /pedir ajuda a um adulto/i }),
+    ).toBeInTheDocument();
+    // Nada foi julgado: o laço nem começou.
+    expect(provar).not.toHaveBeenCalled();
   });
 });
