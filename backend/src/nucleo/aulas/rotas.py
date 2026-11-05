@@ -35,7 +35,7 @@ from ..recursos.modelo import TipoDeRecurso
 from ..reservas.regra import disponivel_de
 from ..resultados.regra import ResultadoDeclarado
 from ..resultados.regra import lancar_atividade_realizada as _lancar_atividade_realizada
-from ..tempo import DataHoraComFuso
+from ..tempo import DataHoraComFuso, agora
 from ..trilhas.modelo import Atividade, FormatoDeAtividade, Missao, Trilha
 from .modelo import (
     Aula,
@@ -208,18 +208,55 @@ def _analisar_momento(bruto: str, campo: str) -> datetime:
     return valor
 
 
+_FILTROS_DA_AGENDA = frozenset({"incluir_canceladas"})
+_POR_VIR = "por_vir"
+_TERMINADAS = "terminadas"
+
+
+def _analisar_incluir_canceladas(bruto: str | None) -> bool:
+    if bruto is None or bruto == "false":
+        return False
+    if bruto == "true":
+        return True
+    raise ErroDeValidacao(
+        mensagem="Filtro 'incluir_canceladas' aceita apenas 'true' ou 'false'.",
+        campo="incluir_canceladas",
+    )
+
+
+def _ler_cursor_da_agenda(cursor: str) -> tuple[str, datetime, datetime, uuid.UUID]:
+    posicao = decodificar_cursor(cursor)
+    try:
+        grupo = posicao["grupo"]
+        referencia = datetime.fromisoformat(posicao["ref"])
+        inicio_em = datetime.fromisoformat(posicao["inicio_em"])
+        id_da_aula = uuid.UUID(posicao["id"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
+    if grupo not in (_POR_VIR, _TERMINADAS):
+        raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor")
+    return grupo, referencia, inicio_em, id_da_aula
+
+
 @roteador.get("/aulas", response_model=PaginaDeResultado[AulaSaida])
 def listar_agenda_rota(
-    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem())],
+    parametros: Annotated[ParametrosDeListagem, Depends(contrato_de_listagem(_FILTROS_DA_AGENDA))],
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> PaginaDeResultado[AulaSaida]:
     """Restrita à gestão — Admin lê qualquer comunidade, sempre declarada; o
     Mestre lê **as comunidades a que está vinculado**, e sem vínculo algum lê
     lista vazia. O filtro de período recorta pelo horário inicial da aula
-    (`RF-02-12`, `RF-01-28`, `RF-01-18`)."""
+    (`RF-02-12`, `RF-01-28`, `RF-01-18`).
+
+    A cancelada só vem com `incluir_canceladas=true`, e a ordem é a das
+    próximas aulas: as que ainda não terminaram, da mais próxima à mais
+    distante, e depois as terminadas, da mais recente à mais antiga. O momento
+    que divide os dois grupos viaja no cursor (documento 09 §1, "Agenda sem
+    canceladas e pelas próximas aulas")."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
+    incluir_canceladas = _analisar_incluir_canceladas(parametros.filtros.get("incluir_canceladas"))
     alvos = escopo_de_comunidade_da_leitura(
         sessao_bd,
         operador=operador,
@@ -229,39 +266,58 @@ def listar_agenda_rota(
     if not alvos:
         return PaginaDeResultado(itens=[], proximo_cursor=None)
 
-    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id.in_(alvos))
+    base = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id.in_(alvos))
+    if not incluir_canceladas:
+        base = base.filter(Aula.situacao != SituacaoDaAula.cancelada)
 
     periodo_inicio = parametros.filtros.get("periodo_inicio")
     if periodo_inicio:
-        consulta = consulta.filter(
-            Aula.inicio_em >= _analisar_momento(periodo_inicio, "periodo_inicio")
-        )
+        base = base.filter(Aula.inicio_em >= _analisar_momento(periodo_inicio, "periodo_inicio"))
     periodo_fim = parametros.filtros.get("periodo_fim")
     if periodo_fim:
-        consulta = consulta.filter(Aula.inicio_em <= _analisar_momento(periodo_fim, "periodo_fim"))
+        base = base.filter(Aula.inicio_em <= _analisar_momento(periodo_fim, "periodo_fim"))
 
+    grupo, posicao = _POR_VIR, None
+    referencia = agora()
     if parametros.cursor:
-        posicao = decodificar_cursor(parametros.cursor)
-        try:
-            inicio_em_cursor = datetime.fromisoformat(posicao["inicio_em"])
-            id_cursor = uuid.UUID(posicao["id"])
-        except (KeyError, ValueError) as exc:
-            raise ErroDeValidacao(mensagem="Cursor de paginação inválido.", campo="cursor") from exc
-        consulta = consulta.filter(tuple_(Aula.inicio_em, Aula.id) > (inicio_em_cursor, id_cursor))
+        grupo, referencia, inicio_em_cursor, id_cursor = _ler_cursor_da_agenda(parametros.cursor)
+        posicao = (inicio_em_cursor, id_cursor)
 
-    consulta = consulta.order_by(Aula.inicio_em, Aula.id).limit(parametros.tamanho + 1)
-    aulas = consulta.all()
+    limite = parametros.tamanho + 1
+    aulas: list[tuple[str, Aula]] = []
+    if grupo == _POR_VIR:
+        consulta = base.filter(Aula.fim_em > referencia)
+        if posicao is not None:
+            consulta = consulta.filter(tuple_(Aula.inicio_em, Aula.id) > posicao)
+            posicao = None
+        por_vir = consulta.order_by(Aula.inicio_em, Aula.id).limit(limite).all()
+        aulas.extend((_POR_VIR, aula) for aula in por_vir)
+    if len(aulas) < limite:
+        consulta = base.filter(Aula.fim_em <= referencia)
+        if posicao is not None:
+            consulta = consulta.filter(tuple_(Aula.inicio_em, Aula.id) < posicao)
+        terminadas = (
+            consulta.order_by(Aula.inicio_em.desc(), Aula.id.desc())
+            .limit(limite - len(aulas))
+            .all()
+        )
+        aulas.extend((_TERMINADAS, aula) for aula in terminadas)
 
     proximo_cursor = None
     if len(aulas) > parametros.tamanho:
         aulas = aulas[: parametros.tamanho]
-        ultima = aulas[-1]
+        grupo_da_ultima, ultima = aulas[-1]
         proximo_cursor = codificar_cursor(
-            {"inicio_em": ultima.inicio_em.isoformat(), "id": str(ultima.id)}
+            {
+                "grupo": grupo_da_ultima,
+                "ref": referencia.isoformat(),
+                "inicio_em": ultima.inicio_em.isoformat(),
+                "id": str(ultima.id),
+            }
         )
 
     return PaginaDeResultado(
-        itens=[_saida(sessao_bd, aula) for aula in aulas], proximo_cursor=proximo_cursor
+        itens=[_saida(sessao_bd, aula) for _, aula in aulas], proximo_cursor=proximo_cursor
     )
 
 

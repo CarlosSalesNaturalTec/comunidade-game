@@ -61,6 +61,7 @@ export function TelaDaAgenda() {
         comunidadeId: podeAgendar ? comunidadeId : undefined,
         periodoInicio: periodoInicio || undefined,
         periodoFim: periodoFim || undefined,
+        incluirCanceladas: exibirCanceladas,
       });
       definirAulas(pagina.itens);
     } catch (erroCapturado) {
@@ -70,7 +71,15 @@ export function TelaDaAgenda() {
       }
       definirErro("Não foi possível carregar a agenda. Tente novamente em instantes.");
     }
-  }, [sessao, podeAgendar, comunidadeId, periodoInicio, periodoFim, tratarRecusaDeSessao]);
+  }, [
+    sessao,
+    podeAgendar,
+    comunidadeId,
+    periodoInicio,
+    periodoFim,
+    exibirCanceladas,
+    tratarRecusaDeSessao,
+  ]);
 
   useEffect(() => {
     carregar();
@@ -109,14 +118,6 @@ export function TelaDaAgenda() {
     );
     return (id: string) => porId.get(id) ?? id;
   }, [pontosDeApoio]);
-
-  // A cancelada some da lista por padrão — filtro só de apresentação, sobre
-  // o que a rota já devolveu (`RN-02-09`, `RN-02-20`).
-  const aulasApresentadas = useMemo(() => {
-    if (aulas === null) return null;
-    if (exibirCanceladas) return aulas;
-    return aulas.filter((aula) => aula.situacao !== "cancelada");
-  }, [aulas, exibirCanceladas]);
 
   return (
     <Moldura>
@@ -177,7 +178,7 @@ export function TelaDaAgenda() {
       )}
 
       <ListaDaAgenda
-        aulas={aulasApresentadas}
+        aulas={aulas}
         nomeDaComunidade={nomeDaComunidade}
         nomeDoPontoDeApoio={nomeDoPontoDeApoio}
         podeCancelar={podeCancelar}
