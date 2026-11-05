@@ -27,6 +27,7 @@ outro.
 | 16  | [Guia de Referência Rápida](16-guia-de-referencia-rapida.md)                     | Em que aplicação, em que aba e em que ordem cada persona opera a plataforma                                           |
 | 99  | [Mapa de referências](99-mapa-de-referencias.md)                                 | Relação entre os documentos — página técnica, para orientação de agentes de IA                                        |
 | —   | [PRDs](prds/index.md)                                                            | Requisitos de produto por aplicação, derivados do documento 08 — a esteira que orienta o desenvolvimento              |
+| —   | [Termo de biometria](termos/termo-de-biometria.md)                               | **[Proposta]** Rascunho do termo impresso de consentimento biométrico, para revisão jurídica                          |
 
 ## Como ler
 
