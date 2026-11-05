@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import { listarRecompensasDeMarco, type RecompensaDeMarco } from "../recompensas/api";
 import type { TipoDeRecurso } from "../recursos/api";
 import {
+  type CorrecaoDaMissao,
   type EtapaDoCiclo,
   type MissaoDaTrilha,
   publicarTrilha,
@@ -187,6 +188,44 @@ export function TelaDaTrilha({
     );
   }
 
+  // A correção e o movimento devolvem a missão sem os blocos aninhados, como
+  // a criação: só os campos da própria missão se sobrepõem ao que a tela já
+  // tem (design — decisão 7).
+  function comCamposDaMissao(atual: MissaoDaTrilha, nova: MissaoDaTrilha): MissaoDaTrilha {
+    return {
+      ...atual,
+      titulo: nova.titulo,
+      posicao: nova.posicao,
+      nivel_de_dificuldade: nova.nivel_de_dificuldade,
+      obrigatoria: nova.obrigatoria,
+      e_sondagem: nova.e_sondagem,
+      etapa_do_ciclo: nova.etapa_do_ciclo,
+    };
+  }
+
+  function comMissoesSobrepostas(novas: MissaoDaTrilha[]): MissaoDaTrilha[] {
+    const porId = new Map(novas.map((missao) => [missao.id, missao]));
+    return trilha.missoes.map((missao) => {
+      const nova = porId.get(missao.id);
+      return nova ? comCamposDaMissao(missao, nova) : missao;
+    });
+  }
+
+  // A situação vem da resposta: a correção que desmarca a sondagem de
+  // trilha publicada a tira do ar, com o motivo gerado (`RN-09-59`).
+  function aoCorrigirMissao(correcao: CorrecaoDaMissao) {
+    onAtualizarTrilha({
+      ...trilha,
+      situacao: correcao.situacao_da_trilha,
+      motivo_da_situacao: correcao.motivo_da_situacao,
+      missoes: comMissoesSobrepostas([correcao.missao]),
+    });
+  }
+
+  function aoMoverMissoes(trocadas: MissaoDaTrilha[]) {
+    onAtualizarTrilha({ ...trilha, missoes: comMissoesSobrepostas(trocadas) });
+  }
+
   async function aoPublicar() {
     if (!sessao) return;
     definirRecusaDaPublicacao(null);
@@ -339,6 +378,9 @@ export function TelaDaTrilha({
         tiposDeRecurso={tiposDeRecurso}
         recompensasDeMarco={recompensasDeMarco}
         onAtualizarMissao={aoAtualizarMissao}
+        trilhaPublicada={trilha.situacao === "publicada"}
+        onCorrigirMissao={aoCorrigirMissao}
+        onMoverMissoes={aoMoverMissoes}
         onDeclararRecompensa={(recompensa) =>
           definirRecompensasDeMarco((atuais) => [...atuais, recompensa])
         }

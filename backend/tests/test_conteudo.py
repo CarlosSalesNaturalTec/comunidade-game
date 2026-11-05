@@ -598,7 +598,9 @@ def test_nenhuma_rota_expoe_total_de_bytes(cliente, criar_chave):
     existe."""
     chave, _ = criar_chave()
     resposta = cliente.get("/v1/missoes/consumo", headers={"X-Chave-Aplicacao": chave})
-    assert resposta.status_code == 404
+    # 405 desde que `PATCH /v1/missoes/{id}` existe (fatia 28): o caminho casa
+    # com o padrão da correção, mas nenhum `GET` o lê — a rota segue inexistente.
+    assert resposta.status_code in (404, 405)
 
 
 # --- Conserto: o tipo do arquivo e a saída de bytes (`RF-05-11`,

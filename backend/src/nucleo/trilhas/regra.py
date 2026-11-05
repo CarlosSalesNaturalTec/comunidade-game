@@ -404,6 +404,53 @@ def duplicar_trilha(
     return copia
 
 
+def _conferir_titulo_da_missao(titulo: str | None) -> str:
+    """As conferências de campo da missão valem iguais na criação e na
+    correção — mensagem e campo são os mesmos nas duas portas (`RF-09-02`,
+    `RF-09-136`, design — decisão 1)."""
+    if not titulo or not titulo.strip():
+        raise ErroDeValidacao(mensagem="Missão exige um título.", campo="titulo")
+    return titulo
+
+
+def _conferir_obrigatoriedade_da_missao(obrigatoria: bool | None) -> bool:
+    if obrigatoria is None:
+        raise ErroDeValidacao(
+            mensagem="Missão exige a declaração de obrigatória ou opcional.",
+            campo="obrigatoria",
+        )
+    return obrigatoria
+
+
+def _conferir_etapa_da_missao(etapa_do_ciclo: str | None) -> EtapaDoCiclo:
+    try:
+        return EtapaDoCiclo(etapa_do_ciclo)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Etapa do ciclo fora dos valores previstos.", campo="etapa_do_ciclo"
+        ) from exc
+
+
+def _conferir_sondagem(
+    sessao: Session, *, trilha_id: uuid.UUID, posicao: int, missao_id: uuid.UUID | None
+) -> None:
+    """A sondagem ocupa a primeira posição e é única na trilha (documento 99
+    §6 invariante 5). Na correção, a própria missão não conta como "outra"
+    sondagem (`RN-09-57`)."""
+    if posicao != 1:
+        raise ErroDeValidacao(
+            mensagem="A missão de sondagem ocupa a primeira posição da trilha.",
+            campo="e_sondagem",
+        )
+    consulta = sessao.query(Missao).filter_by(trilha_id=trilha_id, e_sondagem=True)
+    if missao_id is not None:
+        consulta = consulta.filter(Missao.id != missao_id)
+    if consulta.first() is not None:
+        raise ErroDeValidacao(
+            mensagem="Esta trilha já tem uma missão de sondagem.", campo="e_sondagem"
+        )
+
+
 def criar_missao(
     sessao: Session,
     *,
@@ -428,33 +475,11 @@ def criar_missao(
     if trilha is None:
         raise ErroDeValidacao(mensagem="Missão exige uma trilha.", campo="trilha_id")
     conferir_posse_da_trilha(trilha, operador)
-    if not titulo or not titulo.strip():
-        raise ErroDeValidacao(mensagem="Missão exige um título.", campo="titulo")
-    if obrigatoria is None:
-        raise ErroDeValidacao(
-            mensagem="Missão exige a declaração de obrigatória ou opcional.",
-            campo="obrigatoria",
-        )
-    try:
-        etapa_valida = EtapaDoCiclo(etapa_do_ciclo)
-    except ValueError as exc:
-        raise ErroDeValidacao(
-            mensagem="Etapa do ciclo fora dos valores previstos.", campo="etapa_do_ciclo"
-        ) from exc
-
+    titulo = _conferir_titulo_da_missao(titulo)
+    obrigatoria = _conferir_obrigatoriedade_da_missao(obrigatoria)
+    etapa_valida = _conferir_etapa_da_missao(etapa_do_ciclo)
     if e_sondagem:
-        if posicao != 1:
-            raise ErroDeValidacao(
-                mensagem="A missão de sondagem ocupa a primeira posição da trilha.",
-                campo="e_sondagem",
-            )
-        ja_tem_sondagem = (
-            sessao.query(Missao).filter_by(trilha_id=trilha.id, e_sondagem=True).first()
-        )
-        if ja_tem_sondagem is not None:
-            raise ErroDeValidacao(
-                mensagem="Esta trilha já tem uma missão de sondagem.", campo="e_sondagem"
-            )
+        _conferir_sondagem(sessao, trilha_id=trilha.id, posicao=posicao, missao_id=None)
 
     missao = Missao(
         trilha_id=trilha.id,
@@ -471,6 +496,124 @@ def criar_missao(
     sessao.add(missao)
     sessao.flush()
     return missao
+
+
+def _despublicar_pela_correcao(
+    sessao: Session, trilha: Trilha, *, operador: Persona, missao: Missao
+) -> None:
+    """A correção do Mestre que quebra trava de trilha publicada é aceita e
+    tira a trilha do ar no mesmo ato, com o próprio Mestre como autor da
+    situação e o motivo gerado aqui (`RN-09-59`, design — decisão 6). Não
+    toca fato gravado do Guerreiro(a), como `despublicar_trilha`."""
+    pendentes = _travas_de_publicacao_pendentes(sessao, trilha)
+    trilha.situacao = SituacaoDaTrilha.despublicada
+    trilha.motivo_da_situacao = (
+        f'A correção da missão "{missao.titulo}" deixou a trilha sem '
+        f"{_unir_em_portugues(pendentes)}. Corrija e publique de novo."
+    )
+    trilha.autor_da_situacao_id = operador.id
+    trilha.papel_do_autor_da_situacao = operador.papel.value
+    trilha.situacao_alterada_em = agora()
+
+
+def corrigir_missao(
+    sessao: Session, *, operador: Persona, missao: Missao | None, campos: dict
+) -> Missao:
+    """Corrige título, dificuldade, obrigatoriedade, etapa e sondagem, em
+    qualquer situação da trilha e só pelo Mestre autor (`RF-09-136`,
+    `RN-09-56`). Campo ausente de `campos` conserva o valor gravado; a posição
+    não chega aqui — muda só por `mover_missao`. Desmarcar a sondagem de
+    trilha publicada despublica (`RN-09-59`, design — decisão 6)."""
+    if missao is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada.")
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    conferir_autoria_estrita_da_trilha(trilha, operador)
+
+    if "titulo" in campos:
+        titulo = _conferir_titulo_da_missao(campos["titulo"])
+    if "obrigatoria" in campos:
+        obrigatoria = _conferir_obrigatoriedade_da_missao(campos["obrigatoria"])
+    if "etapa_do_ciclo" in campos:
+        etapa = _conferir_etapa_da_missao(campos["etapa_do_ciclo"])
+    if "nivel_de_dificuldade" in campos and campos["nivel_de_dificuldade"] is None:
+        raise ErroDeValidacao(
+            mensagem="Missão exige o nível de dificuldade.", campo="nivel_de_dificuldade"
+        )
+    era_sondagem = missao.e_sondagem
+    if "e_sondagem" in campos:
+        if campos["e_sondagem"] is None:
+            raise ErroDeValidacao(
+                mensagem="Diga se a missão é ou não a sondagem.", campo="e_sondagem"
+            )
+        if campos["e_sondagem"] and not era_sondagem:
+            _conferir_sondagem(
+                sessao, trilha_id=trilha.id, posicao=missao.posicao, missao_id=missao.id
+            )
+
+    if "titulo" in campos:
+        missao.titulo = titulo
+    if "obrigatoria" in campos:
+        missao.obrigatoria = obrigatoria
+    if "etapa_do_ciclo" in campos:
+        missao.etapa_do_ciclo = etapa
+    if "nivel_de_dificuldade" in campos:
+        missao.nivel_de_dificuldade = campos["nivel_de_dificuldade"]
+    if "e_sondagem" in campos:
+        missao.e_sondagem = campos["e_sondagem"]
+    sessao.flush()
+
+    if era_sondagem and not missao.e_sondagem and trilha.situacao == SituacaoDaTrilha.publicada:
+        _despublicar_pela_correcao(sessao, trilha, operador=operador, missao=missao)
+        sessao.flush()
+    return missao
+
+
+def mover_missao(
+    sessao: Session, *, operador: Persona, missao: Missao | None, direcao: str | None
+) -> list[Missao]:
+    """Troca a posição com a **vizinha** da sequência inteira da trilha — não
+    da etapa —, no molde de `conteudos.regra.mover_conteudo` (`RF-09-137`,
+    design — decisões 4 e 5). Só as duas mudam; lacunas na sequência são
+    aceitas. A sondagem não desce e nada sobe para o lugar dela (`RN-09-57`).
+    A troca roda com a unicidade de posição adiada até o `COMMIT`."""
+    from sqlalchemy import text
+
+    from ..conteudos.regra import DirecaoDoMovimento
+
+    if missao is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada.")
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    conferir_autoria_estrita_da_trilha(trilha, operador)
+    try:
+        sentido = DirecaoDoMovimento(direcao)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="A direção do movimento é 'cima' ou 'baixo'.", campo="direcao"
+        ) from exc
+
+    irmas = sessao.query(Missao).filter_by(trilha_id=trilha.id).order_by(Missao.posicao).all()
+    indice = next(i for i, irma in enumerate(irmas) if irma.id == missao.id)
+    vizinha_indice = indice - 1 if sentido == DirecaoDoMovimento.cima else indice + 1
+    if vizinha_indice < 0 or vizinha_indice >= len(irmas):
+        raise ErroDeValidacao(
+            mensagem=(
+                "Esta missão já é a primeira da trilha."
+                if sentido == DirecaoDoMovimento.cima
+                else "Esta missão já é a última da trilha."
+            ),
+            campo="direcao",
+        )
+    vizinha = irmas[vizinha_indice]
+    if missao.e_sondagem or vizinha.e_sondagem:
+        raise ErroDeValidacao(
+            mensagem="A missão de sondagem abre a trilha e fica na primeira posição.",
+            campo="direcao",
+        )
+
+    sessao.execute(text("SET CONSTRAINTS uq_missao_trilha_id_posicao DEFERRED"))
+    missao.posicao, vizinha.posicao = vizinha.posicao, missao.posicao
+    sessao.flush()
+    return [missao, vizinha]
 
 
 def declarar_cadencia_de_retomada(

@@ -1,15 +1,19 @@
+import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { BlocoRecolhivel, Botao, EstadoDaLista, MarcaDeGravacao } from "comum/react";
+import { Aviso, BlocoRecolhivel, Botao, EstadoDaLista, MarcaDeGravacao } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { lerIdentidade } from "../perfil/api";
 import type { RecompensaDeMarco } from "../recompensas/api";
 import type { TipoDeRecurso } from "../recursos/api";
-import type {
-  CadenciaDeColeta,
-  EtapaDoCiclo,
-  MissaoDaTrilha,
-  NivelDoLocal,
-  TipoDeColeta,
+import {
+  type CadenciaDeColeta,
+  type CorrecaoDaMissao,
+  type DirecaoDoMovimento,
+  type EtapaDoCiclo,
+  type MissaoDaTrilha,
+  moverMissao,
+  type NivelDoLocal,
+  type TipoDeColeta,
 } from "./api";
 import { Bibliografia } from "./Bibliografia";
 import { BlocoDeAtividades } from "./BlocoDeAtividades";
@@ -19,6 +23,7 @@ import { DeclaracaoDeRecompensa } from "./DeclaracaoDeRecompensa";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
 import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeDesafioDeColeta, ROTULO_DO_NIVEL } from "./FormularioDeDesafioDeColeta";
+import { FormularioDeMissao } from "./FormularioDeMissao";
 import { PreVisualizacaoDaMissao } from "./PreVisualizacaoDaMissao";
 import { TemplateDaMissao } from "./TemplateDaMissao";
 
@@ -30,6 +35,9 @@ interface Props {
   recompensasDeMarco: RecompensaDeMarco[];
   onAtualizarMissao: (missao: MissaoDaTrilha) => void;
   onDeclararRecompensa: (recompensa: RecompensaDeMarco) => void;
+  trilhaPublicada?: boolean;
+  onCorrigirMissao?: (correcao: CorrecaoDaMissao) => void;
+  onMoverMissoes?: (missoes: MissaoDaTrilha[]) => void;
 }
 
 const ROTULO_DA_ETAPA: Record<EtapaDoCiclo, string> = {
@@ -120,7 +128,13 @@ export function ListaDeMissoes({
   recompensasDeMarco,
   onAtualizarMissao,
   onDeclararRecompensa,
+  trilhaPublicada = false,
+  onCorrigirMissao,
+  onMoverMissoes,
 }: Props) {
+  const [missaoEmCorrecao, definirMissaoEmCorrecao] = useState<string | null>(null);
+  const [recusaDoMovimento, definirRecusaDoMovimento] = useState<Record<string, string>>({});
+  const [movendo, definirMovendo] = useState(false);
   const [missaoComFormularioDeColeta, definirMissaoComFormularioDeColeta] = useState<
     string | null
   >(null);
@@ -136,7 +150,7 @@ export function ListaDeMissoes({
   // do fundador de 2026-09-16 — o Guerreiro(a) lê o nome da persona, então
   // os dois textos diferem de propósito (design — decisão 5).
   const [nickDoMestre, definirNickDoMestre] = useState<string | null>(null);
-  const { sessao } = useSessao();
+  const { sessao, tratarRecusaDeSessao } = useSessao();
   const tipoPorId = new Map(tiposDeColeta.map((tipo) => [tipo.id, tipo]));
 
   const carregarNick = useCallback(async () => {
@@ -152,6 +166,36 @@ export function ListaDeMissoes({
   useEffect(() => {
     carregarNick();
   }, [carregarNick]);
+
+  // Sobe ou desce trocando de lugar com a vizinha da sequência da trilha; a
+  // recusa do núcleo — o extremo, a sondagem — aparece sob a linha, com o
+  // motivo dele (`RF-09-137`, `RN-09-57`).
+  async function mover(missao: MissaoDaTrilha, direcao: DirecaoDoMovimento) {
+    if (!sessao) return;
+    definirMovendo(true);
+    definirRecusaDoMovimento((atual) => {
+      const { [missao.id]: _removida, ...resto } = atual;
+      return resto;
+    });
+    try {
+      const { missoes: trocadas } = await moverMissao(missao.id, direcao, sessao.token);
+      onMoverMissoes?.(trocadas);
+    } catch (erro) {
+      if (ehRecusaDeSessao(erro)) {
+        tratarRecusaDeSessao();
+        return;
+      }
+      definirRecusaDoMovimento((atual) => ({
+        ...atual,
+        [missao.id]:
+          erro instanceof ErroDaApi
+            ? erro.message
+            : "Não foi possível mover a missão. Tente novamente em instantes.",
+      }));
+    } finally {
+      definirMovendo(false);
+    }
+  }
 
   if (missoes.length === 0) {
     return <EstadoDaLista>Nenhuma missão acrescentada ainda.</EstadoDaLista>;
@@ -177,7 +221,56 @@ export function ListaDeMissoes({
             <span className="lista-de-missoes__obrigatoriedade">
               {missao.obrigatoria ? "Obrigatória" : "Opcional"}
             </span>
+            <span className="lista-de-missoes__dificuldade">
+              Dificuldade {missao.nivel_de_dificuldade}
+            </span>
           </div>
+
+          <div className="lista-de-missoes__atos">
+            <Botao
+              variante="secundaria"
+              onClick={() =>
+                definirMissaoEmCorrecao(missaoEmCorrecao === missao.id ? null : missao.id)
+              }
+            >
+              Corrigir missão
+            </Botao>
+            <Botao
+              variante="secundaria"
+              desabilitado={movendo}
+              onClick={() => mover(missao, "cima")}
+            >
+              Subir
+            </Botao>
+            <Botao
+              variante="secundaria"
+              desabilitado={movendo}
+              onClick={() => mover(missao, "baixo")}
+            >
+              Descer
+            </Botao>
+          </div>
+          {recusaDoMovimento[missao.id] && (
+            <Aviso tipo="erro">{recusaDoMovimento[missao.id]}</Aviso>
+          )}
+
+          {missaoEmCorrecao === missao.id && (
+            <FormularioDeMissao
+              idDaTrilha={idDaTrilha}
+              proximaPosicao={missao.posicao}
+              etapaInicial={missao.etapa_do_ciclo}
+              missao={missao}
+              trilhaPublicada={trilhaPublicada}
+              onSalvo={() => definirMissaoEmCorrecao(null)}
+              onCorrigida={(correcao) => {
+                definirMissaoEmCorrecao(null);
+                marcarGravado(`${missao.id}:missao`);
+                onCorrigirMissao?.(correcao);
+              }}
+              onCancelar={() => definirMissaoEmCorrecao(null)}
+            />
+          )}
+          <MarcaDeGravacao instante={gravadoEm[`${missao.id}:missao`] ?? null} />
 
           <BlocoRecolhivel
             titulo="Template da missão"

@@ -2,14 +2,26 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
-import { criarMissao, type EtapaDoCiclo, type MissaoDaTrilha } from "./api";
+import {
+  type CorrecaoDaMissao,
+  corrigirMissao,
+  criarMissao,
+  type EtapaDoCiclo,
+  type MissaoDaTrilha,
+} from "./api";
 
+// Com `missao`, o formulário corrige o que está gravado em vez de criar: os
+// campos chegam preenchidos e a posição some, porque ela muda só pela ordem
+// (`RF-09-136`, design — decisão 8).
 interface Props {
   idDaTrilha: string;
   proximaPosicao: number;
   etapaInicial: EtapaDoCiclo;
   onSalvo: (missao: MissaoDaTrilha) => void;
   onCancelar: () => void;
+  missao?: MissaoDaTrilha;
+  trilhaPublicada?: boolean;
+  onCorrigida?: (correcao: CorrecaoDaMissao) => void;
 }
 
 interface ErroDeCampo {
@@ -32,17 +44,27 @@ export function FormularioDeMissao({
   etapaInicial,
   onSalvo,
   onCancelar,
+  missao,
+  trilhaPublicada = false,
+  onCorrigida,
 }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDaObrigatoriedade = useId();
   const idDaEtapa = useId();
   const idDaSondagem = useId();
-  const [titulo, definirTitulo] = useState("");
+  const [titulo, definirTitulo] = useState(missao?.titulo ?? "");
   const [posicao, definirPosicao] = useState(String(proximaPosicao));
-  const [nivelDeDificuldade, definirNivelDeDificuldade] = useState("1");
-  const [obrigatoria, definirObrigatoria] = useState<"" | "sim" | "nao">("");
-  const [etapaDoCiclo, definirEtapaDoCiclo] = useState<EtapaDoCiclo>(etapaInicial);
-  const [eSondagem, definirESondagem] = useState(false);
+  const [nivelDeDificuldade, definirNivelDeDificuldade] = useState(
+    String(missao?.nivel_de_dificuldade ?? 1),
+  );
+  const [obrigatoria, definirObrigatoria] = useState<"" | "sim" | "nao">(
+    missao ? (missao.obrigatoria ? "sim" : "nao") : "",
+  );
+  const [etapaDoCiclo, definirEtapaDoCiclo] = useState<EtapaDoCiclo>(
+    missao?.etapa_do_ciclo ?? etapaInicial,
+  );
+  const [eSondagem, definirESondagem] = useState(missao?.e_sondagem ?? false);
+  const [confirmandoDespublicacao, definirConfirmandoDespublicacao] = useState(false);
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
@@ -64,10 +86,34 @@ export function FormularioDeMissao({
       return;
     }
 
+    // Desmarcar a sondagem de trilha publicada a tira do ar: a tela diz isso
+    // antes de gravar, e só grava com a confirmação (`RF-09-139`, `RN-09-59`).
+    const despublica = Boolean(missao && trilhaPublicada && missao.e_sondagem && !eSondagem);
+    if (despublica && !confirmandoDespublicacao) {
+      definirConfirmandoDespublicacao(true);
+      return;
+    }
+    definirConfirmandoDespublicacao(false);
+
     if (!sessao) return;
     definirEnviando(true);
     try {
-      const missao = await criarMissao(
+      if (missao) {
+        const correcao = await corrigirMissao(
+          missao.id,
+          {
+            titulo,
+            nivel_de_dificuldade: Number(nivelDeDificuldade),
+            obrigatoria: obrigatoria === "sim",
+            etapa_do_ciclo: etapaDoCiclo,
+            e_sondagem: eSondagem,
+          },
+          sessao.token,
+        );
+        onCorrigida?.(correcao);
+        return;
+      }
+      const criada = await criarMissao(
         idDaTrilha,
         {
           titulo,
@@ -79,7 +125,7 @@ export function FormularioDeMissao({
         },
         sessao.token,
       );
-      onSalvo(missao);
+      onSalvo(criada);
     } catch (erro) {
       if (ehRecusaDeSessao(erro)) {
         tratarRecusaDeSessao();
@@ -102,7 +148,9 @@ export function FormularioDeMissao({
         return;
       }
       definirErroDeRecusa(
-        "Não foi possível acrescentar a missão. Tente novamente em instantes.",
+        missao
+          ? "Não foi possível corrigir a missão. Tente novamente em instantes."
+          : "Não foi possível acrescentar a missão. Tente novamente em instantes.",
       );
     } finally {
       definirEnviando(false);
@@ -110,14 +158,19 @@ export function FormularioDeMissao({
   }
 
   return (
-    <form onSubmit={aoSubmeter} aria-label="Nova missão">
+    <form
+      onSubmit={aoSubmeter}
+      aria-label={missao ? `Corrigir a missão ${missao.titulo}` : "Nova missão"}
+    >
       <Campo
         rotulo="Título"
         valor={titulo}
         aoAlterar={definirTitulo}
         erro={erroDeCampo?.campo === "titulo" ? erroDeCampo.mensagem : null}
       />
-      <Campo rotulo="Posição" tipo="number" valor={posicao} aoAlterar={definirPosicao} />
+      {!missao && (
+        <Campo rotulo="Posição" tipo="number" valor={posicao} aoAlterar={definirPosicao} />
+      )}
       <Campo
         rotulo="Nível de dificuldade"
         tipo="number"
@@ -178,11 +231,27 @@ export function FormularioDeMissao({
 
       {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
 
+      {confirmandoDespublicacao && (
+        <p role="alert">
+          Esta trilha está publicada. Sem a missão de sondagem, ela sai do ar ao gravar, e para
+          publicar de novo vai faltar a sondagem. Confirme para gravar assim mesmo.
+        </p>
+      )}
+
       <Botao tipo="submit" desabilitado={enviando}>
-        Acrescentar missão
+        {confirmandoDespublicacao
+          ? "Confirmar e tirar a trilha do ar"
+          : missao
+            ? "Gravar correção"
+            : "Acrescentar missão"}
       </Botao>
-      <Botao variante="secundaria" onClick={onCancelar}>
-        Cancelar
+      <Botao
+        variante="secundaria"
+        onClick={
+          confirmandoDespublicacao ? () => definirConfirmandoDespublicacao(false) : onCancelar
+        }
+      >
+        {confirmandoDespublicacao ? "Voltar sem gravar" : "Cancelar"}
       </Botao>
     </form>
   );
