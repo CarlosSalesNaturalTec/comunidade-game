@@ -65,7 +65,8 @@ evolução e as criações do(a) Guerreiro(a) na vitrine pública é **outra**, 
   de tudo do mesmo jeito**.
 - Sem o reconhecimento pelo rosto, quem abre a sessão da criança no encontro é o Mestre ou a
   equipe do projeto. Em casa, quem abre é o responsável.
-- Você pode **retirar este consentimento a qualquer momento**, pela Área dos Responsáveis (App 07) ou com a equipe do projeto. A criança continua participando.
+- Você pode **retirar este consentimento a qualquer momento**, pela Área dos Responsáveis
+  (App 07) ou com a equipe do projeto. A criança continua participando.
 
 ### 6. Quando o código é apagado
 
