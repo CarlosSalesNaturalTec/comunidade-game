@@ -58,9 +58,8 @@ hora — o sentido do fluxo é sempre esse.
 - **Formulário de solicitação de participação** como Mestre ou Apoiador.
 - **Formulário de solicitação de dados** para pesquisadores e gestores públicos.
 - **Área do Apoiador Desenvolvedor** — seção pública para quem quer construir sobre a API,
-  com **assistente de chat com IA** (modelo Gemini, corpus fechado na documentação e no
-  repositório, toda mensagem encerrada por pergunta de múltipla escolha), **link da
-  documentação MkDocs**, **formulário de solicitação de chave** e **link do repositório**.
+  com **link da documentação MkDocs**, **link da documentação da API em Swagger**,
+  **formulário de solicitação de chave** e **link do repositório**.
 - **Chamada "Quero apoiar"** em **toda página individual** e no pedido de favoritar,
   levando à porta da Área do Apoiador — pré-cadastro e caminho de apoio. O **endereço** da
   porta não acompanha o rótulo.
@@ -103,7 +102,7 @@ hora — o sentido do fluxo é sempre esse.
 | Persona          | O que faz nesta aplicação                                          | O que não pode fazer                                                  |
 | ---------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- |
 | Visitante        | Navega, consulta nick exato, solicita participação e pede dados    | Entrar, favoritar, comentar, contatar criança, ver quem não autorizou |
-| Desenvolvedor    | Conversa com o assistente, lê a documentação e solicita a chave    | Receber a chave no ato, obter acesso sem aprovação de Admin           |
+| Desenvolvedor    | Lê a documentação e a da API, e solicita a chave                   | Receber a chave no ato, obter acesso sem aprovação de Admin           |
 | Pesquisador      | Lê séries e metodologia e pede o conjunto completo pelo formulário | Baixar o conjunto direto da vitrine ou ver o coletor                  |
 | Gestor público   | Lê o painel do território e a cobertura da Agenda 2030 por ciclo   | O mesmo do pesquisador                                                |
 | Admin            | Nada aqui: publica o conteúdo institucional pela App 03            | Editar a vitrine por dentro dela                                      |
@@ -217,24 +216,16 @@ fila, nunca acesso.
 
 1. Alguém que quer construir um jogo ou uma aplicação sobre a API chega à **Área do Apoiador
    Desenvolvedor**, pela vitrine.
-2. Abre o **assistente de chat**, que **não espera a primeira pergunta**: explica como a
-   plataforma está montada — a API, as oito aplicações, o contrato de somente leitura — e
-   **encerra a mensagem com uma pergunta de múltipla escolha** sobre o que conhecer em
-   seguida.
-3. A cada resposta, o assistente aprofunda o tópico escolhido e oferece a próxima escolha. O
-   visitante pode também perguntar livremente.
-4. Fora do corpus — documentação e repositório —, o assistente diz que não sabe e aponta a
-   documentação, em vez de inventar.
-5. Convencido, o visitante segue para a **documentação MkDocs** ou para o **repositório no
-   GitHub**, ambos linkados na mesma área.
-6. Preenche o **formulário de solicitação de chave**, declarando quem é e o que pretende
+2. Conhece a plataforma pela **documentação MkDocs**, pela **documentação da API em
+   Swagger** e pelo **repositório no GitHub**, os três linkados na mesma área.
+3. Preenche o **formulário de solicitação de chave**, declarando quem é e o que pretende
    construir. O envio **não emite chave nenhuma**: gera registro na fila de avaliação da
    App 03, com o prazo de resposta de 7 dias.
-7. Aprovado por um Admin, recebe a chave e passa a ter **30 dias para apresentar a URL** do
+4. Aprovado por um Admin, recebe a chave e passa a ter **30 dias para apresentar a URL** do
    que construiu. Não apresentada, a chave é revogada e ele pode solicitar outra.
 
-**Exceção — assistente indisponível.** Falha do modelo não derruba a área: a documentação, o
-repositório e o formulário continuam acessíveis, com aviso de que o assistente voltará.
+**Exceção:** não se aplica — a área é feita de links e de um formulário, sem dependência entre
+eles.
 
 ### 5.9 Entrar na plataforma
 
@@ -355,20 +346,14 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 ### 6.6 Área do Apoiador Desenvolvedor
 
-| ID         | Requisito                                                                                              | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------------ | ---------- |
-| `RF-03-67` | Área reúne assistente de chat, link da documentação, formulário de chave e link do repositório         | essencial  |
-| `RF-03-68` | Assistente abre explicando a arquitetura da plataforma, sem esperar a primeira pergunta                | essencial  |
-| `RF-03-69` | Assistente encerra **toda** mensagem com uma pergunta de múltipla escolha sobre o próximo passo        | essencial  |
-| `RF-03-70` | Assistente responde apenas a partir da documentação e do repositório, e diz quando o assunto está fora | essencial  |
-| `RF-03-71` | Assistente não coleta nem pede dado pessoal do visitante em nenhum momento                             | essencial  |
-| `RF-03-72` | Área segue utilizável — documentação, repositório e formulário — quando o assistente falha             | essencial  |
-| `RF-03-73` | Formulário de chave registra solicitante, contato e o que se pretende construir                        | essencial  |
-| `RF-03-74` | Envio do formulário não emite chave nem cria cadastro: gera registro na fila da App 03                 | essencial  |
-| `RF-03-75` | Área informa o prazo de 7 dias para a resposta e os 30 dias para apresentar a URL                      | essencial  |
-| `RF-03-76` | Área declara que a API não responde sem chave e que a chave não amplia direito de escrita              | essencial  |
-| `RF-03-77` | Área oferece o caminho de apresentar a URL do que foi construído, dentro do prazo                      | essencial  |
-| `RF-03-81` | Abertura do assistente é texto da aplicação, e segue de pé com o modelo fora do ar                     | essencial  |
+| ID         | Requisito                                                                                                         | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-03-67` | Área reúne link da documentação, link da documentação da API (Swagger), formulário de chave e link do repositório | essencial  |
+| `RF-03-73` | Formulário de chave registra solicitante, contato e o que se pretende construir                                   | essencial  |
+| `RF-03-74` | Envio do formulário não emite chave nem cria cadastro: gera registro na fila da App 03                            | essencial  |
+| `RF-03-75` | Área informa o prazo de 7 dias para a resposta e os 30 dias para apresentar a URL                                 | essencial  |
+| `RF-03-76` | Área declara que a API não responde sem chave e que a chave não amplia direito de escrita                         | essencial  |
+| `RF-03-77` | Área oferece o caminho de apresentar a URL do que foi construído, dentro do prazo                                 | essencial  |
 
 ## 7. Regras de negócio
 
@@ -410,10 +395,6 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 | `RN-03-22` | A vitrine não instala cookie, rastreador ou perfilamento, para nenhuma finalidade                                                                       | —                      | 04 §2       |
 | `RN-03-23` | Toda tela indica o que a plataforma coleta, com acesso à área detalhada                                                                                 | —                      | 03 §12      |
 | `RN-03-29` | A Área do Apoiador Desenvolvedor é seção da vitrine, não uma nona aplicação                                                                             | 1                      | 03 §8       |
-| `RN-03-30` | O assistente do Desenvolvedor tem corpus fechado e nunca responde fora dele                                                                             | —                      | 03 §8       |
-| `RN-03-31` | O assistente usa o modelo que o Ciclo 01 destinar à conversa por texto (03 §1.12)                                                                       | —                      | 03 §1       |
-| `RN-03-38` | Ao modelo vai um recorte do corpus por pergunta, com teto, nunca o corpus inteiro                                                                       | —                      | 03 §8       |
-| `RN-03-39` | A consulta ao assistente do Desenvolvedor é superfície do freio por origem                                                                              | —                      | 03 §8       |
 | `RN-03-32` | Solicitação de chave não emite chave nem cria cadastro: quem emite é Admin, na App 03                                                                   | 3                      | 03 §8       |
 | `RN-03-33` | A vitrine consome a API com a chave da aplicação, e o visitante segue anônimo                                                                           | —                      | 03 §§1, 1.1 |
 
@@ -421,8 +402,7 @@ repositório e o formulário continuam acessíveis, com aviso de que o assistent
 
 A aplicação **não escreve no domínio** além das três solicitações públicas e **não cria
 entidade nenhuma**. Também **não persiste nada do visitante** — nem no servidor, nem no
-aparelho: sem favoritos, sem preferência de recorte, sem histórico de navegação. A conversa
-com o assistente **não é guardada**: some ao fechar a página.
+aparelho: sem favoritos, sem preferência de recorte, sem histórico de navegação.
 
 ```text
 ESCREVE (ato público, sem cadastro)     LÊ (definidos em outro PRD)
@@ -480,7 +460,6 @@ A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo �
 | POST   | `/v1/solicitacoes-de-dados`             | pública      | Registra pedido do conjunto de dados                                                  |
 | POST   | `/v1/solicitacoes-de-chave`             | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor                            |
 | POST   | `/v1/chaves/{id}/url`                   | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias                             |
-| POST   | `/v1/assistente-do-desenvolvedor`       | pública      | Pergunta ao assistente, sobre a documentação e o repositório                          |
 
 Nenhuma rota desta aplicação aceita ou devolve preferência de visitante: não há parâmetro de
 favorito, de perfil ou de sessão anônima.
@@ -520,15 +499,14 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
 
 ## 11. LGPD e proteção da criança
 
-| Dado coletado                        | Finalidade                             | Base legal                    | Retenção                           | Quem acessa        |
-| ------------------------------------ | -------------------------------------- | ----------------------------- | ---------------------------------- | ------------------ |
-| Nenhum dado do visitante             | —                                      | —                             | —                                  | —                  |
-| Dados da solicitação de participação | Avaliar quem pede para entrar          | consentimento                 | até o desfecho e o registro dele   | gestão             |
-| Dados da solicitação de dados        | Avaliar e registrar a entrega          | consentimento                 | permanente, como prova do que saiu | gestão             |
-| Dados da solicitação de chave        | Avaliar quem vai construir sobre a API | consentimento                 | enquanto a chave existir           | gestão             |
-| Conversa com o assistente            | Responder a pergunta do momento        | execução da própria aplicação | não é guardada: some ao fechar     | ninguém            |
-| Avatar, nick e desempenho exibidos   | Reconhecimento público do Guerreiro(a) | consentimento do responsável  | enquanto a autorização durar       | qualquer visitante |
-| Séries do território exibidas        | Bem público e evidência sobre o lugar  | interesse público             | permanente, agregado               | qualquer visitante |
+| Dado coletado                        | Finalidade                             | Base legal                   | Retenção                           | Quem acessa        |
+| ------------------------------------ | -------------------------------------- | ---------------------------- | ---------------------------------- | ------------------ |
+| Nenhum dado do visitante             | —                                      | —                            | —                                  | —                  |
+| Dados da solicitação de participação | Avaliar quem pede para entrar          | consentimento                | até o desfecho e o registro dele   | gestão             |
+| Dados da solicitação de dados        | Avaliar e registrar a entrega          | consentimento                | permanente, como prova do que saiu | gestão             |
+| Dados da solicitação de chave        | Avaliar quem vai construir sobre a API | consentimento                | enquanto a chave existir           | gestão             |
+| Avatar, nick e desempenho exibidos   | Reconhecimento público do Guerreiro(a) | consentimento do responsável | enquanto a autorização durar       | qualquer visitante |
+| Séries do território exibidas        | Bem público e evidência sobre o lugar  | interesse público            | permanente, agregado               | qualquer visitante |
 
 - **A vitrine não coleta nada de quem visita.** Sem login, sem cadastro, sem cookie de
   rastreio, sem perfilamento — e a área detalhada diz isso com todas as letras.
@@ -542,23 +520,13 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   só volta como estudo, com as salvaguardas de plataforma usada por criança escritas antes.
 - **Quem preencheu formulário não vira cadastro** e não recebe e-mail da plataforma no Ciclo
   01: o retorno é dado pelo contato que ele mesmo declarou.
-- **O assistente do Desenvolvedor não fala de criança nenhuma.** O corpus é a documentação e o
-  repositório; ele não consulta o domínio, não alcança dado de Guerreiro(a) e não pede dado
-  pessoal de quem conversa. A conversa não é guardada nem usada para treinar modelo.
-- **A área é para adulto que quer construir, mas a vitrine é pública** — e por isso o
-  assistente segue as mesmas travas de conteúdo das demais superfícies da plataforma.
 
 ## 12. Critérios de aceite e métricas
 
 - A vitrine abre inteira sem login, e nenhuma tela oferece cadastro ou área restrita.
-- A primeira mensagem do assistente chega **sem que se pergunte nada**, e **toda** mensagem
-  dele termina com uma pergunta de múltipla escolha — inclusive a última de uma conversa longa.
-- Pergunta fora da documentação e do repositório recebe "não sei" com o caminho da
-  documentação, e não uma resposta inventada.
-- Com o assistente fora do ar, a documentação, o repositório e o formulário continuam
-  acessíveis, com aviso.
+- A Área do Apoiador Desenvolvedor traz os links da documentação, da documentação da API e do
+  repositório, e o formulário de chave — sem assistente.
 - O envio do formulário de chave **não devolve chave nenhuma** — devolve protocolo e prazo.
-- Recarregar a página do assistente **perde a conversa**: nada dela foi guardado.
 - Guerreiro(a) com autorização aparece em página, portfólio e ranking; sem autorização, não
   aparece em nenhum dos três, nem por endereço direto.
 - Cada lista pública mostra **10 registros**, e avançar e voltar percorrem a lista inteira sem
@@ -627,10 +595,7 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Novidade dos favoritos na App 08: cinco fatos, em destaque por 30 dias   | 03 §10     | O que conta como "novidade" dos favoritos |
 | Chamada "Quero apoiar" em toda página individual                         | 03 §8      | Chamada "Quero apoiar" nos perfis         |
 | Área do Apoiador Desenvolvedor como seção da vitrine, não nona aplicação | 03 §8      | Acesso das aplicações de terceiros        |
-| Assistente de chat com corpus fechado e pergunta de múltipla escolha     | 03 §8      | Acesso das aplicações de terceiros        |
-| Recorte do corpus por pergunta, com teto, em vez do corpus inteiro       | 03 §8      | Acesso das aplicações de terceiros        |
-| Freio por origem sobre a consulta ao assistente do Desenvolvedor         | 03 §8      | Acesso das aplicações de terceiros        |
-| Abertura do assistente como texto da aplicação, não resposta do modelo   | 03 §8      | Acesso das aplicações de terceiros        |
+| Assistente do Desenvolvedor retirado; Swagger na área (2026-11-06)       | 03 §8      | Acesso das aplicações de terceiros        |
 | Modelo de IA escolhido por funcionalidade, ao menor custo                | 03 §1      | Modelos de IA do Ciclo 01                 |
 | Solicitação de chave pela vitrine, com emissão por Admin                 | 03 §8      | Acesso das aplicações de terceiros        |
 | Card de Apoiador com avatar, nick, moedas em destaque e moldura comum    | 11 §8.2    | Identidade pública do Apoiador            |
@@ -690,7 +655,6 @@ IA apontando para ela.
 | `RF-03-52` e `RF-03-53`                         | 03 §12 (aviso de coleta e área detalhada)                                 |
 | `RF-03-58` a `RF-03-62`                         | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)                    |
 | `RF-03-63` a `RF-03-65`                         | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)                 |
-| `RF-03-67` a `RF-03-72`                         | 03 §8 (Área do Desenvolvedor e assistente) e 03 §1 (Gemini)               |
+| `RF-03-67`                                      | 03 §8 (Área do Desenvolvedor e documentação da API)                       |
 | `RF-03-73` a `RF-03-77`                         | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
-| `RF-03-81`, `RN-03-38`, `RN-03-39`              | 03 §8 (abertura, recorte do corpus e freio do assistente)                 |
 | `RF-03-84`, `RF-03-85`, `RN-03-41` a `RN-03-43` | 11 §§2.2, 5, 8.2 (o acervo, os dois vereditos e a linha) e 02 §4          |

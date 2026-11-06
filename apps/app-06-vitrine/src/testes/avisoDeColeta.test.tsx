@@ -70,7 +70,7 @@ describe("área detalhada de coleta (RF-03-52, RF-03-53)", () => {
     expect(tabela).toHaveTextContent("Pedido do conjunto de dados");
     expect(tabela).toHaveTextContent("Para sempre, como prova do que foi entregue");
     expect(tabela).toHaveTextContent("Enquanto a autorização durar");
-    expect(tabela).toHaveTextContent("Não é guardada: some ao fechar a página");
+    expect(tabela).not.toHaveTextContent(/assistente/i);
     expect(screen.getByRole("table", { name: /Prazos de guarda/ })).toHaveTextContent(
       "7 dias",
     );

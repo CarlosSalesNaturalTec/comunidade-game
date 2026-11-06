@@ -414,19 +414,19 @@ onde vira cadastro, e a **H1** é medida no App 01 (PRD-04), nunca aqui.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                                            | Gravada em                       | Linha do doc 09                                       |
-| -------------------------------------------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------- |
-| Gênero e mecânica: arena de duelo por turnos contra adversário do computador                       | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
-| Engine **Phaser.js** confirmada, de sugestão para definição vigente                                | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
-| Mapa fixo de virtude em atributo, com monotonia e transparência                                    | doc 11 §8.4                      | Mecânica do jogo (App 04) — Já decididos              |
-| Balanceamento é conteúdo do jogo, alterável em trilha, não regra de plataforma                     | doc 11 §8.4                      | Mecânica do jogo (App 04) — Já decididos              |
-| O jogo funciona offline, com catálogo guardado e revalidação a cada reconexão                      | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
-| Duelo local com dois jogadores no mesmo aparelho, sem igualar atributos                            | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
-| No Ciclo 01, só o Guerreiro(a) é personagem jogável                                                | doc 03 §6                        | Mecânica do jogo (App 04) — Já decididos              |
-| Catálogo guardado vale por **7 dias** sem nenhuma reconexão                                        | doc 03 §6                        | Validade do catálogo offline do App 04 — Já decididos |
-| **Sem chave a API não responde**; a chave é da aplicação, não do visitante                         | doc 03 §§1, 1.1 e doc 99 §6 nº 8 | Acesso das aplicações de terceiros — Já decididos     |
-| **Área do Apoiador Desenvolvedor** na vitrine: chat com IA, documentação, formulário e repositório | doc 03 §8, doc 08 e doc 14 §3    | Acesso das aplicações de terceiros — Já decididos     |
-| Chave de terceiro **revogada** se a URL não vier em **30 dias**                                    | doc 03 §8 e doc 08               | Acesso das aplicações de terceiros — Já decididos     |
+| Decisão                                                                                                    | Gravada em                       | Linha do doc 09                                       |
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------- |
+| Gênero e mecânica: arena de duelo por turnos contra adversário do computador                               | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
+| Engine **Phaser.js** confirmada, de sugestão para definição vigente                                        | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
+| Mapa fixo de virtude em atributo, com monotonia e transparência                                            | doc 11 §8.4                      | Mecânica do jogo (App 04) — Já decididos              |
+| Balanceamento é conteúdo do jogo, alterável em trilha, não regra de plataforma                             | doc 11 §8.4                      | Mecânica do jogo (App 04) — Já decididos              |
+| O jogo funciona offline, com catálogo guardado e revalidação a cada reconexão                              | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
+| Duelo local com dois jogadores no mesmo aparelho, sem igualar atributos                                    | doc 03 §6 e doc 08               | Mecânica do jogo (App 04) — Já decididos              |
+| No Ciclo 01, só o Guerreiro(a) é personagem jogável                                                        | doc 03 §6                        | Mecânica do jogo (App 04) — Já decididos              |
+| Catálogo guardado vale por **7 dias** sem nenhuma reconexão                                                | doc 03 §6                        | Validade do catálogo offline do App 04 — Já decididos |
+| **Sem chave a API não responde**; a chave é da aplicação, não do visitante                                 | doc 03 §§1, 1.1 e doc 99 §6 nº 8 | Acesso das aplicações de terceiros — Já decididos     |
+| **Área do Apoiador Desenvolvedor** na vitrine: documentação, documentação da API, formulário e repositório | doc 03 §8, doc 08 e doc 14 §3    | Acesso das aplicações de terceiros — Já decididos     |
+| Chave de terceiro **revogada** se a URL não vier em **30 dias**                                            | doc 03 §8 e doc 08               | Acesso das aplicações de terceiros — Já decididos     |
 
 ## 14. Pendências que permanecem
 

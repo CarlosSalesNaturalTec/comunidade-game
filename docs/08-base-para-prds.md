@@ -314,10 +314,8 @@ Admin**; a entrega é **gratuita e anonimizada**, e o desfecho fica registrado c
 envio **não cria cadastro nem acesso**.
 
 **Área do Apoiador Desenvolvedor:** seção pública da vitrine — **não é uma nona aplicação** —
-para quem quer construir sobre a API. Reúne (a) **assistente de chat com IA** que explica
-proativamente como a plataforma está montada, com **corpus fechado** na documentação e no
-repositório, e que **encerra toda mensagem com uma pergunta de múltipla escolha** sobre o
-próximo passo a conhecer; (b) **link para a documentação** publicada com MkDocs; (c)
+para quem quer construir sobre a API. Reúne (a) **link para a documentação da API** em
+Swagger, publicada pelo núcleo; (b) **link para a documentação** publicada com MkDocs; (c)
 **formulário de solicitação de chave** de acesso à API, na fila de avaliação da App 03; e (d)
 **link para o repositório no GitHub**. Emitida a chave, o solicitante tem **30 dias para
 apresentar a URL** do que construiu; não apresentada, **a chave é revogada**. **Sem chave a

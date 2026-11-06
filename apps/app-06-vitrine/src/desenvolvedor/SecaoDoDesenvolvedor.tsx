@@ -9,9 +9,8 @@ export function SecaoDoDesenvolvedor({ irPara = navegarPara }: PropsDaSecao) {
   return (
     <>
       <p>
-        Quer construir um jogo ou uma aplicação sobre a API? A área reúne o assistente que
-        explica a arquitetura, a documentação, o repositório e o formulário para pedir a sua
-        chave.
+        Quer construir um jogo ou uma aplicação sobre a API? A área reúne a documentação da
+        plataforma e a da API, o repositório e o formulário para pedir a sua chave.
       </p>
       <Botao onClick={() => irPara(CAMINHO_DA_AREA_DO_DESENVOLVEDOR)}>
         Abrir a Área do Apoiador Desenvolvedor
