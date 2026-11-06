@@ -93,7 +93,7 @@ class PrecoDeReferencia(Base, ComAutoria):
     Inteiro, sem casas decimais: o ponto extra é contado em unidades, ao
     contrário da moeda em `NUMERIC(12, 2)` — é essa diferença de tipo que
     barra a conversão silenciosa entre as réguas (`RN-07-24`, design —
-    Decisions 3). O piso de 20 é regra de `recursos/regra.py`, reforçada
+    Decisions 3). O piso de 25 é regra de `recursos/regra.py`, reforçada
     aqui como `CHECK` (`RF-07-44`, `RN-07-30`).
     """
 
@@ -108,7 +108,7 @@ class PrecoDeReferencia(Base, ComAutoria):
     vigencia_fim: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     __table_args__ = (
-        CheckConstraint("preco_em_pontos_extras >= 20", name="ck_preco_de_referencia_piso_minimo"),
+        CheckConstraint("preco_em_pontos_extras >= 25", name="ck_preco_de_referencia_piso_minimo"),
         CheckConstraint(
             "vigencia_fim IS NULL OR vigencia_fim >= vigencia_inicio",
             name="ck_preco_de_referencia_fim_apos_ou_igual_ao_inicio",

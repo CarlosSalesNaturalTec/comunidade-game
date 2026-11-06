@@ -3,6 +3,9 @@ from datetime import UTC, datetime, timedelta
 
 from nucleo.aulas.modelo import ModoDeComprovacao, Presenca
 from nucleo.personas.modelo import Papel
+from nucleo.ponto_extra.modelo import PontoExtra
+from nucleo.ponto_extra.regra import creditar_ponto_extra, debitar_ponto_extra
+from nucleo.pontuacao.modelo import PontoRegular
 from nucleo.trilhas.modelo import FormatoDeAtividade
 
 MOMENTO_DO_FATO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
@@ -695,3 +698,141 @@ def test_papel_sem_a_operacao_e_recusado_em_minhas_turmas(
     )
 
     assert resposta.status_code == 403
+
+
+def _contas_de_extra(sessao, guerreiro):
+    conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro.id).first()
+    return (0, 0) if conta is None else (conta.acumulado, conta.saldo_disponivel)
+
+
+def _registrar(cliente, aula, guerreiro, headers, modo="confirmacao", momento=MOMENTO_DO_FATO):
+    return cliente.post(
+        f"/v1/aulas/{aula.id}/presencas",
+        json={
+            "guerreiro_id": str(guerreiro.id),
+            "modo": modo,
+            "momento_do_fato": momento.isoformat(),
+        },
+        headers=headers,
+    )
+
+
+def _anular(cliente, aula, id_da_presenca, headers):
+    return cliente.post(
+        f"/v1/aulas/{aula.id}/presencas/{id_da_presenca}/anulacao",
+        json={"motivo": "Reconhecimento apontou a pessoa errada."},
+        headers=headers,
+    )
+
+
+def test_presenca_credita_cinco_extras_nos_dois_modos(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula, sessao
+):
+    """`RF-01-82`: cenários "Presença por reconhecimento credita 5 extras" e
+    "Presença por confirmação credita 5 extras" — nenhum ponto regular."""
+    chave, _ = criar_chave(aplicacao="app-01-aula-presencial")
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    reconhecido = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    confirmado = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    assert _registrar(cliente, aula, reconhecido, headers, modo="reconhecimento").status_code == 201
+    assert _registrar(cliente, aula, confirmado, headers).status_code == 201
+
+    assert _contas_de_extra(sessao, reconhecido) == (5, 5)
+    assert _contas_de_extra(sessao, confirmado) == (5, 5)
+    assert sessao.query(PontoRegular).filter_by(guerreiro_id=reconhecido.id).count() == 0
+    presenca = sessao.query(Presenca).filter_by(guerreiro_id=reconhecido.id).one()
+    assert presenca.pontos_extras_creditados == 5
+
+
+def test_reenvio_nao_credita_duas_vezes(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula, sessao
+):
+    """`RF-01-82`: cenário "O reenvio da mesma presença não credita duas vezes"."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    _registrar(cliente, aula, guerreiro, headers)
+    _registrar(cliente, aula, guerreiro, headers)
+
+    assert _contas_de_extra(sessao, guerreiro) == (5, 5)
+
+
+def test_anulacao_estorna_e_a_presenca_correta_credita_de_novo(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula, sessao
+):
+    """`RF-01-83`, `RN-01-64`: cenários "A anulação estorna os extras da
+    presença" e "A presença correta, depois da anulação, credita de novo"."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    errada = _registrar(cliente, aula, guerreiro, headers).json()["id"]
+    assert _anular(cliente, aula, errada, headers).status_code == 201
+    assert _contas_de_extra(sessao, guerreiro) == (0, 0)
+
+    correta = _registrar(cliente, aula, guerreiro, headers, momento=MOMENTO_DO_FATO + timedelta(1))
+    assert correta.status_code == 201
+    assert _contas_de_extra(sessao, guerreiro) == (5, 5)
+
+
+def test_anulacao_com_saldo_ja_trocado_e_gravada_e_para_em_zero(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula, sessao
+):
+    """`RN-01-64`: a anulação nunca é recusada por falta de saldo."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    id_da_presenca = _registrar(cliente, aula, guerreiro, headers).json()["id"]
+    debitar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=3)
+    sessao.commit()
+
+    assert _anular(cliente, aula, id_da_presenca, headers).status_code == 201
+    assert _contas_de_extra(sessao, guerreiro) == (0, 0)
+
+
+def test_presenca_anterior_a_regra_nao_estorna(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula, sessao
+):
+    """`RN-01-65`: cenário "Presença anterior à regra não estorna"."""
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
+    antiga = Presenca(
+        aula_id=aula.id,
+        guerreiro_id=guerreiro.id,
+        modo=ModoDeComprovacao.confirmacao,
+        confirmador_id=admin.id,
+        momento_do_fato=MOMENTO_DO_FATO,
+        autor_id=admin.id,
+        papel_do_autor=admin.papel.value,
+        pontos_extras_creditados=0,
+    )
+    sessao.add(antiga)
+    sessao.commit()
+
+    assert _anular(cliente, aula, antiga.id, headers).status_code == 201
+    assert _contas_de_extra(sessao, guerreiro) == (10, 10)

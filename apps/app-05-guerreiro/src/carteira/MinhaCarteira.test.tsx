@@ -88,6 +88,11 @@ describe("carteira de pontos extras", () => {
     expect(await screen.findByText(/30 pontos extras/i)).toBeInTheDocument();
     expect(screen.getByText(/18 pontos extras/i)).toBeInTheDocument();
     expect(screen.queryByText(/48 pontos extras/i)).not.toBeInTheDocument();
+    // `RN-01-64`: o acumulado só cai pelo estorno da presença anulada, e a
+    // tela não promete que ele "só cresce" — promete o que vale, que a troca
+    // não o diminui.
+    expect(screen.getByText(/trocar não diminui o acumulado/i)).toBeInTheDocument();
+    expect(screen.queryByText(/só cresce/i)).not.toBeInTheDocument();
   });
 
   it("diz que a divulgação está autorizada quando o responsável concedeu", async () => {

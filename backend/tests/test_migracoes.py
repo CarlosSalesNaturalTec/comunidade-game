@@ -157,3 +157,84 @@ def test_um_dsn_com_porcento_nao_derruba_a_migracao(banco_vazio, monkeypatch):
     finally:
         motor.dispose()
         obter_configuracao.cache_clear()
+
+
+def test_a_subida_do_piso_eleva_so_o_preco_vigente_abaixo_de_25(banco_vazio, monkeypatch):
+    """`RF-07-50`, `RF-07-43`: a migração encerra a vigência aberta abaixo de
+    25 e abre a de 25 na data da entrega; a de 40 não muda, e a consulta por
+    data anterior segue lendo o preço antigo (design — decisão 5)."""
+    configuracao = _configuracao_do_alembic(banco_vazio, monkeypatch)
+    command.upgrade(configuracao, "e7d3c4f5a6b7")
+
+    barato, caro, autor = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+    motor = sa.create_engine(banco_vazio)
+    try:
+        with motor.begin() as conexao:
+            conexao.execute(
+                sa.text("INSERT INTO persona (id, papel) VALUES (:autor, 'admin')"),
+                {"autor": autor},
+            )
+            for tipo in (barato, caro):
+                conexao.execute(
+                    sa.text(
+                        "INSERT INTO tipo_de_recurso (id, nome, natureza, unidade, autor_id, "
+                        "papel_do_autor) VALUES (:tipo, :nome, 'consumivel', 'unidade', "
+                        ":autor, 'admin')"
+                    ),
+                    {"tipo": tipo, "nome": f"Tipo {tipo.hex[:6]}", "autor": autor},
+                )
+            for tipo, preco in ((barato, 20), (caro, 40)):
+                conexao.execute(
+                    sa.text(
+                        "INSERT INTO preco_de_referencia (id, tipo_de_recurso_id, "
+                        "preco_em_pontos_extras, vigencia_inicio, autor_id, papel_do_autor) "
+                        "VALUES (gen_random_uuid(), :tipo, :preco, DATE '2026-01-01', "
+                        ":autor, 'admin')"
+                    ),
+                    {"tipo": tipo, "preco": preco, "autor": autor},
+                )
+
+        command.upgrade(configuracao, "head")
+
+        with motor.connect() as conexao:
+            linhas = conexao.execute(
+                sa.text(
+                    "SELECT tipo_de_recurso_id, preco_em_pontos_extras, vigencia_inicio, "
+                    "vigencia_fim, papel_do_autor, CURRENT_DATE AS hoje "
+                    "FROM preco_de_referencia ORDER BY tipo_de_recurso_id, vigencia_inicio"
+                )
+            ).all()
+            do_barato = [linha for linha in linhas if linha.tipo_de_recurso_id == barato]
+            do_caro = [linha for linha in linhas if linha.tipo_de_recurso_id == caro]
+
+            assert [linha.preco_em_pontos_extras for linha in do_barato] == [20, 25]
+            antigo, novo = do_barato
+            assert antigo.vigencia_fim == antigo.hoje
+            assert novo.vigencia_inicio == antigo.hoje and novo.vigencia_fim is None
+            assert novo.papel_do_autor == "migracao"
+            assert [(linha.preco_em_pontos_extras, linha.vigencia_fim) for linha in do_caro] == [
+                (40, None)
+            ]
+
+            vigente_antes = conexao.execute(
+                sa.text(
+                    "SELECT preco_em_pontos_extras FROM preco_de_referencia "
+                    "WHERE tipo_de_recurso_id = :tipo AND vigencia_inicio <= DATE '2026-02-01' "
+                    "AND (vigencia_fim IS NULL OR vigencia_fim > DATE '2026-02-01')"
+                ),
+                {"tipo": barato},
+            ).scalar_one()
+            assert vigente_antes == 20
+
+        with pytest.raises(sa.exc.IntegrityError), motor.begin() as conexao:
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO preco_de_referencia (id, tipo_de_recurso_id, "
+                    "preco_em_pontos_extras, vigencia_inicio, autor_id, papel_do_autor) "
+                    "VALUES (gen_random_uuid(), :tipo, 24, CURRENT_DATE, :autor, 'admin')"
+                ),
+                {"tipo": caro, "autor": autor},
+            )
+    finally:
+        motor.dispose()
+        obter_configuracao.cache_clear()

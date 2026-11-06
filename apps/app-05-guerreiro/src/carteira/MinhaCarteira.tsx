@@ -73,8 +73,8 @@ export function MinhaCarteira() {
             <strong>Saldo disponível:</strong> {pontos.saldo_disponivel} pontos extras
           </p>
           <Aviso tipo="andamento">
-            O acumulado só cresce — é o seu histórico inteiro. Quem dá para trocar é o saldo
-            disponível.
+            Trocar não diminui o acumulado — é o seu histórico inteiro. Quem dá para trocar é o
+            saldo disponível.
           </Aviso>
         </div>
       )}

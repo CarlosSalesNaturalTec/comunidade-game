@@ -662,7 +662,7 @@ o nível 5 de sustento**, que deixa de exigir virar Mestre.
   dinheiro, mas trava a página pública do Apoiador que doou material.
 - **Catálogo de recompensas por marco** (documento 09): o que o Apoiador pode oferecer como
   recompensa de desafio extra convive com o catálogo do Ciclo 01, ainda não fechado.
-- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
+- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
   estão decididos; os preços por tipo são cadastro da gestão. **Trava** o `RF-14-77` na
   prática, não no desenho.
 - **Nível 5 de sustento** (documento 09): as duas vias do Multiplicador — virou Mestre e aporte

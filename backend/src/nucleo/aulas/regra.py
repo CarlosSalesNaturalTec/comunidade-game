@@ -9,6 +9,11 @@ from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from ..comunidades.regra import abrir_vinculo_do_mestre, comunidades_do_mestre
 from ..erros import ErroDeValidacao, PermissaoNegada, PresencaJaAnulada
 from ..personas.modelo import Papel, Persona
+from ..ponto_extra.regra import (
+    PONTOS_EXTRAS_DA_PRESENCA,
+    creditar_ponto_extra,
+    estornar_ponto_extra_da_presenca,
+)
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..reservas.regra import liberar_reservas_da_aula, tentar_reservar_recursos
@@ -293,9 +298,13 @@ def registrar_presenca(
         momento_do_fato=momento_do_fato,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
+        pontos_extras_creditados=PONTOS_EXTRAS_DA_PRESENCA,
     )
     sessao.add(presenca)
     sessao.flush()
+    # A presença nova rende 5 extras na mesma transação; o reenvio, que
+    # devolve a existente acima, não credita de novo (`RF-01-82`).
+    creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=PONTOS_EXTRAS_DA_PRESENCA)
     return presenca
 
 
@@ -322,4 +331,10 @@ def anular_presenca(
     presenca.anulada_por_id = operador.id
     presenca.motivo_da_anulacao = motivo
     sessao.flush()
+    # Fato desfeito: estorna o que a presença creditou, na mesma transação;
+    # a anterior à regra creditou zero e não toca o ponto extra (`RF-01-83`,
+    # `RN-01-64`, `RN-01-65`).
+    estornar_ponto_extra_da_presenca(
+        sessao, guerreiro_id=presenca.guerreiro_id, valor=presenca.pontos_extras_creditados
+    )
     return presenca

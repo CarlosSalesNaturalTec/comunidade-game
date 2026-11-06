@@ -1309,7 +1309,7 @@ def criar_preco_de_referencia(sessao):
     def _criar(
         autor: Persona,
         tipo: TipoDeRecurso,
-        preco_em_pontos_extras: int = 20,
+        preco_em_pontos_extras: int = 25,
         vigencia_inicio: date | None = None,
         vigencia_fim: date | None = None,
     ) -> PrecoDeReferencia:

@@ -54,7 +54,8 @@ aqui** — o que este PRD define é como a criança as enxerga e as opera.
 - **Criação original**: entrega na culminância e **portfólio** das criações validadas.
 - **Progresso**: pontos, níveis 1 a 5 por trilha ou poder, badges e recompensas conquistadas
   nos marcos.
-- **Carteira de pontos extras**: o acumulado, que só cresce, e o saldo disponível para troca.
+- **Carteira de pontos extras**: o acumulado, que a troca não diminui, e o saldo disponível
+  para troca.
 - **Catálogo avulso** da comunidade, com preço em pontos extras, estoque e histórico das
   trocas já feitas — a troca em si acontece no encontro presencial, no App 01.
 - **Ranking** da comunidade, por trilha ou poder, apenas com pontos regulares.
@@ -671,7 +672,7 @@ para o apoio escolar.
 
 - **Catálogo de qual marco entrega qual recompensa** no Ciclo 01: a regra está decidida, o
   catálogo não. **Trava** o `RF-05-45` na prática, não no desenho.
-- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
+- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
   estão decididos; os preços por tipo são cadastro da gestão e dependem do calendário do
   Ciclo 01. **Trava** o `RF-05-83` na prática, não no desenho.
 
