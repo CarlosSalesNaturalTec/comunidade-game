@@ -41,7 +41,8 @@ Regras estruturais:
 1. **Só a realização gera pontos regulares.** Eles nascem exclusivamente de atividades e
    desafios propostos por Mestres e da coleta de dados do território — nunca de presença
    passiva e nunca de dentro do jogo digital. Os **pontos extras** têm fontes próprias (§5) e
-   dependem sempre de um ato humano de validação.
+   dependem sempre de um ato humano de validação — a presença registrada na aula conta como
+   tal, por reconhecimento ou por confirmação.
 2. **A acumulação é por trilha ou poder**, não global — e o **nível vem do percurso da
    trilha**, não do saldo acumulado (§6).
 3. **Todo reflexo público é derivado, nunca editado à mão**: o que aparece na vitrine, nos
@@ -286,6 +287,7 @@ Tabela única das fontes de pontos da plataforma:
 | **Batalha**                                                 | 10 por disputar, +10 à equipe vencedora, +5 ao melhor desempenho na telemetria | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
 | Badge de conduta (ex.: Guardião do Acervo)                  | 20 + **20 extras** + badge, uma vez por ciclo                                  | Regular **e Extra**                                                                         | Mestre/gestão                              |
 | **Conservação e uso do bem recebido** (livro, camisa, kit)  | 1 por item apresentado, por encontro presencial                                | **Extra** — computado isoladamente                                                          | Mestre, a pedido do Guerreiro(a) na aula   |
+| **Presença registrada em aula presencial**                  | 5, uma vez por aula                                                            | **Extra** — computado isoladamente                                                          | Automático (registro da presença)          |
 | **Valorizar a criação dos colegas e cuidar dos mais novos** | 5, uma vez por encontro presencial                                             | **Extra** — computado isoladamente                                                          | Mestre, ao observar                        |
 | **Pactuação do Código de Conduta** da comunidade            | 10, uma vez por ciclo                                                          | **Extra** — computado isoladamente                                                          | Mestre/gestão, ao registrar o código       |
 | **Desafio extra** de Apoiador ou de Mestre                  | Definidos no desafio, **até 10**                                               | **Extra** — computado isoladamente                                                          | Automático na conclusão validada           |
@@ -294,10 +296,10 @@ Tabela única das fontes de pontos da plataforma:
 
 Duas naturezas de saldo, que nunca se confundem:
 
-| Saldo                | O que é                                                                                               | Regra                                                                                                |
-| -------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Pontos regulares** | Da progressão nas trilhas e poderes                                                                   | Alimentam níveis e ranking. **Nunca se gastam**                                                      |
-| **Pontos extras**    | Do mérito, do auxílio aos colegas, do cuidado com o que recebeu, de desafios extras e do protagonismo | Computados isoladamente; não alimentam níveis; os de desafio são rastreados no histórico do Apoiador |
+| Saldo                | O que é                                                                                                            | Regra                                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| **Pontos regulares** | Da progressão nas trilhas e poderes                                                                                | Alimentam níveis e ranking. **Nunca se gastam**                                                      |
+| **Pontos extras**    | Da presença, do mérito, do auxílio aos colegas, do cuidado com o que recebeu, de desafios extras e do protagonismo | Computados isoladamente; não alimentam níveis; os de desafio são rastreados no histórico do Apoiador |
 
 **Ponto regular é percurso; ponto extra é caráter.** O regular vem de avançar na trilha; o
 extra vem do que se faz além dela — cuidar, colaborar, propor. É o que separa as duas naturezas
@@ -321,10 +323,10 @@ esses dois, ele só cresce.
 
 **Ponto extra tem duas contas**, que nunca se confundem:
 
-| Conta                | O que é                                       | Comportamento                                                                                       |
-| -------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **Acumulado**        | Tudo o que o Guerreiro(a) já ganhou em extras | **Nunca decresce.** É o que a vitrine, os cards, o ranking, o histórico do Apoiador e o App 04 leem |
-| **Saldo disponível** | O que ainda não foi trocado                   | Debita na troca por recompensa avulsa; nunca fica negativo                                          |
+| Conta                | O que é                                       | Comportamento                                                                                                                            |
+| -------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Acumulado**        | Tudo o que o Guerreiro(a) já ganhou em extras | **Nunca decresce**, salvo o estorno da presença anulada. É o que a vitrine, os cards, o ranking, o histórico do Apoiador e o App 04 leem |
+| **Saldo disponível** | O que ainda não foi trocado                   | Debita na troca por recompensa avulsa; nunca fica negativo                                                                               |
 
 Trocar **não enfraquece o personagem** no App 04 nem apaga histórico: o jogo lê o acumulado,
 não o saldo, e segue **sem debitar nada** (§8.4).
@@ -342,6 +344,12 @@ precisão do Caçador, acertos absorvidos sem penalidade do Defensor —, declar
 cadastro da batalha, e o melhor de cada papel na partida leva os 5 pontos. Papéis diferentes
 não disputam a mesma régua, e **batalha sem telemetria não distribui o +5**: ficam de pé os 10
 por disputar e os 10 da equipe vencedora.
+
+**A presença rende 5 extras, e a anulação os estorna.** Cada presença registrada em aula
+presencial credita 5 pontos extras, uma vez por aula, qualquer que seja o modo de comprovação.
+Anulada pelo Admin, a presença é **fato desfeito**: o estorno tira os 5 do acumulado e do saldo
+disponível, que para em zero se já foi trocado. Presença registrada antes de 2026-11-06 não
+rende nem estorna.
 
 **Cuidar do que recebeu pontua, e quem pede é o Guerreiro(a).** Apresentar ao Mestre, no
 encontro presencial, o livro, a camisa, o kit ou outro bem recebido **em bom estado e em uso**

@@ -338,8 +338,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     e **nunca é trocado por recompensa**; debita apenas por fato desfeito — ocorrência de
     conduta lançada e estorno de registro de coleta invalidado —, sem ficar negativo e sem
     derrubar nível ou badge. O extra tem **duas contas** — o **acumulado**, que só
-    cresce e é o que as superfícies públicas leem, e o **saldo disponível**, que debita na
-    troca e **nunca fica negativo**. A troca alcança **só a recompensa avulsa** do catálogo:
+    cresce, salvo o estorno da presença anulada, e é o que as superfícies públicas leem, e o
+    **saldo disponível**, que debita na troca e **nunca fica negativo**. A troca alcança **só a
+    recompensa avulsa** do catálogo:
     **recompensa de marco jamais é comprada**. O preço em pontos **não deriva** do valor em
     moedas nem em reais.
 24. **As oito aplicações têm uma identidade visual só**, com dois temperamentos — Operação e
