@@ -89,9 +89,18 @@ function ProducaoEntregue({
           para conferir antes de julgar.
         </p>
       )}
-      {entregue.comprovacao === null && !entregue.tem_arquivo && (
-        <p>O envio do arquivo ainda não concluiu.</p>
-      )}
+      {/* Sem texto nem arquivo, a tela diz o que de fato aconteceu, e nunca
+          um envio em andamento que não existe (`RF-09-132`, `RF-05-93`). */}
+      {entregue.comprovacao === null &&
+        !entregue.tem_arquivo &&
+        (entregue.forma === null ? (
+          <p>Este desafio não pedia comprovação quando foi declarado.</p>
+        ) : (
+          <p>
+            O arquivo não chegou. O Guerreiro(a) ainda pode enviá-lo pela tela da missão até
+            você julgar.
+          </p>
+        ))}
     </div>
   );
 }

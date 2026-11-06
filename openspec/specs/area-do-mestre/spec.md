@@ -986,8 +986,11 @@ conforme a forma dela: o corpo escrito e o endereço como texto, e a **imagem**,
 **vídeo** exibidos ou tocados na própria bancada, buscando os bytes do núcleo. O **arquivo** que
 não se exibe SHALL vir com o controle de abri-lo. A declaração de **entrega no encontro** SHALL
 ser dita como tal — que o Guerreiro(a) vai entregar presencialmente —, e NEVER SHALL ser
-apresentada como entrega faltando. A mídia que **não carrega** NEVER SHALL impedir o
-julgamento: a tela SHALL dizer que não abriu e seguir permitindo julgar. (`RF-09-26`,
+apresentada como entrega faltando. A declaração **sem texto nem arquivo** SHALL dizer o que
+de fato aconteceu: no prático **sem forma declarada**, que nada foi pedido; na forma em
+**mídia**, que o arquivo **não chegou** e que o Guerreiro(a) ainda pode enviá-lo até o
+julgamento — e NEVER SHALL afirmar envio em andamento que não existe. A mídia que **não
+carrega** NEVER SHALL impedir o julgamento: a tela SHALL dizer que não abriu e seguir permitindo julgar. (`RF-09-26`,
 `RF-09-132`, `RF-09-130`, `RF-05-93`, `RF-05-13`, `RF-05-14`)
 
 #### Scenario: A lista traz o que espera julgamento
@@ -1027,6 +1030,18 @@ julgamento: a tela SHALL dizer que não abriu e seguir permitindo julgar. (`RF-0
 
 - **WHEN** o Mestre abre a bancada dos desafios práticos
 - **THEN** nenhuma declaração de trilha de que ele não é autor é listada
+
+#### Scenario: Prático sem forma declarada, declarado sem comprovação
+
+- **WHEN** a pendência é de um prático sem forma declarada e não traz texto nem arquivo
+- **THEN** a tela diz que o desafio não pedia comprovação, e os controles de julgamento seguem
+  disponíveis
+
+#### Scenario: Mídia cujo arquivo não chegou
+
+- **WHEN** a pendência é de um prático em mídia e não traz arquivo nem entrega no encontro
+- **THEN** a tela diz que o arquivo não chegou e que o Guerreiro(a) ainda pode enviá-lo, sem
+  dizer que um envio está em andamento
 
 ### Requirement: A App 09 mostra ao Mestre autor as criações originais a validar
 

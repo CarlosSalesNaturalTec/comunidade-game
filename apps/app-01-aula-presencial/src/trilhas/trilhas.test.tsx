@@ -908,9 +908,9 @@ function missaoNoPercurso(
 
 const QUIZ_DO_DESBLOQUEIO: trilhaApi.DesafioDeDesbloqueio = {
   tipo: "quiz",
-  desafio_pratico_forma_de_comprovacao: null,
-  desafio_pratico_criterio_de_aceite: null,
-  desafio_pratico_titulo_curto: null,
+  forma_de_comprovacao: null,
+  criterio_de_aceite: null,
+  titulo_curto: null,
   enunciado: null,
   perguntas: [
     {
@@ -1403,9 +1403,9 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
     const usuario = await abrirMissaoComDesafio({
       desafio_de_desbloqueio: {
         tipo: "pratico",
-        desafio_pratico_forma_de_comprovacao: null,
-        desafio_pratico_criterio_de_aceite: null,
-        desafio_pratico_titulo_curto: null,
+        forma_de_comprovacao: null,
+        criterio_de_aceite: null,
+        titulo_curto: null,
         enunciado: "Monte o robô e mostre ao Mestre.",
         perguntas: null,
       },
@@ -1424,9 +1424,9 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
     tipo: "pratico",
     enunciado: "Monte o robô e grave um vídeo.",
     perguntas: null,
-    desafio_pratico_forma_de_comprovacao: "video",
-    desafio_pratico_criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
-    desafio_pratico_titulo_curto: "Robô de sucata",
+    forma_de_comprovacao: "video",
+    criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
+    titulo_curto: "Robô de sucata",
   };
 
   it("entrega a comprovação pelo aparelho da aula, com o critério e o aviso", async () => {
@@ -1443,6 +1443,9 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
     expect(screen.getByText(/fica guardado/i)).toBeInTheDocument();
     // A exigência não divergiu: sem o arquivo, não se declara que cumpriu.
     expect(screen.getByRole("button", { name: /já cumpri/i })).toBeDisabled();
+    // E o arquivo se escolhe no próprio aparelho da aula — o controle que
+    // faltava quando a tela lia a forma por outro nome.
+    expect(screen.getByLabelText(/escolha o arquivo/i)).toBeInTheDocument();
   });
 
   it("oferece a entrega ao Mestre no encontro, como a App 05", async () => {

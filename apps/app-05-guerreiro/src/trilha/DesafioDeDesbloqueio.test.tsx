@@ -19,9 +19,9 @@ function pergunta(
 
 const QUIZ_DE_DUAS: trilhaApi.DesafioDeDesbloqueio = {
   tipo: "quiz",
-  desafio_pratico_forma_de_comprovacao: null,
-  desafio_pratico_criterio_de_aceite: null,
-  desafio_pratico_titulo_curto: null,
+  forma_de_comprovacao: null,
+  criterio_de_aceite: null,
+  titulo_curto: null,
   enunciado: null,
   perguntas: [pergunta("p1", "Quanto é 1 + 1?"), pergunta("p2", "Quanto é 2 + 2?", null, 2)],
 };
@@ -127,9 +127,9 @@ describe("desafio de desbloqueio", () => {
     });
     await renderizar({
       tipo: "pratico",
-      desafio_pratico_forma_de_comprovacao: null,
-      desafio_pratico_criterio_de_aceite: null,
-      desafio_pratico_titulo_curto: null,
+      forma_de_comprovacao: null,
+      criterio_de_aceite: null,
+      titulo_curto: null,
       enunciado: "Monte o robô e mostre ao Mestre.",
       perguntas: null,
     });
@@ -145,9 +145,9 @@ describe("desafio de desbloqueio", () => {
 describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
   const QUIZ_COM_IMAGEM: trilhaApi.DesafioDeDesbloqueio = {
     tipo: "quiz",
-    desafio_pratico_forma_de_comprovacao: null,
-    desafio_pratico_criterio_de_aceite: null,
-    desafio_pratico_titulo_curto: null,
+    forma_de_comprovacao: null,
+    criterio_de_aceite: null,
+    titulo_curto: null,
     enunciado: null,
     perguntas: [
       pergunta("p1", "Quanto é 1 + 1?"),
@@ -222,9 +222,9 @@ describe("a entrega da comprovação do prático na App 05", () => {
     tipo: "pratico",
     enunciado: "Monte o robô e grave um vídeo.",
     perguntas: null,
-    desafio_pratico_forma_de_comprovacao: "video",
-    desafio_pratico_criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
-    desafio_pratico_titulo_curto: "Robô de sucata",
+    forma_de_comprovacao: "video",
+    criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
+    titulo_curto: "Robô de sucata",
   };
 
   afterEach(() => {
@@ -285,9 +285,9 @@ describe("o veredito do Mestre na tela do prático", () => {
     tipo: "pratico",
     enunciado: "Monte o robô e conte como fez.",
     perguntas: null,
-    desafio_pratico_forma_de_comprovacao: "texto",
-    desafio_pratico_criterio_de_aceite: "Conte como montou, sem citar nome de colega.",
-    desafio_pratico_titulo_curto: "Robô de sucata",
+    forma_de_comprovacao: "texto",
+    criterio_de_aceite: "Conte como montou, sem citar nome de colega.",
+    titulo_curto: "Robô de sucata",
   };
 
   const ENTREGUE: trilhaApi.ComprovacaoEntregue = {

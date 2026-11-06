@@ -118,9 +118,9 @@ describe("missão no percurso", () => {
         julgamento: null,
         desafio_de_desbloqueio: {
           tipo: "quiz",
-          desafio_pratico_forma_de_comprovacao: null,
-          desafio_pratico_criterio_de_aceite: null,
-          desafio_pratico_titulo_curto: null,
+          forma_de_comprovacao: null,
+          criterio_de_aceite: null,
+          titulo_curto: null,
           enunciado: null,
           perguntas: [
             {

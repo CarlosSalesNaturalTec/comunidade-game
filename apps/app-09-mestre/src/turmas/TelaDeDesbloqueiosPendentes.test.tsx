@@ -341,3 +341,31 @@ describe("os dois vereditos e o motivo (RF-09-133, RF-09-134, RN-09-52, RN-09-53
     expect(screen.getByText("Guerreira Ana")).toBeInTheDocument();
   });
 });
+
+describe("a declaração sem texto nem arquivo diz o que aconteceu (RF-09-132, RF-05-93)", () => {
+  it("prático sem forma declarada: diz que nada foi pedido, e julgar segue disponível", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarDesbloqueiosPendentes").mockResolvedValue([
+      pendente({ comprovacao_entregue: entregue({ forma: null, comprovacao: null }) }),
+    ]);
+
+    render(<TelaDeDesbloqueiosPendentes />);
+
+    expect(await screen.findByText(/não pedia comprovação/i)).toBeInTheDocument();
+    expect(screen.queryByText(/ainda não concluiu/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^julgar$/i })).toBeInTheDocument();
+  });
+
+  it("mídia cujo arquivo não chegou: diz que não chegou, sem envio em andamento", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarDesbloqueiosPendentes").mockResolvedValue([
+      pendente({ comprovacao_entregue: entregue({ forma: "imagem", comprovacao: null }) }),
+    ]);
+
+    render(<TelaDeDesbloqueiosPendentes />);
+
+    expect(await screen.findByText(/o arquivo não chegou/i)).toBeInTheDocument();
+    expect(screen.queryByText(/ainda não concluiu/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^julgar$/i })).toBeInTheDocument();
+  });
+});
