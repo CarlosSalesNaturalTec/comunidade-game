@@ -25,7 +25,7 @@ def _preparar(
     criar_ponto_extra,
     criar_aula,
     *,
-    preco=20,
+    preco=25,
     estoque=Decimal("5"),
     lastro=Decimal("10"),
     saldo_disponivel=100,
