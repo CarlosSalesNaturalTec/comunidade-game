@@ -18,8 +18,7 @@ export const ENDERECOS_INDEXAVEIS = [
 ] as const;
 
 /** Formulário e Área do Apoiador Desenvolvedor: ficam de fora do
- * `sitemap.xml`. Não é o que se busca, e o assistente consome modelo pago a
- * cada pergunta (`RN-03-38`). */
+ * `sitemap.xml`: não é o que se busca. */
 export const ENDERECOS_FORA_DO_SITEMAP = [
   "/participar",
   "/solicitar-dados",

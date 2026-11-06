@@ -44,8 +44,8 @@ mensageria de terceiros. O documento 03 é a fonte da arquitetura.
 
 A API é aberta a aplicações de terceiros, sob **contrato de somente leitura**: nada que se
 construa sobre ela escreve no domínio, e a chave não amplia direito nenhum. Quem quer construir
-pede a chave na **Área do Apoiador Desenvolvedor**, seção pública da vitrine, que reúne um
-assistente de chat sobre esta documentação, os links da documentação e do repositório e o
+pede a chave na **Área do Apoiador Desenvolvedor**, seção pública da vitrine, que reúne
+o link desta documentação, o da documentação da API em Swagger, o do repositório e o
 formulário do pedido. Emitida a chave, há **30 dias para apresentar a URL** do que foi
 construído; não apresentada, a chave é revogada — e pedir outra é sempre possível.
 

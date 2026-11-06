@@ -38,12 +38,6 @@ const DADOS_DA_VITRINE: DadoDaVitrine[] = [
     prazo: "Enquanto a chave existir",
   },
   {
-    dado: "Conversa com o assistente do Desenvolvedor",
-    deQuem: "Quem conversa com o assistente",
-    paraQue: "Responder a pergunta do momento",
-    prazo: "Não é guardada: some ao fechar a página",
-  },
-  {
     dado: "Avatar, nick e desempenho mostrados na vitrine",
     deQuem: "Guerreiro(a) cujo responsável autorizou",
     paraQue: "Reconhecer o Guerreiro(a) em público",

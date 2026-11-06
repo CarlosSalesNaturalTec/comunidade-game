@@ -110,28 +110,4 @@ describe("solicitação de chave e apresentação da URL", () => {
       expect(screen.getByText("O prazo de apresentação desta chave venceu.")).toBeVisible(),
     );
   });
-
-  it("com o assistente fora do ar a área segue utilizável (RF-03-72)", async () => {
-    vi.spyOn(desenvolvedor, "perguntarAoAssistente").mockRejectedValue(
-      new ErroDaApi(503, {
-        codigo: "assistente_do_desenvolvedor_indisponivel",
-        mensagem: "O assistente não respondeu agora e voltará.",
-      }),
-    );
-    vi.spyOn(desenvolvedor, "enviarSolicitacaoDeChave").mockResolvedValue(REGISTRO);
-    render(<App />);
-
-    await userEvent.click(
-      screen.getByRole("button", { name: "Como a API se autentica por chave" }),
-    );
-
-    await waitFor(() =>
-      expect(screen.getByText(/O assistente não respondeu agora/)).toBeVisible(),
-    );
-    expect(screen.getByRole("link", { name: /Documentação da plataforma/ })).toBeVisible();
-    expect(screen.getByRole("link", { name: /Repositório no GitHub/ })).toBeVisible();
-
-    await preencherOFormularioDeChave();
-    await waitFor(() => expect(screen.getByText(/Pedido registrado/)).toBeVisible());
-  });
 });

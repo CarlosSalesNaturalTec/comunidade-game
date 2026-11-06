@@ -1,8 +1,7 @@
 import { Aviso, Botao, Moldura } from "comum/react";
 import { CAMINHO_DA_APRESENTACAO_DA_URL } from "../navegacao/caminhos";
 import { navegarPara } from "../navegacao/navegar";
-import { ChatDoDesenvolvedor } from "./ChatDoDesenvolvedor";
-import { URL_DA_DOCUMENTACAO, URL_DO_REPOSITORIO } from "./enderecos";
+import { URL_DA_DOCUMENTACAO, URL_DO_REPOSITORIO, urlDaDocumentacaoDaApi } from "./enderecos";
 import { FormularioDeChave } from "./FormularioDeChave";
 
 interface Props {
@@ -11,12 +10,11 @@ interface Props {
 
 /** Área do Apoiador Desenvolvedor: **seção da vitrine**, pública e sem login,
  * nunca uma nona aplicação (`RN-03-29`). Reúne as quatro coisas do `RF-03-67`
- * — assistente, documentação, formulário de chave e repositório —, os dois
- * prazos (`RF-03-75`) e o que a chave é e não é (`RF-03-76`).
- *
- * As quatro partes são independentes: o assistente fora do ar não derruba
- * nenhuma das outras três (`RF-03-72`). */
+ * — documentação, documentação da API, formulário de chave e repositório —,
+ * os dois prazos (`RF-03-75`) e o que a chave é e não é (`RF-03-76`). Sem
+ * assistente: saiu por decisão do fundador de 2026-11-06. */
 export function AreaDoDesenvolvedor({ irPara = navegarPara }: Props) {
+  const documentacaoDaApi = urlDaDocumentacaoDaApi();
   return (
     <Moldura>
       <div className="cg-vitrine">
@@ -26,7 +24,7 @@ export function AreaDoDesenvolvedor({ irPara = navegarPara }: Props) {
         <h2>Área do Apoiador Desenvolvedor</h2>
         <p>
           Quer construir um jogo ou uma aplicação sobre a API do Comunidade Game? Esta é a
-          porta. Converse com o assistente, leia a documentação, veja o código e peça a sua
+          porta. Leia a documentação da plataforma e a da API, veja o código e peça a sua
           chave.
         </p>
 
@@ -36,8 +34,6 @@ export function AreaDoDesenvolvedor({ irPara = navegarPara }: Props) {
           — nada que você construir escreve no domínio.
         </Aviso>
 
-        <ChatDoDesenvolvedor />
-
         <section aria-labelledby="cg-portas-do-desenvolvedor">
           <h3 id="cg-portas-do-desenvolvedor">Documentação e código</h3>
           <ul>
@@ -46,6 +42,13 @@ export function AreaDoDesenvolvedor({ irPara = navegarPara }: Props) {
                 Documentação da plataforma
               </a>
             </li>
+            {documentacaoDaApi && (
+              <li>
+                <a href={documentacaoDaApi} target="_blank" rel="noreferrer">
+                  Documentação da API (Swagger)
+                </a>
+              </li>
+            )}
             <li>
               <a href={URL_DO_REPOSITORIO} target="_blank" rel="noreferrer">
                 Repositório no GitHub

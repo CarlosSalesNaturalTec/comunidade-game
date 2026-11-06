@@ -129,6 +129,22 @@ def test_openapi_responde_sem_chave(cliente):
     assert resposta.status_code == 200
 
 
+def test_swagger_responde_sem_chave(cliente):
+    """A Área do Apoiador Desenvolvedor aponta esta interface a quem ainda não
+    tem chave (`RF-03-67`, decisão do fundador de 2026-11-06)."""
+    resposta = cliente.get("/docs")
+    assert resposta.status_code == 200
+    assert "swagger" in resposta.text.lower()
+
+
+def test_assistente_do_desenvolvedor_nao_existe_mais(cliente):
+    """Retirado por decisão do fundador de 2026-11-06: a rota some do
+    contrato e responde como qualquer rota inexistente."""
+    assert "/v1/assistente-do-desenvolvedor" not in cliente.get("/openapi.json").json()["paths"]
+    resposta = cliente.post("/v1/assistente-do-desenvolvedor", json={"texto": "Oi"})
+    assert resposta.status_code == 404
+
+
 def test_openapi_nao_serve_dado_de_dominio(cliente):
     """ "guerreiro" é um valor legítimo do enum `Papel`, contrato desta fatia
     (RF-01-19), "aporte" é o aporte declarado na solicitação de

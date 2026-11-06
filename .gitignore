@@ -21,10 +21,6 @@ Thumbs.db
 # Scaffolding de agentes em worktree isolado (Claude Code)
 .claude/worktrees/
 
-# Artefato do corpus do assistente do Desenvolvedor: nasce na esteira, antes
-# do `docker build`, e nunca é versionado (change
-# `2026-09-29-area-do-apoiador-desenvolvedor`, design — decisão 1).
-backend/corpus-do-desenvolvedor.json
 
 # O favicon de cada aplicação é provisionado de `comum/marca/favicon.svg` pelo
 # plugin do Vite, em `dev` e em `build` — arquivo único, nunca sete cópias

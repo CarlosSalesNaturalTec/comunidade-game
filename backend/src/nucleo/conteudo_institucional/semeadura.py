@@ -55,7 +55,7 @@ TEXTO_DE_CONTATOS = (
     "## Construir sobre a plataforma\n\n"
     "O código é aberto e a API pública pode ser consumida por outra aplicação. A seção "
     "“Construir sobre a API” explica como solicitar a chave de aplicação, emitida por um "
-    "Admin, e traz o assistente que responde dúvidas de integração.\n\n"
+    "Admin, e traz a documentação da API.\n\n"
     "## Responsáveis por um Guerreiro ou Guerreira\n\n"
     "O caminho mais curto é a gestão, no encontro presencial. O acompanhamento, a autorização "
     "de divulgação e o desligamento da personalização por IA ficam na Área dos "

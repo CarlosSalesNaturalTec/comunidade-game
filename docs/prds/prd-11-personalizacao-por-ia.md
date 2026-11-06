@@ -59,8 +59,6 @@ recomendação e desliga tudo com um toque, sem que a criança perca uma linha d
 - **Escolha do modelo**: já decidida — por funcionalidade, ao menor custo (documento 03 §1.12).
 - **Auxílio de IA na autoria da trilha** (App 09): já está no PRD-09, e monta estrutura, não
   conteúdo.
-- **Assistente da Área do Apoiador Desenvolvedor**: é da vitrine, PRD-03, e não trata de
-  criança.
 - **Personalização da vitrine**: o visitante não é perfilado, nem por cookie nem por servidor.
 - **Recomendação entre ciclos ou entre comunidades**: no Ciclo 01 há uma comunidade e duas
   trilhas.
