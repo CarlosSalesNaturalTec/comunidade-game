@@ -74,7 +74,7 @@
 
 ## Workflow follow-up
 
-- No `/opsx:archive`, a spec `openspec/specs/assistente-do-desenvolvedor/` fica sem requisito:
-  apagar a pasta.
+- No `/opsx:archive`, `retire_capabilities: true` no `.openspec.yaml` apaga a spec
+  `assistente-do-desenvolvedor`, que fica sem requisito.
 - No PR, avisar o fundador para o Admin revisar o texto publicado de "Construir sobre a
   plataforma" em produção.

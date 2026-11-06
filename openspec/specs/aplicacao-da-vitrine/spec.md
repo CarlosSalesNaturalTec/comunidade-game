@@ -1160,8 +1160,7 @@ acionado. (`RN-03-23`, `RF-03-51`, PRD-03 §11)
 A App 06 SHALL oferecer a **área detalhada** em endereço próprio, explicando em **linguagem
 simples**, para cada dado, **o que a plataforma coleta, de quem, para quê e por quanto tempo**,
 e SHALL declarar que a **vitrine não coleta dado do visitante**: sem login, sem cadastro, sem
-cookie de rastreio e sem perfilamento. SHALL declarar também que a conversa com o assistente do
-Desenvolvedor não é guardada. (`RF-03-52`, `RF-03-53`, `RN-03-22`, PRD-03 §11)
+cookie de rastreio e sem perfilamento. (`RF-03-52`, `RF-03-53`, `RN-03-22`, PRD-03 §11)
 
 #### Scenario: A área detalhada traz a tabela de coleta em linguagem simples
 
@@ -1440,83 +1439,31 @@ linha exibe, e é ela, com a ausência de posição, que impede o pódio. (`RF-0
 A App 06 SHALL oferecer a **Área do Apoiador Desenvolvedor** em endereço próprio, pública e sem
 login, como **seção da vitrine** — nunca uma nona aplicação (`RN-03-29`).
 
-A área SHALL reunir, na mesma tela, as quatro coisas do `RF-03-67`: o **assistente de chat**, o
-**link da documentação** publicada com MkDocs, o **formulário de solicitação de chave** e o
-**link do repositório no GitHub**.
+A área SHALL reunir, na mesma tela, as quatro coisas do `RF-03-67`: o **link da documentação**
+publicada com MkDocs, o **link da documentação da API** — a interface Swagger que o núcleo
+publica fora de `/v1`, aberta e sem chave —, o **formulário de solicitação de chave** e o
+**link do repositório no GitHub** (decisão do fundador de 2026-11-06).
 
 A área NEVER SHALL pedir login, cadastro ou qualquer dado do visitante fora dos campos do
-formulário de chave.
+formulário de chave, e NEVER SHALL oferecer conversa com assistente.
 
 #### Scenario: A área abre com as quatro coisas
 
 - **WHEN** um visitante abre a Área do Apoiador Desenvolvedor
-- **THEN** a tela traz o assistente de chat, o link da documentação, o formulário de chave e o
-  link do repositório, sem pedir login
+- **THEN** a tela traz o link da documentação, o link da documentação da API, o formulário de
+  chave e o link do repositório, sem pedir login
 
-### Requirement: O assistente abre explicando a arquitetura, sem esperar a primeira pergunta
+#### Scenario: O link da documentação da API aponta a interface do núcleo
 
-A primeira mensagem do assistente SHALL chegar **sem que se pergunte nada**, explicando como a
-plataforma está montada — a API, as oito aplicações e o contrato de somente leitura — e
-terminando com a pergunta de múltipla escolha sobre o próximo passo (`RF-03-68`, `RF-03-69`).
+- **WHEN** o visitante aciona o link da documentação da API
+- **THEN** ele abre, em nova aba, a interface Swagger do núcleo configurado para a vitrine, sem
+  chave
 
-Essa abertura SHALL ser **texto da própria aplicação**, e não resposta do modelo: nenhuma
-chamada ao assistente acontece ao abrir a área (`RF-03-81`, decisão do fundador de 2026-09-29). Ela SHALL
-continuar de pé com o assistente fora do ar.
-
-#### Scenario: A primeira mensagem chega sozinha
-
-- **WHEN** o visitante abre a área e não digita nada
-- **THEN** o assistente já apresenta a arquitetura da plataforma e oferece as escolhas do
-  próximo passo
-
-#### Scenario: A abertura não consulta o modelo
+#### Scenario: A área não oferece assistente
 
 - **WHEN** a área abre
-- **THEN** nenhuma consulta ao assistente é enviada ao núcleo antes da primeira pergunta do
-  visitante
-
-### Requirement: Toda mensagem do assistente termina com a escolha do próximo passo
-
-A tela SHALL apresentar, ao fim de **toda** mensagem do assistente, a pergunta de múltipla
-escolha sobre o que conhecer em seguida — inclusive na recusa de assunto fora do corpus e na
-última mensagem de uma conversa longa (`RF-03-69`).
-
-Escolher uma das opções SHALL valer como a próxima pergunta, e o visitante SHALL poder
-perguntar livremente em vez de escolher.
-
-#### Scenario: A escolha conduz a conversa
-
-- **WHEN** o visitante escolhe uma das opções oferecidas
-- **THEN** o assistente aprofunda aquele tópico e oferece a escolha seguinte
-
-#### Scenario: A pergunta livre também é aceita
-
-- **WHEN** o visitante digita a própria pergunta em vez de escolher
-- **THEN** o assistente responde a ela e ainda assim termina com a pergunta de múltipla escolha
-
-### Requirement: A conversa não sobrevive à página, e nada dela é guardado no aparelho
-
-A App 06 NEVER SHALL guardar a conversa com o assistente — nem no servidor, nem no
-armazenamento local, nem em cookie (`RN-03-15`, `RN-03-22`, PRD-03 §8). Recarregar a página
-SHALL perder a conversa inteira.
-
-#### Scenario: Recarregar perde a conversa
-
-- **WHEN** o visitante conversa com o assistente e recarrega a página
-- **THEN** a área volta à mensagem de abertura, e nada da conversa anterior está no aparelho
-
-### Requirement: A área segue utilizável com o assistente fora do ar
-
-Quando o núcleo devolver a indisponibilidade do assistente, a tela SHALL exibir o **aviso de
-que o assistente voltará**, dito como falha do assistente e não como recusa do domínio, e SHALL
-manter acessíveis a **documentação**, o **repositório** e o **formulário de chave**
-(`RF-03-72`, documento 99 §6 invariante 25).
-
-#### Scenario: O assistente fora do ar não derruba a área
-
-- **WHEN** a consulta ao assistente devolve indisponibilidade
-- **THEN** a tela avisa que o assistente voltará e a documentação, o repositório e o formulário
-  de chave continuam acessíveis
+- **THEN** não há chat, mensagem de abertura nem campo de pergunta, e nenhuma consulta a
+  assistente é enviada ao núcleo
 
 ### Requirement: O formulário de chave pede quem é, o contato e o que se pretende construir
 

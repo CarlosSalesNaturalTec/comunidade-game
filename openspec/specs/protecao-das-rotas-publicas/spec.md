@@ -47,19 +47,55 @@ contagem. (`RF-01-55`, 03 §8)
   em 429
 - **THEN** a chamada de leitura seguinte volta a ser processada, sem intervenção humana
 
-### Requirement: O freio por origem atrasa a repetição nas superfícies públicas
+### Requirement: A origem se identifica sem guardar dado do visitante
 
-O núcleo SHALL contar por **origem** as chamadas à consulta por nick exato, aos envios dos
-formulários de solicitação de participação e de solicitação de dados e às **consultas ao
-assistente do Desenvolvedor**, e SHALL recusar com **429** a que exceder o limite daquela
-superfície na janela declarada no documento 03 §8. A
-recusa SHALL informar o tempo de espera. O atraso SHALL crescer a cada repetição, a partir do
-valor inicial e até o teto declarados no documento 03 §8. O freio NEVER SHALL exigir CAPTCHA,
-cadastro ou qualquer dado do visitante. (`RF-01-65`, `RN-01-27`, `RN-03-08`, `RN-03-39`, 03 §8)
+O núcleo SHALL agrupar as chamadas por origem usando o **resumo criptográfico do endereço de
+rede com sal rotativo**, mantido **apenas em memória** e **apenas pela janela** do freio. O
+núcleo NEVER SHALL gravar em banco o endereço de rede, o seu resumo ou qualquer outro dado do
+visitante, e NEVER SHALL usar cookie, rastreador ou identificador persistente para o freio.
+(`RN-01-45`, `RN-01-27`, 03 §8)
 
-A consulta ao assistente do Desenvolvedor é superfície freada porque cada pergunta consome
-modelo pago numa rota aberta a qualquer visitante, sem login (`RN-03-39`, decisão do fundador
-de 2026-09-29). Ela NEVER SHALL dividir contagem com as demais superfícies.
+#### Scenario: Nenhuma tabela recebe a origem
+
+- **WHEN** o freio conta, atrasa e libera uma origem ao longo de várias janelas
+- **THEN** nenhuma linha com o endereço de rede ou o seu resumo é gravada em banco
+
+#### Scenario: O endereço em claro não sobrevive à contagem
+
+- **WHEN** o núcleo agrupa uma chamada por origem
+- **THEN** o que se guarda em memória é o resumo com sal, e não o endereço de rede
+
+#### Scenario: O freio não usa cookie nem identificador persistente
+
+- **WHEN** um visitante chama uma superfície freada
+- **THEN** o núcleo não emite cookie, não pede identificador e não guarda preferência alguma
+  para reconhecê-lo depois
+
+### Requirement: A solicitação de chave não tem freio por origem
+
+O núcleo NEVER SHALL aplicar freio por origem ao envio do formulário de solicitação de chave,
+porque nova solicitação é sempre possível. Essa superfície SHALL permanecer protegida apenas
+pela cota da faixa da chave da aplicação que a serve. (`RN-01-46`, `RN-01-36`, 03 §8)
+
+#### Scenario: Envio repetido de solicitação de chave não é freado por origem
+
+- **WHEN** a mesma origem envia solicitações de chave em número que freria a origem nos
+  formulários de participação ou de dados
+- **THEN** nenhuma delas é recusada por freio de origem
+
+#### Scenario: A solicitação de chave segue sob a cota da chave da aplicação
+
+- **WHEN** a aplicação que serve o formulário de solicitação de chave excede a cota da sua
+  faixa
+- **THEN** a recusa vem da cota, e não do freio por origem
+
+### Requirement: O freio por origem atrasa a repetição na consulta por nick e nos formulários
+
+O núcleo SHALL contar por **origem** a consulta por nick exato e os envios dos formulários de
+participação e de dados, e SHALL recusar com **429**, informando a espera, a que exceder o
+limite da superfície na janela do documento 03 §8, com atraso crescente até o teto ali
+declarado. NEVER SHALL exigir CAPTCHA, cadastro ou dado do visitante. (`RF-01-65`,
+`RN-01-27`, `RN-03-08`)
 
 #### Scenario: Consulta por nick dentro do limite responde
 
@@ -103,56 +139,3 @@ de 2026-09-29). Ela NEVER SHALL dividir contagem com as demais superfícies.
 - **WHEN** uma origem é freada na consulta por nick e, em seguida, envia um formulário de
   participação pela primeira vez
 - **THEN** o envio é processado, porque o limite de cada superfície é contado em separado
-
-#### Scenario: A repetição da pergunta ao assistente encontra o freio
-
-- **WHEN** uma origem excede o limite de consultas ao assistente do Desenvolvedor na janela
-- **THEN** o núcleo responde 429, informa o tempo de espera e nenhuma pergunta vai ao modelo
-
-#### Scenario: O freio do assistente não alcança a solicitação de chave
-
-- **WHEN** uma origem é freada no assistente do Desenvolvedor e, em seguida, envia o formulário
-  de solicitação de chave
-- **THEN** o envio é processado, porque a solicitação de chave não tem freio por origem
-
-### Requirement: A origem se identifica sem guardar dado do visitante
-
-O núcleo SHALL agrupar as chamadas por origem usando o **resumo criptográfico do endereço de
-rede com sal rotativo**, mantido **apenas em memória** e **apenas pela janela** do freio. O
-núcleo NEVER SHALL gravar em banco o endereço de rede, o seu resumo ou qualquer outro dado do
-visitante, e NEVER SHALL usar cookie, rastreador ou identificador persistente para o freio.
-(`RN-01-45`, `RN-01-27`, 03 §8)
-
-#### Scenario: Nenhuma tabela recebe a origem
-
-- **WHEN** o freio conta, atrasa e libera uma origem ao longo de várias janelas
-- **THEN** nenhuma linha com o endereço de rede ou o seu resumo é gravada em banco
-
-#### Scenario: O endereço em claro não sobrevive à contagem
-
-- **WHEN** o núcleo agrupa uma chamada por origem
-- **THEN** o que se guarda em memória é o resumo com sal, e não o endereço de rede
-
-#### Scenario: O freio não usa cookie nem identificador persistente
-
-- **WHEN** um visitante chama uma superfície freada
-- **THEN** o núcleo não emite cookie, não pede identificador e não guarda preferência alguma
-  para reconhecê-lo depois
-
-### Requirement: A solicitação de chave não tem freio por origem
-
-O núcleo NEVER SHALL aplicar freio por origem ao envio do formulário de solicitação de chave,
-porque nova solicitação é sempre possível. Essa superfície SHALL permanecer protegida apenas
-pela cota da faixa da chave da aplicação que a serve. (`RN-01-46`, `RN-01-36`, 03 §8)
-
-#### Scenario: Envio repetido de solicitação de chave não é freado por origem
-
-- **WHEN** a mesma origem envia solicitações de chave em número que freria a origem nos
-  formulários de participação ou de dados
-- **THEN** nenhuma delas é recusada por freio de origem
-
-#### Scenario: A solicitação de chave segue sob a cota da chave da aplicação
-
-- **WHEN** a aplicação que serve o formulário de solicitação de chave excede a cota da sua
-  faixa
-- **THEN** a recusa vem da cota, e não do freio por origem
