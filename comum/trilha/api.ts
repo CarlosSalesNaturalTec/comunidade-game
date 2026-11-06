@@ -79,10 +79,13 @@ export interface DesafioDeDesbloqueio {
   // Os três do prático, declarados pelo Mestre autor: é deles que a criança
   // sabe o que entregar e sob que critério será julgada, e por isso nenhum é
   // segredo dele (`RF-09-129` a `RF-09-131`). No quiz vêm nulos. O título
-  // curto é da vitrine — a tela do desafio não o apresenta.
-  desafio_pratico_forma_de_comprovacao: FormaDeComprovacao | null;
-  desafio_pratico_criterio_de_aceite: string | null;
-  desafio_pratico_titulo_curto: string | null;
+  // curto é da vitrine — a tela do desafio não o apresenta. Os nomes são os
+  // da leitura do percurso (`DesafioDeDesbloqueioSaida`), conferidos pelo
+  // exemplo de `comum/contratos/missao-no-percurso.json`; os `desafio_pratico_*`
+  // são da leitura do Mestre, e lê-los aqui deixava a forma sempre ausente.
+  forma_de_comprovacao: FormaDeComprovacao | null;
+  criterio_de_aceite: string | null;
+  titulo_curto: string | null;
 }
 
 /** O que ficou gravado da entrega, para a tela reapresentá-la em lugar de um

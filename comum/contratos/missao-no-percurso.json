@@ -1,0 +1,27 @@
+{
+  "id": "00000000-0000-4000-8000-000000000001",
+  "titulo": "Missão de Teste",
+  "posicao": 1,
+  "obrigatoria": true,
+  "e_sondagem": false,
+  "desbloqueada": false,
+  "e_proxima": true,
+  "aguardando_mestre": true,
+  "motivo_do_bloqueio": null,
+  "desafio_de_desbloqueio": {
+    "tipo": "pratico",
+    "enunciado": "Monte o robô e mostre ao Mestre.",
+    "perguntas": null,
+    "forma_de_comprovacao": "imagem",
+    "criterio_de_aceite": "Em foto ou vídeo não deve aparecer o rosto da criança.",
+    "titulo_curto": "Robô de sucata"
+  },
+  "comprovacao_entregue": {
+    "forma": "imagem",
+    "comprovacao": null,
+    "entrega_presencial": false,
+    "tem_arquivo": false,
+    "tipo_do_arquivo": null
+  },
+  "julgamento": null
+}

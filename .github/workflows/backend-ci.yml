@@ -4,10 +4,10 @@ on:
   pull_request:
     branches: [main]
     # Markdown de fora: Ruff e pytest não têm o que dizer sobre um README.
-    paths: [backend/**, "!backend/**.md"]
+    paths: [backend/**, "!backend/**.md", comum/contratos/**]
   push:
     branches: [main]
-    paths: [backend/**, "!backend/**.md"]
+    paths: [backend/**, "!backend/**.md", comum/contratos/**]
   workflow_dispatch:
 
 concurrency:

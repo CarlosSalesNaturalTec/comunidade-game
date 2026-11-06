@@ -1,4 +1,6 @@
+import json
 import uuid
+from pathlib import Path
 
 import pytest
 
@@ -2390,6 +2392,42 @@ def test_percurso_devolve_a_comprovacao_entregue_ao_proprio_guerreiro(
     assert corpo["desafio_de_desbloqueio"]["criterio_de_aceite"] == (
         "Em foto ou vídeo não deve aparecer o rosto da criança."
     )
+
+
+EXEMPLO_DO_PERCURSO = (
+    Path(__file__).resolve().parents[2] / "comum" / "contratos" / "missao-no-percurso.json"
+)
+
+
+def test_percurso_serve_os_nomes_do_exemplo_de_contrato(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    """`RF-05-91`, `RF-04-76`: a tela do Guerreiro(a) lê o percurso pelo exemplo
+    de `comum/contratos/`, e os testes dela o importam. Conferir aqui as chaves
+    contra a resposta real faz nome divergente quebrar a suíte — foi a
+    divergência de nome que deixou a forma de comprovação longe da tela."""
+    missao, _, _, cabecalhos, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "imagem",
+    )
+    # Declaração em mídia cujo arquivo não chegou: o estado que a tela retoma.
+    cliente.post(f"/v1/eu/missoes/{missao.id}/desbloqueio", json={}, headers=cabecalhos)
+
+    corpo = cliente.get(
+        f"/v1/eu/trilhas/{missao.trilha_id}/missoes/{missao.posicao}", headers=cabecalhos
+    ).json()
+    exemplo = json.loads(EXEMPLO_DO_PERCURSO.read_text(encoding="utf-8"))
+
+    assert set(corpo) == set(exemplo)
+    assert set(corpo["desafio_de_desbloqueio"]) == set(exemplo["desafio_de_desbloqueio"])
+    assert set(corpo["comprovacao_entregue"]) == set(exemplo["comprovacao_entregue"])
+    assert corpo["desafio_de_desbloqueio"]["forma_de_comprovacao"] == "imagem"
+    assert corpo["comprovacao_entregue"]["tem_arquivo"] is False
 
 
 # ---------------------------------------------------------------------------

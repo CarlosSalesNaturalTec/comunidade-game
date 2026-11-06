@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as autenticacaoApi from "../autenticacao/api";
 import { ProvedorDeSessao } from "../autenticacao/ContextoDeSessao";
+import exemploDoPercurso from "../contratos/missao-no-percurso.json";
 import { ProvedorDeNarracao, useNarracao } from "../narracao/ProvedorDeNarracao";
 import * as trilhaApi from "./api";
 import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
@@ -18,9 +19,9 @@ import { Missao } from "./Missao";
 const CHAVE_DE_SESSAO = "comum:teste-trilha";
 
 const QUIZ: trilhaApi.DesafioDeDesbloqueio = {
-  desafio_pratico_forma_de_comprovacao: null,
-  desafio_pratico_criterio_de_aceite: null,
-  desafio_pratico_titulo_curto: null,
+  forma_de_comprovacao: null,
+  criterio_de_aceite: null,
+  titulo_curto: null,
   tipo: "quiz",
   enunciado: null,
   perguntas: [
@@ -38,9 +39,9 @@ const PRATICO_SEM_FORMA: trilhaApi.DesafioDeDesbloqueio = {
   tipo: "pratico",
   enunciado: "Monte o robô.",
   perguntas: null,
-  desafio_pratico_forma_de_comprovacao: null,
-  desafio_pratico_criterio_de_aceite: null,
-  desafio_pratico_titulo_curto: null,
+  forma_de_comprovacao: null,
+  criterio_de_aceite: null,
+  titulo_curto: null,
 };
 
 // O prático desta fatia: forma aceita, critério e título curto declarados pelo
@@ -49,14 +50,14 @@ const PRATICO_EM_VIDEO: trilhaApi.DesafioDeDesbloqueio = {
   tipo: "pratico",
   enunciado: "Monte o robô e grave um vídeo.",
   perguntas: null,
-  desafio_pratico_forma_de_comprovacao: "video",
-  desafio_pratico_criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
-  desafio_pratico_titulo_curto: "Robô de sucata",
+  forma_de_comprovacao: "video",
+  criterio_de_aceite: "Não deve aparecer o rosto da criança, só a produção.",
+  titulo_curto: "Robô de sucata",
 };
 
 const PRATICO_EM_TEXTO: trilhaApi.DesafioDeDesbloqueio = {
   ...PRATICO_EM_VIDEO,
-  desafio_pratico_forma_de_comprovacao: "texto",
+  forma_de_comprovacao: "texto",
 };
 
 function pergunta(id: string, ordem: number, enunciado: string) {
@@ -70,9 +71,9 @@ function pergunta(id: string, ordem: number, enunciado: string) {
 }
 
 const QUIZ_DE_TRES: trilhaApi.DesafioDeDesbloqueio = {
-  desafio_pratico_forma_de_comprovacao: null,
-  desafio_pratico_criterio_de_aceite: null,
-  desafio_pratico_titulo_curto: null,
+  forma_de_comprovacao: null,
+  criterio_de_aceite: null,
+  titulo_curto: null,
   tipo: "quiz",
   enunciado: null,
   perguntas: [
@@ -1011,9 +1012,9 @@ function LigarNarracao() {
 }
 
 const QUIZ_COM_IMAGEM: trilhaApi.DesafioDeDesbloqueio = {
-  desafio_pratico_forma_de_comprovacao: null,
-  desafio_pratico_criterio_de_aceite: null,
-  desafio_pratico_titulo_curto: null,
+  forma_de_comprovacao: null,
+  criterio_de_aceite: null,
+  titulo_curto: null,
   tipo: "quiz",
   enunciado: null,
   perguntas: [
@@ -1759,5 +1760,102 @@ describe("a entrega da comprovação do prático", () => {
       screen.getByText("Não deve aparecer o rosto da criança, só a produção."),
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /já cumpri/i })).not.toBeInTheDocument();
+  });
+});
+
+// O exemplo de contrato é a resposta real do percurso, conferida pelo teste do
+// núcleo: a tela lida a partir dele não pode mais ler nome que o núcleo não
+// serve (`RF-05-91`, `RF-04-76`).
+const MISSAO_DO_CONTRATO = exemploDoPercurso as trilhaApi.MissaoNoPercurso;
+const PRATICO_DO_CONTRATO =
+  MISSAO_DO_CONTRATO.desafio_de_desbloqueio as trilhaApi.DesafioDeDesbloqueio;
+
+describe("a tela lê o desafio prático pelos nomes que o núcleo serve", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    sessionStorage.clear();
+  });
+
+  it("o prático em imagem do percurso oferece critério, aviso, arquivo e a alternativa", async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_DO_CONTRATO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+      />,
+    );
+
+    const secao = screen.getByRole("region", { name: "Desafio de desbloqueio" });
+    expect(secao.textContent).toContain(PRATICO_DO_CONTRATO.criterio_de_aceite);
+    expect(secao.textContent).toContain("entregue uma foto");
+    expect(screen.getByText(/fica guardado/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/escolha o arquivo/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /já cumpri/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /vou entregar ao mestre no encontro/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("a declaração em mídia sem arquivo recebe o arquivo, sem declarar de novo", async () => {
+    const submeter = vi.spyOn(trilhaApi, "submeterDesafioDeDesbloqueio");
+    const abrir = vi
+      .spyOn(trilhaApi, "abrirEnvioDaComprovacao")
+      .mockResolvedValue("https://armazenamento/sessao-1");
+    vi.spyOn(trilhaApi, "enviarComprovacao").mockResolvedValue();
+    vi.spyOn(trilhaApi, "confirmarEnvioDaComprovacao").mockResolvedValue({
+      forma: "imagem",
+      comprovacao: null,
+      entrega_presencial: false,
+      tem_arquivo: true,
+    });
+
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_DO_CONTRATO}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+        comprovacaoEntregue={MISSAO_DO_CONTRATO.comprovacao_entregue}
+        julgamento={null}
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    expect(screen.getByText(/o arquivo não chegou/i)).toBeInTheDocument();
+    const enviar = screen.getByRole("button", { name: /enviar o arquivo/i });
+    expect(enviar).toBeDisabled();
+
+    const foto = new File(["PNG"], "robo.png", { type: "image/png" });
+    await usuario.upload(screen.getByLabelText(/escolha o arquivo/i), foto);
+    await usuario.click(enviar);
+
+    expect(abrir).toHaveBeenCalledWith("missao-1", "image/png", 3, expect.any(String));
+    expect(submeter).not.toHaveBeenCalled();
+    expect(await screen.findByText(/o seu arquivo foi enviado/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /enviar o arquivo/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('sem texto nem arquivo, "O que você entregou" não aparece vazio', async () => {
+    await renderizar(
+      <DesafioDeDesbloqueio
+        missaoId="missao-1"
+        desafio={PRATICO_SEM_FORMA}
+        aoDesbloquear={vi.fn()}
+        submissaoLigada
+        comprovacaoEntregue={{
+          forma: null,
+          comprovacao: null,
+          entrega_presencial: false,
+          tem_arquivo: false,
+        }}
+        julgamento={null}
+      />,
+    );
+
+    expect(screen.getByText(/agora é só esperar o mestre/i)).toBeInTheDocument();
+    expect(screen.queryByText("O que você entregou")).not.toBeInTheDocument();
   });
 });

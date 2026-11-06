@@ -162,6 +162,7 @@ function EntregaDoPraticoNaTela({
   comprovacaoEntregue,
   julgamento,
   aoDeclarar,
+  aoEnviarArquivo,
   enviando,
   erro,
 }: {
@@ -169,6 +170,7 @@ function EntregaDoPraticoNaTela({
   comprovacaoEntregue: ComprovacaoEntregue | null;
   julgamento: JulgamentoDoPratico | null;
   aoDeclarar: (entrega: EntregaDoPratico, arquivo: File | null) => Promise<void>;
+  aoEnviarArquivo: (arquivo: File) => Promise<void>;
   enviando: boolean;
   erro: string | null;
 }) {
@@ -177,12 +179,10 @@ function EntregaDoPraticoNaTela({
   const [progresso, definirProgresso] = useState<number | null>(null);
   const [erroDeCampo, definirErroDeCampo] = useState<string | null>(null);
 
-  // `?? null` porque o campo chega **ausente** de quem monta a tela sem ele —
-  // o prático declarado antes dos três campos, e todo chamador anterior a esta
-  // fatia. `undefined` tratado como forma declarada faria o controle nascer
-  // indisponível para sempre, sem campo algum a preencher (design — decisão 7).
-  const forma = desafio.desafio_pratico_forma_de_comprovacao ?? null;
-  const criterio = desafio.desafio_pratico_criterio_de_aceite ?? null;
+  // Nulos no prático declarado antes dos três campos, que segue realizável
+  // pela declaração nua (`RN-09-50`).
+  const forma = desafio.forma_de_comprovacao ?? null;
+  const criterio = desafio.criterio_de_aceite ?? null;
   const ehTexto = forma !== null && FORMAS_DE_COMPROVACAO_EM_TEXTO.includes(forma);
   const ehMidia = forma !== null && !ehTexto;
 
@@ -206,7 +206,10 @@ function EntregaDoPraticoNaTela({
           <p>Você vai entregar a sua produção ao Mestre no encontro.</p>
         ) : (
           <>
-            <h4>O que você entregou</h4>
+            {/* O título só com o que apresentar embaixo dele (`RF-05-93`). */}
+            {(comprovacaoEntregue.comprovacao !== null || comprovacaoEntregue.tem_arquivo) && (
+              <h4>O que você entregou</h4>
+            )}
             {comprovacaoEntregue.comprovacao !== null && (
               <p className="cg-trilha__comprovacao-entregue">
                 {comprovacaoEntregue.comprovacao}
@@ -220,6 +223,46 @@ function EntregaDoPraticoNaTela({
       </>
     );
 
+    // Declaração em mídia, ainda não julgada, cujo arquivo não chegou: a
+    // mesma declaração recebe o arquivo agora, como retomada do envio, sem
+    // declarar de novo (`RF-05-91`, `RF-05-93`).
+    const arquivoFaltando =
+      julgamento === null &&
+      ehMidia &&
+      !comprovacaoEntregue.entrega_presencial &&
+      !comprovacaoEntregue.tem_arquivo;
+    if (arquivoFaltando && forma !== null) {
+      return (
+        <div className="cg-trilha__entrega-feita">
+          <Aviso tipo="andamento">
+            Você declarou que cumpriu, mas o arquivo não chegou. Envie {ROTULO_DA_FORMA[forma]}{" "}
+            para o Mestre conferir.
+          </Aviso>
+          {criterio !== null && (
+            <div className="cg-trilha__criterio">
+              <h4>O que o seu Mestre combinou</h4>
+              <p>{criterio}</p>
+            </div>
+          )}
+          <AvisoDaMidiaGuardada />
+          <label className="cg-trilha__arquivo-da-comprovacao">
+            Escolha o arquivo
+            <input
+              type="file"
+              accept={FORMATOS_ACEITOS[forma]}
+              onChange={(evento) => definirArquivo(evento.target.files?.[0] ?? null)}
+            />
+          </label>
+          {erro !== null && <Aviso tipo="erro">{erro}</Aviso>}
+          <Botao
+            onClick={() => arquivo !== null && aoEnviarArquivo(arquivo)}
+            desabilitado={enviando || arquivo === null}
+          >
+            {enviando ? "Enviando…" : "Enviar o arquivo"}
+          </Botao>
+        </div>
+      );
+    }
     if (julgamento === null) {
       return (
         <div className="cg-trilha__entrega-feita">
@@ -503,6 +546,26 @@ export function DesafioDeDesbloqueio({
     return confirmarEnvioDaComprovacao(missaoId, token);
   }
 
+  /** Envia o arquivo de uma declaração em mídia que ficou sem ele, sem
+   * declarar de novo: a sessão de envio aceita a declaração pendente
+   * (`RF-05-91`, `RF-05-93`). */
+  async function enviarArquivoPendente(arquivo: File) {
+    if (!sessao) return;
+    definirEnviando(true);
+    definirErro(null);
+    try {
+      definirEntregue(await enviarArquivoDaComprovacao(arquivo, sessao.token));
+    } catch (erroCapturado) {
+      if (erroCapturado instanceof QuedaDeRedeDuranteEnvio) {
+        definirErro(MENSAGEM_DE_QUEDA_DE_REDE);
+        return;
+      }
+      definirErro("Não foi possível enviar agora. Tente de novo em instantes.");
+    } finally {
+      definirEnviando(false);
+    }
+  }
+
   async function retomarEnvio() {
     if (!sessao || retomada === null) return;
     definirEnviando(true);
@@ -550,6 +613,7 @@ export function DesafioDeDesbloqueio({
             comprovacaoEntregue={entregue}
             julgamento={vereditoDoMestre}
             aoDeclarar={submeter}
+            aoEnviarArquivo={enviarArquivoPendente}
             enviando={enviando}
             erro={erro}
           />
@@ -646,6 +710,7 @@ export function DesafioDeDesbloqueio({
           comprovacaoEntregue={null}
           julgamento={null}
           aoDeclarar={submeter}
+          aoEnviarArquivo={enviarArquivoPendente}
           enviando={enviando}
           erro={erro}
         />
@@ -653,10 +718,10 @@ export function DesafioDeDesbloqueio({
 
       {/* Desligada a submissão, o critério e a forma seguem à vista: eles não
           são segredo do Mestre, e é deles que a criança sabe o que preparar. */}
-      {!ehQuiz && !submissaoLigada && !!desafio.desafio_pratico_criterio_de_aceite && (
+      {!ehQuiz && !submissaoLigada && !!desafio.criterio_de_aceite && (
         <div className="cg-trilha__criterio">
           <h4>O que o seu Mestre combinou</h4>
-          <p>{desafio.desafio_pratico_criterio_de_aceite}</p>
+          <p>{desafio.criterio_de_aceite}</p>
         </div>
       )}
 
