@@ -9,6 +9,7 @@ from sqlalchemy import (
     Enum,
     ForeignKey,
     Index,
+    Integer,
     Numeric,
     Text,
     Uuid,
@@ -143,6 +144,12 @@ class Presenca(Base, ComAutoria, ComMomentoDoFato):
         Uuid, ForeignKey("persona.id"), nullable=True
     )
     motivo_da_anulacao: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # O que a presença creditou em ponto extra, e é o que a anulação estorna
+    # (`RF-01-82`, `RF-01-83`). Zero na presença anterior à regra: ela não
+    # rende nem estorna (`RN-01-65`, design — decisão 1).
+    pontos_extras_creditados: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
 
     __table_args__ = (
         Index(

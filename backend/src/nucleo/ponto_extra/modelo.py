@@ -6,15 +6,17 @@ from sqlalchemy.orm import Mapped, mapped_column
 from ..banco import Base
 from ..erros import DebitoDePontoExtraRecusado
 
+MARCADOR_DO_ESTORNO_DA_PRESENCA = "cg.estorno_de_presenca"
+
 
 class PontoExtra(Base):
     """Duas contas por Guerreiro(a): acumulado, que só cresce, e saldo
     disponível, que nunca fica negativo (`RN-01-39`, `RN-01-40`, documento
-    11 §5). Nesta fatia as duas só recebem crédito; o débito por troca
-    chega com o livro-razão (PRD-07, `RF-01-59`). O saldo negativo é
-    recusado pela `CheckConstraint` abaixo, válida em qualquer via; a
-    redução do acumulado é recusada pelos gatilhos, no mesmo padrão de
-    `consentimentos.modelo`.
+    11 §5). O saldo negativo é recusado pela `CheckConstraint` abaixo,
+    válida em qualquer via; a redução do acumulado é recusada pelos
+    gatilhos, no mesmo padrão de `consentimentos.modelo` — salvo o estorno
+    da presença anulada, que liga o marcador local à transação
+    `cg.estorno_de_presenca` (`RN-01-64`, design — decisão 4).
     """
 
     __tablename__ = "ponto_extra"
@@ -33,6 +35,8 @@ class PontoExtra(Base):
 
 
 def _recusar_debito_de_ponto_extra(mapper, connection, target: PontoExtra) -> None:
+    if connection.info.get(MARCADOR_DO_ESTORNO_DA_PRESENCA):
+        return
     historico = inspect(target).attrs.acumulado.history
     if not historico.deleted:
         return
@@ -58,9 +62,10 @@ event.listen(
         BEGIN
             IF (TG_OP = 'DELETE') THEN
                 RAISE EXCEPTION
-                    'ponto extra nunca é debitado nesta fatia: DELETE não é permitido';
+                    'ponto extra nunca é removido: DELETE não é permitido';
             END IF;
-            IF NEW.acumulado < OLD.acumulado THEN
+            IF NEW.acumulado < OLD.acumulado
+               AND coalesce(current_setting('cg.estorno_de_presenca', true), '') <> 'on' THEN
                 RAISE EXCEPTION
                     'o acumulado de ponto extra só cresce: não pode diminuir';
             END IF;

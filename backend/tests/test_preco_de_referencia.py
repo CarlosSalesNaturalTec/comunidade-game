@@ -24,12 +24,12 @@ def test_primeira_vigencia_do_preco_nasce_sem_encerramento(
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     sessao.commit()
 
-    assert preco.preco_em_pontos_extras == 20
+    assert preco.preco_em_pontos_extras == 25
     assert preco.vigencia_fim is None
 
 
@@ -43,7 +43,7 @@ def test_preco_novo_encerra_a_vigencia_anterior_sem_reescreve_la(
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     sessao.commit()
@@ -59,7 +59,7 @@ def test_preco_novo_encerra_a_vigencia_anterior_sem_reescreve_la(
     sessao.refresh(primeiro)
 
     assert primeiro.vigencia_fim == date(2026, 6, 1)
-    assert primeiro.preco_em_pontos_extras == 20
+    assert primeiro.preco_em_pontos_extras == 25
     assert sessao.query(PrecoDeReferencia).count() == 2
 
 
@@ -73,7 +73,7 @@ def test_empate_no_mesmo_dia_a_consulta_devolve_o_registrado_por_ultimo(
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     sessao.commit()
@@ -101,7 +101,7 @@ def test_leitura_pela_data_da_epoca_devolve_o_preco_daquela_vigencia(
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     registrar_preco_de_referencia(
@@ -115,10 +115,10 @@ def test_leitura_pela_data_da_epoca_devolve_o_preco_daquela_vigencia(
 
     preco = consultar_preco_de_referencia(sessao, tipo=tipo, data=date(2026, 3, 1))
 
-    assert preco.preco_em_pontos_extras == 20
+    assert preco.preco_em_pontos_extras == 25
 
 
-def test_piso_de_vinte_e_aceito(sessao, criar_persona, criar_tipo_de_recurso):
+def test_piso_de_vinte_e_cinco_e_aceito(sessao, criar_persona, criar_tipo_de_recurso):
     admin = criar_persona(Papel.admin)
     tipo = criar_tipo_de_recurso(admin)
 
@@ -126,15 +126,15 @@ def test_piso_de_vinte_e_aceito(sessao, criar_persona, criar_tipo_de_recurso):
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     sessao.commit()
 
-    assert preco.preco_em_pontos_extras == 20
+    assert preco.preco_em_pontos_extras == 25
 
 
-def test_dezenove_e_recusado(sessao, criar_persona, criar_tipo_de_recurso):
+def test_vinte_e_quatro_e_recusado(sessao, criar_persona, criar_tipo_de_recurso):
     admin = criar_persona(Papel.admin)
     tipo = criar_tipo_de_recurso(admin)
 
@@ -143,7 +143,7 @@ def test_dezenove_e_recusado(sessao, criar_persona, criar_tipo_de_recurso):
             sessao,
             operador=admin,
             tipo=tipo,
-            preco_em_pontos_extras=19,
+            preco_em_pontos_extras=24,
             vigencia_inicio=date(2026, 1, 1),
         )
     assert excinfo.value.campo == "preco_em_pontos_extras"
@@ -157,7 +157,7 @@ def test_alteracao_para_abaixo_do_piso_e_recusada(sessao, criar_persona, criar_t
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     sessao.commit()
@@ -203,7 +203,7 @@ def test_mestre_nao_registra_preco_de_referencia(sessao, criar_persona, criar_ti
             sessao,
             operador=mestre,
             tipo=tipo,
-            preco_em_pontos_extras=20,
+            preco_em_pontos_extras=25,
             vigencia_inicio=date(2026, 1, 1),
         )
     assert sessao.query(PrecoDeReferencia).count() == 0
@@ -227,7 +227,7 @@ def test_registrar_preco_em_pontos_nao_mexe_no_valor_em_moedas(
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     sessao.commit()
@@ -248,7 +248,7 @@ def test_tipo_com_preco_em_pontos_e_sem_valor_em_moedas(
         sessao,
         operador=admin,
         tipo=tipo,
-        preco_em_pontos_extras=20,
+        preco_em_pontos_extras=25,
         vigencia_inicio=date(2026, 1, 1),
     )
     sessao.commit()
@@ -267,12 +267,12 @@ def test_saida_do_preco_nao_traz_moedas_nem_reais(
 
     resposta = cliente.post(
         f"/v1/tipos-de-recurso/{tipo.id}/precos-de-referencia",
-        json={"preco_em_pontos_extras": 20, "vigencia_inicio": "2026-01-01"},
+        json={"preco_em_pontos_extras": 25, "vigencia_inicio": "2026-01-01"},
         headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
     )
 
     assert resposta.status_code == 201
     corpo = resposta.json()
-    assert corpo["preco_em_pontos_extras"] == 20
+    assert corpo["preco_em_pontos_extras"] == 25
     assert "valor_em_moedas" not in corpo
     assert "valor_em_reais" not in corpo

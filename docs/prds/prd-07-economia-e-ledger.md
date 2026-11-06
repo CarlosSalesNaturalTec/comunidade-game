@@ -196,9 +196,10 @@ atividades previstas.
 | `RF-07-38` | Preço em pontos extras vem da tabela de referência vigente, sem derivação do valor em moedas do tipo de recurso                                                                                                                                                                                      | essencial  |
 | `RF-07-42` | Admin cadastra o preço de referência em pontos extras por tipo de recurso                                                                                                                                                                                                                            | essencial  |
 | `RF-07-43` | Sistema versiona o preço de referência por data de vigência, como o valor em moedas                                                                                                                                                                                                                  | essencial  |
-| `RF-07-44` | Sistema recusa preço de referência menor que 20 pontos extras                                                                                                                                                                                                                                        | essencial  |
+| `RF-07-44` | Sistema recusa preço de referência menor que 25 pontos extras                                                                                                                                                                                                                                        | essencial  |
 | `RF-07-45` | Item do catálogo herda o preço da tabela vigente; o cadastro do item não aceita preço próprio                                                                                                                                                                                                        | essencial  |
 | `RF-07-46` | Troca cobra o preço vigente na data da troca e o registra no histórico                                                                                                                                                                                                                               | essencial  |
+| `RF-07-50` | Sistema eleva a 25, na entrega do piso de 25, todo preço de referência vigente abaixo dele, com vigência nova e o histórico preservado                                                                                                                                                               | essencial  |
 | `RF-07-39` | Publicação de desafio extra reserva a recompensa; sem saldo, a publicação é recusada                                                                                                                                                                                                                 | essencial  |
 | `RF-07-40` | Desafio extra encerrado sem conclusão libera a reserva, devolvendo o saldo                                                                                                                                                                                                                           | essencial  |
 | `RF-07-41` | Sistema aceita custeio do desafio extra por absorção do proponente ou por saldo de recurso existente                                                                                                                                                                                                 | essencial  |
@@ -240,7 +241,7 @@ atividades previstas.
 | `RN-07-24` | Reais, moedas da plataforma e pontos extras não se convertem entre si                                                                | 23         | 02 §8.2      |
 | `RN-07-25` | Preço do catálogo avulso é declarado em pontos extras e nunca deriva do valor em moedas                                              | 23         | 02 §8.2      |
 | `RN-07-29` | Quem fixa o preço é a tabela de referência da gestão; nem o Mestre nem o Apoiador arbitram valor                                     | 23         | 02 §8.2      |
-| `RN-07-30` | Nenhum item do catálogo avulso vale menos de 20 pontos extras                                                                        | 23         | 02 §8.2      |
+| `RN-07-30` | Nenhum item do catálogo avulso vale menos de 25 pontos extras                                                                        | 23         | 02 §8.2      |
 | `RN-07-31` | A prestação de contas pública é painel vivo, sem fechamento periódico no Ciclo 01                                                    | —          | 04 §1        |
 | `RN-07-32` | As horas da produção executiva são declaradas pelo Admin por período; commits são lastro, não fórmula                                | —          | 04 §1        |
 | `RN-07-26` | Nenhum item entra no catálogo avulso sem lastro, como toda recompensa                                                                | 9          | 02 §8.2      |
@@ -460,7 +461,7 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 | Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
 | Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
 | Preço fixado por tabela de referência da gestão, versionada por vigência       | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
-| Piso de 20 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
+| Piso de 25 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
 | Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio     |
 | Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio     |
 | Horas da produção executiva declaradas por período, com commits como lastro    | 04 §1          | Apuração da produção executiva                 |
@@ -525,7 +526,8 @@ qualquer número de pontos de apoio.
 | `RF-07-21` a `RF-07-25` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
 | `RF-07-26`              | 11 §8.2 (cards e páginas individuais)            |
 | `RF-07-33` a `RF-07-38` | 02 §8.2 (catálogo avulso, lastro e entrega)      |
-| `RF-07-42` a `RF-07-46` | 02 §8.2 (tabela de referência e piso de 20)      |
+| `RF-07-42` a `RF-07-46` | 02 §8.2 (tabela de referência e piso de 25)      |
+| `RF-07-50`              | 02 §8.2 e 09 §1 (subida do piso para 25)         |
 | `RF-07-39` a `RF-07-41` | 04 §3 (custeio e reserva do desafio extra)       |
 | `RF-07-27` e `RF-07-28` | 04 §1 (necessidade publicada e absorção)         |
 | `RF-07-32`              | 04 §1 (custos anteriores ao livro-razão)         |

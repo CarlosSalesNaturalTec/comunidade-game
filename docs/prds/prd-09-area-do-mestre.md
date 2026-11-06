@@ -765,7 +765,7 @@ missão é o que permite a mesma trilha atender dos 6 aos 16 anos.
 | Template monta estrutura e checklist; a IA não escreve conteúdo                                  | 03 §11              | Auxílio de IA na autoria da trilha                          |
 | Camisa conquistada no marco de missão, não entregue a todo inscrito                              | 02 §8, 04 §1, 05 §3 | Camisa como recompensa de marco                             |
 | Catálogo avulso cadastrado pelo Mestre sem homologação, com lastro e estoque                     | 02 §8.2             | Troca de pontos extras por recompensa avulsa                |
-| Preço do catálogo vindo de tabela de referência da gestão, com piso de 20 pontos                 | 02 §8.2             | Quem fixa o preço do catálogo avulso                        |
+| Preço do catálogo vindo de tabela de referência da gestão, com piso de 25 pontos                 | 02 §8.2             | Quem fixa o preço do catálogo avulso                        |
 | Mestre propõe desafio extra, presencial ou on-line, com teto de 10 pontos                        | 04 §3               | Desafio extra — proponente, teto e custeio                  |
 | Custeio do desafio extra por absorção do proponente ou saldo da plataforma                       | 04 §3               | Desafio extra — proponente, teto e custeio                  |
 | Validação pedagógica dispensada só para o Mestre autor; Admin aprova sempre                      | 04 §3               | Desafio extra — proponente, teto e custeio                  |
@@ -797,7 +797,7 @@ modelo por ato, e a coluna só existiria para ficar vazia.
 
 ## 14. Pendências que permanecem
 
-- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 20
+- **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
   estão decididos; os preços por tipo são cadastro da gestão e dependem do calendário do
   Ciclo 01. **Trava** o `RF-09-99` na prática, não no desenho.
 - **Mapeamento dos livros nas trilhas**: qual capítulo apoia qual missão das trilhas 1 e 2 é

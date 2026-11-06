@@ -7,7 +7,7 @@ from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from .modelo import NaturezaDoRecurso, PrecoDeReferencia, TipoDeRecurso, ValorDeReferencia
 
-PISO_DE_PONTOS_EXTRAS = 20
+PISO_DE_PONTOS_EXTRAS = 25
 
 
 def cadastrar_tipo_de_recurso(
@@ -144,7 +144,7 @@ def registrar_preco_de_referencia(
     """A segunda régua do tipo de recurso, irmã de `registrar_valor_de_
     referencia` — mesma mecânica de vigência, nunca deriva nem altera o
     valor em moedas (`RF-07-42`, `RF-07-43`, `RN-07-24`, `RN-07-25`,
-    design — Decisions 1). Preço fracionário ou abaixo do piso de 20 é
+    design — Decisions 1). Preço fracionário ou abaixo do piso de 25 é
     recusado aqui, antes do banco (`RF-07-44`, `RN-07-30`)."""
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin registra preço de referência.")

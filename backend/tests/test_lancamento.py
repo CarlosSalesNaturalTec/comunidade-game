@@ -483,7 +483,7 @@ def _preparar_troca(
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin)
-    criar_preco_de_referencia(admin, tipo, preco_em_pontos_extras=20)
+    criar_preco_de_referencia(admin, tipo, preco_em_pontos_extras=25)
     criar_valor_de_referencia(admin, tipo, valor_em_moedas=Decimal("1.00"))
     criar_lancamento(
         admin,
