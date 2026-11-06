@@ -53,5 +53,5 @@
       piso de 25 em `RF-07-44`, `RN-07-30` e nas §§13 e 15. PRDs 04 (`RN-04-24`), 05 (§2 e
       §14), 09 e 14: o acumulado com a exceção e o piso de 25. Documentos-fonte, 09 §1 e 99 §6
       já foram atualizados antes da change; `docs/prds/index.md` e a `nav` não mudam.
-- [ ] 5.2 `openspec/cronograma-de-fatias.md`: a linha da fatia passa a `implementado`, com o
+- [x] 5.2 `openspec/cronograma-de-fatias.md`: a linha da fatia passa a `implementado`, com o
       slug arquivado.
