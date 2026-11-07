@@ -1,3 +1,4 @@
+import enum
 import uuid
 from collections.abc import Iterable
 from datetime import date, datetime
@@ -173,9 +174,43 @@ class PoderComNivelSaida(BaseModel):
     nivel: int
 
 
-class CriacaoNaCartaSaida(BaseModel):
+class FonteDoAcervo(enum.StrEnum):
+    """As **duas** fontes do acervo público (documento 99 §6, invariante 5):
+    a criação da culminância e a comprovação aprovada do desafio prático. A
+    produção das **atividades** da missão não está aqui, e nunca estará: ela
+    não tem ato de aprovação do Mestre (`RN-03-42`)."""
+
+    criacao_original = "criacao_original"
+    comprovacao_do_pratico = "comprovacao_do_pratico"
+
+
+class CriacaoPublicaSaida(BaseModel):
+    """O item do acervo público — a linha do `RF-03-08` e a da carta do
+    Guerreiro(a) (`RF-03-86`, `RF-03-87`): **título**, trilha, data e
+    autoria por nick, mais o que a abertura da produção exige — `id`, `fonte`
+    e `tipo` (`RF-03-84`, `RF-03-85`).
+
+    O **título** é o curto que o Mestre autor declarou no desafio, na
+    comprovação, e o **nome da trilha**, na criação da culminância, que não
+    tem campo de título no modelo (`RN-03-43`, decisão do fundador,
+    2026-11-04). `trilha` vem nas duas fontes: quem decide não repetir o nome
+    quando ele já é o título é a App 06, pela `fonte`, porque a rota pública é
+    o que terceiros constroem por cima (PRD-03 §8, design — decisão 4).
+
+    `producao` leva o corpo do tipo texto e o endereço do tipo link externo;
+    nos quatro tipos de mídia ela é **nula**, e os bytes saem pela rota de
+    arquivo da fonte.
+    """
+
+    id: uuid.UUID
+    fonte: FonteDoAcervo
+    titulo: str
+    tipo: TipoDeProducaoDaCriacaoOriginal | None
+    trilha_id: uuid.UUID
     trilha: str
     validada_em: datetime
+    producao: str | None = None
+    autores: list[AvatarENickSaida]
 
 
 class CartaPublicaDeGuerreiroSaida(AvatarENickSaida):
@@ -189,7 +224,7 @@ class CartaPublicaDeGuerreiroSaida(AvatarENickSaida):
     poderes: list[PoderComNivelSaida]
     pontos_regulares: int
     posicao_no_ranking: int
-    criacoes: list[CriacaoNaCartaSaida]
+    criacoes: list[CriacaoPublicaSaida]
 
 
 def condicoes_de_criacao_publica(sessao: Session):
@@ -289,6 +324,101 @@ def desafios_praticos_das_missoes(
     }
 
 
+def montar_itens_do_acervo(
+    sessao: Session,
+    criacoes: Iterable[CriacaoOriginal],
+    comprovacoes: Iterable[DesbloqueioDaMissao],
+) -> list[tuple[CriacaoPublicaSaida, list[uuid.UUID]]]:
+    """O item do acervo público, um só para a listagem da vitrine e para a
+    carta do Guerreiro(a), cada um com as personas creditadas — o
+    Guerreiro(a) individual, os integrantes da equipe ou o autor da
+    comprovação —, em ordem **decrescente** por `(data, id)` (`RF-03-83`,
+    `RF-03-86`, `RN-03-43`, design — decisão 1).
+
+    Quem chama já aplicou os portões das duas fontes. A autoria e os nomes
+    saem num round-trip por tabela (sem N+1)."""
+    criacoes = [criacao for criacao in criacoes if criacao.validado_em is not None]
+    comprovacoes = [c for c in comprovacoes if c.julgado_em is not None]
+
+    equipe_ids = {criacao.equipe_id for criacao in criacoes if criacao.equipe_id is not None}
+    integrantes_por_equipe: dict[uuid.UUID, list[uuid.UUID]] = {}
+    if equipe_ids:
+        for integrante in sessao.query(IntegranteDaEquipe).filter(
+            IntegranteDaEquipe.equipe_id.in_(equipe_ids)
+        ):
+            integrantes_por_equipe.setdefault(integrante.equipe_id, []).append(
+                integrante.persona_id
+            )
+
+    def _creditados(criacao: CriacaoOriginal) -> list[uuid.UUID]:
+        if criacao.guerreiro_id is not None:
+            return [criacao.guerreiro_id]
+        return integrantes_por_equipe.get(criacao.equipe_id, [])
+
+    todas_as_personas_ids = {
+        persona_id for criacao in criacoes for persona_id in _creditados(criacao)
+    } | {comprovacao.guerreiro_id for comprovacao in comprovacoes}
+    avatares_e_nicks = buscar_avatares_e_nicks(sessao, todas_as_personas_ids)
+    trilhas = nomes_de_trilha(sessao, {criacao.trilha_id for criacao in criacoes})
+    desafios = desafios_praticos_das_missoes(
+        sessao, {comprovacao.missao_id for comprovacao in comprovacoes}
+    )
+
+    def _autores(ids: list[uuid.UUID]) -> list[AvatarENickSaida]:
+        return [
+            avatares_e_nicks[persona_id] for persona_id in ids if persona_id in avatares_e_nicks
+        ]
+
+    itens: list[tuple[CriacaoPublicaSaida, list[uuid.UUID]]] = []
+    for criacao in criacoes:
+        nome_da_trilha = trilhas.get(criacao.trilha_id, "")
+        creditados = _creditados(criacao)
+        itens.append(
+            (
+                CriacaoPublicaSaida(
+                    id=criacao.id,
+                    fonte=FonteDoAcervo.criacao_original,
+                    # O título da criação **é** o nome da trilha: o modelo não
+                    # tem campo de título (`RN-03-43`, decisão do fundador,
+                    # 2026-11-04).
+                    titulo=nome_da_trilha,
+                    tipo=criacao.tipo,
+                    trilha_id=criacao.trilha_id,
+                    trilha=nome_da_trilha,
+                    validada_em=criacao.validado_em,
+                    producao=criacao.producao,
+                    autores=_autores(creditados),
+                ),
+                creditados,
+            )
+        )
+    for comprovacao in comprovacoes:
+        # Comprovação cuja missão não resolve fica **fora**, em vez de sair
+        # com trilha inventada: `missao_id` é chave estrangeira obrigatória,
+        # então isto é inalcançável — e, se um dia alcançar, omitir é o seguro.
+        desafio = desafios.get(comprovacao.missao_id)
+        if desafio is None:
+            continue
+        itens.append(
+            (
+                CriacaoPublicaSaida(
+                    id=comprovacao.id,
+                    fonte=FonteDoAcervo.comprovacao_do_pratico,
+                    titulo=desafio.titulo or "",
+                    tipo=desafio.tipo,
+                    trilha_id=desafio.trilha_id,
+                    trilha=desafio.trilha,
+                    validada_em=comprovacao.julgado_em,
+                    producao=comprovacao.comprovacao,
+                    autores=_autores([comprovacao.guerreiro_id]),
+                ),
+                [comprovacao.guerreiro_id],
+            )
+        )
+    itens.sort(key=lambda linha: (linha[0].validada_em, linha[0].id), reverse=True)
+    return itens
+
+
 def _nomes_de_poder(
     sessao: Session,
     *,
@@ -340,44 +470,50 @@ def _desempenho_publico(
 
 def _criacoes_na_carta(
     sessao: Session, personas_ids: Iterable[uuid.UUID]
-) -> dict[uuid.UUID, list[CriacaoNaCartaSaida]]:
-    """As criações originais públicas creditadas a cada Guerreiro(a) da
-    página, individuais e em equipe, em duas consultas."""
+) -> dict[uuid.UUID, list[CriacaoPublicaSaida]]:
+    """O **acervo público** creditado a cada Guerreiro(a) da página — a
+    criação da culminância, individual ou em equipe, e a comprovação do
+    prático —, pelos mesmos portões e pelo mesmo montador da listagem do
+    acervo, do mais recente ao mais antigo (`RF-03-86`, `RF-03-87`,
+    `RN-03-41`, decisão do fundador, 2026-11-07)."""
     ids = list(personas_ids)
     if not ids:
         return {}
     condicoes = condicoes_de_criacao_publica(sessao)
 
-    creditos: list[tuple[uuid.UUID, CriacaoOriginal]] = [
-        (criacao.guerreiro_id, criacao)
+    criacoes = {
+        criacao.id: criacao
         for criacao in sessao.query(CriacaoOriginal)
         .filter(*condicoes, CriacaoOriginal.guerreiro_id.in_(ids))
         .all()
-    ]
+    }
     # O portão já consulta `IntegranteDaEquipe`; juntar a tabela de novo sem
     # apelido faria o SQLAlchemy correlacionar a subconsulta e a deixar sem
     # `FROM`. O apelido mantém as duas leituras independentes.
     integrante = aliased(IntegranteDaEquipe)
-    creditos += [
-        (persona_id, criacao)
-        for criacao, persona_id in sessao.query(CriacaoOriginal, integrante.persona_id)
+    for criacao in (
+        sessao.query(CriacaoOriginal)
         .join(integrante, integrante.equipe_id == CriacaoOriginal.equipe_id)
         .filter(*condicoes, integrante.persona_id.in_(ids))
         .all()
-    ]
+    ):
+        criacoes[criacao.id] = criacao
 
-    trilhas = nomes_de_trilha(sessao, {criacao.trilha_id for _, criacao in creditos})
-    por_guerreiro: dict[uuid.UUID, list[CriacaoNaCartaSaida]] = {}
-    for persona_id, criacao in creditos:
-        if criacao.validado_em is None:
-            continue
-        por_guerreiro.setdefault(persona_id, []).append(
-            CriacaoNaCartaSaida(
-                trilha=trilhas.get(criacao.trilha_id, ""), validada_em=criacao.validado_em
-            )
+    comprovacoes = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter(
+            *condicoes_de_comprovacao_publica(sessao),
+            DesbloqueioDaMissao.guerreiro_id.in_(ids),
         )
-    for criacoes in por_guerreiro.values():
-        criacoes.sort(key=lambda criacao: criacao.validada_em)
+        .all()
+    )
+
+    da_pagina = set(ids)
+    por_guerreiro: dict[uuid.UUID, list[CriacaoPublicaSaida]] = {}
+    for item, creditados in montar_itens_do_acervo(sessao, criacoes.values(), comprovacoes):
+        for persona_id in creditados:
+            if persona_id in da_pagina:
+                por_guerreiro.setdefault(persona_id, []).append(item)
     return por_guerreiro
 
 

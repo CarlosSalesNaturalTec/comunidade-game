@@ -1,4 +1,3 @@
-import enum
 import uuid
 from datetime import datetime
 from typing import Annotated
@@ -15,9 +14,7 @@ from ..comunidades.modelo import ComunidadeVirtual
 from ..configuracao import Configuracao, obter_configuracao
 from ..criacoes_originais.modelo import (
     CriacaoOriginal,
-    TipoDeProducaoDaCriacaoOriginal,
 )
-from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao, NaoEncontrado
 from ..ods.regra import cobertura_por_comunidade, comunidades_com_cobertura
 from ..paginacao import (
@@ -37,19 +34,17 @@ from .publico import (
     CartaPublicaDeApoiadorSaida,
     CartaPublicaDeGuerreiroSaida,
     CartaPublicaDeMestreSaida,
-    DesafioPraticoDaMissao,
+    CriacaoPublicaSaida,
     MestreResponsavelSaida,
     buscar_adulto_publico,
-    buscar_avatares_e_nicks,
     buscar_persona_guerreiro_publica_por_nick,
     condicoes_de_comprovacao_publica,
     condicoes_de_criacao_publica,
-    desafios_praticos_das_missoes,
     mestres_responsaveis_por_poder,
     montar_cartas_de_apoiador,
     montar_cartas_de_mestre,
     montar_cartas_publicas,
-    nomes_de_trilha,
+    montar_itens_do_acervo,
     paginar_apoiadores_publicos,
     paginar_cartas_publicas,
     paginar_mestres_publicos,
@@ -264,44 +259,6 @@ def pagina_publica_de_apoiador(
     return montar_cartas_de_apoiador(sessao_bd, [persona])[0]
 
 
-class FonteDoAcervo(enum.StrEnum):
-    """As **duas** fontes do acervo público (documento 99 §6, invariante 5):
-    a criação da culminância e a comprovação aprovada do desafio prático. A
-    produção das **atividades** da missão não está aqui, e nunca estará: ela
-    não tem ato de aprovação do Mestre (`RN-03-42`)."""
-
-    criacao_original = "criacao_original"
-    comprovacao_do_pratico = "comprovacao_do_pratico"
-
-
-class CriacaoPublicaSaida(BaseModel):
-    """A linha do acervo público do `RF-03-08`: **título**, trilha, data e
-    autoria por nick, mais o que a abertura da produção exige — `id`, `fonte`
-    e `tipo` (`RF-03-84`, `RF-03-85`).
-
-    O **título** é o curto que o Mestre autor declarou no desafio, na
-    comprovação, e o **nome da trilha**, na criação da culminância, que não
-    tem campo de título no modelo (`RN-03-43`, decisão do fundador,
-    2026-11-04). `trilha` vem nas duas fontes: quem decide não repetir o nome
-    quando ele já é o título é a App 06, pela `fonte`, porque a rota pública é
-    o que terceiros constroem por cima (PRD-03 §8, design — decisão 4).
-
-    `producao` leva o corpo do tipo texto e o endereço do tipo link externo;
-    nos quatro tipos de mídia ela é **nula**, e os bytes saem pela rota de
-    arquivo da fonte.
-    """
-
-    id: uuid.UUID
-    fonte: FonteDoAcervo
-    titulo: str
-    tipo: TipoDeProducaoDaCriacaoOriginal | None
-    trilha_id: uuid.UUID
-    trilha: str
-    validada_em: datetime
-    producao: str | None = None
-    autores: list[AvatarENickSaida]
-
-
 @roteador.get("/vitrine/criacoes/{id_da_criacao}/arquivo")
 def ler_arquivo_publico_da_criacao(
     id_da_criacao: uuid.UUID,
@@ -430,92 +387,10 @@ def listar_criacoes_publicas(
         .all()
     )
 
-    # A autoria e os nomes das duas fontes, num round-trip cada (sem N+1).
-    equipe_ids = [criacao.equipe_id for criacao in criacoes if criacao.equipe_id is not None]
-    integrantes_por_equipe: dict[uuid.UUID, list[uuid.UUID]] = {}
-    if equipe_ids:
-        for integrante in sessao_bd.query(IntegranteDaEquipe).filter(
-            IntegranteDaEquipe.equipe_id.in_(equipe_ids)
-        ):
-            integrantes_por_equipe.setdefault(integrante.equipe_id, []).append(
-                integrante.persona_id
-            )
-
-    guerreiro_ids = {
-        criacao.guerreiro_id for criacao in criacoes if criacao.guerreiro_id is not None
-    } | {comprovacao.guerreiro_id for comprovacao in comprovacoes}
-    todas_as_personas_ids = {
-        persona_id for ids in integrantes_por_equipe.values() for persona_id in ids
-    } | guerreiro_ids
-    avatares_e_nicks = buscar_avatares_e_nicks(sessao_bd, todas_as_personas_ids)
-
-    trilhas = nomes_de_trilha(sessao_bd, {criacao.trilha_id for criacao in criacoes})
-    desafios = desafios_praticos_das_missoes(
-        sessao_bd, {comprovacao.missao_id for comprovacao in comprovacoes}
-    )
-
-    def _autores_da_criacao(criacao: CriacaoOriginal) -> list[AvatarENickSaida]:
-        if criacao.guerreiro_id is not None:
-            return (
-                [avatares_e_nicks[criacao.guerreiro_id]]
-                if criacao.guerreiro_id in avatares_e_nicks
-                else []
-            )
-        return [
-            avatares_e_nicks[persona_id]
-            for persona_id in integrantes_por_equipe.get(criacao.equipe_id, [])
-            if persona_id in avatares_e_nicks
-        ]
-
-    def _item_da_criacao(criacao: CriacaoOriginal) -> CriacaoPublicaSaida:
-        nome_da_trilha = trilhas.get(criacao.trilha_id, "")
-        return CriacaoPublicaSaida(
-            id=criacao.id,
-            fonte=FonteDoAcervo.criacao_original,
-            # O título da criação **é** o nome da trilha: o modelo não tem
-            # campo de título (`RN-03-43`, decisão do fundador, 2026-11-04).
-            titulo=nome_da_trilha,
-            tipo=criacao.tipo,
-            trilha_id=criacao.trilha_id,
-            trilha=nome_da_trilha,
-            validada_em=criacao.validado_em,
-            producao=criacao.producao,
-            autores=_autores_da_criacao(criacao),
-        )
-
-    def _item_da_comprovacao(
-        comprovacao: DesbloqueioDaMissao, desafio: DesafioPraticoDaMissao
-    ) -> CriacaoPublicaSaida:
-        autor = avatares_e_nicks.get(comprovacao.guerreiro_id)
-        return CriacaoPublicaSaida(
-            id=comprovacao.id,
-            fonte=FonteDoAcervo.comprovacao_do_pratico,
-            titulo=desafio.titulo or "",
-            tipo=desafio.tipo,
-            trilha_id=desafio.trilha_id,
-            trilha=desafio.trilha,
-            validada_em=comprovacao.julgado_em,
-            producao=comprovacao.comprovacao,
-            autores=[autor] if autor is not None else [],
-        )
-
-    acervo = sorted(
-        [(criacao.validado_em, criacao.id, _item_da_criacao(criacao)) for criacao in criacoes]
-        # Comprovação cuja missão não resolve fica **fora**, em vez de sair com
-        # trilha inventada: `missao_id` é chave estrangeira obrigatória, então
-        # isto é inalcançável — e, se um dia alcançar, omitir é o seguro.
-        + [
-            (
-                comprovacao.julgado_em,
-                comprovacao.id,
-                _item_da_comprovacao(comprovacao, desafios[comprovacao.missao_id]),
-            )
-            for comprovacao in comprovacoes
-            if comprovacao.missao_id in desafios
-        ],
-        key=lambda linha: (linha[0], linha[1]),
-        reverse=True,
-    )
+    acervo = [
+        (item.validada_em, item.id, item)
+        for item, _ in montar_itens_do_acervo(sessao_bd, criacoes, comprovacoes)
+    ]
 
     proximo_cursor = None
     if len(acervo) > parametros.tamanho:

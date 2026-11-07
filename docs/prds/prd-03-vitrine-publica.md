@@ -255,7 +255,7 @@ eles.
 | `RF-03-01` | Vitrine abre sem login e sem cadastro, na raiz do domínio da plataforma                                                                                 | essencial  |
 | `RF-03-02` | Aplicação exibe Mestres, batalhas, apoiadores e comunidades em **lista de registros**, uma linha por registro; Guerreiros e Guerreiras não são listados | essencial  |
 | `RF-03-03` | Cada linha abre a página individual do personagem, em endereço próprio, com a composição do documento 11                                                | essencial  |
-| `RF-03-05` | Carta e página de Guerreiro(a) exibem só avatar, nick, badges, poderes e desempenho                                                                     | essencial  |
+| `RF-03-05` | Carta e página de Guerreiro(a) exibem só avatar, nick, badges, poderes, desempenho e criações originais                                                 | essencial  |
 | `RF-03-06` | Nenhuma tela exibe imagem real, nome civil, rede social ou contato de Guerreiro(a)                                                                      | essencial  |
 | `RF-03-07` | Página de Mestre e de Apoiador exibe currículo, portfólios, redes sociais e comprobatórios                                                              | essencial  |
 | `RF-03-79` | Card e página de Mestre e de Apoiador sem nick exibem o nome da persona, apresentado como nome                                                          | essencial  |
@@ -267,6 +267,8 @@ eles.
 | `RF-03-08` | Portfólio exibe as criações originais autorizadas, com título, trilha, data e autoria por nick                                                          | essencial  |
 | `RF-03-84` | Portfólio reúne as duas fontes do acervo em uma lista: comprovações aprovadas do prático e criação da culminância                                       | essencial  |
 | `RF-03-85` | Cada linha abre a produção na própria linha — imagem, áudio, vídeo, texto, link externo ou arquivo                                                      | essencial  |
+| `RF-03-86` | A coluna de criações originais da carta lista o acervo público do Guerreiro(a), do mais recente ao mais antigo, com título e data                       | essencial  |
+| `RF-03-87` | A página do Guerreiro(a) mantém o portfólio abaixo da carta, com a linha do portfólio da vitrine, que abre a produção                                   | essencial  |
 | `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                                                   | essencial  |
 | `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                                                    | essencial  |
 | `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta                                             | essencial  |
@@ -635,26 +637,26 @@ IA apontando para ela.
 
 ## 15. Rastreabilidade
 
-| Requisito                                       | Origem                                                                    |
-| ----------------------------------------------- | ------------------------------------------------------------------------- |
-| `RF-03-01` a `RF-03-14`                         | 03 §8 (vitrine), 11 §§8.1, 8.2 (cartas e páginas) e 03 §12                |
-| `RF-03-82`, `RF-03-83`, `RN-03-40`              | 03 §8 (lista de registros e paginação) e 11 §8.2 (a linha resume a carta) |
-| `RF-03-55` a `RF-03-57`, `RF-03-66`             | 11 §8.2 (card, moldura e piso do avatar) e 04 §2 (aporte)                 |
-| `RF-03-15` a `RF-03-21`                         | 02 §1 (série e granularidade) e 11 §8.3 (representação visual)            |
-| `RF-03-22` a `RF-03-24`                         | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)                 |
-| `RF-03-25` e `RF-03-26`                         | 03 §8 (três recortes de leitura)                                          |
-| `RF-03-27` a `RF-03-31`                         | 02 §1 (solicitação de participação, dados mínimos e prazo)                |
-| `RF-03-32` a `RF-03-34`                         | 03 §12.3 (entrega sob solicitação aprovada)                               |
-| `RF-03-35` a `RF-03-37`                         | 03 §8 (proteção das rotas públicas)                                       |
-| `RN-03-34` e `RN-03-35`                         | 03 §8 (origem em memória e chave sem freio)                               |
-| `RF-03-38` a `RF-03-44`                         | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)               |
-| `RF-03-78`                                      | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)                          |
-| `RF-03-79` e `RF-03-80`                         | 11 §8.2 (identificação do adulto e efetividade agregada)                  |
-| `RF-03-45` a `RF-03-49`                         | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15              |
-| `RF-03-50` e `RF-03-51`                         | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)                        |
-| `RF-03-52` e `RF-03-53`                         | 03 §12 (aviso de coleta e área detalhada)                                 |
-| `RF-03-58` a `RF-03-62`                         | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)                    |
-| `RF-03-63` a `RF-03-65`                         | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)                 |
-| `RF-03-67`                                      | 03 §8 (Área do Desenvolvedor e documentação da API)                       |
-| `RF-03-73` a `RF-03-77`                         | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
-| `RF-03-84`, `RF-03-85`, `RN-03-41` a `RN-03-43` | 11 §§2.2, 5, 8.2 (o acervo, os dois vereditos e a linha) e 02 §4          |
+| Requisito                                        | Origem                                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------------------- |
+| `RF-03-01` a `RF-03-14`                          | 03 §8 (vitrine), 11 §§8.1, 8.2 (cartas e páginas) e 03 §12                |
+| `RF-03-82`, `RF-03-83`, `RN-03-40`               | 03 §8 (lista de registros e paginação) e 11 §8.2 (a linha resume a carta) |
+| `RF-03-55` a `RF-03-57`, `RF-03-66`              | 11 §8.2 (card, moldura e piso do avatar) e 04 §2 (aporte)                 |
+| `RF-03-15` a `RF-03-21`                          | 02 §1 (série e granularidade) e 11 §8.3 (representação visual)            |
+| `RF-03-22` a `RF-03-24`                          | 04 §4 (Agenda 2030 e meta 17.18) e 11 §2.1 (etiqueta ODS)                 |
+| `RF-03-25` e `RF-03-26`                          | 03 §8 (três recortes de leitura)                                          |
+| `RF-03-27` a `RF-03-31`                          | 02 §1 (solicitação de participação, dados mínimos e prazo)                |
+| `RF-03-32` a `RF-03-34`                          | 03 §12.3 (entrega sob solicitação aprovada)                               |
+| `RF-03-35` a `RF-03-37`                          | 03 §8 (proteção das rotas públicas)                                       |
+| `RN-03-34` e `RN-03-35`                          | 03 §8 (origem em memória e chave sem freio)                               |
+| `RF-03-38` a `RF-03-44`                          | 03 §§8, 10 (chamada e sem favoritos) e 02 §1 (pré-cadastro)               |
+| `RF-03-78`                                       | 02 §1 e 14 §§10, 11 (garfo do que a pessoa traz)                          |
+| `RF-03-79` e `RF-03-80`                          | 11 §8.2 (identificação do adulto e efetividade agregada)                  |
+| `RF-03-45` a `RF-03-49`                          | 03 §8 (institucional), 04 §1 (PIX e lastro), 01 §7 (IA) e 15              |
+| `RF-03-50` e `RF-03-51`                          | 04 §2 (sem publicidade) e 03 §8 (sem rastreamento)                        |
+| `RF-03-52` e `RF-03-53`                          | 03 §12 (aviso de coleta e área detalhada)                                 |
+| `RF-03-58` a `RF-03-62`                          | 03 §§1, 1.1, 8 (vitrine na raiz e entrada por persona)                    |
+| `RF-03-63` a `RF-03-65`                          | 03 §8 (área do gestor) e 04 §4 (Agenda 2030 e meta 17.18)                 |
+| `RF-03-67`                                       | 03 §8 (Área do Desenvolvedor e documentação da API)                       |
+| `RF-03-73` a `RF-03-77`                          | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
+| `RF-03-84` a `RF-03-87`, `RN-03-41` a `RN-03-43` | 11 §§2.2, 5, 8.2 (o acervo, os dois vereditos, a linha e a carta) e 02 §4 |

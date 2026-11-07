@@ -18,7 +18,19 @@ const GUERREIRA: leituras.GuerreiroPublico = {
   poderes: [{ poder: "Poder do Território", nivel: 2 }],
   pontos_regulares: 40,
   posicao_no_ranking: 1,
-  criacoes: [{ trilha: "Trilha 1", validada_em: "2026-09-01" }],
+  criacoes: [
+    {
+      id: "c-1",
+      fonte: "criacao_original",
+      titulo: "Trilha 1",
+      tipo: "texto",
+      trilha_id: "t-1",
+      trilha: "Trilha 1",
+      validada_em: "2026-09-01",
+      producao: "Produção de teste.",
+      autores: [{ avatar: null, nick: "ZeBita" }],
+    },
+  ],
 };
 
 afterEach(() => {

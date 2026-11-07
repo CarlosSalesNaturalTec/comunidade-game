@@ -11,8 +11,10 @@ import { type GuerreiroPublico, obterGuerreiroPorNick } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { esperaEmLinguagemSimples } from "../formularios/espera";
 import { useLeitura } from "../leitura/useLeitura";
+import { RegistrosEmLinha } from "../listas/ListaDeRegistros";
 import { navegarPara } from "../navegacao/navegar";
-import { cartaDoGuerreiro, FORMATADOR_DE_DATA } from "./carta";
+import { idDoAcervo, linhaDoAcervo } from "../portfolio/linhaDoAcervo";
+import { cartaDoGuerreiro } from "./carta";
 
 interface Props {
   nick: string;
@@ -86,14 +88,15 @@ function Pagina({
           {criacoes.length === 0 ? (
             <EstadoDaLista>Nenhuma criação original validada ainda.</EstadoDaLista>
           ) : (
-            <ul className="cg-portfolio">
-              {criacoes.map((criacao) => (
-                <li key={`${criacao.trilha}-${criacao.validada_em}`}>
-                  <strong>{criacao.trilha}</strong> —{" "}
-                  {FORMATADOR_DE_DATA.format(new Date(criacao.validada_em))}
-                </li>
-              ))}
-            </ul>
+            // A linha é a do portfólio da vitrine, e a produção abre nela; a
+            // coluna da carta é o resumo (`RF-03-87`, `RF-03-85`, decisão do
+            // fundador, 2026-11-07). Sem paginação: os itens chegaram na carta.
+            <RegistrosEmLinha
+              idDe={idDoAcervo}
+              itens={criacoes}
+              linhaDe={linhaDoAcervo}
+              rotulo={`Portfólio de ${guerreiro.nick}`}
+            />
           )}
         </>
       }

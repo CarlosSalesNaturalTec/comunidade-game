@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CartaDoPersonagem, cartaEstaCompleta } from "comum/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -21,7 +21,7 @@ function guerreiro(nick: string, posicao = 1): GuerreiroPublico {
     poderes: [{ poder: "Poder do Código", nivel: 3 }],
     pontos_regulares: 40,
     posicao_no_ranking: posicao,
-    criacoes: [{ trilha: "Trilha da Água", validada_em: "2026-08-01T10:00:00Z" }],
+    criacoes: [noPortfolio(nick)],
   };
 }
 
@@ -223,5 +223,98 @@ describe("o saldo de pontos extras nunca chega à superfície pública", () => {
     expect(container.querySelectorAll(".cg-carta__coluna")).toHaveLength(3);
     expect(container.textContent).not.toContain("Para trocar");
     expect(container.textContent).not.toContain("pontos extras");
+  });
+});
+
+describe("o acervo na carta e na página do Guerreiro(a)", () => {
+  // Fatia 13 do PRD-03 (`RF-03-86`, `RF-03-87`, `RN-03-43`, decisão do
+  // fundador, 2026-11-07): a coluna da carta é o resumo do acervo, e o
+  // portfólio abaixo dela usa a linha da vitrine, que abre a produção.
+  function comprovacao(nick: string, titulo: string, validada_em: string): CriacaoPublica {
+    return {
+      id: `p-${titulo}`,
+      fonte: "comprovacao_do_pratico",
+      titulo,
+      tipo: "texto",
+      trilha_id: "t-2",
+      trilha: "Trilha do Território",
+      validada_em,
+      producao: `Comprovação de ${titulo}.`,
+      autores: [{ avatar: "avatar-de-teste", nick }],
+    };
+  }
+
+  function comAcervo(nick: string, criacoes: CriacaoPublica[]) {
+    comLeituras({ guerreiros: [{ ...guerreiro(nick), criacoes }] });
+    window.history.pushState(null, "", `/guerreiros/${nick}`);
+    return render(<App />);
+  }
+
+  function colunaDaCarta() {
+    const coluna = document.querySelector(".cg-carta__criacoes");
+    return [...(coluna?.querySelectorAll("li") ?? [])].map((item) => item.textContent);
+  }
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("só comprovações aprovadas preenchem a coluna, pelo título e pela data (RF-03-86)", async () => {
+    const { container } = comAcervo("so-pratico", [
+      comprovacao("so-pratico", "Mapa da rua", "2026-10-02T10:00:00Z"),
+    ]);
+
+    await screen.findByRole("heading", { name: "so-pratico", level: 2 });
+    expect(colunaDaCarta()).toEqual(["Mapa da rua — 02/10/2026"]);
+    expect(container.textContent).not.toContain("Nenhuma criação original validada ainda.");
+  });
+
+  it("a criação da culminância aparece pelo nome da trilha (RN-03-43)", async () => {
+    comAcervo("culminante", [noPortfolio("culminante")]);
+
+    await screen.findByRole("heading", { name: "culminante", level: 2 });
+    expect(colunaDaCarta()).toEqual(["Trilha da Água — 01/08/2026"]);
+  });
+
+  it("a coluna e o portfólio abrem pelo mais recente (RF-03-86, RF-03-87)", async () => {
+    comAcervo("em-ordem", [
+      comprovacao("em-ordem", "Mapa da rua", "2026-10-02T10:00:00Z"),
+      noPortfolio("em-ordem"),
+    ]);
+
+    await screen.findByRole("heading", { name: "em-ordem", level: 2 });
+    expect(colunaDaCarta()).toEqual([
+      "Mapa da rua — 02/10/2026",
+      "Trilha da Água — 01/08/2026",
+    ]);
+    const portfolio = screen.getByRole("list", { name: "Portfólio de em-ordem" });
+    const titulos = [
+      ...portfolio.querySelectorAll(".cg-lista-de-registros__identificacao"),
+    ].map((celula) => celula.textContent);
+    expect(titulos).toEqual(["Mapa da rua", "Trilha da Água"]);
+  });
+
+  it("sem acervo público, a coluna diz em uma frase que não há", async () => {
+    comAcervo("sem-acervo", []);
+
+    await screen.findByRole("heading", { name: "sem-acervo", level: 2 });
+    const carta = document.querySelector(".cg-carta") as HTMLElement;
+    expect(within(carta).getByText("Nenhuma criação original validada ainda.")).toBeVisible();
+  });
+
+  it("a linha do portfólio da página é a da vitrine e abre a produção (RF-03-87, RF-03-85)", async () => {
+    const usuario = userEvent.setup();
+    comAcervo("abre-producao", [
+      comprovacao("abre-producao", "Mapa da rua", "2026-10-02T10:00:00Z"),
+    ]);
+
+    const portfolio = await screen.findByRole("list", { name: "Portfólio de abre-producao" });
+    // A trilha sai ao lado da data na comprovação, e a autoria por nick abre
+    // a página do autor — a linha do portfólio da vitrine.
+    expect(portfolio.textContent).toContain("Trilha do Território");
+    expect(portfolio.querySelector('a[href*="abre-producao"]')).not.toBeNull();
+
+    await usuario.click(screen.getByRole("button", { name: "Ler a produção" }));
+    expect(await screen.findByText("Comprovação de Mapa da rua.")).toBeVisible();
   });
 });

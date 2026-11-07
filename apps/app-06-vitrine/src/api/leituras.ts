@@ -42,11 +42,6 @@ export interface PoderComNivelPublico {
   nivel: number;
 }
 
-export interface CriacaoNaCartaPublica {
-  trilha: string;
-  validada_em: string;
-}
-
 export interface GuerreiroPublico {
   avatar: string | null;
   nick: string;
@@ -54,7 +49,9 @@ export interface GuerreiroPublico {
   poderes: PoderComNivelPublico[];
   pontos_regulares: number;
   posicao_no_ranking: number;
-  criacoes: CriacaoNaCartaPublica[];
+  /** O **acervo público** do Guerreiro(a), do mais recente ao mais antigo,
+   * no mesmo formato do portfólio da vitrine (`RF-03-86`, `RF-03-87`). */
+  criacoes: CriacaoPublica[];
 }
 
 export interface AutorPublico {
