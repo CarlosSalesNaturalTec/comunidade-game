@@ -86,10 +86,10 @@
     consumo é por **endpoint global**, em qualquer provedor: no Ciclo 01 a região de
     processamento não é escolhida, e a revisão fica para o Ciclo 02 (documento 09). A
     **biometria facial do App 01 não usa modelo de linguagem** e é resolvida no próprio
-    aparelho (§3.3). A **transcrição da fala** segue o mesmo caminho: acontece no **próprio
-    aparelho**, pela Web Speech API do navegador, e ao núcleo chega **texto** — o áudio nunca
-    trafega nem custa. Onde o navegador não oferecer a API, a tela oferece o mesmo registro
-    por texto digitado (documento 09).
+    aparelho (§3.3). A **transcrição da fala** segue o mesmo caminho: acontece no **navegador**,
+    pela Web Speech API — no Chrome, nos serviços do Google, sob a conta do navegador —, e ao
+    núcleo chega **texto**: o áudio nunca chega ao núcleo nem custa. Onde o navegador não
+    oferecer a API, a tela oferece o mesmo registro por texto digitado (documento 09).
 
     A **síntese de fala** — a narração que lê as telas em voz alta (documento 15 §5.1) — vai
     no sentido contrário e **não** cabe na mesma regra: as vozes em pt-BR dos navegadores são
@@ -516,8 +516,9 @@ partida estão no documento 05.
 O **apoio às atividades escolares** não fica aqui: é atendido pelo assistente da App 05.
 
 **A aplicação não escuta a aula.** O microfone só abre quando o Guerreiro(a) fala com o
-assistente e fecha quando ele termina — não há captação do áudio ambiente nem transcrição da
-conversa da turma.
+assistente e fecha quando ele termina, ou, com o áudio ligado, nos 5 segundos depois de cada
+pergunta falada da sondagem (documento 09) — não há captação do áudio ambiente nem
+transcrição da conversa da turma.
 
 ## 5. App 03 — Gestão administrativa
 

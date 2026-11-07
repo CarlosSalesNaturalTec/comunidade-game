@@ -176,6 +176,9 @@ class Missao(Base, ComAutoria):
 # não validação (`RF-09-118`).
 PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO = 1
 TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO = 4
+# Guarda de entrada da resposta falada da sondagem: cinco segundos de fala
+# ficam muito abaixo disto (design — decisão 7). Não é regra de produto.
+LIMITE_DA_RESPOSTA_FALADA = 500
 
 
 class PerguntaDoDesbloqueio(Base):
@@ -261,6 +264,10 @@ class RespostaDaSubmissao(Base):
     se acertou (`RN-05-47`). É o grão que a medida do ciclo lê ao comparar a
     sondagem com os desbloqueios (documento 10 §3); esta fatia grava, não
     lê.
+
+    Na sondagem, a resposta pode vir **falada** e sem alternativa — a
+    transcrição literal de quando a fala não se ligou a nenhuma —, gravada
+    como não acertada (`RF-05-98`, `RN-05-55`). Cada linha tem uma forma só.
     """
 
     __tablename__ = "resposta_da_submissao"
@@ -272,12 +279,17 @@ class RespostaDaSubmissao(Base):
     pergunta_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("pergunta_do_desbloqueio.id"), nullable=False
     )
-    alternativa_escolhida: Mapped[int] = mapped_column(Integer, nullable=False)
+    alternativa_escolhida: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    resposta_falada: Mapped[str | None] = mapped_column(Text, nullable=True)
     acertou: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     __table_args__ = (
         UniqueConstraint(
             "submissao_id", "pergunta_id", name="uq_resposta_da_submissao_submissao_id_pergunta_id"
+        ),
+        CheckConstraint(
+            "(alternativa_escolhida IS NULL) <> (resposta_falada IS NULL)",
+            name="ck_resposta_da_submissao_forma_unica",
         ),
         Index("ix_resposta_da_submissao_submissao_id", "submissao_id"),
     )

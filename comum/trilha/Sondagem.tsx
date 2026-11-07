@@ -14,7 +14,8 @@ interface Props {
 // Primeiro passo de toda trilha recém inscrita: mede de onde o Guerreiro(a)
 // parte, para o Mestre ajustar o que vem pela frente. Nunca é apresentada
 // como prova, e a resposta não muda nível nem saldo (`RF-05-72`,
-// `RF-05-73`, `RN-05-34`).
+// `RF-05-73`, `RN-05-34`). É também o único quiz que responde por voz, com o
+// áudio ligado (`RF-05-97`, `RN-05-54`).
 export function Sondagem({ missaoId, desafio, aoResponder, submissaoLigada }: Props) {
   return (
     <section aria-label="Sondagem">
@@ -27,6 +28,7 @@ export function Sondagem({ missaoId, desafio, aoResponder, submissaoLigada }: Pr
         desafio={desafio}
         aoDesbloquear={aoResponder}
         submissaoLigada={submissaoLigada}
+        respostaPorVoz
       />
     </section>
   );

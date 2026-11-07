@@ -141,7 +141,10 @@ export function obterMissaoNoPercurso(
 
 export interface RespostaDoDesbloqueio {
   pergunta_id: string;
-  alternativa_escolhida: number;
+  // Uma forma só: a alternativa, ou — só na sondagem — a transcrição da fala
+  // que não se ligou a nenhuma (`RF-05-98`, `RN-05-55`).
+  alternativa_escolhida?: number;
+  resposta_falada?: string;
 }
 
 export interface ResultadoDaSubmissaoDoDesbloqueio {

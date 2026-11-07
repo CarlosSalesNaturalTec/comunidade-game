@@ -245,6 +245,8 @@ Mestre no encontro, e quem quer propor uma melhoria também.
 | `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"                                                                                    | essencial  |
 | `RF-05-72` | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão                                                                          | essencial  |
 | `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                                                        | essencial  |
+| `RF-05-97` | Com o áudio ligado, a sondagem abre o microfone por 5 s depois de falar a pergunta, mostra a barra do tempo e a transcrição, e envia sozinha ao fim             | essencial  |
+| `RF-05-98` | A fala é ligada à alternativa aproximada; silêncio ou fala sem correspondência segue como transcrição literal, sem alternativa                                  | essencial  |
 | `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                                                | essencial  |
 | `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                                                    | essencial  |
 | `RF-05-76` | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva                                      | essencial  |
@@ -407,6 +409,8 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-51` | A comprovação é exigida para declarar que cumpriu o prático, e quem não entrega pelo aparelho **entrega ao Mestre no encontro**: a declaração vale sem mídia e nunca faz perder a missão      | —                      | 02 §4            |
 | `RN-05-52` | Entrega nova antes do julgamento substitui a anterior, corpo e mídia; julgada que não cumpriu, a declaração e a comprovação permanecem, com o motivo, e entregar de novo reabre a mesma linha | —                      | 11 §2.2          |
 | `RN-05-53` | O visor ao vivo da câmera é permitido na entrada; o quadro capturado nunca volta à tela, antes ou depois do descritor, e a câmera só acende depois de a entrada ser pedida                    | 12                     | 03 §3.3          |
+| `RN-05-54` | Só a sondagem responde por voz, só com o áudio ligado; ligar o áudio pede o microfone, que só capta na janela de 5 s                                                                          | —                      | 03 §§1.12, 4     |
+| `RN-05-55` | Resposta falada sem alternativa é gravada com a transcrição e como não acertada; a sondagem abre a trilha do mesmo jeito                                                                      | —                      | 11 §2.2          |
 
 `RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
 Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
@@ -614,6 +618,8 @@ do Ciclo 02** (§3.2).
 - Criação de equipe entregue registra o papel de cada integrante; devolvida, mantém a autoria.
 - Criação validada de Guerreiro(a) sem autorização do responsável aparece no portfólio interno
   e **não** na vitrine.
+- Com o áudio ligado, a sondagem fala a pergunta, escuta 5 s com a barra do tempo à vista e
+  avança sozinha; desligado, segue por toque.
 - Nenhuma tela oferece comprar recompensa com pontos.
 - Nenhuma tela exibe imagem real, nome civil ou qualquer dado pessoal de outra criança.
 
@@ -660,6 +666,7 @@ soma a ele a partir do Ciclo 02, quando o canal desta aplicação abrir.
 | Equipe da trilha formada **e** homologada na App 01                                             | 02 §5           | Onde a equipe da trilha é formada e homologada                                                                    |
 | Desbloqueio é fato do Guerreiro(a) na trilha; quiz o núcleo afere, prático o Mestre autor julga | 11 §2.2         | O desbloqueio da missão é fato do Guerreiro(a) na trilha                                                          |
 | Pré-carga dos modelos na entrada da App 05: depois da câmera, e com indicador                   | 09 §1           | Pré-carga dos modelos de biometria na Área do Guerreiro(a)                                                        |
+| Sondagem respondida por voz, com o áudio ligado, em janela de 5 s                               | 03 §§1.12, 4    | Sondagem respondida por voz                                                                                       |
 
 As entidades `DisciplinaDeApoio` e `ConteudoDeApoio` foram acrescentadas ao modelo do PRD-01,
 e `Nivel` passou a ser derivado do percurso. O badge **de protagonismo** entrou no catálogo do
@@ -692,6 +699,8 @@ coletores distintos no recorte publicado (documento 02 §1).
 | `RN-05-49`              | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                                     |
 | `RF-05-95` e `RF-05-96` | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida) e 15 §5, aplicando à App 05 o que o `RF-04-64` já exige da App 01           |
 | `RN-05-53`              | 03 §3.3 e o invariante 12 do doc 99, que distingue o visor do quadro capturado                                                      |
+| `RF-05-97`, `RF-05-98`  | 03 §§1.12, 4 e 15 §5.1 (narração e transcrição na sondagem), decisão do fundador de 2026-11-07                                      |
+| `RN-05-54`, `RN-05-55`  | 03 §§1.12, 4 e 11 §2.2 (sondagem não define nível)                                                                                  |
 | `RN-05-50`              | 15 §9 (o trio de estrelas e a exceção da grandeza ponto), servindo o `RF-05-45`                                                     |
 | `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                                               |
 | `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                                   |

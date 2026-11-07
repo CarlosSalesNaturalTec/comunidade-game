@@ -30,7 +30,9 @@ transcrição (pendência no documento 09).
 2. **Janela com prazo em `comum/fala/`.** Função nova `escutarPorJanela({ duracaoMs, aoParcial,
    aoEncerrar })`: `continuous` e `interimResults` **ligados**, `stop()` ao fim do prazo, e
    `aoEncerrar(transcricao)` uma vez só, com o texto acumulado (vazio no silêncio ou erro
-   `no-speech`). Devolve o encerrador, seguro de chamar duas vezes. `iniciarTranscricao` não
+   `no-speech`). Devolve o encerrador, seguro de chamar duas vezes;
+   `encerrar(true)` fecha **sem** entregar (o toque vence a voz). Fim do navegador antes do
+   prazo não antecipa a entrega. `iniciarTranscricao` não
    muda. A duração é constante `JANELA_DA_SONDAGEM_MS = 5000`, da decisão do fundador.
 3. **Permissão no toque que liga.** Ao ligar, `alternarNarracao` chama
    `navigator.mediaDevices.getUserMedia({ audio: true })` e para todas as faixas na hora — só
@@ -51,7 +53,7 @@ transcrição (pendência no documento 09).
    Retornar à pergunta anterior refala e reabre a janela, pela regra de identidade que já existe.
 6. **Componente `JanelaDeEscuta`** em `comum/trilha/`: `<progress max={5000} value={ms decorridos}>`
    com `aria-label` ("Tempo para responder") — mede **o tempo da janela**, recomeça vazio a cada
-   pergunta e não tem relação com a posição no quiz —, avançando por `requestAnimationFrame`, e a transcrição parcial num parágrafo
+   pergunta e não tem relação com a posição no quiz —, avançando por relógio de 100 ms, e a transcrição parcial num parágrafo
    `aria-live="polite"` — texto da tela, não frase só para voz (spec da narração).
 7. **Contrato do núcleo.** `RespostaDoDesbloqueioEntrada`: `alternativa_escolhida: int | None =
    None` e `resposta_falada: str | None = Field(default=None, max_length=500)`. A regra exige

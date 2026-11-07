@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao } from "comum/autenticacao";
@@ -1652,6 +1652,8 @@ class EnunciadoFalso {
   lang = "";
   voice: SpeechSynthesisVoice | null = null;
   text: string;
+  onend: (() => void) | null = null;
+  onerror: (() => void) | null = null;
 
   constructor(text: string) {
     this.text = text;
@@ -1743,6 +1745,40 @@ describe("a pergunta da sondagem é falada no encontro", () => {
     expect(motor.ditos.map((dito) => dito.text).filter((texto) => texto !== "")).toContain(
       "Quanto é 1 + 1?. 1. 2. 3. 4",
     );
+  });
+
+  // A sondagem respondida por voz no aparelho do encontro (`RF-04-77`,
+  // `RN-05-54`): a mesma tela da App 05, e o microfone só abre na janela.
+  it("com o áudio ligado, a janela abre só depois da fala, e o toque fecha o microfone", async () => {
+    instalarReconhecimentoFalso();
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia: vi.fn().mockResolvedValue({ getTracks: () => [] }) },
+    });
+    const motor = await renderizarSondagemComNarracao();
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+    await act(async () => {});
+
+    // Enquanto a pergunta é falada, o microfone segue fechado.
+    expect(reconhecimentoAtual).toBeNull();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+
+    await act(async () => {
+      motor.ditos.at(-1)?.onend?.();
+    });
+    expect(reconhecimentoAtual).not.toBeNull();
+    expect(
+      screen.getByRole("progressbar", { name: "Tempo para responder" }),
+    ).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("radio", { name: "2" }));
+
+    expect(reconhecimentoAtual?.parado).toBe(true);
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "2" })).toBeChecked();
+    Reflect.deleteProperty(navigator, "mediaDevices");
   });
 
   it("desligada, a pergunta não fala e segue legível na tela", async () => {

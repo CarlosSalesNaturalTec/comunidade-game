@@ -12,6 +12,8 @@ class EnunciadoFalso {
   lang = "";
   voice: SpeechSynthesisVoice | null = null;
   text: string;
+  onend: (() => void) | null = null;
+  onerror: (() => void) | null = null;
 
   constructor(text: string) {
     this.text = text;
@@ -161,6 +163,35 @@ describe("falar", () => {
 
   it("sem a API do navegador, fica em silêncio e não lança", () => {
     expect(() => falar({ texto: "Oi" }, voz("pt-BR", true))).not.toThrow();
+  });
+});
+
+describe("fim da fala", () => {
+  it("avisa quem pediu quando o enunciado termina de ser dito", () => {
+    const motor = instalarMotorFalso();
+    const aoTerminar = vi.fn();
+    falar({ texto: "Pergunta" }, voz("pt-BR", true), { aoTerminar });
+    motor.ditos[0].onend?.();
+    expect(aoTerminar).toHaveBeenCalledTimes(1);
+  });
+
+  it("fala cancelada não é dada como terminada", () => {
+    const motor = instalarMotorFalso();
+    const aoTerminar = vi.fn();
+    falar({ texto: "Pergunta" }, voz("pt-BR", true), { aoTerminar });
+    cancelar();
+    motor.ditos[0].onerror?.();
+    motor.ditos[0].onend?.();
+    expect(aoTerminar).not.toHaveBeenCalled();
+  });
+
+  it("a fala substituída por outra não avisa o fim", () => {
+    const motor = instalarMotorFalso();
+    const daPrimeira = vi.fn();
+    falar({ texto: "Primeira" }, voz("pt-BR", true), { aoTerminar: daPrimeira });
+    falar({ texto: "Segunda" }, voz("pt-BR", true));
+    motor.ditos[0].onend?.();
+    expect(daPrimeira).not.toHaveBeenCalled();
   });
 });
 
