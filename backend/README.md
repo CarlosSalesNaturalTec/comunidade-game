@@ -235,11 +235,14 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
 
    Ligar o domínio a cada site (console do Firebase Hosting → domínio personalizado):
    `api.comunidadegame.org` ao alvo `api`, `gestao.comunidadegame.org` ao alvo `app-03`,
-   `mestre.comunidadegame.org` ao alvo `mestre`, e a raiz `comunidadegame.org` ao alvo
-   `vitrine`, com `www.comunidadegame.org` cadastrado no mesmo site como redirecionamento
-   para a raiz. Os registros DNS que o Firebase pedir entram na Cloudflare em modo
-   **"DNS only"** (nuvem cinza) enquanto o certificado é emitido — o proxy da Cloudflare
-   atrapalha a validação.
+   `mestre.comunidadegame.org` ao alvo `mestre`, `responsavel.comunidadegame.org` ao alvo
+   `responsavel`, `apoiador.comunidadegame.org` ao alvo `apoiador`, e a raiz
+   `comunidadegame.org` ao alvo `vitrine`, com `www.comunidadegame.org` cadastrado no mesmo
+   site como redirecionamento para a raiz. Os registros DNS que o Firebase pedir entram na
+   Cloudflare em modo **"DNS only"** (nuvem cinza) enquanto o certificado é emitido — o
+   proxy da Cloudflare atrapalha a validação. Aplicação com login Google precisa do endereço
+   novo também nas **origens JavaScript autorizadas** do cliente OAuth (o `GOOGLE_CLIENT_ID`),
+   senão o login falha com `origin_mismatch`.
 
 7. **O serviço do Cloud Run aceita invocação não autenticada** (`--allow-unauthenticated`,
    já no workflow). O Firebase Hosting **não se autentica** ao proxiar o _rewrite_: com o
