@@ -65,6 +65,6 @@
 
 ## 5. Documentação
 
-- [ ] 5.1 Marcar a fatia 15 do PRD-05 como `implementado` no cronograma. `docs/prds/index.md` não
+- [x] 5.1 Marcar a fatia 15 do PRD-05 como `implementado` no cronograma. `docs/prds/index.md` não
       muda (a situação do PRD-05 segue a mesma); `mkdocs.yml` não muda (nenhum arquivo novo em
       `docs/`).
