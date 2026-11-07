@@ -292,6 +292,13 @@ projeção SHALL ser **a mesma nas duas rotas**: o que o card mostra é o que a 
 resumido. (`RF-01-21`, `RF-01-28`, `RF-01-33`, `RN-01-10`, `RN-01-11`, documento 11 §§8.1, 8.2,
 PRD-03 §9, decisão do fundador, 2026-09-28)
 
+As **criações originais** da carta SHALL ser o **acervo público** do Guerreiro(a): a criação da
+culminância e a comprovação do desafio prático, sob o **mesmo portão** do acervo da vitrine, em
+ordem **decrescente** pela data de aprovação. Cada item SHALL ter o formato do item do acervo
+— identificador, fonte, título, tipo, produção, trilha, data e autoria —, sem regra própria que
+possa divergir dele. (`RF-03-86`, `RF-03-87`, `RN-03-41`, `RN-03-43`, decisão do fundador,
+2026-11-07)
+
 A composição SHALL sair **na própria listagem**, sem exigir de quem consome uma consulta por
 nick para cada Guerreiro(a) exibido: a consulta por nick tem freio por origem, e montar uma
 página de cards com ela seria barrado pelo próprio freio. (`RF-01-65`, `RN-01-27`)
@@ -335,6 +342,29 @@ e 16 do documento 99 §6)
 - **WHEN** uma criação original pública credita a autoria, ou o elenco dos jogos devolve um
   Guerreiro(a)
 - **THEN** ele continua projetado como avatar e nick, sem a composição do card
+
+#### Scenario: A carta traz as duas fontes do acervo
+
+- **WHEN** um Guerreiro(a) com autorização vigente tem uma criação da culminância validada e uma
+  comprovação do prático julgada cumprida e publicável
+- **THEN** as duas vêm nas criações originais da carta dele, nas duas rotas
+
+#### Scenario: Comprovação fora do portão não entra na carta
+
+- **WHEN** a comprovação do prático de um Guerreiro(a) não foi julgada, foi julgada não
+  publicável ou é entrega presencial
+- **THEN** ela não vem nas criações originais da carta dele
+
+#### Scenario: O acervo da carta vem do mais recente ao mais antigo
+
+- **WHEN** a carta de um Guerreiro(a) traz mais de um item do acervo
+- **THEN** eles vêm em ordem decrescente pela data de aprovação do Mestre
+
+#### Scenario: O item da carta é o item do acervo da vitrine
+
+- **WHEN** um item aparece nas criações originais da carta e no acervo público
+- **THEN** os dois trazem o mesmo identificador, fonte, título, tipo, produção, trilha, data e
+  autoria
 
 ### Requirement: A leitura pública de Mestres sai em listagem e por identificador
 
