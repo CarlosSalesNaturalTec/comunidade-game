@@ -43,13 +43,15 @@
       acumulado, silêncio vazio, encerrador idempotente. (`RF-05-97`, `RN-05-54`)
 - [ ] 3.3 `comum/trilha/ligarFalaAAlternativa.ts` e teste: texto aproximado, sem acento, letra,
       número, ordinal, empate e fala sem correspondência devolvendo `null`. (`RF-05-98`)
-- [ ] 3.4 `comum/trilha/JanelaDeEscuta.tsx`: barra de 5 s com rótulo acessível e transcrição
+- [ ] 3.4 `comum/trilha/JanelaDeEscuta.tsx`: barra do **tempo** da janela (vazia ao abrir, cheia aos
+      5 s, recomeçando a cada pergunta — nunca a posição no quiz), com rótulo acessível e transcrição
       parcial em `aria-live`. (`RF-05-97`)
 - [ ] 3.5 `comum/trilha/api.ts`, `DesafioDeDesbloqueio.tsx` e `Sondagem.tsx`: `respostaPorVoz`
       só na sondagem; janela aberta no fim da fala; toque encerra a janela e vale; ao fim marca
       e avança, e na última submete; resposta sem alternativa vai como `resposta_falada`.
       (`RF-05-97`, `RF-05-98`, `RN-05-54`)
-- [ ] 3.6 `comum/trilha/trilha.test.tsx`: fala → janela → transcrição à vista → avanço; última
+- [ ] 3.6 `comum/trilha/trilha.test.tsx`: fala → janela → barra enche em 5 s
+      (com relógio falso) e recomeça vazia na pergunta seguinte → transcrição à vista → avanço; última
       submete sozinha; silêncio e fala sem correspondência vão literais; toque durante a janela
       vence; áudio desligado, sem transcrição ou microfone negado seguem por toque; desafio de
       desbloqueio não abre a janela. (`RF-05-97`, `RF-05-98`, `RN-05-54`)

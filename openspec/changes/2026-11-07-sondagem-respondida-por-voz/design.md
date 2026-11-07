@@ -49,8 +49,9 @@ transcrição (pendência no documento 09).
    `aoTerminar` que abre a janela. Toque numa alternativa durante a janela chama o encerrador e
    vale a escolha. Ao fim: marca, cancela a janela e avança; na última, chama `submeter()`.
    Retornar à pergunta anterior refala e reabre a janela, pela regra de identidade que já existe.
-6. **Componente `JanelaDeEscuta`** em `comum/trilha/`: `<progress>` com `aria-label` ("Escutando
-   sua resposta") avançando por `requestAnimationFrame`, e a transcrição parcial num parágrafo
+6. **Componente `JanelaDeEscuta`** em `comum/trilha/`: `<progress max={5000} value={ms decorridos}>`
+   com `aria-label` ("Tempo para responder") — mede **o tempo da janela**, recomeça vazio a cada
+   pergunta e não tem relação com a posição no quiz —, avançando por `requestAnimationFrame`, e a transcrição parcial num parágrafo
    `aria-live="polite"` — texto da tela, não frase só para voz (spec da narração).
 7. **Contrato do núcleo.** `RespostaDoDesbloqueioEntrada`: `alternativa_escolhida: int | None =
    None` e `resposta_falada: str | None = Field(default=None, max_length=500)`. A regra exige

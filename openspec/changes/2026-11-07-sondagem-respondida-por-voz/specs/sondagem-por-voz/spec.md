@@ -26,7 +26,8 @@ e só então. Antes do fim da fala NEVER SHALL abrir. (`RF-05-97`, `RF-04-77`)
 
 ### Requirement: A janela de escuta é visível e mostra a transcrição
 
-Enquanto a janela dura, a tela SHALL mostrar uma **barra de progresso** de 5 segundos e a
+Enquanto a janela dura, a tela SHALL mostrar uma **barra de progresso do tempo** da janela —
+vazia ao abrir o microfone, cheia aos 5 segundos —, nunca a posição da pergunta no quiz, e a
 **transcrição obtida até ali**, atualizada conforme a criança fala. A barra SHALL ter rótulo
 acessível, e a transcrição SHALL ser texto da tela, alcançável por leitor de tela.
 (`RF-05-97`, documento 15 §5)
@@ -35,6 +36,12 @@ acessível, e a transcrição SHALL ser texto da tela, alcançável por leitor d
 
 - **WHEN** a janela de escuta está aberta
 - **THEN** a barra avança de vazia a cheia em 5 segundos
+
+#### Scenario: A barra mede o tempo, não as perguntas
+
+- **WHEN** a janela abre na primeira e depois na última pergunta da sondagem
+- **THEN** a barra começa vazia nas duas e enche em 5 segundos, sem refletir quantas perguntas
+  já foram respondidas
 
 #### Scenario: O que foi dito aparece na tela
 
