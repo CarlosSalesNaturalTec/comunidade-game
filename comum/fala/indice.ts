@@ -1,1 +1,6 @@
-export { existeTranscricaoDeFala, iniciarTranscricao } from "./fala";
+export {
+  escutarPorJanela,
+  existeTranscricaoDeFala,
+  iniciarTranscricao,
+  pedirPermissaoDoMicrofone,
+} from "./fala";

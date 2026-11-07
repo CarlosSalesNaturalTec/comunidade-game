@@ -7,12 +7,14 @@ import {
   useMemo,
   useState,
 } from "react";
+import { existeTranscricaoDeFala, pedirPermissaoDoMicrofone } from "../fala/fala";
 import {
   armar,
   cancelar,
   existeSinteseDeFala,
   type Fala,
   falar,
+  type OpcoesDaFala,
   observarVozes,
   vozPreferida,
 } from "./narracao";
@@ -26,12 +28,16 @@ interface ContextoDeNarracaoValor {
   /** O navegador oferece síntese de fala. Sem ela a camada cala. */
   disponivel: boolean;
   alternarNarracao: () => void;
-  /** O texto **curto** que a tela declarou, ao entrar nela. */
-  narrar: (fala: Fala) => void;
+  /** O texto **curto** que a tela declarou, ao entrar nela. `aoTerminar`
+   * só é chamado se a fala chegou a ser dita até o fim (`RF-05-97`). */
+  narrar: (fala: Fala, opcoes?: OpcoesDaFala) => void;
   /** O texto **longo**, sob toque, **independente do liga e desliga**: o
    * próprio toque é o pedido e é o gesto que o navegador exige. */
   ouvir: (fala: Fala) => void;
   cancelarNarracao: () => void;
+  /** O microfone foi permitido no toque que ligou o áudio. Sem a permissão,
+   * nada escuta e a sondagem segue por toque (`RN-05-54`). */
+  microfonePermitido: boolean;
 }
 
 // Sem provedor montado a camada fica **inerte**: é o que mantém inalterada
@@ -44,6 +50,7 @@ const INERTE: ContextoDeNarracaoValor = {
   narrar: () => {},
   ouvir: () => {},
   cancelarNarracao: () => {},
+  microfonePermitido: false,
 };
 
 const ContextoDeNarracao = createContext<ContextoDeNarracaoValor | null>(null);
@@ -69,9 +76,9 @@ export function ProvedorDeNarracao({ children }: { children: ReactNode }) {
   }, [disponivel]);
 
   const narrar = useCallback(
-    (fala: Fala) => {
+    (fala: Fala, opcoes?: OpcoesDaFala) => {
       if (!ligada || !voz) return;
-      falar(fala, voz);
+      falar(fala, voz, opcoes);
     },
     [ligada, voz],
   );
@@ -93,14 +100,23 @@ export function ProvedorDeNarracao({ children }: { children: ReactNode }) {
   // O clique que **liga** é o gesto que libera o motor de fala — daí o
   // `armar()` aqui dentro, e daí não existir um controle de iniciar à parte
   // (design — decisões 1 e 2).
+  const [microfonePermitido, definirMicrofonePermitido] = useState(false);
+
+  // Ligar o áudio também pede o microfone — só a permissão: as faixas param
+  // na hora e nada é captado. Negada, a narração segue ligada e sem alarme
+  // (`RN-05-54`, design — decisão 3). O pedido sai do mesmo toque, que é o
+  // gesto que o navegador exige.
   const alternarNarracao = useCallback(() => {
-    definirLigada((anterior) => {
-      const proxima = !anterior;
-      if (proxima) armar();
-      else cancelar();
-      return proxima;
-    });
-  }, []);
+    const proxima = !ligada;
+    definirLigada(proxima);
+    if (!proxima) {
+      cancelar();
+      return;
+    }
+    armar();
+    if (!existeTranscricaoDeFala()) return;
+    pedirPermissaoDoMicrofone().then(definirMicrofonePermitido);
+  }, [ligada]);
 
   const cancelarNarracao = useCallback(() => {
     cancelar();
@@ -114,8 +130,17 @@ export function ProvedorDeNarracao({ children }: { children: ReactNode }) {
       narrar,
       ouvir,
       cancelarNarracao,
+      microfonePermitido,
     }),
-    [ligada, disponivel, alternarNarracao, narrar, ouvir, cancelarNarracao],
+    [
+      ligada,
+      disponivel,
+      alternarNarracao,
+      narrar,
+      ouvir,
+      cancelarNarracao,
+      microfonePermitido,
+    ],
   );
 
   return <ContextoDeNarracao.Provider value={valor}>{children}</ContextoDeNarracao.Provider>;

@@ -22,6 +22,14 @@ export interface Fala {
   nick?: string;
 }
 
+/** Quem pede a fala pode querer saber quando ela **terminou de ser dita** —
+ * nunca quando foi cancelada (`RF-05-97`, design — decisão 1). */
+export interface OpcoesDaFala {
+  aoTerminar?: () => void;
+}
+
+let falaCorrente: SpeechSynthesisUtterance | null = null;
+
 // Único módulo que toca a síntese de fala do navegador — a fronteira por
 // onde o texto passa antes de ser falado, que pode ser voz de rede
 // (documento 03 §1.12). Onde o navegador não a oferece, tudo aqui devolve
@@ -84,7 +92,7 @@ export function enunciarFala(fala: Fala): string {
  * Fala o enunciado, cancelando antes o que estiver em curso: uma tela fala
  * uma coisa, e a seguinte cala a anterior (documento 15 §5.1).
  */
-export function falar(fala: Fala, voz: SpeechSynthesisVoice): void {
+export function falar(fala: Fala, voz: SpeechSynthesisVoice, opcoes: OpcoesDaFala = {}): void {
   const motor = motorDeFala();
   if (!motor || typeof window.SpeechSynthesisUtterance === "undefined") return;
   const enunciado = enunciarFala(fala);
@@ -93,10 +101,25 @@ export function falar(fala: Fala, voz: SpeechSynthesisVoice): void {
   const dito = new window.SpeechSynthesisUtterance(enunciado);
   dito.lang = IDIOMA;
   dito.voice = voz;
+  // O fim só vale para **este** enunciado, e só se ele terminou de ser dito:
+  // o cancelamento chega como `error` no Chrome e às vezes também como
+  // `end` — por isso a identidade, guardada em `falaCorrente`, e a marca de
+  // erro (`RF-05-97`, design — decisão 1).
+  falaCorrente = dito;
+  let interrompida = false;
+  dito.onerror = () => {
+    interrompida = true;
+  };
+  dito.onend = () => {
+    if (interrompida || falaCorrente !== dito) return;
+    falaCorrente = null;
+    opcoes.aoTerminar?.();
+  };
   motor.speak(dito);
 }
 
 export function cancelar(): void {
+  falaCorrente = null;
   motorDeFala()?.cancel();
 }
 

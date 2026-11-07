@@ -26,6 +26,7 @@ from ..pontuacao.regra import (
 )
 from ..tempo import agora
 from .modelo import (
+    LIMITE_DA_RESPOSTA_FALADA,
     PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO,
     TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO,
     Atividade,
@@ -1628,7 +1629,9 @@ def submeter_desafio_de_desbloqueio(
                 mensagem="Esta missão não tem desafio de desbloqueio declarado.",
                 campo="missao_id",
             )
-        escolhas = _conferir_respostas_do_quiz(respostas, perguntas)
+        escolhas, faladas = _conferir_respostas_do_quiz(
+            respostas, perguntas, e_sondagem=missao.e_sondagem
+        )
         acertos = sum(
             1 for pergunta in perguntas if escolhas[pergunta.id] == pergunta.alternativa_correta
         )
@@ -1638,6 +1641,7 @@ def submeter_desafio_de_desbloqueio(
             missao_id=missao.id,
             perguntas=perguntas,
             escolhas=escolhas,
+            faladas=faladas,
             acertos=acertos,
         )
         # A sondagem abre ao ser respondida: o corte não se aplica a ela
@@ -1660,7 +1664,13 @@ def submeter_desafio_de_desbloqueio(
         missao, comprovacao=comprovacao, entrega_presencial=entrega_presencial
     )
     _gravar_submissao(
-        sessao, guerreiro_id=guerreiro.id, missao_id=missao.id, perguntas=[], escolhas={}, acertos=0
+        sessao,
+        guerreiro_id=guerreiro.id,
+        missao_id=missao.id,
+        perguntas=[],
+        escolhas={},
+        faladas={},
+        acertos=0,
     )
     desbloqueio = DesbloqueioDaMissao(
         guerreiro_id=guerreiro.id,
@@ -1919,12 +1929,18 @@ def ler_arquivo_da_comprovacao(
 
 
 def _conferir_respostas_do_quiz(
-    respostas: list[dict] | None, perguntas: list[PerguntaDoDesbloqueio]
-) -> dict[uuid.UUID, int]:
+    respostas: list[dict] | None,
+    perguntas: list[PerguntaDoDesbloqueio],
+    *,
+    e_sondagem: bool,
+) -> tuple[dict[uuid.UUID, int | None], dict[uuid.UUID, str]]:
     """A submissão traz a resposta de todas as perguntas de uma vez
     (`RF-05-89`): resposta faltando, repetida ou apontando pergunta de outra
-    missão é 422."""
-    escolhas: dict[uuid.UUID, int] = {}
+    missão é 422. Na sondagem, e só nela, a resposta pode vir **falada** —
+    a transcrição sem alternativa —, quando a fala não se ligou a nenhuma
+    (`RF-05-98`, `RN-05-55`)."""
+    escolhas: dict[uuid.UUID, int | None] = {}
+    faladas: dict[uuid.UUID, str] = {}
     esperadas = {pergunta.id for pergunta in perguntas}
     for resposta in respostas or []:
         pergunta_id = resposta.get("pergunta_id")
@@ -1937,6 +1953,25 @@ def _conferir_respostas_do_quiz(
                 mensagem="Cada pergunta aceita uma resposta só.", campo="respostas"
             )
         escolhida = resposta.get("alternativa_escolhida")
+        falada = resposta.get("resposta_falada")
+        if falada is not None:
+            if escolhida is not None:
+                raise ErroDeValidacao(
+                    mensagem="Cada resposta tem uma forma só: alternativa ou fala.",
+                    campo="respostas",
+                )
+            if not e_sondagem:
+                raise ErroDeValidacao(
+                    mensagem="Só a sondagem aceita resposta falada sem alternativa.",
+                    campo="respostas",
+                )
+            if len(falada) > LIMITE_DA_RESPOSTA_FALADA:
+                raise ErroDeValidacao(
+                    mensagem="A resposta falada passou do tamanho aceito.", campo="respostas"
+                )
+            escolhas[pergunta_id] = None
+            faladas[pergunta_id] = falada
+            continue
         if escolhida is None or not (
             PRIMEIRA_ALTERNATIVA_DO_DESBLOQUEIO <= escolhida <= TOTAL_DE_ALTERNATIVAS_DO_DESBLOQUEIO
         ):
@@ -1948,7 +1983,7 @@ def _conferir_respostas_do_quiz(
         raise ErroDeValidacao(
             mensagem="Responda a todas as perguntas do quiz antes de enviar.", campo="respostas"
         )
-    return escolhas
+    return escolhas, faladas
 
 
 def _gravar_submissao(
@@ -1957,7 +1992,8 @@ def _gravar_submissao(
     guerreiro_id: uuid.UUID,
     missao_id: uuid.UUID,
     perguntas: list[PerguntaDoDesbloqueio],
-    escolhas: dict[uuid.UUID, int],
+    escolhas: dict[uuid.UUID, int | None],
+    faladas: dict[uuid.UUID, str],
     acertos: int,
 ) -> SubmissaoDoDesbloqueio:
     """Acrescenta a tentativa ao histórico, sem tocar nas anteriores
@@ -1973,6 +2009,7 @@ def _gravar_submissao(
                 submissao_id=submissao.id,
                 pergunta_id=pergunta.id,
                 alternativa_escolhida=escolhas[pergunta.id],
+                resposta_falada=faladas.get(pergunta.id),
                 acertou=escolhas[pergunta.id] == pergunta.alternativa_correta,
             )
         )

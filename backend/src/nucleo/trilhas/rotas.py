@@ -33,6 +33,7 @@ from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..tempo import agora
 from .modelo import (
+    LIMITE_DA_RESPOSTA_FALADA,
     Atividade,
     DesbloqueioDaMissao,
     EtapaDoCiclo,
@@ -1364,7 +1365,11 @@ class RespostaDoDesbloqueioEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     pergunta_id: uuid.UUID
-    alternativa_escolhida: int
+    # Uma forma só: a alternativa, ou — na sondagem, e só nela — a
+    # transcrição da fala que não se ligou a nenhuma (`RF-05-98`,
+    # `RN-05-55`). A regra confere a forma e a missão.
+    alternativa_escolhida: int | None = None
+    resposta_falada: str | None = Field(default=None, max_length=LIMITE_DA_RESPOSTA_FALADA)
 
 
 class SubmeterDesafioDeDesbloqueioEntrada(BaseModel):

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSessao } from "../autenticacao/ContextoDeSessao";
+import { escutarPorJanela, existeTranscricaoDeFala } from "../fala/fala";
 import { useNarracao } from "../narracao/ProvedorDeNarracao";
 import { Aviso } from "../react/Aviso";
 import { Botao } from "../react/Botao";
@@ -20,6 +21,8 @@ import {
   lerImagemDaPergunta,
   submeterDesafioDeDesbloqueio,
 } from "./api";
+import { JanelaDeEscuta } from "./JanelaDeEscuta";
+import { ligarFalaAAlternativa } from "./ligarFalaAAlternativa";
 
 interface Props {
   missaoId: string;
@@ -38,7 +41,19 @@ interface Props {
    * motivo — nada do julgamento fica gravado sem ser lido por ele
    * (`RF-05-94`). */
   julgamento?: JulgamentoDoPratico | null;
+  /** Só a **sondagem** responde por voz: com o áudio ligado, depois de cada
+   * pergunta falada, o microfone abre pela janela de 5 s (`RF-05-97`,
+   * `RN-05-54`). Fora dela, nenhum quiz escuta. */
+  respostaPorVoz?: boolean;
 }
+
+// A janela da sondagem por voz: cinco segundos, da decisão do fundador de
+// 2026-11-07 (`RF-05-97`, design — decisão 2).
+export const JANELA_DA_SONDAGEM_MS = 5000;
+
+// A escolha por toque é o número da alternativa; a resposta falada que não
+// se ligou a nenhuma segue literal (`RF-05-98`).
+type Escolha = number | { falada: string };
 
 type Pergunta = NonNullable<Desafio["perguntas"]>[number];
 
@@ -402,14 +417,26 @@ export function DesafioDeDesbloqueio({
   submissaoLigada = false,
   comprovacaoEntregue = null,
   julgamento = null,
+  respostaPorVoz = false,
 }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
-  const { narrar } = useNarracao();
+  const { narrar, microfonePermitido } = useNarracao();
   const [enviando, definirEnviando] = useState(false);
   const [placar, definirPlacar] = useState<{ acertos: number; total: number } | null>(null);
   const [aguardandoMestre, definirAguardandoMestre] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
-  const [escolhas, definirEscolhas] = useState<Record<string, number>>({});
+  const [escolhas, definirEscolhasNoEstado] = useState<Record<string, Escolha>>({});
+  // A resposta falada chega por retorno do navegador, fora do render: a
+  // referência é o que ela lê para não marcar sobre escolhas velhas.
+  const escolhasAtuais = useRef<Record<string, Escolha>>({});
+  function definirEscolhas(novas: Record<string, Escolha>) {
+    escolhasAtuais.current = novas;
+    definirEscolhasNoEstado(novas);
+  }
+  const [escuta, definirEscuta] = useState<{ perguntaId: string; transcricao: string } | null>(
+    null,
+  );
+  const encerrarEscuta = useRef<((descartar?: boolean) => void) | null>(null);
   const [indiceDaPergunta, definirIndiceDaPergunta] = useState(0);
   const [midiaCarregando, definirMidiaCarregando] = useState(false);
   const [entregue, definirEntregue] = useState<ComprovacaoEntregue | null>(
@@ -434,6 +461,12 @@ export function DesafioDeDesbloqueio({
   const ehQuiz = desafio.tipo === "quiz";
   const perguntaDaVez = perguntas[Math.min(indiceDaPergunta, perguntas.length - 1)];
   const todasRespondidas = perguntas.every((pergunta) => escolhas[pergunta.id] !== undefined);
+  const escutaPossivel =
+    respostaPorVoz &&
+    ehQuiz &&
+    submissaoLigada &&
+    microfonePermitido &&
+    existeTranscricaoDeFala();
 
   // A fala entra na **mudança do `id`** da pergunta, guardada em referência, e
   // não num efeito sobre o objeto dela: o objeto é novo a cada render de quem
@@ -444,26 +477,101 @@ export function DesafioDeDesbloqueio({
   // não chegou, e um `id` já marcado faria a pergunta nunca falar depois — o
   // laço de `useNarrarAoEntrar`, que refala quando o `narrar` muda de
   // identidade, sem o `id` só porque não precisa dele.
-  const perguntaFalada = useRef<{ id: string; narrar: typeof narrar } | null>(null);
+  // `escuta` entra na marca porque a permissão do microfone chega depois do
+  // toque que liga: a pergunta no ar é falada de novo, agora com a janela.
+  const perguntaFalada = useRef<{
+    id: string;
+    narrar: typeof narrar;
+    escuta: boolean;
+  } | null>(null);
+  // O que a janela faz ao fechar mora numa referência renovada a cada render:
+  // o retorno do navegador chega depois, e precisa da tela de agora.
+  const aoFimDaEscuta = useRef<(pergunta: Pergunta, transcricao: string) => void>(() => {});
+  aoFimDaEscuta.current = (pergunta, transcricao) => {
+    encerrarEscuta.current = null;
+    definirEscuta(null);
+    const ligada = ligarFalaAAlternativa(transcricao, pergunta.alternativas);
+    const escolha: Escolha = ligada ?? { falada: transcricao };
+    const novas = { ...escolhasAtuais.current, [pergunta.id]: escolha };
+    definirEscolhas(novas);
+    const posicao = perguntas.findIndex((cada) => cada.id === pergunta.id);
+    if (posicao < perguntas.length - 1) {
+      definirIndiceDaPergunta(posicao + 1);
+      return;
+    }
+    // Na última, a sondagem segue sozinha (`RF-05-97`).
+    void submeter({}, null, novas);
+  };
+
+  const abrirEscuta = useRef<(pergunta: Pergunta) => void>(() => {});
+  abrirEscuta.current = (pergunta) => {
+    if (!escutaPossivel || encerrarEscuta.current) return;
+    try {
+      definirEscuta({ perguntaId: pergunta.id, transcricao: "" });
+      encerrarEscuta.current = escutarPorJanela({
+        duracaoMs: JANELA_DA_SONDAGEM_MS,
+        aoParcial: (transcricao) =>
+          definirEscuta((atual) =>
+            atual?.perguntaId === pergunta.id ? { ...atual, transcricao } : atual,
+          ),
+        aoEncerrar: (transcricao) => aoFimDaEscuta.current(pergunta, transcricao),
+      });
+    } catch {
+      // Sem reconhecimento, a sondagem segue por toque, sem alarme.
+      encerrarEscuta.current = null;
+      definirEscuta(null);
+    }
+  };
+
+  // Trocar de pergunta ou sair da tela fecha o microfone **sem** entregar: a
+  // janela é da pergunta que estava no ar (`RN-05-54`).
+  const idDaPerguntaDaVez = perguntaDaVez?.id;
+  useEffect(() => {
+    if (!idDaPerguntaDaVez) return;
+    return () => {
+      encerrarEscuta.current?.(true);
+      encerrarEscuta.current = null;
+      definirEscuta(null);
+    };
+  }, [idDaPerguntaDaVez]);
+
   useEffect(() => {
     if (!ehQuiz || !perguntaDaVez) return;
     const falada = perguntaFalada.current;
-    if (falada?.id === perguntaDaVez.id && falada.narrar === narrar) return;
-    perguntaFalada.current = { id: perguntaDaVez.id, narrar };
-    narrar({ texto: falaDaPergunta(perguntaDaVez) });
-  }, [ehQuiz, perguntaDaVez, narrar]);
+    if (
+      falada?.id === perguntaDaVez.id &&
+      falada.narrar === narrar &&
+      falada.escuta === escutaPossivel
+    ) {
+      return;
+    }
+    perguntaFalada.current = { id: perguntaDaVez.id, narrar, escuta: escutaPossivel };
+    const pergunta = perguntaDaVez;
+    // Só depois de a pergunta ser **dita até o fim** o microfone abre; fala
+    // cancelada não avisa o fim, e nada escuta (`RF-05-97`).
+    narrar(
+      { texto: falaDaPergunta(pergunta) },
+      escutaPossivel ? { aoTerminar: () => abrirEscuta.current(pergunta) } : undefined,
+    );
+  }, [ehQuiz, perguntaDaVez, narrar, escutaPossivel]);
 
-  async function submeter(entrega: EntregaDoPratico = {}, arquivo: File | null = null) {
+  async function submeter(
+    entrega: EntregaDoPratico = {},
+    arquivo: File | null = null,
+    escolhasDoEnvio: Record<string, Escolha> = escolhas,
+  ) {
     if (!sessao) return;
     let respostas = null;
     if (ehQuiz) {
       // O envio não fica disponível antes disto; a guarda é a rede de
       // segurança de quem chamar por outro caminho.
-      if (!todasRespondidas) return;
-      respostas = perguntas.map((pergunta) => ({
-        pergunta_id: pergunta.id,
-        alternativa_escolhida: escolhas[pergunta.id],
-      }));
+      if (!perguntas.every((pergunta) => escolhasDoEnvio[pergunta.id] !== undefined)) return;
+      respostas = perguntas.map((pergunta) => {
+        const escolha = escolhasDoEnvio[pergunta.id];
+        return typeof escolha === "number"
+          ? { pergunta_id: pergunta.id, alternativa_escolhida: escolha }
+          : { pergunta_id: pergunta.id, resposta_falada: escolha.falada };
+      });
     }
     definirEnviando(true);
     definirErro(null);
@@ -686,15 +794,27 @@ export function DesafioDeDesbloqueio({
                         name={`pergunta-${pergunta.id}`}
                         checked={escolhas[pergunta.id] === posicao + 1}
                         disabled={!submissaoLigada}
-                        onChange={() =>
-                          definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 })
-                        }
+                        onChange={() => {
+                          // O toque vence a voz: fecha o microfone sem
+                          // entregar a fala, e vale a alternativa (`RN-05-54`).
+                          encerrarEscuta.current?.(true);
+                          encerrarEscuta.current = null;
+                          definirEscuta(null);
+                          definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 });
+                        }}
                       />
                       {alternativa}
                     </label>
                   </li>
                 ))}
               </ul>
+              {escuta?.perguntaId === pergunta.id && (
+                <JanelaDeEscuta
+                  key={pergunta.id}
+                  duracaoMs={JANELA_DA_SONDAGEM_MS}
+                  transcricao={escuta.transcricao}
+                />
+              )}
             </fieldset>
           )}
         </SequenciaPaginada>

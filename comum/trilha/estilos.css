@@ -87,3 +87,20 @@
 .cg-trilha__comprovacao-entregue {
   white-space: pre-wrap;
 }
+
+/* A janela de escuta da sondagem por voz (`RF-05-97`): a barra mede o tempo
+   da janela, não a posição no quiz. */
+.cg-trilha__escuta {
+  display: grid;
+  gap: var(--espaco-8);
+  margin-block-start: var(--espaco-12);
+}
+
+.cg-trilha__escuta progress {
+  inline-size: 100%;
+  block-size: var(--espaco-12);
+}
+
+.cg-trilha__escuta-transcricao {
+  font-weight: 600;
+}

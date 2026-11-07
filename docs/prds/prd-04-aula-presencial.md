@@ -406,7 +406,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-36` | Assistente de trilhas responde por voz ou texto, apenas a partir do corpus cadastrado pelos Mestres                                                           | essencial  |
 | `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro                                                             | essencial  |
 | `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                                                                    | essencial  |
-| `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala; não há captação do áudio ambiente                                                             | essencial  |
+| `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala — salvo a janela da sondagem do `RF-04-77`; não há captação do áudio ambiente                  | essencial  |
 | `RF-04-40` | Áudio da pergunta não chega ao núcleo: a fala é transcrita no aparelho e só a transcrição trafega                                                             | essencial  |
 | `RF-04-41` | Aparelho da equipe disputante recebe a pergunta da partida simultaneamente aos demais                                                                         | essencial  |
 | `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                                                                    | essencial  |
@@ -417,6 +417,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-73` | Guerreiro(a) responde à missão de sondagem, que abre a trilha, e submete o desafio de desbloqueio da missão no aparelho do encontro                           | essencial  |
 | `RF-04-74` | Guerreiro(a) escolhe o poder no catálogo do ciclo e inscreve-se na trilha pelo aparelho do encontro, sem teto de quantas e sem desinscrição                   | essencial  |
 | `RF-04-76` | Guerreiro(a) entrega a comprovação do desafio prático pelo aparelho do encontro, com o critério de aceite e o aviso da mídia guardada, sem divergir da App 05 | essencial  |
+| `RF-04-77` | Com o áudio ligado, a sondagem no aparelho do encontro é respondida por voz como na App 05 (`RF-05-97`, `RF-05-98`), sem divergir dela                        | essencial  |
 
 ### 6.3 Troca por recompensa avulsa
 
@@ -455,7 +456,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RN-04-17` | O Guerreiro(a) integra várias equipes, mas joga a partida de quiz por uma só                                                                                                                                                                  | 15         | 02 §5, 05 §5  |
 | `RN-04-18` | A gestão não forma nem edita equipe: acompanha as do dia no painel da App 03                                                                                                                                                                  | —          | 03 §5         |
 | `RN-04-19` | O assistente responde apenas a partir do corpus fechado cadastrado pelos Mestres                                                                                                                                                              | —          | 03 §§4, 7     |
-| `RN-04-20` | A aplicação não capta o áudio ambiente da aula; só o áudio dirigido ao assistente                                                                                                                                                             | —          | 03 §4         |
+| `RN-04-20` | A aplicação não capta o áudio ambiente da aula; só o áudio dirigido ao assistente ou, na janela do `RF-04-77`, à sondagem                                                                                                                     | —          | 03 §4         |
 | `RN-04-21` | Do áudio do assistente guarda-se apenas a transcrição, feita no aparelho                                                                                                                                                                      | —          | 03 §7         |
 | `RN-04-22` | Uma resposta por equipe e pergunta, válida para todos os integrantes                                                                                                                                                                          | —          | 05 §5         |
 | `RN-04-23` | Só o saldo de pontos extras é trocável; a troca nunca alcança o ponto regular                                                                                                                                                                 | 23         | 11 §5         |
@@ -878,42 +879,43 @@ janela da aula agendada; e a **forma do aviso** da exclusão do _template_, que 
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                    |
-| ----------------------- | --------------------------------------------------------- |
-| `RF-04-01`, `RF-04-06`  | 03 §3.2 (tela inicial e interação cognitiva), 06 §3       |
-| `RF-04-02` e `RF-04-03` | 02 §1 e 03 §3.2 (comunidade vinda da aula agendada)       |
-| `RF-04-04` e `RF-04-05` | 03 §3.2 (condição de funcionamento)                       |
-| `RF-04-75`              | 03 §§3.2, 3.4 (aparelho modesto, poucos segundos)         |
-| `RF-04-76`              | 02 §4 (as seis formas de entrega), servindo o `RF-05-91`  |
-| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)          |
-| `RF-04-08`              | 02 §1 (nick único)                                        |
-| `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                              |
-| `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)                  |
-| `RF-04-11` a `RF-04-14` | 03 §3.3 (consentimento, minimização e retenção)           |
-| `RF-04-15` e `RF-04-16` | 03 §3.2 (criança sem o responsável)                       |
-| `RF-04-17` a `RF-04-19` | 03 §3.2 (registro de presença)                            |
-| `RF-04-20` a `RF-04-22` | 03 §§1.1, 3.2 (falha de identificação e alternativa)      |
-| `RF-04-23` a `RF-04-25` | 03 §3.4 (rede instável e fila local)                      |
-| `RF-04-26`              | 03 §12 (aviso visível e área detalhada)                   |
-| `RF-04-27` e `RF-04-28` | 03 §3 (onboarding contínuo em aparelho compartilhado)     |
-| `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                       |
-| `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)                |
-| `RF-04-67` e `RF-04-68` | 03 §§3, 4 (presença e equipes em caminhos separados)      |
-| `RF-04-69` e `RF-04-70` | 02 §5 (nome da equipe)                                    |
-| `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                       |
-| `RF-04-61` e `RF-04-62` | 02 §5 (equipe da trilha formada e homologada no encontro) |
-| `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2             |
-| `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)          |
-| `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)                 |
-| `RF-04-58`              | 03 §3.4 (rede instável)                                   |
-| `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)                   |
-| `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)       |
-| `RF-04-60`              | 09 §1 (responsável mínimo no ato do encontro), 03 §3.3    |
-| `RF-04-63`              | 03 §3.3 (calibração do limiar no aparelho do encontro)    |
-| `RF-04-66` e `RN-04-35` | 03 §3.3 (limiar medido por ponto de apoio)                |
-| `RF-04-64` e `RF-04-65` | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida)   |
-| `RN-04-36`              | 03 §1 (erro declarado pelo núcleo chega como ele é)       |
-| `RN-04-37` e `RN-04-38` | 03 §§1.1, 3.4 (PIN de confirmação do adulto)              |
-| `RF-04-71` e `RN-04-41` | 03 §§1.1, 3 (saída do aparelho e PIN nos atos do adulto)  |
-| `RF-04-72` e `RF-04-73` | 03 §3 (percurso, sondagem e desbloqueio no encontro)      |
-| `RF-04-74`              | 03 §3 e 11 §2 (inscrição na trilha no encontro)           |
+| Requisito               | Origem                                                             |
+| ----------------------- | ------------------------------------------------------------------ |
+| `RF-04-01`, `RF-04-06`  | 03 §3.2 (tela inicial e interação cognitiva), 06 §3                |
+| `RF-04-02` e `RF-04-03` | 02 §1 e 03 §3.2 (comunidade vinda da aula agendada)                |
+| `RF-04-04` e `RF-04-05` | 03 §3.2 (condição de funcionamento)                                |
+| `RF-04-75`              | 03 §§3.2, 3.4 (aparelho modesto, poucos segundos)                  |
+| `RF-04-76`              | 02 §4 (as seis formas de entrega), servindo o `RF-05-91`           |
+| `RF-04-77`              | 03 §4 (a janela da sondagem), servindo o `RF-05-97` e o `RF-05-98` |
+| `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)                   |
+| `RF-04-08`              | 02 §1 (nick único)                                                 |
+| `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                                       |
+| `RF-04-10`              | 02 §1 (vínculo obrigatório à comunidade)                           |
+| `RF-04-11` a `RF-04-14` | 03 §3.3 (consentimento, minimização e retenção)                    |
+| `RF-04-15` e `RF-04-16` | 03 §3.2 (criança sem o responsável)                                |
+| `RF-04-17` a `RF-04-19` | 03 §3.2 (registro de presença)                                     |
+| `RF-04-20` a `RF-04-22` | 03 §§1.1, 3.2 (falha de identificação e alternativa)               |
+| `RF-04-23` a `RF-04-25` | 03 §3.4 (rede instável e fila local)                               |
+| `RF-04-26`              | 03 §12 (aviso visível e área detalhada)                            |
+| `RF-04-27` e `RF-04-28` | 03 §3 (onboarding contínuo em aparelho compartilhado)              |
+| `RF-04-29`              | 03 §1.1 (entrada por nick e imagem)                                |
+| `RF-04-30` a `RF-04-34` | 02 §5 e 03 §4.1 (equipes formadas na aula)                         |
+| `RF-04-67` e `RF-04-68` | 03 §§3, 4 (presença e equipes em caminhos separados)               |
+| `RF-04-69` e `RF-04-70` | 02 §5 (nome da equipe)                                             |
+| `RF-04-35`              | 11 §2 (anatomia da trilha), 03 §4.2                                |
+| `RF-04-61` e `RF-04-62` | 02 §5 (equipe da trilha formada e homologada no encontro)          |
+| `RF-04-45` a `RF-04-47` | 11 §2.2 (produção e devolutiva), 03 §§4, 12.2                      |
+| `RF-04-36` a `RF-04-40` | 03 §§4.2, 7 (assistente, corpus fechado e áudio)                   |
+| `RF-04-41` a `RF-04-44` | 05 §5 (regras da partida de Quiz ao Vivo)                          |
+| `RF-04-58`              | 03 §3.4 (rede instável)                                            |
+| `RF-04-48`              | 03 §3.3 (_template_ gerado no aparelho)                            |
+| `RF-04-49` a `RF-04-57` | 02 §8.2 (recompensa avulsa) e 11 §5 (saldo e troca)                |
+| `RF-04-60`              | 09 §1 (responsável mínimo no ato do encontro), 03 §3.3             |
+| `RF-04-63`              | 03 §3.3 (calibração do limiar no aparelho do encontro)             |
+| `RF-04-66` e `RN-04-35` | 03 §3.3 (limiar medido por ponto de apoio)                         |
+| `RF-04-64` e `RF-04-65` | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida)            |
+| `RN-04-36`              | 03 §1 (erro declarado pelo núcleo chega como ele é)                |
+| `RN-04-37` e `RN-04-38` | 03 §§1.1, 3.4 (PIN de confirmação do adulto)                       |
+| `RF-04-71` e `RN-04-41` | 03 §§1.1, 3 (saída do aparelho e PIN nos atos do adulto)           |
+| `RF-04-72` e `RF-04-73` | 03 §3 (percurso, sondagem e desbloqueio no encontro)               |
+| `RF-04-74`              | 03 §3 e 11 §2 (inscrição na trilha no encontro)                    |

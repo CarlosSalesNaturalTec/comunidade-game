@@ -2779,3 +2779,112 @@ def test_reabrir_a_declaracao_recoloca_o_momento_da_entrega(
     sessao.commit()
 
     assert de_novo.desbloqueio.momento > antigo + timedelta(days=300)
+
+
+def _sondagem_inscrita(sessao, criar_persona, criar_trilha, criar_missao, corretas):
+    mestre, guerreiro, _, sondagem = _trilha_inscrita(
+        sessao, criar_persona, criar_trilha, criar_missao, e_sondagem=True
+    )
+    _quiz_com_corretas(sessao, mestre, sondagem, corretas)
+    sessao.commit()
+    return guerreiro, sondagem
+
+
+def test_a_sondagem_aceita_resposta_falada_sem_alternativa(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-05-98`, `RN-05-55`, `RN-05-46`: a fala que não se ligou a nenhuma
+    alternativa segue literal, é gravada como não acertada e a trilha abre."""
+    guerreiro, sondagem = _sondagem_inscrita(
+        sessao, criar_persona, criar_trilha, criar_missao, [1, 1]
+    )
+    perguntas = perguntas_do_desbloqueio(sessao, missao_id=sondagem.id)
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao,
+        guerreiro=guerreiro,
+        missao=sondagem,
+        respostas=[
+            {"pergunta_id": perguntas[0].id, "alternativa_escolhida": 1},
+            {"pergunta_id": perguntas[1].id, "resposta_falada": "acho que é a lua"},
+        ],
+    )
+    sessao.commit()
+
+    assert resultado.aprovado is True
+    assert (resultado.acertos, resultado.total) == (1, 2)
+    falada = sessao.query(RespostaDaSubmissao).filter_by(pergunta_id=perguntas[1].id).one()
+    assert falada.alternativa_escolhida is None
+    assert falada.resposta_falada == "acho que é a lua"
+    assert falada.acertou is False
+    tocada = sessao.query(RespostaDaSubmissao).filter_by(pergunta_id=perguntas[0].id).one()
+    assert tocada.resposta_falada is None
+
+
+def test_o_silencio_na_sondagem_grava_transcricao_vazia(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-05-98`: silêncio segue sem alternativa e com transcrição vazia."""
+    guerreiro, sondagem = _sondagem_inscrita(sessao, criar_persona, criar_trilha, criar_missao, [1])
+    pergunta = perguntas_do_desbloqueio(sessao, missao_id=sondagem.id)[0]
+
+    resultado = submeter_desafio_de_desbloqueio(
+        sessao,
+        guerreiro=guerreiro,
+        missao=sondagem,
+        respostas=[{"pergunta_id": pergunta.id, "resposta_falada": ""}],
+    )
+    sessao.commit()
+
+    assert resultado.aprovado is True
+    gravada = sessao.query(RespostaDaSubmissao).filter_by(pergunta_id=pergunta.id).one()
+    assert (gravada.alternativa_escolhida, gravada.resposta_falada) == (None, "")
+    assert gravada.acertou is False
+
+
+def test_desbloqueio_comum_recusa_resposta_falada(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-54`: fora da sondagem a alternativa segue obrigatória."""
+    mestre, guerreiro, _, missao = _trilha_inscrita(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    _quiz_com_corretas(sessao, mestre, missao, [1])
+    sessao.commit()
+    pergunta = perguntas_do_desbloqueio(sessao, missao_id=missao.id)[0]
+
+    with pytest.raises(ErroDeValidacao):
+        submeter_desafio_de_desbloqueio(
+            sessao,
+            guerreiro=guerreiro,
+            missao=missao,
+            respostas=[{"pergunta_id": pergunta.id, "resposta_falada": "a primeira"}],
+        )
+    sessao.rollback()
+    assert sessao.query(SubmissaoDoDesbloqueio).filter_by(missao_id=missao.id).count() == 0
+
+
+@pytest.mark.parametrize(
+    "resposta",
+    [
+        {"alternativa_escolhida": 1, "resposta_falada": "a primeira"},
+        {"resposta_falada": "x" * 501},
+    ],
+    ids=["duas-formas", "acima-do-limite"],
+)
+def test_a_sondagem_recusa_resposta_falada_fora_da_forma(
+    sessao, criar_persona, criar_trilha, criar_missao, resposta
+):
+    """`RN-05-55`: cada resposta tem uma forma só, e a transcrição tem limite."""
+    guerreiro, sondagem = _sondagem_inscrita(sessao, criar_persona, criar_trilha, criar_missao, [1])
+    pergunta = perguntas_do_desbloqueio(sessao, missao_id=sondagem.id)[0]
+
+    with pytest.raises(ErroDeValidacao):
+        submeter_desafio_de_desbloqueio(
+            sessao,
+            guerreiro=guerreiro,
+            missao=sondagem,
+            respostas=[{"pergunta_id": pergunta.id, **resposta}],
+        )
+    sessao.rollback()
+    assert sessao.query(SubmissaoDoDesbloqueio).filter_by(missao_id=sondagem.id).count() == 0

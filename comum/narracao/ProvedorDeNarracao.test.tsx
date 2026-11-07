@@ -250,3 +250,86 @@ describe("sem provedor montado a camada é inerte (design — decisão 3)", () =
     expect(screen.queryByRole("button", { name: "Ouvir este texto" })).not.toBeInTheDocument();
   });
 });
+
+function TelaDoMicrofone() {
+  const { ligada, alternarNarracao, microfonePermitido } = useNarracao();
+  return (
+    <>
+      <button type="button" onClick={alternarNarracao}>
+        {ligada ? "Desligar a narração" : "Ligar a narração"}
+      </button>
+      <p>{microfonePermitido ? "microfone permitido" : "microfone sem permissão"}</p>
+    </>
+  );
+}
+
+function instalarMicrofone(getUserMedia: ReturnType<typeof vi.fn>) {
+  vi.stubGlobal("SpeechRecognition", class {});
+  Object.defineProperty(navigator, "mediaDevices", {
+    configurable: true,
+    value: { getUserMedia },
+  });
+}
+
+describe("ligar o áudio pede o microfone (RN-05-54, RF-05-97)", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, "mediaDevices");
+  });
+
+  it("pede a permissão no toque que liga e não deixa nada captando", async () => {
+    instalarMotorFalso();
+    const parar = vi.fn();
+    const getUserMedia = vi.fn().mockResolvedValue({ getTracks: () => [{ stop: parar }] });
+    instalarMicrofone(getUserMedia);
+    const usuario = userEvent.setup();
+    render(
+      <ProvedorDeNarracao>
+        <TelaDoMicrofone />
+      </ProvedorDeNarracao>,
+    );
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+
+    expect(await screen.findByText("microfone permitido")).toBeInTheDocument();
+    expect(getUserMedia).toHaveBeenCalledWith({ audio: true });
+    expect(parar).toHaveBeenCalledTimes(1);
+  });
+
+  it("negado, a narração segue ligada e nada avisa", async () => {
+    instalarMotorFalso();
+    instalarMicrofone(vi.fn().mockRejectedValue(new Error("NotAllowedError")));
+    const usuario = userEvent.setup();
+    render(
+      <ProvedorDeNarracao>
+        <TelaDoMicrofone />
+      </ProvedorDeNarracao>,
+    );
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+
+    expect(
+      await screen.findByRole("button", { name: "Desligar a narração" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("microfone sem permissão")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("sem transcrição no navegador, nem pede o microfone", async () => {
+    instalarMotorFalso();
+    const getUserMedia = vi.fn();
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia },
+    });
+    const usuario = userEvent.setup();
+    render(
+      <ProvedorDeNarracao>
+        <TelaDoMicrofone />
+      </ProvedorDeNarracao>,
+    );
+
+    await usuario.click(screen.getByRole("button", { name: "Ligar a narração" }));
+
+    expect(getUserMedia).not.toHaveBeenCalled();
+  });
+});
