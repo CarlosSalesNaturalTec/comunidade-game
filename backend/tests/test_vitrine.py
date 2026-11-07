@@ -2338,3 +2338,169 @@ def test_midia_da_comprovacao_de_quem_nao_autorizou_responde_404(
     )
 
     assert resposta.status_code == 404
+
+
+# --- O acervo na carta e na página do Guerreiro(a) ---
+# Fatia 13 do PRD-03: `RF-03-86`, `RF-03-87`, `RN-03-41`, `RN-03-43`.
+
+
+def _carta_por_nick(cliente, chave, nick):
+    resposta = cliente.get(f"/v1/vitrine/guerreiros/{nick}", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200, resposta.text
+    return resposta.json()
+
+
+def _carta_na_listagem(cliente, chave, nick):
+    resposta = cliente.get("/v1/vitrine/guerreiros", headers={"X-Chave-Aplicacao": chave})
+    assert resposta.status_code == 200, resposta.text
+    (item,) = [item for item in resposta.json()["itens"] if item["nick"] == nick]
+    return item
+
+
+def test_carta_traz_as_duas_fontes_do_acervo_nas_duas_rotas(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    comprovacao_aprovada,
+    guerreiro_publico,
+):
+    """`RF-03-86`, `RF-03-87`: a criação da culminância e a comprovação
+    aprovada vêm nas criações da carta, na listagem e na página por nick."""
+    guerreiro, nick = guerreiro_publico(nick="acervo-duplo")
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre, nome="Trilha da Culminância")
+    criacao = criar_criacao_original(trilha, guerreiro, guerreiro=guerreiro)
+    comprovacao = comprovacao_aprovada(guerreiro)
+
+    chave, _ = criar_chave()
+    for carta in (_carta_por_nick(cliente, chave, nick), _carta_na_listagem(cliente, chave, nick)):
+        assert {(item["fonte"], item["id"]) for item in carta["criacoes"]} == {
+            ("criacao_original", str(criacao.id)),
+            ("comprovacao_do_pratico", str(comprovacao.id)),
+        }
+
+
+def test_so_comprovacoes_aprovadas_preenchem_a_carta(
+    cliente, criar_chave, comprovacao_aprovada, guerreiro_publico
+):
+    """`RF-03-86`: quem só tem comprovação aprovada não fica com a carta
+    vazia — era o defeito que abriu a fatia 13."""
+    guerreiro, nick = guerreiro_publico(nick="so-pratico")
+    comprovacao_aprovada(guerreiro, titulo_curto="Mapa da rua")
+
+    chave, _ = criar_chave()
+    (item,) = _carta_por_nick(cliente, chave, nick)["criacoes"]
+    assert item["titulo"] == "Mapa da rua"
+
+
+@pytest.mark.parametrize(
+    "vereditos",
+    [
+        {"cumpriu": None, "publicavel": None, "julgado_em": None},
+        {"cumpriu": True, "publicavel": False},
+        {"comprovacao": None, "entrega_presencial": True},
+    ],
+    ids=["nao-julgada", "nao-publicavel", "entrega-presencial"],
+)
+def test_comprovacao_fora_do_portao_nao_entra_na_carta(
+    cliente, criar_chave, comprovacao_aprovada, guerreiro_publico, vereditos
+):
+    """`RN-03-41`: a carta usa o mesmo portão do acervo da vitrine."""
+    guerreiro, nick = guerreiro_publico(nick="fora-do-portao")
+    comprovacao_aprovada(guerreiro, **vereditos)
+
+    chave, _ = criar_chave()
+    assert _carta_por_nick(cliente, chave, nick)["criacoes"] == []
+
+
+def test_acervo_da_carta_vem_do_mais_recente_ao_mais_antigo(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    comprovacao_aprovada,
+    guerreiro_publico,
+):
+    """`RF-03-86`, `RF-03-83`: ordem decrescente pela data de aprovação,
+    misturando as duas fontes."""
+    guerreiro, nick = guerreiro_publico(nick="em-ordem")
+    agora = datetime.now(UTC)
+    antiga = comprovacao_aprovada(guerreiro, julgado_em=agora - timedelta(days=3))
+    trilha = criar_trilha(criar_persona(Papel.mestre), nome="Trilha do Meio")
+    meio = criar_criacao_original(
+        trilha, guerreiro, guerreiro=guerreiro, validado_em=agora - timedelta(days=2)
+    )
+    recente = comprovacao_aprovada(guerreiro, julgado_em=agora - timedelta(days=1))
+
+    chave, _ = criar_chave()
+    ids = [item["id"] for item in _carta_por_nick(cliente, chave, nick)["criacoes"]]
+    assert ids == [str(recente.id), str(meio.id), str(antiga.id)]
+
+
+def test_item_da_carta_e_o_item_do_acervo(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    comprovacao_aprovada,
+    guerreiro_publico,
+):
+    """`RF-03-87`, `RN-03-43`: um montador só — o item da carta é, campo a
+    campo, o item do acervo público."""
+    guerreiro, nick = guerreiro_publico(nick="mesmo-item")
+    trilha = criar_trilha(criar_persona(Papel.mestre), nome="Trilha Igual")
+    criar_criacao_original(trilha, guerreiro, guerreiro=guerreiro)
+    comprovacao_aprovada(guerreiro)
+
+    chave, _ = criar_chave()
+    carta = _carta_por_nick(cliente, chave, nick)["criacoes"]
+    assert carta == _acervo(cliente, chave)["itens"]
+
+
+def test_acervo_na_carta_nao_cresce_em_consultas_com_os_itens(
+    cliente,
+    criar_chave,
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_criacao_original,
+    comprovacao_aprovada,
+    guerreiro_publico,
+):
+    """Design — risco: a listagem de cartas consulta o acervo por conjunto,
+    nunca por item."""
+    from sqlalchemy import event
+
+    guerreiro, _ = guerreiro_publico(nick="conta-consultas")
+    mestre = criar_persona(Papel.mestre)
+    criar_criacao_original(criar_trilha(mestre), guerreiro, guerreiro=guerreiro)
+    comprovacao_aprovada(guerreiro)
+    chave, _ = criar_chave()
+
+    def _contar():
+        consultas = []
+        engine = sessao.connection().engine
+
+        # A leitura da chave de aplicação volta depois dos commits do
+        # cenário; ela é da autenticação da rota, não do acervo.
+        def _registrar(_conexao, _cursor, sql, *_args, **_kwargs):
+            if "chave_de_aplicacao" not in sql:
+                consultas.append(sql)
+
+        event.listen(engine, "before_cursor_execute", _registrar)
+        try:
+            resposta = cliente.get("/v1/vitrine/guerreiros", headers={"X-Chave-Aplicacao": chave})
+            assert resposta.status_code == 200
+        finally:
+            event.remove(engine, "before_cursor_execute", _registrar)
+        return len(consultas)
+
+    antes = _contar()
+    for _ in range(3):
+        criar_criacao_original(criar_trilha(mestre), guerreiro, guerreiro=guerreiro)
+        comprovacao_aprovada(guerreiro)
+    assert _contar() == antes

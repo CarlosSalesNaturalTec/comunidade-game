@@ -95,34 +95,7 @@ export function ListaDeRegistros<Pagina extends PaginaDoNucleo<unknown>>({
       )}
 
       {itens.length > 0 && (
-        <ol className="cg-lista-de-registros" aria-label={rotulo}>
-          {itens.map((item) => {
-            const linha = linhaDe(item);
-            return (
-              <li key={idDe(item)} className="cg-lista-de-registros__linha">
-                {/* Avatar ausente não reserva espaço: a linha sai sem ele, e
-                    nenhum vazio anuncia a falta (`RF-03-02`). */}
-                {linha.avatar !== undefined && (
-                  <span className="cg-lista-de-registros__avatar">
-                    <Avatar avatar={linha.avatar} tamanho={40} />
-                  </span>
-                )}
-                <span className="cg-lista-de-registros__identificacao">
-                  {linha.destino === undefined ? (
-                    linha.identificacao
-                  ) : (
-                    // `<a href>`, nunca `<button>`: o visitante abre em nova
-                    // aba, copia o endereço e navega pelo teclado, e o
-                    // `noindex` continua declarado no destino (design —
-                    // decisão 3).
-                    <a href={linha.destino}>{linha.identificacao}</a>
-                  )}
-                </span>
-                <span className="cg-lista-de-registros__dados">{linha.dados}</span>
-              </li>
-            );
-          })}
-        </ol>
+        <RegistrosEmLinha idDe={idDe} itens={itens} linhaDe={linhaDe} rotulo={rotulo} />
       )}
 
       {estado.situacao === "pronta" && depoisDaLista?.(estado.dado)}
@@ -155,5 +128,51 @@ export function ListaDeRegistros<Pagina extends PaginaDoNucleo<unknown>>({
         </div>
       )}
     </>
+  );
+}
+
+/** As linhas de registro, sem leitura nem paginação: a marcação da lista,
+ * para quem já tem os itens em mãos — o portfólio da página do Guerreiro(a),
+ * que chega na carta (`RF-03-87`). */
+export function RegistrosEmLinha<Item>({
+  itens,
+  idDe,
+  linhaDe,
+  rotulo,
+}: {
+  itens: readonly Item[];
+  idDe: (item: Item) => string;
+  linhaDe: (item: Item) => LinhaDeRegistro;
+  rotulo: string;
+}) {
+  return (
+    <ol className="cg-lista-de-registros" aria-label={rotulo}>
+      {itens.map((item) => {
+        const linha = linhaDe(item);
+        return (
+          <li key={idDe(item)} className="cg-lista-de-registros__linha">
+            {/* Avatar ausente não reserva espaço: a linha sai sem ele, e
+                nenhum vazio anuncia a falta (`RF-03-02`). */}
+            {linha.avatar !== undefined && (
+              <span className="cg-lista-de-registros__avatar">
+                <Avatar avatar={linha.avatar} tamanho={40} />
+              </span>
+            )}
+            <span className="cg-lista-de-registros__identificacao">
+              {linha.destino === undefined ? (
+                linha.identificacao
+              ) : (
+                // `<a href>`, nunca `<button>`: o visitante abre em nova
+                // aba, copia o endereço e navega pelo teclado, e o
+                // `noindex` continua declarado no destino (design —
+                // decisão 3).
+                <a href={linha.destino}>{linha.identificacao}</a>
+              )}
+            </span>
+            <span className="cg-lista-de-registros__dados">{linha.dados}</span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

@@ -45,9 +45,12 @@ export function cartaDoGuerreiro(guerreiro: LeituraDoGuerreiro): DadosDaCarta {
     })),
     poderes: guerreiro.poderes,
     desempenho: desempenhoDoGuerreiro(guerreiro),
+    // A coluna é o **resumo** do acervo: título e data, na ordem em que o
+    // núcleo os manda — do mais recente ao mais antigo. A produção abre no
+    // portfólio abaixo da carta, não aqui (`RF-03-86`, `RN-03-43`).
     criacoes: guerreiro.criacoes?.map(
       (criacao) =>
-        `${criacao.trilha} — ${FORMATADOR_DE_DATA.format(new Date(criacao.validada_em))}`,
+        `${criacao.titulo} — ${FORMATADOR_DE_DATA.format(new Date(criacao.validada_em))}`,
     ),
   };
 }
