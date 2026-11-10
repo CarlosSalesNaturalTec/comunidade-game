@@ -653,6 +653,17 @@ A App 01 SHALL permitir que o **Mestre ou o Admin** em sessão de trabalho recad
 de referência de um Guerreiro(a) atendido no encontro — captura ruim ou imagem que envelheceu
 —, capturando nova imagem no aparelho e enviando **apenas o descritor**.
 
+O recadastro SHALL ser alcançado pelo item **"Recadastrar imagem de Guerreiro(a)"** do grupo de
+quem opera o aparelho, na tela inicial, e NEVER SHALL ser oferecido de dentro de caminho que a
+criança escolhe — o das equipes inclusive. Escolhido o item, a aplicação SHALL abrir a sessão do
+Guerreiro(a) **apenas por confirmação presencial** — o nick dito pela criança e o PIN de quem
+abriu o aparelho —, sem oferecer a entrada por reconhecimento, e SHALL seguir direto à captura,
+**sem passar pela guarda de presença**: é ato de quem opera, como a medição e as entregas. Sem
+rede, o item SHALL dizer que precisa de rede, sem abrir sessão nem captura. Concluída a captura,
+a aplicação SHALL dizer que a nova imagem foi gravada e SHALL voltar à tela inicial com a sessão
+do Guerreiro(a) encerrada. (`RF-04-22`, `RF-04-21`, `RF-04-24`, `RF-04-28`, `RN-04-37`, decisão
+do fundador de 2026-11-10)
+
 O identificador do Guerreiro(a) SHALL vir da **sessão dele já aberta** por confirmação
 presencial, e NEVER SHALL ser obtido por consulta de nick: a App 01 NEVER SHALL dispor de rota
 que resolva nick em identificador, e o alcance continua vedado pelo `RN-01-22`. A substituição
@@ -671,6 +682,24 @@ SHALL ficar registrada pelo núcleo. (`RF-04-22`, `RN-01-22`, `RN-04-12`, PRD-04
   partir do nick
 - **THEN** nenhum existe: o identificador só aparece depois de uma sessão aberta por
   confirmação presencial
+
+#### Scenario: O recadastro mora no grupo de quem opera
+
+- **WHEN** a tela inicial é apresentada
+- **THEN** o grupo de quem opera o aparelho traz "Recadastrar imagem de Guerreiro(a)", e a tela
+  das equipes não oferece recadastro algum
+
+#### Scenario: O recadastro abre só pela confirmação presencial
+
+- **WHEN** quem opera escolhe recadastrar a imagem
+- **THEN** a aplicação pede o nick e o PIN de quem abriu o aparelho, sem oferecer a entrada por
+  reconhecimento, e confirmada a identidade segue à captura sem conferir a presença do dia
+
+#### Scenario: Gravada a imagem, o atendimento termina
+
+- **WHEN** a captura do recadastro conclui
+- **THEN** a aplicação diz que a nova imagem foi gravada e, ao voltar, apresenta a tela inicial
+  sem sessão de Guerreiro(a) aberta
 
 ### Requirement: O Guerreiro(a) forma a equipe da aula pelo aparelho, com o papel declarado
 
@@ -2179,13 +2208,14 @@ Cada caminho SHALL apresentar, **ao lado do rótulo textual que já tem**, o gli
 glifo NEVER SHALL substituir o rótulo nem ser a única forma de distinguir um caminho do outro.
 (`RF-04-01`, documento 15 §§5, 11.1, decisão do fundador de 2026-09-25)
 
-Os atos de **quem opera o aparelho** — a **medição do limiar**, abrir e fechar o momento de
-troca, as **entregas pendentes do encontro** e encerrar a sessão de trabalho — SHALL ser
-apresentados no **mesmo padrão dos
-caminhos**, ao fim da lista e depois de todos eles, sob um rótulo de grupo que os separe do que
-a criança escolhe. A ordem do grupo SHALL ser **medição do limiar**, momento de troca,
+Os atos de **quem opera o aparelho** — a **medição do limiar**, o **recadastro da imagem de
+Guerreiro(a)**, abrir e fechar o momento de troca, as **entregas pendentes do encontro** e
+encerrar a sessão de trabalho — SHALL ser apresentados no **mesmo padrão dos caminhos**, ao fim
+da lista e depois de todos eles, sob um rótulo de grupo que os separe do que a criança escolhe.
+A ordem do grupo SHALL ser **medição do limiar**, **recadastro da imagem**, momento de troca,
 **entregas pendentes do encontro** e encerramento, e o **encerramento SHALL ser o último
-do grupo**. As entregas pendentes SHALL acompanhar o momento de troca, por serem as duas
+do grupo**. O recadastro SHALL aparecer em toda sessão de trabalho, por ser ato do Mestre ou do
+Admin (`RF-04-22`, decisão do fundador de 2026-11-10). As entregas pendentes SHALL acompanhar o momento de troca, por serem as duas
 do encontro em curso, e SHALL aparecer **apenas quando quem abriu a sessão de trabalho é
 Mestre** — o Admin nunca confirma entrega (`RF-07-13`, `RN-02-17`). A abertura e o fechamento do
 momento de troca SHALL aparecer ali apenas para o aparelho que pode abri-lo; a medição SHALL
@@ -2271,14 +2301,15 @@ trilha. (`RF-04-01`, decisão do fundador de 2026-10-15)
 
 - **WHEN** a tela inicial é apresentada num aparelho que pode abrir o momento de troca
 - **THEN** depois de todos os caminhos aparecem, sob um rótulo de grupo que os separa deles e no
-  mesmo padrão dos caminhos, a medição do limiar, a abertura do momento de troca e, por último,
-  o encerramento da sessão de trabalho
+  mesmo padrão dos caminhos, a medição do limiar, o recadastro da imagem de Guerreiro(a), a
+  abertura do momento de troca e, por último, o encerramento da sessão de trabalho
 
 #### Scenario: O aparelho que não abre a troca mostra a medição e o encerramento
 
 - **WHEN** a tela inicial é apresentada num aparelho que não pode abrir o momento de troca
-- **THEN** o grupo de quem opera apresenta a medição do limiar e, por último, o encerramento da
-  sessão de trabalho, e nenhuma abertura de momento de troca é oferecida
+- **THEN** o grupo de quem opera apresenta a medição do limiar, o recadastro da imagem de
+  Guerreiro(a) e, por último, o encerramento da sessão de trabalho, e nenhuma abertura de
+  momento de troca é oferecida
 
 #### Scenario: Os caminhos aparecem na ordem decidida
 
