@@ -415,8 +415,8 @@ ela SHALL ser agregada e sem identificador de visitante. (`RF-03-38`, `RF-03-51`
 
 #### Scenario: Pedir para acompanhar não cria favorito
 
-- **WHEN** o visitante aciona a ação de acompanhar em uma página individual e depois recarrega
-  a vitrine
+- **WHEN** o visitante, querendo acompanhar alguém, abre a página individual dessa pessoa,
+  aciona "Quero apoiar" e depois recarrega a vitrine
 - **THEN** nenhum favorito e nenhuma pessoa acompanhada existem em lugar nenhum, e a vitrine
   está idêntica à primeira visita
 
@@ -1178,48 +1178,6 @@ cookie de rastreio e sem perfilamento. (`RF-03-52`, `RF-03-53`, `RN-03-22`, PRD-
 - **WHEN** o visitante abre a área detalhada e recarrega a página
 - **THEN** `localStorage`, `sessionStorage` e cookie seguem vazios
 
-### Requirement: Toda página individual traz a chamada "Quero apoiar", e acompanhar leva à mesma porta
-
-A App 06 SHALL apresentar, em **toda página individual** que publica, a chamada **"Quero
-apoiar"**, e SHALL apresentar na mesma página a **ação de acompanhar ou favoritar**, que
-SHALL levar à **mesma porta** da chamada. As duas SHALL abrir a porta do convite sem exigir
-cadastro, login ou dado do visitante. Com as páginas de Mestre e de Apoiador publicadas, a
-chamada SHALL aparecer nas **quatro** páginas individuais que a vitrine tem — Guerreiro(a),
-comunidade, Mestre e Apoiador. O **endereço** da porta NEVER SHALL mudar com o rótulo: ele é
-público e compartilhável. (`RF-03-39`, `RF-03-40`, `RF-03-42`, PRD-03 §5.5, decisão do
-fundador de 2026-10-11)
-
-#### Scenario: A página do Guerreiro(a) convida
-
-- **WHEN** o visitante abre a página individual de um Guerreiro(a) com autorização vigente
-- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
-
-#### Scenario: A página da comunidade convida
-
-- **WHEN** o visitante abre a página de uma Comunidade Virtual
-- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
-
-#### Scenario: A página do Mestre convida
-
-- **WHEN** o visitante abre a página individual de um Mestre
-- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
-
-#### Scenario: A página do Apoiador convida
-
-- **WHEN** o visitante abre a página individual de um Apoiador
-- **THEN** a página traz a chamada "Quero apoiar" e a ação de acompanhar
-
-#### Scenario: Acompanhar chega à porta do convite
-
-- **WHEN** o visitante aciona a ação de acompanhar
-- **THEN** a porta do convite abre, a mesma que a chamada "Quero apoiar" abre
-
-#### Scenario: O endereço da porta não mudou com o rótulo
-
-- **WHEN** o visitante aciona a chamada "Quero apoiar", em qualquer tela que a traga
-- **THEN** a porta abre no mesmo endereço público de antes, e nenhum endereço anterior fica
-  sem resposta
-
 ### Requirement: A chamada é do projeto e a porta não sabe quem estava sendo visto
 
 A chamada SHALL ser **do projeto**, e NEVER SHALL oferecer apoiar, apadrinhar ou favorecer a
@@ -1603,24 +1561,6 @@ O poder continua existindo como atributo público do Guerreiro(a), no card e na 
 - **WHEN** uma aplicação de terceiro com chave válida consulta a leitura pública de poderes
 - **THEN** o núcleo responde como antes, sem depender de a vitrine ter seção para isso
 
-### Requirement: "Necessidades em aberto" é seção da abertura, e não um bloco de outra seção
-
-A App 06 SHALL apresentar as necessidades de recurso em aberto como **seção própria da
-abertura**, com o rótulo "Necessidades em aberto". A seção NEVER SHALL depender de o visitante
-passar pela porta do convite, e NEVER SHALL ficar pendurada em outra seção. (`RF-03-47`,
-decisão do fundador de 2026-10-11)
-
-#### Scenario: A seção aparece por si na abertura
-
-- **WHEN** a raiz do domínio é aberta e há necessidade de recurso em aberto
-- **THEN** a seção "Necessidades em aberto" lista as necessidades, sem exigir que o visitante
-  abra a porta do convite nem outra seção
-
-#### Scenario: Sem necessidade em aberto, a seção diz isso
-
-- **WHEN** a raiz do domínio é aberta e não há necessidade de recurso em aberto
-- **THEN** a seção continua presente e diz que não há necessidade em aberto
-
 ### Requirement: "Contatos" exibe o texto publicado que o núcleo devolve
 
 A App 06 SHALL exibir a seção **"Contatos"** com o texto publicado, na ordem do recorte, sem
@@ -1641,9 +1581,9 @@ ficar escrito na aplicação. (`RF-03-45`, `RN-03-21`)
 
 A App 06 NEVER SHALL exibir a seção **"Como apoiar"**, em recorte nenhum. A seção continua
 existindo no núcleo, gravável por Admin e legível na leitura pública: o que sai é a tela. A
-**chave PIX** da pessoa jurídica vinculada SHALL ser oferecida na **porta do convite**, e as
-**necessidades de recurso em aberto**, em seção própria da abertura. (`RF-03-45`, `RF-03-46`,
-`RF-03-47`, decisão do fundador de 2026-10-11)
+**chave PIX** da pessoa jurídica vinculada e as **necessidades de recurso em aberto** SHALL ser
+oferecidas na **porta do convite**. (`RF-03-43`, `RF-03-45`, `RF-03-46`, `RF-03-47`, decisões do
+fundador de 2026-10-11 e 2026-11-10)
 
 #### Scenario: Nenhuma tela pública apresenta "Como apoiar"
 
@@ -1770,3 +1710,37 @@ linha do portfólio da vitrine. (`RF-03-87`, `RF-03-85`, `RN-03-43`, decisão do
 
 - **WHEN** um item aparece no portfólio da página e no portfólio da vitrine
 - **THEN** as duas linhas trazem o mesmo título, data, trilha e autoria
+
+### Requirement: Toda página individual traz a chamada "Quero apoiar", sem ação de acompanhar
+
+A App 06 SHALL apresentar a chamada **"Quero apoiar"** nas **quatro** páginas individuais —
+Guerreiro(a), comunidade, Mestre e Apoiador —, abrindo a porta do convite sem cadastro, login
+ou dado do visitante. A página NEVER SHALL oferecer ação de **acompanhar** ou **favoritar**. O
+**endereço** da porta NEVER SHALL mudar com o rótulo. (`RF-03-39`, `RF-03-42`, `RN-03-16`,
+PRD-03 §5.5, decisões do fundador de 2026-10-11 e 2026-11-10)
+
+#### Scenario: A página do Guerreiro(a) convida, sem acompanhar
+
+- **WHEN** o visitante abre a página individual de um Guerreiro(a) com autorização vigente
+- **THEN** a página traz a chamada "Quero apoiar" e nenhum botão "Quero acompanhar"
+
+#### Scenario: A página da comunidade convida, sem acompanhar
+
+- **WHEN** o visitante abre a página de uma Comunidade Virtual
+- **THEN** a página traz a chamada "Quero apoiar" e nenhum botão "Quero acompanhar"
+
+#### Scenario: A página do Mestre convida, sem acompanhar
+
+- **WHEN** o visitante abre a página individual de um Mestre
+- **THEN** a página traz a chamada "Quero apoiar" e nenhum botão "Quero acompanhar"
+
+#### Scenario: A página do Apoiador convida, sem acompanhar
+
+- **WHEN** o visitante abre a página individual de um Apoiador
+- **THEN** a página traz a chamada "Quero apoiar" e nenhum botão "Quero acompanhar"
+
+#### Scenario: O endereço da porta não mudou com o rótulo
+
+- **WHEN** o visitante aciona a chamada "Quero apoiar", em qualquer tela que a traga
+- **THEN** a porta abre no mesmo endereço público de antes, e nenhum endereço anterior fica
+  sem resposta
