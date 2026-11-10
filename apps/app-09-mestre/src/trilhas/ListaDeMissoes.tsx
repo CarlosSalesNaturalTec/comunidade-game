@@ -225,6 +225,11 @@ export function ListaDeMissoes({
               Dificuldade {missao.nivel_de_dificuldade}
             </span>
           </div>
+          {missao.materiais && missao.materiais.length > 0 && (
+            <p className="lista-de-missoes__materiais">
+              Materiais para a aula: {missao.materiais.join(", ")}
+            </p>
+          )}
 
           <div className="lista-de-missoes__atos">
             <Botao

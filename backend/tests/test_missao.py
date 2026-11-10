@@ -272,3 +272,51 @@ def test_mestre_nao_autor_e_recusado_ao_declarar_cadencia(
         declarar_cadencia_de_retomada(
             sessao, operador=outro_mestre, missao=missao, cadencia_de_retomada=[2, 7, 21]
         )
+
+
+def _criar_com_materiais(sessao, mestre, trilha, materiais):
+    return criar_missao(
+        sessao,
+        operador=mestre,
+        trilha=trilha,
+        titulo="Missão com materiais",
+        posicao=1,
+        nivel_de_dificuldade=1,
+        obrigatoria=True,
+        etapa_do_ciclo=EtapaDoCiclo.abertura,
+        materiais=materiais,
+    )
+
+
+def test_missao_criada_com_materiais_aparados(sessao, criar_persona, criar_trilha):
+    """`RF-09-140`, `RN-09-61`: só nomes, sem os espaços das pontas, na ordem."""
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+
+    missao = _criar_com_materiais(sessao, mestre, trilha, [" cola ", "jumpers"])
+    sessao.commit()
+    sessao.refresh(missao)
+
+    assert missao.materiais == ["cola", "jumpers"]
+
+
+def test_missao_criada_sem_materiais_nasce_com_lista_vazia(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+
+    missao = _criar_com_materiais(sessao, mestre, trilha, None)
+    sessao.commit()
+    sessao.refresh(missao)
+
+    assert missao.materiais == []
+
+
+def test_material_vazio_e_recusado(sessao, criar_persona, criar_trilha):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        _criar_com_materiais(sessao, mestre, trilha, ["cola", "   "])
+
+    assert erro.value.campo == "materiais"
+    assert sessao.query(Missao).filter_by(trilha_id=trilha.id).count() == 0

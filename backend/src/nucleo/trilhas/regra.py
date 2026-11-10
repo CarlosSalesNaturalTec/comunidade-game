@@ -352,6 +352,7 @@ def duplicar_trilha(
             e_sondagem=missao_de_origem.e_sondagem,
             etapa_do_ciclo=missao_de_origem.etapa_do_ciclo,
             cadencia_de_retomada=missao_de_origem.cadencia_de_retomada,
+            materiais=list(missao_de_origem.materiais),
             tipo_do_desafio_de_desbloqueio=missao_de_origem.tipo_do_desafio_de_desbloqueio,
             desafio_de_desbloqueio_enunciado=missao_de_origem.desafio_de_desbloqueio_enunciado,
             autor_id=operador.id,
@@ -464,6 +465,7 @@ def criar_missao(
     etapa_do_ciclo: str | None,
     e_sondagem: bool = False,
     cadencia_de_retomada: list[int] | None = None,
+    materiais: list[str] | None = None,
 ) -> Missao:
     """A dificuldade é só o que o Mestre autor declara — nunca deriva da
     idade do Guerreiro(a) (documento 99 §6 invariante 2). A sondagem
@@ -479,6 +481,7 @@ def criar_missao(
     titulo = _conferir_titulo_da_missao(titulo)
     obrigatoria = _conferir_obrigatoriedade_da_missao(obrigatoria)
     etapa_valida = _conferir_etapa_da_missao(etapa_do_ciclo)
+    materiais_validos = _conferir_materiais_da_missao(materiais if materiais is not None else [])
     if e_sondagem:
         _conferir_sondagem(sessao, trilha_id=trilha.id, posicao=posicao, missao_id=None)
 
@@ -491,6 +494,7 @@ def criar_missao(
         etapa_do_ciclo=etapa_valida,
         e_sondagem=e_sondagem,
         cadencia_de_retomada=cadencia_de_retomada,
+        materiais=materiais_validos,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
@@ -517,10 +521,26 @@ def _despublicar_pela_correcao(
     trilha.situacao_alterada_em = agora()
 
 
+def _conferir_materiais_da_missao(materiais: list[str] | None) -> list[str]:
+    """Os materiais são só nomes: cada um sem os espaços das pontas, e nome
+    vazio é recusado. Sem teto de itens nem de tamanho — nenhum número foi
+    decidido (`RF-09-140`, `RN-09-61`, design — decisão 3)."""
+    if materiais is None:
+        raise ErroDeValidacao(
+            mensagem="Mande a lista dos materiais; lista vazia apaga os declarados.",
+            campo="materiais",
+        )
+    aparados = [material.strip() for material in materiais]
+    if any(not material for material in aparados):
+        raise ErroDeValidacao(mensagem="Cada material precisa de um nome.", campo="materiais")
+    return aparados
+
+
 def corrigir_missao(
     sessao: Session, *, operador: Persona, missao: Missao | None, campos: dict
 ) -> Missao:
-    """Corrige título, dificuldade, obrigatoriedade, etapa e sondagem, em
+    """Corrige título, dificuldade, obrigatoriedade, etapa, sondagem e os
+    materiais (`RF-09-140`), em
     qualquer situação da trilha e só pelo Mestre autor (`RF-09-136`,
     `RN-09-56`). Campo ausente de `campos` conserva o valor gravado; a posição
     não chega aqui — muda só por `mover_missao`. Desmarcar a sondagem de
@@ -536,6 +556,8 @@ def corrigir_missao(
         obrigatoria = _conferir_obrigatoriedade_da_missao(campos["obrigatoria"])
     if "etapa_do_ciclo" in campos:
         etapa = _conferir_etapa_da_missao(campos["etapa_do_ciclo"])
+    if "materiais" in campos:
+        materiais = _conferir_materiais_da_missao(campos["materiais"])
     if "nivel_de_dificuldade" in campos and campos["nivel_de_dificuldade"] is None:
         raise ErroDeValidacao(
             mensagem="Missão exige o nível de dificuldade.", campo="nivel_de_dificuldade"
@@ -561,6 +583,8 @@ def corrigir_missao(
         missao.nivel_de_dificuldade = campos["nivel_de_dificuldade"]
     if "e_sondagem" in campos:
         missao.e_sondagem = campos["e_sondagem"]
+    if "materiais" in campos:
+        missao.materiais = materiais
     sessao.flush()
 
     if era_sondagem and not missao.e_sondagem and trilha.situacao == SituacaoDaTrilha.publicada:

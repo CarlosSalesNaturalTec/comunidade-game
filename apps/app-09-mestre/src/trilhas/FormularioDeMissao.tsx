@@ -64,10 +64,24 @@ export function FormularioDeMissao({
     missao?.etapa_do_ciclo ?? etapaInicial,
   );
   const [eSondagem, definirESondagem] = useState(missao?.e_sondagem ?? false);
+  const [materiais, definirMateriais] = useState<string[]>(missao?.materiais ?? []);
+  const [novoMaterial, definirNovoMaterial] = useState("");
   const [confirmandoDespublicacao, definirConfirmandoDespublicacao] = useState(false);
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
+
+  // Item em branco nunca entra na lista (`RF-09-140`).
+  function acrescentarMaterial() {
+    const nome = novoMaterial.trim();
+    if (!nome) return;
+    definirMateriais((atuais) => [...atuais, nome]);
+    definirNovoMaterial("");
+  }
+
+  function removerMaterial(indice: number) {
+    definirMateriais((atuais) => atuais.filter((_, posicao) => posicao !== indice));
+  }
 
   async function aoSubmeter(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -107,6 +121,9 @@ export function FormularioDeMissao({
             obrigatoria: obrigatoria === "sim",
             etapa_do_ciclo: etapaDoCiclo,
             e_sondagem: eSondagem,
+            // Só manda a lista quando ela mudou, para não reescrever o que
+            // não foi tocado (design — decisão 6).
+            ...(materiaisMudaram(missao.materiais ?? [], materiais) ? { materiais } : {}),
           },
           sessao.token,
         );
@@ -122,6 +139,7 @@ export function FormularioDeMissao({
           obrigatoria: obrigatoria === "sim",
           etapa_do_ciclo: etapaDoCiclo,
           e_sondagem: eSondagem,
+          materiais,
         },
         sessao.token,
       );
@@ -229,6 +247,28 @@ export function FormularioDeMissao({
         )}
       </div>
 
+      <fieldset className="cg-campo">
+        <legend>Materiais necessários para a aula</legend>
+        <p>Opcional. Por exemplo: cola, jumpers, papel.</p>
+        {materiais.length > 0 && (
+          <ul aria-label="Materiais declarados">
+            {materiais.map((material, indice) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: nomes podem se repetir
+              <li key={`${indice}-${material}`}>
+                {material}{" "}
+                <Botao variante="secundaria" onClick={() => removerMaterial(indice)}>
+                  Remover {material}
+                </Botao>
+              </li>
+            ))}
+          </ul>
+        )}
+        <Campo rotulo="Novo material" valor={novoMaterial} aoAlterar={definirNovoMaterial} />
+        <Botao variante="secundaria" onClick={acrescentarMaterial}>
+          Acrescentar material
+        </Botao>
+      </fieldset>
+
       {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
 
       {confirmandoDespublicacao && (
@@ -255,4 +295,8 @@ export function FormularioDeMissao({
       </Botao>
     </form>
   );
+}
+
+function materiaisMudaram(gravados: string[], atuais: string[]): boolean {
+  return gravados.length !== atuais.length || gravados.some((nome, i) => nome !== atuais[i]);
 }

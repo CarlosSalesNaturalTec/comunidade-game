@@ -279,6 +279,7 @@ class ItemDaProgramacaoSaida(BaseModel):
     atividade: AtividadeSaida
     missao_id: uuid.UUID
     missao_titulo: str
+    missao_materiais: list[str] = Field(default_factory=list)
     trilha_id: uuid.UUID
     trilha_titulo: str
     conteudos: list[ConteudoSaida] = Field(default_factory=list)
@@ -299,6 +300,8 @@ def _saida_do_item_da_programacao(
         atividade=saida_da_atividade(atividade),
         missao_id=missao.id,
         missao_titulo=missao.titulo,
+        # Os materiais da aula, como o Mestre autor os declarou (`RF-04-79`).
+        missao_materiais=list(missao.materiais or []),
         trilha_id=trilha.id,
         trilha_titulo=trilha.nome,
         conteudos=[

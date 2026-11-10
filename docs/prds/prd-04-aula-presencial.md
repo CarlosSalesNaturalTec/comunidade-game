@@ -419,6 +419,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-76` | Guerreiro(a) entrega a comprovação do desafio prático pelo aparelho do encontro, com o critério de aceite e o aviso da mídia guardada, sem divergir da App 05 | essencial  |
 | `RF-04-77` | Com o áudio ligado, a sondagem no aparelho do encontro é respondida por voz como na App 05 (`RF-05-97`, `RF-05-98`), sem divergir dela                        | essencial  |
 | `RF-04-78` | A sondagem no aparelho do encontro tem o retorno por pergunta, a tela final e o refazer da App 05 (`RF-05-99` a `RF-05-101`), sem divergir dela               | essencial  |
+| `RF-04-79` | A programação do encontro mostra, junto da missão, os materiais que o Mestre autor declarou para a aula (`RF-09-140`)                                         | essencial  |
 
 ### 6.3 Troca por recompensa avulsa
 
@@ -554,20 +555,20 @@ corpo, até três variações já testadas contra todo papel (documento 09, 2026
 
 Rotas do caminho das equipes, todas autenticadas na **sessão do Guerreiro(a)**:
 
-| Método | Rota                                  | Uso nesta aplicação                                                                                                                                            |
-| ------ | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET    | `/v1/aulas/{id}/equipes`              | Listar as equipes já formadas na aula, por avatar e nick                                                                                                       |
-| POST   | `/v1/aulas/{id}/equipes`              | Criar equipe da aula, com quem a criou como primeiro integrante                                                                                                |
-| POST   | `/v1/trilhas/{id}/equipes`            | Criar a equipe da trilha, com quem a criou como primeiro integrante (`RF-04-61`)                                                                               |
-| POST   | `/v1/equipes/{id}/homologacao`        | Homologar a equipe da trilha — única escrita desta lista sob a **sessão de trabalho**, do Mestre, e não sob a do Guerreiro(a) (`RF-04-62`)                     |
-| POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                                                                                                                 |
-| PATCH  | `/v1/equipes/{id}`                    | Renomear a equipe — só quem a integra (`RF-04-70`)                                                                                                             |
-| DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                                                                                                                 |
-| GET    | `/v1/equipes/{id}/missao`             | Programação do encontro, em lista — missão, conteúdo e atividade do dia de cada atividade presencial da aula da equipe; restrita a quem a integra (`RF-04-35`) |
-| POST   | `/v1/equipes/{id}/producao`           | Entregar a produção da missão — texto, áudio ou foto — na atividade corrente da equipe (`RF-04-45` a `RF-04-47`)                                               |
-| POST   | `/v1/assistente/trilhas/consultas`    | Perguntar ao assistente de trilhas e gravar a transcrição                                                                                                      |
-| GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Receber a pergunta em andamento no aparelho da equipe                                                                                                          |
-| POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe, nunca do aparelho de onde veio                                                                                                    |
+| Método | Rota                                  | Uso nesta aplicação                                                                                                                                                             |
+| ------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/v1/aulas/{id}/equipes`              | Listar as equipes já formadas na aula, por avatar e nick                                                                                                                        |
+| POST   | `/v1/aulas/{id}/equipes`              | Criar equipe da aula, com quem a criou como primeiro integrante                                                                                                                 |
+| POST   | `/v1/trilhas/{id}/equipes`            | Criar a equipe da trilha, com quem a criou como primeiro integrante (`RF-04-61`)                                                                                                |
+| POST   | `/v1/equipes/{id}/homologacao`        | Homologar a equipe da trilha — única escrita desta lista sob a **sessão de trabalho**, do Mestre, e não sob a do Guerreiro(a) (`RF-04-62`)                                      |
+| POST   | `/v1/equipes/{id}/integrantes`        | Entrar em uma equipe existente                                                                                                                                                  |
+| PATCH  | `/v1/equipes/{id}`                    | Renomear a equipe — só quem a integra (`RF-04-70`)                                                                                                                              |
+| DELETE | `/v1/equipes/{id}/integrantes/eu`     | Sair da equipe                                                                                                                                                                  |
+| GET    | `/v1/equipes/{id}/missao`             | Programação do encontro, em lista — missão com os materiais, conteúdo e atividade do dia de cada atividade presencial da aula da equipe; restrita a quem a integra (`RF-04-35`) |
+| POST   | `/v1/equipes/{id}/producao`           | Entregar a produção da missão — texto, áudio ou foto — na atividade corrente da equipe (`RF-04-45` a `RF-04-47`)                                                                |
+| POST   | `/v1/assistente/trilhas/consultas`    | Perguntar ao assistente de trilhas e gravar a transcrição                                                                                                                       |
+| GET    | `/v1/partidas-de-quiz/{id}/pergunta`  | Receber a pergunta em andamento no aparelho da equipe                                                                                                                           |
+| POST   | `/v1/partidas-de-quiz/{id}/respostas` | Enviar a resposta da equipe, nunca do aparelho de onde veio                                                                                                                     |
 
 Rotas do momento de troca por recompensa avulsa (`RF-04-49` a `RF-04-57`), oferecido só com o
 Mestre na sessão de trabalho:
@@ -889,6 +890,7 @@ janela da aula agendada; e a **forma do aviso** da exclusão do _template_, que 
 | `RF-04-76`              | 02 §4 (as seis formas de entrega), servindo o `RF-05-91`           |
 | `RF-04-77`              | 03 §4 (a janela da sondagem), servindo o `RF-05-97` e o `RF-05-98` |
 | `RF-04-78`              | 11 §2.2, servindo o `RF-05-99`, o `RF-05-100` e o `RF-05-101`      |
+| `RF-04-79`              | 11 §2.2 (os materiais da missão), servindo o `RF-09-140`           |
 | `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)                   |
 | `RF-04-08`              | 02 §1 (nick único)                                                 |
 | `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                                       |

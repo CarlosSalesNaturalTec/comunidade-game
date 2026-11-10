@@ -128,6 +128,12 @@ class Missao(Base, ComAutoria):
         Enum(EtapaDoCiclo, native_enum=False, length=16), nullable=False
     )
     cadencia_de_retomada: Mapped[list[int] | None] = mapped_column(ARRAY(Integer), nullable=True)
+    # Os materiais que a aula da missão pede — só nomes, na ordem declarada
+    # pelo Mestre autor; lista vazia é missão sem materiais (`RF-09-140`,
+    # `RN-09-61`).
+    materiais: Mapped[list[str]] = mapped_column(
+        ARRAY(Text), nullable=False, default=list, server_default=text("'{}'")
+    )
     # O desafio de desbloqueio, declarado pelo Mestre autor (`RF-09-26`,
     # `RF-09-118`): o tipo fica aqui, porque é ele que diz se a missão tem
     # desafio e de que natureza. No **quiz**, as perguntas são linhas de

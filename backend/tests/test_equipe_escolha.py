@@ -16,7 +16,7 @@ def _cabecalhos(chave, token):
 
 def _montar_atividade(criar_trilha, criar_missao, criar_atividade, mestre, aula):
     trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
-    missao = criar_missao(trilha, mestre)
+    missao = criar_missao(trilha, mestre, materiais=["cola", "papel"])
     return criar_atividade(missao, mestre, aula=aula)
 
 
@@ -213,6 +213,8 @@ def test_declarar_e_ler_pela_rota(
     corpo = leitura.json()
     assert len(corpo) == 1
     assert corpo[0]["corrente"] is True
+    # Os materiais da aula chegam com a missão (`RF-04-79`).
+    assert corpo[0]["missao_materiais"] == ["cola", "papel"]
 
 
 def test_mestre_recebe_403_ao_declarar_pela_rota(

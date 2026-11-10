@@ -158,6 +158,7 @@ class MissaoSaida(BaseModel):
     e_sondagem: bool
     etapa_do_ciclo: EtapaDoCiclo
     cadencia_de_retomada: list[int] | None
+    materiais: list[str] = Field(default_factory=list)
     atividades: list[AtividadeSaida] = Field(default_factory=list)
     etiquetas_ods: list[EtiquetaOdsSaida] = Field(default_factory=list)
     conteudos: list[ConteudoSaida] = Field(default_factory=list)
@@ -189,6 +190,7 @@ def _saida_da_missao(
         e_sondagem=missao.e_sondagem,
         etapa_do_ciclo=missao.etapa_do_ciclo,
         cadencia_de_retomada=missao.cadencia_de_retomada,
+        materiais=list(missao.materiais or []),
         atividades=[saida_da_atividade(atividade) for atividade in (atividades or [])],
         etiquetas_ods=[saida_da_etiqueta(etiqueta) for etiqueta in (etiquetas or [])],
         conteudos=[saida_do_conteudo(conteudo) for conteudo in (conteudos or [])],
@@ -535,6 +537,7 @@ class CriarMissaoEntrada(BaseModel):
     obrigatoria: bool | None = None
     etapa_do_ciclo: str | None = None
     e_sondagem: bool = False
+    materiais: list[str] | None = None
 
 
 @roteador.post("/trilhas/{id_da_trilha}/missoes", status_code=201)
@@ -559,6 +562,7 @@ def criar_missao_rota(
         obrigatoria=entrada.obrigatoria,
         etapa_do_ciclo=entrada.etapa_do_ciclo,
         e_sondagem=entrada.e_sondagem,
+        materiais=entrada.materiais,
     )
     sessao_bd.commit()
     return _saida_da_missao(missao, etiquetas=_etiquetas_da_missao(sessao_bd, missao))
@@ -572,7 +576,9 @@ class CorrigirMissaoEntrada(BaseModel):
     obrigatoria: bool | None = None
     etapa_do_ciclo: str | None = None
     e_sondagem: bool | None = None
-    """Cinco campos, todos opcionais: o que não vier conserva o valor gravado.
+    materiais: list[str] | None = None
+    """Seis campos, todos opcionais: o que não vier conserva o valor gravado;
+    `materiais` substitui a lista inteira, e lista vazia a apaga (`RF-09-140`).
     Não há `posicao` — com o `extra="forbid"`, mandá-la responde **422** pelo
     próprio contrato; a posição muda só pela ordem (design — decisão 2)."""
 

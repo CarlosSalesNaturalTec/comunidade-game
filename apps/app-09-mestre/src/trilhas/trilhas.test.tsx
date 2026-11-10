@@ -113,6 +113,7 @@ function missao(sobrescreve: Partial<MissaoDaTrilha> = {}): MissaoDaTrilha {
     e_sondagem: false,
     etapa_do_ciclo: "abertura",
     cadencia_de_retomada: null,
+    materiais: [],
     atividades: [],
     etiquetas_ods: [],
     ...sobrescreve,
@@ -4409,5 +4410,144 @@ describe("correção e movimento da missão (RF-09-136, RF-09-137, RF-09-139)", 
 
     await waitFor(() => expect(corrigir).toHaveBeenCalledTimes(1));
     expect(screen.queryByText(/sai do ar ao gravar/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("materiais da missão (RF-09-140, RN-09-61)", () => {
+  async function abrirTrilha(dados: TrilhaDoMestre) {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([dados]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      minhasTurmas({ itens: [aula()] }),
+    );
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await screen.findByLabelText("Missões da trilha");
+    return usuario;
+  }
+
+  function linhaDa(titulo: string): HTMLElement {
+    const item = within(screen.getByLabelText("Missões da trilha"))
+      .getByText(titulo, { selector: ".lista-de-missoes__titulo" })
+      .closest("li");
+    if (!item) throw new Error(`Linha de ${titulo} não encontrada`);
+    return item as HTMLElement;
+  }
+
+  it("acrescenta os materiais e os manda na criação da missão", async () => {
+    const criar = vi.spyOn(trilhasApi, "criarMissao").mockResolvedValue(
+      missao({
+        id: "missao-2",
+        titulo: "Robô de papel",
+        posicao: 2,
+        materiais: ["cola", "jumpers"],
+      }),
+    );
+    const usuario = await abrirTrilha(trilha({ missoes: [missao()] }));
+
+    await usuario.click(await screen.findByRole("button", { name: /nova missão/i }));
+    const formulario = screen.getByRole("form", { name: /nova missão/i });
+    await usuario.type(within(formulario).getByLabelText(/^título$/i), "Robô de papel");
+    await usuario.selectOptions(within(formulario).getByLabelText(/obrigatoriedade/i), "sim");
+    for (const nome of ["cola", "jumpers"]) {
+      await usuario.type(within(formulario).getByLabelText(/novo material/i), nome);
+      await usuario.click(
+        within(formulario).getByRole("button", { name: /acrescentar material/i }),
+      );
+    }
+    await usuario.click(
+      within(formulario).getByRole("button", { name: /acrescentar missão/i }),
+    );
+
+    await waitFor(() =>
+      expect(criar).toHaveBeenCalledWith(
+        "trilha-1",
+        expect.objectContaining({ materiais: ["cola", "jumpers"] }),
+        "token-do-mestre",
+      ),
+    );
+    expect(
+      await within(linhaDa("Robô de papel")).findByText(
+        /materiais para a aula: cola, jumpers/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("item em branco não entra na lista", async () => {
+    const usuario = await abrirTrilha(trilha({ missoes: [missao()] }));
+
+    await usuario.click(await screen.findByRole("button", { name: /nova missão/i }));
+    const formulario = screen.getByRole("form", { name: /nova missão/i });
+    await usuario.type(within(formulario).getByLabelText(/novo material/i), "   ");
+    await usuario.click(
+      within(formulario).getByRole("button", { name: /acrescentar material/i }),
+    );
+
+    expect(
+      within(formulario).queryByLabelText("Materiais declarados"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("a correção abre com os gravados, e remover manda a lista vazia", async () => {
+    const corrigir = vi.spyOn(trilhasApi, "corrigirMissao").mockResolvedValue({
+      missao: missao({ materiais: [] }),
+      situacao_da_trilha: "rascunho",
+      motivo_da_situacao: null,
+    });
+    const usuario = await abrirTrilha(trilha({ missoes: [missao({ materiais: ["papel"] })] }));
+
+    expect(
+      within(linhaDa("Primeira missão")).getByText(/materiais para a aula: papel/i),
+    ).toBeInTheDocument();
+    await usuario.click(
+      within(linhaDa("Primeira missão")).getByRole("button", { name: /corrigir missão/i }),
+    );
+    const formulario = screen.getByRole("form", { name: /corrigir a missão/i });
+    expect(within(formulario).getByLabelText("Materiais declarados")).toHaveTextContent(
+      "papel",
+    );
+
+    await usuario.click(within(formulario).getByRole("button", { name: /remover papel/i }));
+    await usuario.click(within(formulario).getByRole("button", { name: /gravar correção/i }));
+
+    await waitFor(() =>
+      expect(corrigir).toHaveBeenCalledWith(
+        "missao-1",
+        expect.objectContaining({ materiais: [] }),
+        "token-do-mestre",
+      ),
+    );
+  });
+
+  it("a correção que não toca os materiais não os manda", async () => {
+    const corrigir = vi.spyOn(trilhasApi, "corrigirMissao").mockResolvedValue({
+      missao: missao({ titulo: "Outro título", materiais: ["papel"] }),
+      situacao_da_trilha: "rascunho",
+      motivo_da_situacao: null,
+    });
+    const usuario = await abrirTrilha(trilha({ missoes: [missao({ materiais: ["papel"] })] }));
+
+    await usuario.click(
+      within(linhaDa("Primeira missão")).getByRole("button", { name: /corrigir missão/i }),
+    );
+    const formulario = screen.getByRole("form", { name: /corrigir a missão/i });
+    await usuario.click(within(formulario).getByRole("button", { name: /gravar correção/i }));
+
+    await waitFor(() => expect(corrigir).toHaveBeenCalled());
+    expect(corrigir.mock.calls[0][1]).not.toHaveProperty("materiais");
+  });
+
+  it("missão sem materiais não mostra o rótulo", async () => {
+    await abrirTrilha(trilha({ missoes: [missao()] }));
+
+    expect(
+      within(linhaDa("Primeira missão")).queryByText(/materiais para a aula/i),
+    ).not.toBeInTheDocument();
   });
 });

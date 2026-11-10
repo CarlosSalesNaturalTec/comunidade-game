@@ -135,6 +135,9 @@ export interface MissaoDaTrilha {
   e_sondagem: boolean;
   etapa_do_ciclo: EtapaDoCiclo;
   cadencia_de_retomada: number[] | null;
+  // Os materiais que a aula da missão pede — só nomes, na ordem declarada;
+  // lista vazia é missão sem materiais (`RF-09-140`, `RN-09-61`).
+  materiais: string[];
   // O desafio que abre a missão seguinte — fato do Guerreiro(a) na trilha,
   // nunca da equipe; declarar de novo substitui o anterior, com as
   // perguntas dele (`RF-09-26`, `RF-09-118`, documento 11 §2.2). O quiz tem
@@ -239,6 +242,7 @@ export interface CriarMissaoEntrada {
   obrigatoria: boolean;
   etapa_do_ciclo: EtapaDoCiclo;
   e_sondagem?: boolean;
+  materiais?: string[];
 }
 
 export function criarMissao(
@@ -253,14 +257,16 @@ export function criarMissao(
   });
 }
 
-// Os cinco campos são opcionais: o que não vier conserva o valor gravado. A
-// posição não está aqui — muda só por `moverMissao` (`RF-09-136`).
+// Os seis campos são opcionais: o que não vier conserva o valor gravado. A
+// posição não está aqui — muda só por `moverMissao` (`RF-09-136`). Os
+// materiais substituem a lista inteira, e lista vazia a apaga (`RF-09-140`).
 export interface CorrigirMissaoEntrada {
   titulo?: string;
   nivel_de_dificuldade?: number;
   obrigatoria?: boolean;
   etapa_do_ciclo?: EtapaDoCiclo;
   e_sondagem?: boolean;
+  materiais?: string[];
 }
 
 // A correção diz a situação da trilha depois dela: desmarcar a sondagem de

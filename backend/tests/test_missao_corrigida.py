@@ -293,3 +293,93 @@ def test_rota_recusa_o_admin(
     )
 
     assert resposta.status_code == 403
+
+
+def test_correcao_so_dos_materiais_em_trilha_publicada(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_culminancia
+):
+    """`RF-09-140`, `RN-09-61`: substitui a lista, conserva o resto e não
+    mexe na situação da trilha."""
+    mestre = criar_persona(Papel.mestre)
+    trilha, _, segunda = _trilha_publicavel(
+        criar_trilha, criar_missao, criar_desafio_de_coleta, criar_culminancia, mestre
+    )
+
+    corrigir_missao(
+        sessao, operador=mestre, missao=segunda, campos={"materiais": ["papel ", "cola"]}
+    )
+
+    assert segunda.materiais == ["papel", "cola"]
+    assert segunda.titulo == "Segunda"
+    assert trilha.situacao == SituacaoDaTrilha.publicada
+
+
+def test_lista_vazia_apaga_os_materiais(sessao, criar_persona, criar_trilha, criar_missao):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre, materiais=["papel"])
+
+    corrigir_missao(sessao, operador=mestre, missao=missao, campos={"materiais": []})
+
+    assert missao.materiais == []
+
+
+@pytest.mark.parametrize("materiais", [None, ["cola", ""]])
+def test_materiais_nulos_ou_vazios_sao_recusados(
+    sessao, criar_persona, criar_trilha, criar_missao, materiais
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre, materiais=["papel"])
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        corrigir_missao(sessao, operador=mestre, missao=missao, campos={"materiais": materiais})
+
+    assert erro.value.campo == "materiais"
+    assert missao.materiais == ["papel"]
+
+
+def test_publicacao_sem_materiais_confere_so_as_travas_antigas(
+    sessao, criar_persona, criar_trilha, criar_missao, criar_desafio_de_coleta, criar_culminancia
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha, _, _ = _trilha_publicavel(
+        criar_trilha,
+        criar_missao,
+        criar_desafio_de_coleta,
+        criar_culminancia,
+        mestre,
+        situacao=SituacaoDaTrilha.rascunho,
+    )
+
+    publicar_trilha(sessao, trilha, operador=mestre)
+
+    assert trilha.situacao == SituacaoDaTrilha.publicada
+
+
+def test_rota_corrige_os_materiais_e_recusa_o_admin(
+    cliente, criar_chave, criar_sessao_de_teste, criar_persona, criar_trilha, criar_missao
+):
+    mestre = criar_persona(Papel.mestre)
+    admin = criar_persona(Papel.admin)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+
+    chave, _ = criar_chave()
+    token_do_mestre, _ = criar_sessao_de_teste(mestre)
+    token_do_admin, _ = criar_sessao_de_teste(admin)
+
+    resposta = cliente.patch(
+        f"/v1/missoes/{missao.id}",
+        json={"materiais": ["cola", "jumpers"]},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_mestre}"},
+    )
+    assert resposta.status_code == 200
+    assert resposta.json()["missao"]["materiais"] == ["cola", "jumpers"]
+
+    recusa = cliente.patch(
+        f"/v1/missoes/{missao.id}",
+        json={"materiais": []},
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token_do_admin}"},
+    )
+    assert recusa.status_code == 403
