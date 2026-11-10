@@ -335,7 +335,7 @@ dentro da mesma sessão de trabalho do aparelho.
    sem escolha: a aula já o declara obrigatoriamente.
 5. Confirmada, a pendência **sai da fila**, que é relida do núcleo — a mesma entrega pode ter
    sido confirmada na App 09 enquanto a tela estava aberta.
-6. Recusa do núcleo — falta de lastro no ponto de apoio da aula, quantidade esgotada, presença
+6. Recusa do núcleo — falta de lastro no ponto de apoio da aula, recompensa já entregue, presença
    ausente — é apresentada **como ela vem**, em linguagem simples.
 7. Encontro **sem pendência alguma** diz que não há, e não apresenta erro.
 

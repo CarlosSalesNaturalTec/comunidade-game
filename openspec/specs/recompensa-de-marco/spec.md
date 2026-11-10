@@ -9,8 +9,10 @@ confirmada no encontro, que dá **baixa definitiva** no livro-razão e nunca cus
 ### Requirement: O Mestre autor declara qual marco concede qual recompensa
 
 O núcleo SHALL permitir que o **Mestre autor da trilha** declare, para um marco dela, qual tipo
-de recurso é concedido como recompensa e em que **quantidade**. Só o Mestre autor SHALL escrever
-a recompensa de marco da sua trilha, como já vale para todo o restante dela.
+de recurso é concedido como recompensa e em que **quantidade**. A quantidade SHALL ser o que
+**cada** Guerreiro(a) que alcança o marco recebe numa entrega, e NEVER SHALL ser lida como total
+da turma (decisão do fundador de 2026-11-09, 02 §8.1). Só o Mestre autor SHALL escrever a
+recompensa de marco da sua trilha, como já vale para todo o restante dela.
 
 O marco SHALL ser uma **missão** da trilha — o marco de uso corrente do documento 02 §8.1, e por
 onde saem a camisa, o livro e o kit. As outras três espécies que o documento 02 §8.1 admite —
@@ -26,9 +28,10 @@ Guerreiro(a): a recompensa de marco é **conquistada, nunca comprada nem trocada
 
 #### Scenario: Mestre autor declara a recompensa de um marco
 
-- **WHEN** o Mestre autor de uma trilha declara que o desbloqueio de uma missão dela concede 30
-  unidades de um tipo de recurso
-- **THEN** o núcleo grava a recompensa de marco com a trilha, o marco, o tipo e a quantidade
+- **WHEN** o Mestre autor de uma trilha declara que o desbloqueio de uma missão dela concede 1
+  unidade de um tipo de recurso
+- **THEN** o núcleo grava a recompensa de marco com a trilha, o marco, o tipo e a quantidade, que
+  é o que cada Guerreiro(a) receberá na entrega
 
 #### Scenario: Mestre que não é autor não declara
 
@@ -75,9 +78,10 @@ entregue sem estar provida SHALL ser cumprida **no ato da entrega** (`RF-09-72`,
 O núcleo SHALL registrar a entrega da recompensa de marco a um Guerreiro(a) por ato de **Mestre
 vinculado à Comunidade Virtual do Guerreiro(a)**, gravando o **ponto de apoio** de onde o
 recurso saiu, o Mestre que entregou e a data. A entrega SHALL ser **uma por Guerreiro(a)** que
-alcança o marco, e a `RecompensaDeMarco` NEVER SHALL guardar situação de entrega própria: a
-quantidade declarada é N e cada entrega é registro próprio, como a `Troca` é do item de catálogo
-avulso.
+alcança o marco e SHALL entregar a **quantidade declarada**, inteira, a esse Guerreiro(a). A
+`RecompensaDeMarco` NEVER SHALL guardar situação de entrega própria nem teto de entregas: cada
+entrega é registro próprio, e o que limita quantos recebem é o lastro do ponto de apoio
+(decisão do fundador de 2026-11-09, 02 §8.1).
 
 O Admin NEVER SHALL ser quem confirma a entrega: quem estava no encontro é quem entrega
 (`RF-07-13`, `RF-09-76`, `RF-02-50`, `RF-02-51`, `RN-02-17`, 02 §8.1, 05 §3).
@@ -94,82 +98,17 @@ O Admin NEVER SHALL ser quem confirma a entrega: quem estava no encontro é quem
 - **THEN** o núcleo grava duas entregas, e a recompensa de marco segue sem situação de entrega
   própria
 
+#### Scenario: Recompensa de quantidade 1 chega a todos que alcançaram o marco
+
+- **WHEN** a recompensa declara quantidade 1, três Guerreiros e Guerreiras alcançaram o marco e o
+  ponto de apoio tem saldo de 3 unidades
+- **THEN** o núcleo grava as três entregas, cada uma com baixa de 1 unidade, e nenhuma é
+  recusada por já ter havido entrega anterior
+
 #### Scenario: Admin não confirma a entrega
 
 - **WHEN** um Admin tenta confirmar a entrega de uma recompensa de marco
 - **THEN** o núcleo recusa e nada é gravado
-
-### Requirement: Cinco condições recusam a entrega antes de qualquer escrita
-
-O núcleo SHALL recusar a entrega com **422**, sem gravar nada e sem mover saldo algum, quando:
-
-1. o tipo de recurso da recompensa for de natureza **durável** — o saldo durável é patrimônio e
-   nunca lastreia recompensa;
-2. o **lastro** não se confirmar no ato — a quantidade disponível do tipo no **ponto de apoio da
-   entrega** for menor que a quantidade da recompensa;
-3. a **quantidade** declarada na recompensa de marco já estiver esgotada pelas entregas
-   anteriores;
-4. o Mestre **não estiver vinculado à comunidade** do Guerreiro(a);
-5. o Guerreiro(a) **não tiver desbloqueado a missão** declarada como marco.
-
-O marco alcançado SHALL ser o **desbloqueio da missão** pelo Guerreiro(a), registrado pela
-capacidade `desbloqueio-da-missao` — é o desbloqueio que libera a recompensa, e não a existência
-de `Resultado` numa atividade da missão. Desbloqueio de missão em forma de desafio prático ainda
-**não julgado** pelo Mestre autor NEVER SHALL contar como marco alcançado: enquanto o Mestre não
-julga, a missão aguarda.
-
-A resposta SHALL dizer qual das condições recusou. O lastro SHALL ser reverificado **no ato da
-entrega**, e não na declaração do marco nem na publicação da trilha, porque a trilha é bem comum
-e o saldo é de um ponto de apoio (`RF-07-13`, `RF-09-84`, `RN-07-07`, `RN-09-26`, `RN-09-27`,
-invariante 9, 02 §8.1, 02 §8.2, documento 11 §2.2).
-
-#### Scenario: Recompensa de tipo durável não é entregue
-
-- **WHEN** um Mestre confirma a entrega de uma recompensa cujo tipo de recurso é de natureza
-  durável
-- **THEN** o núcleo responde 422 dizendo que o saldo durável é patrimônio, e nada é gravado
-
-#### Scenario: Lastro é reverificado no ato da entrega
-
-- **WHEN** um Mestre confirma a entrega de uma recompensa de quantidade 1 num ponto de apoio
-  cujo saldo disponível daquele tipo é zero
-- **THEN** o núcleo responde 422 dizendo que falta lastro, e nada é gravado
-
-#### Scenario: Quantidade esgotada recusa a entrega
-
-- **WHEN** um Mestre confirma a entrega de uma recompensa de marco de quantidade 30 que já teve
-  30 entregas registradas
-- **THEN** o núcleo responde 422 e nada é gravado
-
-#### Scenario: Mestre de outra comunidade não entrega
-
-- **WHEN** um Mestre confirma a entrega a um Guerreiro(a) de Comunidade Virtual diferente
-  daquela a que ele está vinculado
-- **THEN** o núcleo responde 422 e nada é gravado
-
-#### Scenario: Marco não alcançado recusa a entrega
-
-- **WHEN** um Mestre confirma a entrega a um Guerreiro(a) que ainda não desbloqueou a missão
-  declarada como marco
-- **THEN** o núcleo responde 422 dizendo que o marco não foi alcançado, e nada é gravado
-
-#### Scenario: Desafio prático não julgado ainda não é marco alcançado
-
-- **WHEN** o Guerreiro(a) declarou ter cumprido o desafio prático da missão declarada como marco
-  e o Mestre autor ainda não julgou
-- **THEN** o núcleo responde 422 dizendo que o marco não foi alcançado, e nada é gravado
-
-#### Scenario: Resultado na atividade não alcança o marco sozinho
-
-- **WHEN** um Mestre confirma a entrega a um Guerreiro(a) que tem Resultado lançado numa
-  atividade da missão declarada como marco, mas ainda não a desbloqueou
-- **THEN** o núcleo responde 422 dizendo que o marco não foi alcançado, e nada é gravado
-
-#### Scenario: Recusa não move nada
-
-- **WHEN** qualquer das cinco condições recusa a entrega
-- **THEN** nenhuma entrega é gravada, nenhum lançamento é emitido e o saldo do ponto de apoio
-  segue como estava
 
 ### Requirement: A entrega dá baixa definitiva numa operação só
 
@@ -275,8 +214,8 @@ criança. (`RF-05-45`, `RF-07-13`, `RN-09-26`, `RN-05-50`)
 
 O marco alcançado SHALL ser o **desbloqueio da missão**, o mesmo que a recusa de entrega já
 confere na capacidade — a consulta é uma só e não se duplica. A leitura NEVER SHALL antecipar as demais
-condições da entrega — lastro no ponto de apoio e quantidade esgotada —, que são reverificadas
-no ato pelo Mestre; ela diz o que foi conquistado, não o que será entregue.
+condições da entrega — como o lastro no ponto de apoio —, que são reverificadas no ato pelo
+Mestre; ela diz o que foi conquistado, não o que será entregue.
 
 A saída NEVER SHALL trazer valor em moedas nem em reais, pela mesma razão que o histórico de
 entregas não os traz, e NEVER SHALL oferecer caminho de aquisição: recompensa de marco se
@@ -341,10 +280,10 @@ Estando o Mestre vinculado a mais de uma comunidade, a fila SHALL trazer as pend
 **todas elas**. Mestre sem vínculo com comunidade alguma SHALL receber fila **vazia**, nunca
 erro. Persona que não é Mestre SHALL ser recusada com **403**.
 
-Confirmada a entrega, a pendência SHALL **sair** da fila. A pendência cuja quantidade declarada
-já se esgotou nas entregas anteriores SHALL continuar na fila, marcada com o motivo, porque é o
-Mestre quem precisa saber que falta recompensa a entregar — a fila diz o que o Guerreiro(a)
-conquistou, e a recusa segue acontecendo no ato. A saída NEVER SHALL trazer valor em moedas nem
+Confirmada a entrega, a pendência SHALL **sair** da fila. A fila diz o que o Guerreiro(a)
+conquistou e NEVER SHALL marcar a pendência como esgotada pelas entregas a outros Guerreiros e
+Guerreiras: a quantidade é o que cada um recebe, e a recusa por lastro segue acontecendo no ato
+(decisão do fundador de 2026-11-09). A saída NEVER SHALL trazer valor em moedas nem
 em reais, nem imagem real de Guerreiro(a). (`RF-09-75`, `RF-09-76`, `RN-09-26`, invariantes 12 e
 16, PRD-09 §12)
 
@@ -365,6 +304,12 @@ em reais, nem imagem real de Guerreiro(a). (`RF-09-75`, `RF-09-76`, `RN-09-26`, 
 
 - **WHEN** o Mestre confirma a entrega daquela recompensa àquele Guerreiro(a)
 - **THEN** a pendência deixa de aparecer na fila dele
+
+#### Scenario: A entrega a um não marca a pendência dos outros
+
+- **WHEN** o Mestre entrega a recompensa de quantidade 1 a um Guerreiro(a), e outros dois da
+  mesma comunidade alcançaram o mesmo marco
+- **THEN** a pendência dos outros dois segue na fila, sem marca de esgotada
 
 #### Scenario: A fila é da comunidade, não da autoria
 
@@ -521,3 +466,86 @@ decisão do fundador de 2026-10-30)
 
 - **WHEN** a presença do Guerreiro(a) naquela aula foi anulada e o Mestre tenta confirmar
 - **THEN** o núcleo recusa com **422** e nada é gravado
+
+### Requirement: A entrega é recusada antes de qualquer escrita
+
+O núcleo SHALL recusar a entrega com **422**, sem gravar nem mover saldo, quando o tipo for
+**durável**, faltar **lastro** no ponto de apoio, o Mestre **não for da comunidade** do
+Guerreiro(a), o **marco não tiver sido alcançado** ou o Guerreiro(a) **já tiver recebido**
+aquela recompensa. A resposta SHALL dizer qual recusou (`RF-07-13`, `RF-09-84`, `RN-07-07`,
+`RN-09-26`, invariante 9, 02 §8.1).
+
+#### Scenario: Recompensa de tipo durável não é entregue
+
+- **WHEN** um Mestre confirma a entrega de uma recompensa cujo tipo de recurso é de natureza
+  durável
+- **THEN** o núcleo responde 422 dizendo que o saldo durável é patrimônio, e nada é gravado
+
+#### Scenario: Mestre de outra comunidade não entrega
+
+- **WHEN** um Mestre confirma a entrega a um Guerreiro(a) de Comunidade Virtual diferente
+  daquela a que ele está vinculado
+- **THEN** o núcleo responde 422 e nada é gravado
+
+#### Scenario: Recusa não move nada
+
+- **WHEN** qualquer das condições recusa a entrega
+- **THEN** nenhuma entrega é gravada, nenhum lançamento é emitido e o saldo do ponto de apoio
+  segue como estava
+
+### Requirement: O lastro é reverificado no ato da entrega
+
+O núcleo SHALL conferir o lastro **no ato da entrega**, contra o saldo do tipo no ponto de apoio
+de onde o recurso sai, e não na declaração do marco nem na publicação da trilha, porque a
+trilha é bem comum e o saldo é de um ponto de apoio (`RF-07-13`, `RN-09-27`, invariante 9,
+02 §8.1, documento 11 §2.2).
+
+#### Scenario: Lastro é reverificado no ato da entrega
+
+- **WHEN** um Mestre confirma a entrega de uma recompensa de quantidade 1 num ponto de apoio
+  cujo saldo disponível daquele tipo é zero
+- **THEN** o núcleo responde 422 dizendo que falta lastro, e nada é gravado
+
+### Requirement: Uma entrega por Guerreiro(a), sem teto da turma
+
+Entregas da mesma recompensa a **outros** Guerreiros e Guerreiras NEVER SHALL recusar a entrega:
+a quantidade declarada é o que cada um recebe, não um teto da turma, e o que limita quantos
+recebem é o lastro. A segunda entrega ao **mesmo** Guerreiro(a) SHALL ser recusada com 422
+(`RF-07-13`, `RF-09-76`, decisão do fundador de 2026-11-09, 02 §8.1).
+
+#### Scenario: Entregas anteriores não recusam a seguinte
+
+- **WHEN** um Mestre confirma a entrega de uma recompensa de marco de quantidade 1 que já foi
+  entregue a outro Guerreiro(a), num ponto de apoio com saldo
+- **THEN** o núcleo grava a entrega e dá baixa de 1 unidade
+
+#### Scenario: O mesmo Guerreiro(a) não recebe duas vezes
+
+- **WHEN** um Mestre confirma a entrega de uma recompensa a um Guerreiro(a) que já a recebeu
+- **THEN** o núcleo responde 422 dizendo que a recompensa já foi entregue a ele, e nada é
+  gravado
+
+### Requirement: O marco alcançado é o desbloqueio da missão
+
+O marco alcançado SHALL ser o **desbloqueio da missão** pelo Guerreiro(a), registrado pela
+capacidade `desbloqueio-da-missao`, e não a existência de `Resultado` numa atividade da missão.
+Desbloqueio por desafio prático ainda **não julgado** pelo Mestre autor NEVER SHALL contar como
+marco alcançado (`RF-09-84`, `RN-09-26`, 02 §8.1).
+
+#### Scenario: Marco não alcançado recusa a entrega
+
+- **WHEN** um Mestre confirma a entrega a um Guerreiro(a) que ainda não desbloqueou a missão
+  declarada como marco
+- **THEN** o núcleo responde 422 dizendo que o marco não foi alcançado, e nada é gravado
+
+#### Scenario: Desafio prático não julgado ainda não é marco alcançado
+
+- **WHEN** o Guerreiro(a) declarou ter cumprido o desafio prático da missão declarada como marco
+  e o Mestre autor ainda não julgou
+- **THEN** o núcleo responde 422 dizendo que o marco não foi alcançado, e nada é gravado
+
+#### Scenario: Resultado na atividade não alcança o marco sozinho
+
+- **WHEN** um Mestre confirma a entrega a um Guerreiro(a) que tem Resultado lançado numa
+  atividade da missão declarada como marco, mas ainda não a desbloqueou
+- **THEN** o núcleo responde 422 dizendo que o marco não foi alcançado, e nada é gravado

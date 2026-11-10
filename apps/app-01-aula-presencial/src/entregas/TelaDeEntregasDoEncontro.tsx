@@ -64,7 +64,7 @@ export function TelaDeEntregasDoEncontro({ tokenDeTrabalho, aulaId, aoVoltar }: 
       await carregar();
     } catch (erroCapturado) {
       // A recusa do núcleo já vem em linguagem simples — falta de lastro no
-      // ponto de apoio da aula, quantidade esgotada, presença ausente. A tela
+      // ponto de apoio da aula, recompensa já entregue, presença ausente. A tela
       // a apresenta como ela vem, sem recalcular saldo por conta própria.
       definirErro(
         erroCapturado instanceof ErroDaApi
@@ -103,8 +103,6 @@ export function TelaDeEntregasDoEncontro({ tokenDeTrabalho, aulaId, aoVoltar }: 
                 <p>
                   {pendencia.quantidade} {pendencia.tipo_de_recurso_unidade} de{" "}
                   {pendencia.tipo_de_recurso_nome}
-                  {pendencia.quantidade_esgotada &&
-                    " — quantidade declarada já esgotada nas entregas anteriores"}
                 </p>
                 <Botao
                   onClick={() => confirmar(pendencia)}

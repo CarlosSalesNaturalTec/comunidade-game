@@ -82,7 +82,6 @@ def test_marco_desbloqueado_aparece_na_fila_do_mestre(sessao, cenario):
     assert pendencia.missao_titulo == c["missao"].titulo
     assert pendencia.tipo_de_recurso_id == c["tipo"].id
     assert pendencia.quantidade == c["recompensa"].quantidade
-    assert pendencia.quantidade_esgotada is False
 
 
 def test_entrega_confirmada_sai_da_fila(sessao, cenario):
@@ -144,7 +143,7 @@ def test_quem_nao_e_mestre_nao_le_a_fila(sessao, cenario):
         listar_entregas_pendentes(sessao, operador=c["guerreiro"])
 
 
-def test_quantidade_esgotada_continua_na_fila_marcada(sessao, cenario, criar_persona):
+def test_entregue_a_um_a_pendencia_dos_outros_segue_na_fila(sessao, cenario, criar_persona):
     c = cenario(quantidade=Decimal("1"))
     _desbloquear(sessao, guerreiro=c["guerreiro"], missao=c["missao"])
     registrar_entrega(
@@ -163,7 +162,6 @@ def test_quantidade_esgotada_continua_na_fila_marcada(sessao, cenario, criar_per
 
     assert len(pendencias) == 1
     assert pendencias[0].guerreiro_id == outro_guerreiro.id
-    assert pendencias[0].quantidade_esgotada is True
 
 
 def test_desbloqueio_pratico_nao_julgado_nao_entra_na_fila(sessao, cenario):

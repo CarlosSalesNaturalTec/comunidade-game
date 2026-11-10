@@ -2,7 +2,6 @@ import uuid
 from dataclasses import dataclass
 from decimal import Decimal
 
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, Presenca
@@ -136,9 +135,15 @@ def _validar_entrega(
     guerreiro: Persona,
     ponto_de_apoio: PontoDeApoio,
 ) -> None:
-    """As cinco recusas do delta, na ordem dele — durável, lastro, quantidade
-    esgotada, comunidade, marco alcançado —, todas antes de qualquer escrita
-    (`RF-07-13`, `RN-07-07`, `RN-09-26`, invariante 9)."""
+    """As cinco recusas, nesta ordem — durável, lastro, já recebeu, comunidade,
+    marco alcançado —, todas antes de qualquer escrita (`RF-07-13`,
+    `RF-09-76`, `RN-07-07`, `RN-09-26`, invariante 9).
+
+    A quantidade declarada é o que **cada** Guerreiro(a) recebe, não teto da
+    turma: entregas a outros nunca recusam esta, e quem limita quantos
+    recebem é o lastro. A recusa é da segunda entrega ao **mesmo**
+    Guerreiro(a), feita sob a trava de `_bloquear_recompensa` (decisão do
+    fundador de 2026-11-09, documento 02 §8.1)."""
     if tipo.natureza == NaturezaDoRecurso.duravel:
         raise ErroDeValidacao(
             mensagem="Recurso de natureza durável é patrimônio e nunca lastreia recompensa.",
@@ -154,16 +159,15 @@ def _validar_entrega(
             campo="ponto_de_apoio_id",
         )
 
-    ja_entregues = (
-        sessao.query(func.count(EntregaDeRecompensa.id))
-        .filter_by(recompensa_de_marco_id=recompensa.id)
-        .scalar()
+    ja_recebeu = (
+        sessao.query(EntregaDeRecompensa.id)
+        .filter_by(recompensa_de_marco_id=recompensa.id, guerreiro_id=guerreiro.id)
+        .first()
     )
-    if Decimal(ja_entregues) >= recompensa.quantidade:
+    if ja_recebeu is not None:
         raise ErroDeValidacao(
-            mensagem="A quantidade declarada nesta recompensa já foi esgotada pelas "
-            "entregas anteriores.",
-            campo="recompensa_de_marco_id",
+            mensagem="Este Guerreiro(a) já recebeu esta recompensa.",
+            campo="guerreiro_id",
         )
 
     vinculo_guerreiro: VinculoJogador | None = guerreiro.vinculo_vigente
@@ -429,10 +433,10 @@ def listar_entregas(sessao: Session, *, operador: Persona) -> list[EntregaDeReco
 @dataclass(frozen=True)
 class PendenciaDeEntrega:
     """Um par Guerreiro(a)/recompensa que o Mestre da comunidade precisa
-    entregar (`RF-09-75`, design — decisão 7). `quantidade_esgotada` marca a
-    pendência cuja recompensa já não tem mais o que entregar — ela continua
-    na fila, porque o Mestre precisa saber, e a recusa segue acontecendo no
-    ato pela mesma `_validar_entrega`."""
+    entregar (`RF-09-75`, design — decisão 7). A quantidade é o que cada
+    Guerreiro(a) recebe, então a entrega a um nunca marca a pendência dos
+    outros; o lastro segue reverificado no ato pela mesma `_validar_entrega`
+    (decisão do fundador de 2026-11-09)."""
 
     guerreiro_id: uuid.UUID
     guerreiro_nick: str
@@ -450,7 +454,6 @@ class PendenciaDeEntrega:
     tipo_de_recurso_nome: str
     tipo_de_recurso_unidade: str
     quantidade: Decimal
-    quantidade_esgotada: bool
 
 
 def _guerreiros_com_presenca_na_aula(sessao: Session, *, aula: Aula) -> list[Persona]:
@@ -503,13 +506,6 @@ def listar_entregas_pendentes(
 
     pendencias: list[PendenciaDeEntrega] = []
     for recompensa in sessao.query(RecompensaDeMarco).all():
-        ja_entregues = (
-            sessao.query(func.count(EntregaDeRecompensa.id))
-            .filter_by(recompensa_de_marco_id=recompensa.id)
-            .scalar()
-        )
-        quantidade_esgotada = Decimal(ja_entregues) >= recompensa.quantidade
-
         for guerreiro in guerreiros_da_comunidade:
             desbloqueadas = missoes_desbloqueadas_pelo_guerreiro(
                 sessao, guerreiro_id=guerreiro.id, trilha_id=recompensa.trilha_id
@@ -544,7 +540,6 @@ def listar_entregas_pendentes(
                     tipo_de_recurso_nome=tipo.nome if tipo is not None else "",
                     tipo_de_recurso_unidade=tipo.unidade if tipo is not None else "",
                     quantidade=recompensa.quantidade,
-                    quantidade_esgotada=quantidade_esgotada,
                 )
             )
     return pendencias

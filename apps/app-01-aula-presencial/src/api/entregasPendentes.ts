@@ -18,7 +18,6 @@ export interface PendenciaDeEntrega {
   tipo_de_recurso_nome: string;
   tipo_de_recurso_unidade: string;
   quantidade: string;
-  quantidade_esgotada: boolean;
 }
 
 export interface EntregaRegistrada {

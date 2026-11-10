@@ -148,7 +148,32 @@ def test_lastro_insuficiente_recusa_a_entrega(sessao, cenario):
     assert sessao.query(EntregaDeRecompensa).count() == 0
 
 
-def test_quantidade_esgotada_recusa_a_entrega(sessao, cenario, criar_persona):
+def test_quantidade_um_chega_a_todos_que_alcancaram_o_marco(sessao, cenario, criar_persona):
+    """A quantidade é o que cada Guerreiro(a) recebe, não teto da turma:
+    entregas a outros não recusam a seguinte (`RF-07-13`, `RF-09-76`,
+    decisão do fundador de 2026-11-09)."""
+    c = cenario(quantidade=Decimal("1"), lastro=Decimal("3"))
+    outros = [criar_persona(Papel.guerreiro, comunidade=c["comunidade"]) for _ in range(2)]
+    for guerreiro in outros:
+        _marcar_marco_alcancado(sessao, mestre=c["mestre"], guerreiro=guerreiro, missao=c["missao"])
+
+    for guerreiro in [c["guerreiro"], *outros]:
+        registrar_entrega(
+            sessao,
+            operador=c["mestre"],
+            recompensa=c["recompensa"],
+            guerreiro=guerreiro,
+            ponto_de_apoio=c["ponto_de_apoio"],
+        )
+        sessao.commit()
+
+    assert sessao.query(EntregaDeRecompensa).count() == 3
+    assert saldo_de(
+        sessao, tipo_de_recurso_id=c["tipo"].id, ponto_de_apoio_id=c["ponto_de_apoio"].id
+    ) == Decimal("0")
+
+
+def test_o_mesmo_guerreiro_nao_recebe_duas_vezes(sessao, cenario):
     c = cenario(quantidade=Decimal("1"), lastro=Decimal("10"))
     registrar_entrega(
         sessao,
@@ -159,21 +184,19 @@ def test_quantidade_esgotada_recusa_a_entrega(sessao, cenario, criar_persona):
     )
     sessao.commit()
 
-    outro_guerreiro = criar_persona(Papel.guerreiro, comunidade=c["comunidade"])
-    _marcar_marco_alcancado(
-        sessao, mestre=c["mestre"], guerreiro=outro_guerreiro, missao=c["missao"]
-    )
-
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_entrega(
             sessao,
             operador=c["mestre"],
             recompensa=c["recompensa"],
-            guerreiro=outro_guerreiro,
+            guerreiro=c["guerreiro"],
             ponto_de_apoio=c["ponto_de_apoio"],
         )
-    assert excinfo.value.campo == "recompensa_de_marco_id"
+    assert excinfo.value.campo == "guerreiro_id"
     assert sessao.query(EntregaDeRecompensa).count() == 1
+    assert saldo_de(
+        sessao, tipo_de_recurso_id=c["tipo"].id, ponto_de_apoio_id=c["ponto_de_apoio"].id
+    ) == Decimal("9")
 
 
 def test_mestre_de_outra_comunidade_nao_entrega(
