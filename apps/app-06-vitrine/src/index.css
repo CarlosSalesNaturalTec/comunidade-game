@@ -564,12 +564,6 @@ textarea {
   border-top: 1px solid var(--cor-separador);
 }
 
-.cg-chamada__ajuda {
-  margin: 0;
-  color: var(--cor-texto-secundario);
-  font-size: var(--escala-0875);
-}
-
 /* A porta do convite: o garfo do que a pessoa traz, uma escolha por linha. */
 .cg-convite__modalidades {
   display: flex;

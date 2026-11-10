@@ -139,16 +139,15 @@ describe("cada recorte abre com as seções que o PRD-03 §5 lhe dá", () => {
     return [...semDialogo.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map((achado) => achado[1]);
   }
 
-  it("sociedade civil traz as dez seções, na ordem (RF-03-02, RF-03-25)", () => {
+  it("sociedade civil traz as nove seções, na ordem (RF-03-02, RF-03-25)", () => {
     // A abertura abre pelo que o projeto produziu e fecha no institucional
     // (decisão do fundador de 2026-10-11). Duas seções saíram: a de poderes e
-    // "Como apoiar"; as necessidades viraram seção própria.
+    // "Como apoiar"; a de necessidades saiu em 2026-11-10.
     expect(titulos("index.html")).toEqual([
       "Ranking",
       "Portfólio de criações originais",
       "Guerreiros e Guerreiras",
       "Apoiadores",
-      "Necessidades em aberto",
       "Mestres",
       "Comunidades Virtuais",
       "Construir sobre a API",

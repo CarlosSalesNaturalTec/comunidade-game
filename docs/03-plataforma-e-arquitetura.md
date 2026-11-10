@@ -777,9 +777,8 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 - **Portfólio de criações originais** — as criações dos Guerreiros e Guerreiras autorizados,
   com o nick do autor (ou dos autores, em equipe).
 - **Sem favoritos e sem qualquer preferência guardada** — nem no servidor, nem no aparelho do
-  visitante. Quem pede para favoritar ou acompanhar alguém é levado à **apresentação da Área do
-  Apoiador**, com o formulário de solicitação e o caminho de apoio: acompanhar é função de quem
-  se cadastra, não da vitrine.
+  visitante. A vitrine **não oferece** ação de favoritar nem de acompanhar: acompanhar é função
+  de quem se cadastra, na Área do Apoiador.
 - **Proteção das rotas públicas**: a consulta por nick exato e o envio dos dois formulários têm
   **limite por origem e janela de tempo, com atraso progressivo** a cada repetição — é o que
   barra a varredura de nicks e o envio abusivo. **Sem CAPTCHA**, que é barreira de
@@ -829,8 +828,7 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   aponta a etiqueta do texto reescrito nas Apps 01 e 05 (§7.1).
 - **"Como apoiar"** — canais de doação, incluindo a chave PIX da pessoa jurídica vinculada —
   **não tem tela pública**: segue editável pelos Admins e legível pela API, e a chave PIX
-  chega ao visitante pela porta da chamada. As **necessidades de recurso em aberto** são
-  seção própria da abertura.
+  e as **necessidades de recurso em aberto** chegam ao visitante pela porta da chamada.
 - Identidade visual: a da plataforma, no temperamento **Arena** (documento 15).
 - **Vídeo de apresentação**: os irmãos Susy e Otávio, os Rôbróders e o professor Carlos
   Trenell (narrativa da trilha Robô Educa), aberto por **link**, sem player de terceiro
@@ -841,11 +839,11 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 A vitrine é uma só e **sem login**. O que muda por público é o **recorte de leitura** — a porta
 de entrada e a ordem do que se mostra primeiro, sobre os mesmos dados públicos:
 
-| Recorte               | Quem chega procurando                | O que a porta abre primeiro                                                                   |
-| --------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------- |
-| **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Ranking, criações originais, cards, batalhas e as necessidades em aberto — recorte **padrão** |
-| **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado       |
-| **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18    |
+| Recorte               | Quem chega procurando                | O que a porta abre primeiro                                                                |
+| --------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Sociedade civil**   | Conhecer, acompanhar e apoiar        | Ranking, criações originais, cards e batalhas — recorte **padrão**                         |
+| **Pesquisadores**     | Dado do território para estudo       | Séries históricas por comunidade, com o que se mede, cadência, período e origem do dado    |
+| **Gestores públicos** | Evidência sobre o lugar para decidir | Painel do território por comunidade e ciclo e a cobertura da Agenda 2030, com a meta 17.18 |
 
 **Área do gestor público.** O recorte de gestores abre com um bloco em destaque que explica, na
 linguagem de quem decide, **para que a plataforma serve ao município e ao estado**: a série

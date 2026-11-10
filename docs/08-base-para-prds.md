@@ -270,11 +270,11 @@ de comunidade (grafite, cores, imagens do território); **portfólio de criaçõ
 Guerreiros e Guerreiras autorizados, com o nick dos autores; **painel de cobertura da Agenda
 2030** por comunidade e por ciclo, com destaque para a contribuição à meta 17.18 e a ressalva
 de que o ODS 18 é adoção voluntária do Brasil; **nota de transparência sobre IA**
-nas seções institucionais; **sem favoritos e sem preferência guardada** — o pedido de favoritar
-leva à apresentação da Área do Apoiador, com solicitação de cadastro e caminho de apoio;
-**chamada "Quero apoiar" em toda página individual**, que leva à mesma porta, **abre pela
-pergunta do que a pessoa traz** — encaminhando dinheiro ao pré-cadastro da App 08 e as demais
-modalidades ao formulário da vitrine, cada uma com o seu campo comprobatório (documento 14) — e
+nas seções institucionais; **sem favoritos e sem preferência guardada**, e sem ação de
+favoritar ou acompanhar; **chamada "Quero apoiar" em toda página individual**, que leva à
+porta da Área do Apoiador, **abre pela pergunta do que a pessoa traz** — encaminhando
+dinheiro ao pré-cadastro da App 08 e as demais modalidades ao formulário da vitrine, cada uma
+com o seu campo comprobatório (documento 14) — e
 **nunca vincula o apoio à pessoa exibida**; **botão "Entrar"** na abertura, encaminhando Guerreiro(a)
 à App 05, responsável à App 07, Mestre à App 09, Apoiador à App 08, gestão à App 03 e o aparelho
 da aula à App 01 — a vitrine não autentica ninguém e não guarda a escolha; **card de Apoiador

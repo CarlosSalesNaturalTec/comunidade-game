@@ -6,8 +6,9 @@ interface Props {
   irPara?: (destino: string) => void;
 }
 
-/** A chamada "Quero apoiar" e a ação de acompanhar, que **toda página
- * individual** traz e que levam à **mesma porta** (`RF-03-39`, `RF-03-40`).
+/** A chamada "Quero apoiar", que **toda página individual** traz e que leva à
+ * porta do convite (`RF-03-39`). A vitrine não oferece ação de acompanhar nem de
+ * favoritar (decisão do fundador de 2026-11-10).
  *
  * A chamada é **do projeto**: não oferece apoiar, apadrinhar ou favorecer quem
  * está na tela, e nada de quem está sendo visto é passado adiante — o componente
@@ -23,13 +24,6 @@ export function ChamadaDeParticipacao({ irPara = navegarPara }: Props) {
         o apoio é do Comunidade Game inteiro.
       </p>
       <Botao onClick={() => irPara(CAMINHO_DO_CONVITE)}>Quero apoiar</Botao>
-      <Botao variante="secundaria" onClick={() => irPara(CAMINHO_DO_CONVITE)}>
-        Quero acompanhar
-      </Botao>
-      <p className="cg-chamada__ajuda">
-        Acompanhar favoritos é coisa de Apoiador cadastrado, na Área do Apoiador. A vitrine não
-        guarda favoritos.
-      </p>
     </section>
   );
 }

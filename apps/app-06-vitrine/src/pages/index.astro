@@ -19,15 +19,13 @@ import { RolagemAteAAncora } from "../institucional/RolagemAteAAncora";
  * são ilhas — mudam a cada visita e congelá-las na publicação mostraria dado
  * velho.
  *
- * Duas seções **não existem** aqui: a de **poderes**, porque o poder é atributo
- * do Guerreiro(a) e não tem página própria, e **"Como apoiar"**, que segue
- * gravável no núcleo sem tela pública — a chave PIX dela chega ao visitante
- * pela porta da chamada (`RF-03-43`).
+ * Três seções **não existem** aqui: a de **poderes**, porque o poder é atributo
+ * do Guerreiro(a) e não tem página própria; **"Como apoiar"**, que segue
+ * gravável no núcleo sem tela pública; e **"Necessidades em aberto"**, que saiu
+ * em 2026-11-10. A chave PIX e as necessidades chegam ao visitante pela porta
+ * da chamada (`RF-03-43`).
  */
-import {
-  ApresentacaoDaSecao,
-  NecessidadesEmAberto,
-} from "../institucional/SecoesInstitucionais";
+import { ApresentacaoDaSecao } from "../institucional/SecoesInstitucionais";
 import Vitrine from "../layouts/Vitrine.astro";
 import { SecaoDoPortfolio } from "../portfolio/SecaoDoPortfolio";
 import { SecaoDoRanking } from "../ranking/SecaoDoRanking";
@@ -56,7 +54,6 @@ const contatos = await secaoInstitucionalDoBuild("contatos");
   <section><h2>Portfólio de criações originais</h2><SecaoDoPortfolio client:visible /></section>
   <section><h2>Guerreiros e Guerreiras</h2><SecaoDeGuerreiros client:visible /></section>
   <section><h2>Apoiadores</h2><SecaoDeApoiadores client:visible /></section>
-  <section><h2>Necessidades em aberto</h2><NecessidadesEmAberto client:visible /></section>
   <section><h2>Mestres</h2><SecaoDeMestres client:visible /></section>
   <section><h2>Comunidades Virtuais</h2><SecaoDeComunidades client:visible /></section>
   <section><h2>Construir sobre a API</h2><SecaoDoDesenvolvedor client:visible /></section>
