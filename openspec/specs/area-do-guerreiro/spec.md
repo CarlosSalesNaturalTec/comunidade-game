@@ -737,8 +737,10 @@ sequência, sob pena de a rede ruim virar beco sem saída. (decisão do fundador
 A aplicação SHALL apresentar a **missão de sondagem** como o primeiro passo da trilha recém
 inscrita, e a tela SHALL dizer, em linguagem simples, que ela serve para **o Mestre ajustar** o
 que vem pela frente e que o resultado dela **não muda o nível** de ninguém. NEVER SHALL
-apresentar a sondagem como prova nem exibir acerto e erro como nota. (`RF-05-72`, `RF-05-73`,
-`RN-05-34`)
+apresentar a sondagem como prova nem exibir acerto e erro como nota: o retorno por pergunta e
+o total de acertos e erros da tela final dizem o que a criança acertou, sem nota, sem palavra
+de aprovação ou reprovação e sem trancar nada. (`RF-05-72`, `RF-05-73`, `RF-05-99`,
+`RF-05-100`, `RN-05-34`)
 
 #### Scenario: A sondagem abre a trilha
 
@@ -761,6 +763,11 @@ guardada **no aparelho** enquanto o Guerreiro(a) percorre as demais, e ele SHALL
 **voltar** a uma pergunta anterior para trocá-la antes de submeter. A tela NEVER SHALL declarar
 a **posição na sequência** de perguntas, nem escrita nem anunciada a leitor de tela.
 (documento 15 §6.4, decisão do fundador de 2026-09-26, revista em 2026-10-16)
+
+Na **missão de sondagem**, o voltar à pergunta anterior e o controle de enviar as respostas
+NEVER SHALL ser apresentados: a resposta tem retorno por pergunta, a sondagem avança e se
+submete sozinha e termina na tela de acertos e erros, como o requisito do retorno por pergunta
+determina. As demais regras deste requisito seguem valendo para ela. (`RF-05-99`, `RF-05-100`)
 
 O controle de **enviar as respostas** SHALL ficar **indisponível enquanto houver pergunta sem
 resposta**, e SHALL ficar disponível quando todas estiverem respondidas: o inválido se impede
@@ -866,7 +873,12 @@ não abriu. A tela NEVER SHALL exigir a imagem para submeter o quiz. (`RF-09-119
 #### Scenario: A sondagem não fala em aprovação
 
 - **WHEN** o Guerreiro(a) responde a missão de sondagem
-- **THEN** a tela agradece e segue para a trilha, sem dizer que ele passou ou não passou
+- **THEN** a tela mostra o total de acertos e de erros, sem dizer que ele passou ou não passou
+
+#### Scenario: A sondagem não volta nem tem botão de enviar
+
+- **WHEN** o Guerreiro(a) percorre as perguntas da sondagem
+- **THEN** não há controle de voltar à pergunta anterior nem de enviar as respostas
 
 #### Scenario: O controle do prático fica indisponível sem a comprovação
 
@@ -2291,3 +2303,103 @@ imagem real nem o _template_ biométrico. (`RN-05-15`, documento 15 §7)
 - **WHEN** a gravação falha por motivo que não é recusa de sessão
 - **THEN** a App 05 diz que não conseguiu salvar, em linguagem de criança, e a montagem segue
   aberta com os traços escolhidos
+
+### Requirement: Cada resposta da sondagem tem retorno por 2 segundos e avança sozinha
+
+Respondida uma pergunta da sondagem, por toque ou por voz, a tela SHALL mostrar por **2
+segundos** o símbolo de **acerto**, verde, ou de **erro**, vermelho, com formas distintas e
+texto acessível, e SHALL avançar sozinha à pergunta seguinte. Durante o retorno as alternativas
+SHALL ficar travadas; a resposta dada NEVER SHALL ser trocada, e a sondagem NEVER SHALL
+oferecer voltar à pergunta anterior nem botão de envio. (`RF-05-99`)
+
+#### Scenario: Acertar mostra o símbolo verde
+
+- **WHEN** o Guerreiro(a) toca a alternativa correta de uma pergunta da sondagem
+- **THEN** a tela mostra o símbolo verde de acerto por 2 segundos e apresenta a pergunta seguinte
+
+#### Scenario: Errar mostra o símbolo vermelho
+
+- **WHEN** o Guerreiro(a) toca uma alternativa que não é a correta
+- **THEN** a tela mostra o símbolo vermelho de erro por 2 segundos e apresenta a pergunta
+  seguinte
+
+#### Scenario: A resposta não se troca
+
+- **WHEN** o retorno de uma pergunta está na tela
+- **THEN** as alternativas estão travadas, e não há caminho para voltar à pergunta anterior
+
+#### Scenario: O retorno não depende só da cor
+
+- **WHEN** o símbolo de acerto ou de erro está na tela
+- **THEN** acerto e erro têm formas diferentes e um texto que o leitor de tela anuncia
+
+### Requirement: Com a narração ligada, o retorno da sondagem é falado
+
+Com a narração ligada, o retorno de acerto ou de erro de cada pergunta da sondagem SHALL ser
+**falado** enquanto o símbolo está na tela; desligada, NEVER SHALL falar. (`RF-05-99`, decisão
+do fundador de 2026-11-10)
+
+#### Scenario: Com o áudio ligado, o retorno é falado
+
+- **WHEN** a narração está ligada e o Guerreiro(a) responde uma pergunta da sondagem
+- **THEN** o retorno de acerto ou de erro é falado enquanto o símbolo está na tela
+
+#### Scenario: Com o áudio desligado, o retorno não fala
+
+- **WHEN** a narração está desligada e o Guerreiro(a) responde uma pergunta da sondagem
+- **THEN** o símbolo aparece e nada é falado
+
+### Requirement: A sondagem termina na tela de acertos e erros, com Refazer e Concluir
+
+Depois do retorno da **última** pergunta, a sondagem SHALL ser submetida sem toque, e a tela
+SHALL mostrar o **total de acertos e de erros** que o núcleo devolveu, com os botões
+**Refazer** e **Concluir**. Refazer SHALL recomeçar da primeira pergunta, sem resposta marcada;
+Concluir SHALL seguir o percurso, que só então recarrega. Falhando o envio, a tela SHALL dizer
+em linguagem simples e oferecer tentar de novo sem refazer. (`RF-05-100`, `RN-05-56`)
+
+#### Scenario: A tela final traz o total
+
+- **WHEN** o Guerreiro(a) responde a última pergunta de uma sondagem de cinco, acertando três
+- **THEN** depois do retorno a tela diz que ele acertou três e errou duas, com Refazer e Concluir
+
+#### Scenario: Concluir segue o percurso
+
+- **WHEN** o Guerreiro(a) toca Concluir
+- **THEN** a trilha recarrega e apresenta a missão seguinte do percurso, que a sondagem abriu
+
+#### Scenario: Refazer recomeça a sondagem
+
+- **WHEN** o Guerreiro(a) toca Refazer
+- **THEN** a primeira pergunta volta sem resposta marcada, e a nova realização é gravada ao fim
+
+#### Scenario: Resposta falada sem alternativa conta como erro
+
+- **WHEN** uma resposta falada da sondagem não se ligou a alternativa alguma
+- **THEN** o retorno daquela pergunta é o de erro, e ela entra no total de erros
+
+#### Scenario: Sondagem largada no meio recomeça
+
+- **WHEN** o Guerreiro(a) sai da sondagem antes da última pergunta e volta a ela
+- **THEN** ela recomeça da primeira pergunta, e nada da realização largada foi gravado
+
+### Requirement: A sondagem respondida se refaz pelo rodapé da trilha
+
+Com a sondagem da trilha já respondida, o rodapé da trilha SHALL oferecer **Refazer a
+sondagem**, a qualquer tempo e sem limite, que a apresenta com o mesmo retorno por pergunta e a
+mesma tela final; Concluir SHALL voltar à missão em que o percurso está. Sem submissão ligada,
+o caminho NEVER SHALL aparecer. (`RF-05-101`, `RN-05-56`)
+
+#### Scenario: O rodapé oferece refazer
+
+- **WHEN** o Guerreiro(a) abre uma trilha cuja sondagem ele já respondeu
+- **THEN** o rodapé oferece Refazer a sondagem
+
+#### Scenario: Antes de responder não há o caminho
+
+- **WHEN** o Guerreiro(a) abre uma trilha cuja sondagem ainda é a próxima missão
+- **THEN** o rodapé não oferece Refazer a sondagem, porque ela já está na tela
+
+#### Scenario: Refazer pelo rodapé e concluir volta ao percurso
+
+- **WHEN** o Guerreiro(a) refaz a sondagem pelo rodapé e toca Concluir
+- **THEN** a tela volta à missão em que o percurso dele está
