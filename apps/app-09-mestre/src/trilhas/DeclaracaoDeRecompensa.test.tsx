@@ -121,6 +121,26 @@ describe("Declaração da recompensa de marco", () => {
     expect(aoDeclarar).toHaveBeenCalledWith(recompensa());
   });
 
+  it("diz que a quantidade é por Guerreiro(a), na declaração e na lista", async () => {
+    configurarSessao();
+
+    render(
+      <DeclaracaoDeRecompensa
+        idDaTrilha="trilha-1"
+        missao={missao()}
+        tiposDeRecurso={[tipoDeRecurso()]}
+        recompensas={[recompensa({ quantidade: "1" })]}
+        onDeclarada={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/1 Camisa por Guerreiro\(a\)/)).toBeInTheDocument();
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: /^declarar recompensa$/i }));
+    expect(screen.getByLabelText("Quantidade por Guerreiro(a)")).toBeInTheDocument();
+  });
+
   it("a tela não oferece campo de preço, pontos nem contrapartida", () => {
     configurarSessao();
 

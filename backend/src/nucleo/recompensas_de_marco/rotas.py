@@ -288,7 +288,6 @@ class PendenciaDeEntregaSaida(BaseModel):
     tipo_de_recurso_nome: str
     tipo_de_recurso_unidade: str
     quantidade: Decimal
-    quantidade_esgotada: bool
 
 
 @roteador.get("/recompensas-de-marco/pendentes")
@@ -318,7 +317,6 @@ def listar_entregas_pendentes_rota(
             tipo_de_recurso_nome=pendencia.tipo_de_recurso_nome,
             tipo_de_recurso_unidade=pendencia.tipo_de_recurso_unidade,
             quantidade=pendencia.quantidade,
-            quantidade_esgotada=pendencia.quantidade_esgotada,
         )
         for pendencia in pendencias
     ]

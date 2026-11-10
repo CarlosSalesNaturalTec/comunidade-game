@@ -85,7 +85,8 @@ export function DeclaracaoDeRecompensa({
           {recompensas.map((recompensa) => (
             <li key={recompensa.id}>
               {recompensa.quantidade}{" "}
-              {tipoPorId.get(recompensa.tipo_de_recurso_id)?.nome ?? "recurso"}
+              {tipoPorId.get(recompensa.tipo_de_recurso_id)?.nome ?? "recurso"} por
+              Guerreiro(a)
             </li>
           ))}
         </ul>
@@ -112,7 +113,7 @@ export function DeclaracaoDeRecompensa({
           </div>
 
           <div className="cg-campo">
-            <label htmlFor={idDaQuantidade}>Quantidade</label>
+            <label htmlFor={idDaQuantidade}>Quantidade por Guerreiro(a)</label>
             <input
               id={idDaQuantidade}
               type="number"

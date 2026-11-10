@@ -57,7 +57,6 @@ function pendencia(sobrescreve: Partial<PendenciaDeEntrega> = {}): PendenciaDeEn
     recompensa_de_marco_id: "recompensa-1",
     tipo_de_recurso_id: "tipo-1",
     quantidade: "1",
-    quantidade_esgotada: false,
     ...sobrescreve,
   };
 }

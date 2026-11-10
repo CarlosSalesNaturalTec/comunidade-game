@@ -601,6 +601,7 @@ passa a valer no ato da entrega.
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | Quem confirma         | O **Mestre vinculado à comunidade do Guerreiro(a)**; o Admin nunca confirma                                                                   |
 | De onde o recurso sai | **No encontro**, o ponto de apoio **da aula**, automático; **fora do encontro**, o que o Mestre escolhe                                       |
+| Quantidade            | O que **cada** Guerreiro(a) recebe numa entrega, **uma por Guerreiro(a)**; não é teto da turma — quem limita quantos recebem é o lastro       |
 | Lastro                | **Reverificado no ato da entrega**, contra o saldo do ponto de apoio de onde o recurso sai                                                    |
 | Marco alcançado       | Conferido contra o percurso já derivado da pontuação (missões concluídas)                                                                     |
 | Alcance               | **No encontro**, só quem tem **presença registrada naquela aula** — quem o Mestre tem à frente é quem chegou; fora dele, a comunidade inteira |

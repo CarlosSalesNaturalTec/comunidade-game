@@ -78,7 +78,7 @@ export function FilaDeEntregasPendentes() {
         return;
       }
       // A entrega recusada pelo núcleo já vem em linguagem simples — falta
-      // de lastro, quantidade esgotada ou marco não alcançado (`RN-09-18`).
+      // de lastro, recompensa já entregue ou marco não alcançado (`RN-09-18`).
       if (erroCapturado instanceof ErroDaApi) {
         definirErro(erroCapturado.message);
         return;
@@ -112,8 +112,6 @@ export function FilaDeEntregasPendentes() {
                 <p>
                   {pendencia.quantidade}{" "}
                   {tipoPorId.get(pendencia.tipo_de_recurso_id)?.nome ?? "recurso"}
-                  {pendencia.quantidade_esgotada &&
-                    " — quantidade declarada já esgotada nas entregas anteriores"}
                 </p>
 
                 <div className="cg-campo">

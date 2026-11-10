@@ -23,7 +23,6 @@ const PENDENCIA: PendenciaDeEntrega = {
   tipo_de_recurso_nome: "Kit de robótica",
   tipo_de_recurso_unidade: "unidade",
   quantidade: "1.00",
-  quantidade_esgotada: false,
 };
 
 afterEach(() => {

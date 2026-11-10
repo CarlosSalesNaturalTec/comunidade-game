@@ -53,7 +53,6 @@ export interface PendenciaDeEntrega {
   recompensa_de_marco_id: string;
   tipo_de_recurso_id: string;
   quantidade: string;
-  quantidade_esgotada: boolean;
 }
 
 export function listarEntregasPendentes(token: string): Promise<PendenciaDeEntrega[]> {
