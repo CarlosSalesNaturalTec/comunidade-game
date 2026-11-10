@@ -273,6 +273,16 @@ def definir_avatar_do_mestre(sessao: Session, persona: Persona, avatar: str) -> 
     return persona
 
 
+def definir_avatar_do_guerreiro(sessao: Session, persona: Persona, avatar: str) -> Persona:
+    """O Guerreiro(a) em sessão troca o próprio avatar, a qualquer tempo e
+    sem limite de vezes. Opaco ao núcleo, como nas rotas do Apoiador e do
+    Mestre: quem compõe e lê o objeto do documento 15 §7.2 é a camada comum
+    (`RF-05-51`, design — decisão 1)."""
+    persona.avatar = avatar
+    sessao.flush()
+    return persona
+
+
 def editar_artefato_do_mestre(
     sessao: Session,
     *,

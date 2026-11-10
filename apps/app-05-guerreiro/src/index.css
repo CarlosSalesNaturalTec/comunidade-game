@@ -218,3 +218,12 @@ textarea {
 .cg-carteira-secao > .cg-fundo-de-comunidade {
   min-height: 100%;
 }
+
+/* A alteração do próprio avatar: a montagem da camada comum e as duas ações
+ * logo abaixo dela, em coluna (`RF-05-51`). */
+.cg-meu-avatar,
+.cg-meu-avatar__acoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-12);
+}

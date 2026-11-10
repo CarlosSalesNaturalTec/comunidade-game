@@ -1,10 +1,5 @@
 import { ErroDaApi } from "comum/api";
-import {
-  Avatar,
-  type AvatarDoGuerreiro,
-  CAMADAS_DO_AVATAR,
-  escreverAvatar,
-} from "comum/avatar";
+import { type AvatarDoGuerreiro, escreverAvatar, MontagemDoAvatar } from "comum/avatar";
 import { Aviso, Botao, Cabecalho, Campo, Moldura } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
 import { cadastrarGuerreiroNoEncontro, type GuerreiroCadastrado } from "../api/guerreiros";
@@ -46,8 +41,8 @@ function idadeEm(nascimentoIso: string, referencia: Date): number | null {
 // nick antes de enviar (design — decisão 6): envia o cadastro e trata a
 // recusa.
 //
-// O avatar se **compõe no catálogo fechado** da camada comum, camada por
-// camada, pelo nome dizível de cada traço — nunca por texto livre, que ninguém
+// O avatar se **compõe no catálogo fechado** da camada comum, pela montagem
+// que ela entrega, camada por camada, pelo nome dizível de cada traço — nunca por texto livre, que ninguém
 // desenha depois (`RF-04-07`, documento 15 §7). Ele nasce quase no avatar
 // padrão do projeto, para a criança ver um avatar completo desde o primeiro
 // toque e trocar só o que quiser (design — decisão 4), e a composição acontece
@@ -69,7 +64,6 @@ const FUNDO_DE_PARTIDA = "acao-100";
 
 export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }: Props) {
   const idDaFormaDeTratamento = useId();
-  const idDaEscolhaDeAvatar = useId();
   const [nome, definirNome] = useState("");
   const [nick, definirNick] = useState("");
   const [formaDeTratamento, definirFormaDeTratamento] =
@@ -82,10 +76,6 @@ export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }
   const [variacoesDeNick, definirVariacoesDeNick] = useState<string[]>([]);
   const [idadeForaDaFaixa, definirIdadeForaDaFaixa] = useState(false);
   const [enviando, definirEnviando] = useState(false);
-
-  function escolherTraco(camada: string, tracoId: string) {
-    definirAvatar((atual) => escreverAvatar({ ...atual, [camada]: tracoId }));
-  }
 
   function usarVariacao(variacao: string) {
     definirNick(variacao);
@@ -220,26 +210,7 @@ export function TelaDeCadastro({ tokenDeTrabalho, aulaId, aoConcluir, aoVoltar }
           aoAlterar={definirNascimento}
           erro={erroDeCampo?.campo === "nascimento" ? erroDeCampo.mensagem : null}
         />
-        <fieldset className="cg-escolha-de-avatar">
-          <legend>Monte o seu avatar</legend>
-          <Avatar avatar={avatar} tamanho={96} />
-          {CAMADAS_DO_AVATAR.map((camada) => (
-            <div className="cg-campo" key={camada.nome}>
-              <label htmlFor={`${idDaEscolhaDeAvatar}-${camada.nome}`}>{camada.rotulo}</label>
-              <select
-                id={`${idDaEscolhaDeAvatar}-${camada.nome}`}
-                value={avatar[camada.nome]}
-                onChange={(evento) => escolherTraco(camada.nome, evento.target.value)}
-              >
-                {camada.tracos.map((traco) => (
-                  <option key={traco.id} value={traco.id}>
-                    {traco.nome}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
-        </fieldset>
+        <MontagemDoAvatar avatar={avatar} aoAlterar={definirAvatar} />
         {erroDeCampo?.campo === "geral" && <Aviso tipo="erro">{erroDeCampo.mensagem}</Aviso>}
         <Botao tipo="submit" desabilitado={enviando}>
           {enviando ? "Cadastrando…" : "Concluir cadastro"}

@@ -79,3 +79,26 @@ export function lerAvatar(texto: string | null | undefined): AvatarDoGuerreiro {
 export function escreverAvatar(escolhas: Partial<EscolhasDoAvatar>): AvatarDoGuerreiro {
   return resolverAvatar({ v: VERSAO_DO_AVATAR, ...escolhas });
 }
+
+/** Monta o texto a gravar quando o avatar é **alterado**, a partir do texto
+ * vigente. Se o vigente é o envelope da App 01 — o objeto do §7.2 em `avatar`,
+ * ao lado da forma de tratamento —, troca só o objeto e preserva as demais
+ * chaves: alterar o avatar nunca apaga a forma de tratamento (`RF-05-51`,
+ * documento 15 §7). Objeto sozinho, texto livre antigo ou nada não têm o que
+ * preservar, e o objeto novo é gravado sozinho. */
+export function regravarAvatar(
+  textoVigente: string | null | undefined,
+  avatarNovo: AvatarDoGuerreiro,
+): string {
+  if (textoVigente) {
+    try {
+      const vigente = objetoOuNulo(JSON.parse(textoVigente));
+      if (vigente && objetoOuNulo(vigente.avatar)) {
+        return JSON.stringify({ ...vigente, avatar: avatarNovo });
+      }
+    } catch {
+      // Texto que não é JSON: não há envelope a preservar.
+    }
+  }
+  return JSON.stringify(avatarNovo);
+}
