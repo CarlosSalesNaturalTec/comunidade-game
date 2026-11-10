@@ -291,6 +291,15 @@ class PerguntaDoDesbloqueioSaida(BaseModel):
     imagem_referencia: str | None = None
 
 
+class PerguntaDaSondagemSaida(PerguntaDoDesbloqueioSaida):
+    """A pergunta da **sondagem** no percurso do Guerreiro(a), com a
+    alternativa correta: é dela que a tela tira o retorno de acerto ou de erro
+    de cada resposta. Só a sondagem, que não tranca nada — a do desafio de
+    desbloqueio segue só no núcleo (`RN-05-57`, `RF-05-99`)."""
+
+    alternativa_correta: int
+
+
 class PerguntaDoDesbloqueioAoAutorSaida(PerguntaDoDesbloqueioSaida):
     """Só ao Mestre autor, e só nesta rota: a pergunta com a alternativa
     correta."""
@@ -960,11 +969,13 @@ def listar_minhas_trilhas_do_guerreiro_rota(
 class DesafioDeDesbloqueioSaida(BaseModel):
     tipo: TipoDeDesafioDeDesbloqueio
     enunciado: str | None = None
-    perguntas: list[PerguntaDoDesbloqueioSaida] | None = None
+    # Na sondagem, cada pergunta traz a alternativa correta; nas demais missões,
+    # nunca (`RN-05-57`). A sondagem vem primeiro na união para a serialização
+    # escolher a forma pelo tipo da instância.
+    perguntas: list[PerguntaDaSondagemSaida] | list[PerguntaDoDesbloqueioSaida] | None = None
     # No prático, a forma aceita e o critério são o que o Guerreiro(a) precisa
     # para entregar; o título curto vem com eles, porque é do mesmo desafio
-    # (`RF-09-129` a `RF-09-131`). A alternativa correta das perguntas segue
-    # fora desta saída, como já estava.
+    # (`RF-09-129` a `RF-09-131`).
     forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None
     criterio_de_aceite: str | None = None
     titulo_curto: str | None = None
@@ -1069,7 +1080,16 @@ def _saida_do_desafio_de_desbloqueio(
         return None
     perguntas = None
     if missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz:
-        perguntas = _saida_das_perguntas(perguntas_do_desbloqueio(sessao, missao_id=missao.id))
+        do_desbloqueio = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+        perguntas = _saida_das_perguntas(do_desbloqueio)
+        if missao.e_sondagem:
+            # O gabarito só da sondagem, para o retorno por pergunta (`RN-05-57`).
+            perguntas = [
+                PerguntaDaSondagemSaida(
+                    **saida.model_dump(), alternativa_correta=pergunta.alternativa_correta
+                )
+                for saida, pergunta in zip(perguntas, do_desbloqueio, strict=True)
+            ]
     return DesafioDeDesbloqueioSaida(
         tipo=missao.tipo_do_desafio_de_desbloqueio,
         enunciado=missao.desafio_de_desbloqueio_enunciado,

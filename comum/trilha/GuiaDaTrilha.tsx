@@ -16,6 +16,7 @@ import {
   type TrilhaPublicaComMissoes,
 } from "./api";
 import { Missao } from "./Missao";
+import { Sondagem } from "./Sondagem";
 import { TelaDaRecompensa } from "./TelaDaRecompensa";
 
 interface Props {
@@ -86,6 +87,13 @@ export function GuiaDaTrilha({
   // antes da próxima missão (`RF-05-45`, `RN-05-50`).
   const [recompensas, definirRecompensas] = useState<RecompensaConquistada[]>([]);
   const [gravandoCiencia, definirGravandoCiencia] = useState(false);
+  // A sondagem **já respondida** desta trilha, que se refaz pelo rodapé
+  // quando o Guerreiro(a) quiser, e se ela está sendo refeita agora
+  // (`RF-05-101`, design — decisão 7).
+  const [sondagemRespondida, definirSondagemRespondida] = useState<MissaoNoPercurso | null>(
+    null,
+  );
+  const [refazendoSondagem, definirRefazendoSondagem] = useState(false);
 
   const tratarErro = useCallback(
     (erroCapturado: unknown) => {
@@ -173,6 +181,41 @@ export function GuiaDaTrilha({
     };
   }, [trilha.id]);
 
+  // Trocar de trilha sai da sondagem que estava sendo refeita.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: zera na troca de trilha
+  useEffect(() => {
+    definirRefazendoSondagem(false);
+  }, [trilha.id]);
+
+  // A posição da sondagem vem da trilha publicada; o estado dela, do
+  // percurso. Só a respondida — desbloqueada e que não é mais a próxima —
+  // se oferece para refazer, e só onde a submissão está ligada. Depende de
+  // `trilha` para reler depois de cada recarga do percurso.
+  const posicaoDaSondagem = trilhaPublica?.missoes.find((item) => item.e_sondagem)?.posicao;
+  useEffect(() => {
+    definirSondagemRespondida(null);
+    if (!sessao || !submissaoDoDesbloqueioLigada || posicaoDaSondagem === undefined) return;
+    let cancelado = false;
+    obterMissaoNoPercurso(trilha.id, posicaoDaSondagem, sessao.token)
+      .then((missao) => {
+        if (cancelado) return;
+        const respondida =
+          missao.desbloqueada && !missao.e_proxima && missao.desafio_de_desbloqueio !== null;
+        definirSondagemRespondida(respondida ? missao : null);
+      })
+      .catch(() => {
+        if (!cancelado) definirSondagemRespondida(null);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [sessao, submissaoDoDesbloqueioLigada, posicaoDaSondagem, trilha]);
+
+  function aoConcluirARefeita() {
+    definirRefazendoSondagem(false);
+    carregar();
+  }
+
   function aoDesbloquear() {
     aoAtualizarTrilhas();
     carregarRecompensas();
@@ -222,7 +265,9 @@ export function GuiaDaTrilha({
   // Cada grupo só existe se tiver conteúdo — é isso que impede a linha órfã.
   const temGrupoDoQueSeLeDepois =
     !trilhaConcluida && (proximaTrancada || bibliografia.length > 0);
-  const temRodape = aoEscolherOutroPoder !== undefined || trilhaPublica !== null;
+  const podeRefazerASondagem = sondagemRespondida !== null && !refazendoSondagem;
+  const temRodape =
+    aoEscolherOutroPoder !== undefined || trilhaPublica !== null || podeRefazerASondagem;
 
   return (
     <section aria-label={`Guia de ${trilha.nome}`} className="cg-trilha__guia">
@@ -253,7 +298,17 @@ export function GuiaDaTrilha({
           {/* Grupo 1 — o conteúdo e o ato da missão, ou, na trilha inteira
           desbloqueada, a culminância. Não tem linha: é o primeiro. */}
           <div className="cg-trilha__grupo">
-            {trilhaConcluida ? (
+            {refazendoSondagem && sondagemRespondida?.desafio_de_desbloqueio ? (
+              <article aria-label={sondagemRespondida.titulo} className="cg-trilha__missao">
+                <h2>{sondagemRespondida.titulo}</h2>
+                <Sondagem
+                  missaoId={sondagemRespondida.id}
+                  desafio={sondagemRespondida.desafio_de_desbloqueio}
+                  aoResponder={aoConcluirARefeita}
+                  submissaoLigada={submissaoDoDesbloqueioLigada}
+                />
+              </article>
+            ) : trilhaConcluida ? (
               <>
                 <Aviso tipo="sucesso">
                   Você já desbloqueou todas as missões desta trilha. Agora é hora da
@@ -323,6 +378,11 @@ export function GuiaDaTrilha({
           crédito da trilha, que é metadado da obra. */}
           {temRodape && (
             <div className="cg-trilha__grupo">
+              {podeRefazerASondagem && (
+                <Botao variante="secundaria" onClick={() => definirRefazendoSondagem(true)}>
+                  Refazer a sondagem
+                </Botao>
+              )}
               {aoEscolherOutroPoder && (
                 <Botao variante="secundaria" onClick={aoEscolherOutroPoder}>
                   Escolher outro poder

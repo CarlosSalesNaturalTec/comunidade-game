@@ -500,6 +500,84 @@ def test_a_sondagem_abre_a_trilha_ao_ser_respondida(
     assert (resultado.acertos, resultado.total) == (0, 4)
 
 
+def test_refazer_a_sondagem_grava_tentativa_nova_e_vale_a_ultima(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RF-05-101`, `RN-05-56`: a sondagem respondida se refaz; cada
+    realização é tentativa nova com o placar dela, o desbloqueio segue um só e
+    a mais recente é a que vale."""
+    from nucleo.pontuacao.modelo import PontoRegular
+
+    mestre, guerreiro, _, sondagem = _trilha_inscrita(
+        sessao, criar_persona, criar_trilha, criar_missao, e_sondagem=True
+    )
+    _quiz_com_corretas(sessao, mestre, sondagem, [1, 1, 1, 1, 1])
+    sessao.commit()
+
+    primeira = submeter_desafio_de_desbloqueio(
+        sessao,
+        guerreiro=guerreiro,
+        missao=sondagem,
+        respostas=_responder(sessao, sondagem, [1, 1, 2, 2, 2]),
+    )
+    sessao.commit()
+    refeita = submeter_desafio_de_desbloqueio(
+        sessao,
+        guerreiro=guerreiro,
+        missao=sondagem,
+        respostas=_responder(sessao, sondagem, [1, 1, 1, 1, 2]),
+    )
+    sessao.commit()
+
+    assert (primeira.acertos, primeira.total) == (2, 5)
+    assert refeita.aprovado is True
+    assert (refeita.acertos, refeita.total) == (4, 5)
+    assert (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=sondagem.id)
+        .count()
+        == 1
+    )
+    submissoes = (
+        sessao.query(SubmissaoDoDesbloqueio)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=sondagem.id)
+        .order_by(SubmissaoDoDesbloqueio.momento)
+        .all()
+    )
+    assert [s.acertos for s in submissoes] == [2, 4]
+    assert submissoes[-1].acertos == 4
+    assert sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id).first() is None
+
+
+def test_quiz_comum_ja_cumprido_responde_como_antes(
+    sessao, criar_persona, criar_trilha, criar_missao
+):
+    """`RN-05-56` vale só para a sondagem: o quiz de missão comum já
+    desbloqueado devolve a situação do desbloqueio, sem gravar tentativa."""
+    mestre, guerreiro, _, missao = _trilha_inscrita(
+        sessao, criar_persona, criar_trilha, criar_missao
+    )
+    _quiz_com_corretas(sessao, mestre, missao, [1, 1])
+    sessao.commit()
+    submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, respostas=_responder(sessao, missao, [1, 1])
+    )
+    sessao.commit()
+
+    de_novo = submeter_desafio_de_desbloqueio(
+        sessao, guerreiro=guerreiro, missao=missao, respostas=_responder(sessao, missao, [2, 2])
+    )
+    sessao.commit()
+
+    assert de_novo.aprovado is True
+    assert (
+        sessao.query(SubmissaoDoDesbloqueio)
+        .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
+        .count()
+        == 1
+    )
+
+
 def test_toda_tentativa_fica_gravada_com_a_resposta_de_cada_pergunta(
     sessao, criar_persona, criar_trilha, criar_missao
 ):

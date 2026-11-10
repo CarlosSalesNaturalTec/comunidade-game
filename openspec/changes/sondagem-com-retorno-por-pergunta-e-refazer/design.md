@@ -17,7 +17,7 @@ implementação só, e a tentativa nova gravada pelo núcleo (`RN-05-56`).
 
 **Non-Goals:** leitura do resultado vigente por alguém — nenhuma tela ou rota o consome hoje, e
 o documento 10 não está fatiado; retorno por pergunta no desafio de desbloqueio ou no Quiz ao
-Vivo; narrar o retorno de acerto ou erro.
+Vivo.
 
 ## Decisions
 
@@ -57,7 +57,9 @@ Vivo; narrar o retorno de acerto ou erro.
 6. **Símbolo: dois glifos novos no `Icone`.** `acerto` (✓) e `erro` (✗), coloridos por
    `--cor-sucesso` e `--cor-erro`, com texto visualmente oculto em região `aria-live` ("Você
    acertou!" / "Não foi essa."). Forma distinta mais texto atende "nenhum significado só por
-   cor" (documento 15). O símbolo é grande e centralizado sobre a pergunta, em
+   cor" (documento 15). Com a narração ligada, o mesmo texto é falado pelo `narrar` ao abrir o
+   retorno (decisão do fundador de 2026-11-10); desligada, `narrar` já cala sozinho. A fala é
+   curta e cabe nos 2 s; a fala da pergunta seguinte a interrompe se ainda soar. O símbolo é grande e centralizado sobre a pergunta, em
    `comum/trilha/estilos.css`.
 7. **Refazer pelo rodapé no `GuiaDaTrilha`.** O guia localiza a missão de sondagem em
    `trilhaPublica.missoes` (`e_sondagem`), busca o estado dela no percurso e, se está

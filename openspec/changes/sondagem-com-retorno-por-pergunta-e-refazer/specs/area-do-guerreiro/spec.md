@@ -31,6 +31,22 @@ oferecer voltar à pergunta anterior nem botão de envio. (`RF-05-99`)
 - **WHEN** o símbolo de acerto ou de erro está na tela
 - **THEN** acerto e erro têm formas diferentes e um texto que o leitor de tela anuncia
 
+### Requirement: Com a narração ligada, o retorno da sondagem é falado
+
+Com a narração ligada, o retorno de acerto ou de erro de cada pergunta da sondagem SHALL ser
+**falado** enquanto o símbolo está na tela; desligada, NEVER SHALL falar. (`RF-05-99`, decisão
+do fundador de 2026-11-10)
+
+#### Scenario: Com o áudio ligado, o retorno é falado
+
+- **WHEN** a narração está ligada e o Guerreiro(a) responde uma pergunta da sondagem
+- **THEN** o retorno de acerto ou de erro é falado enquanto o símbolo está na tela
+
+#### Scenario: Com o áudio desligado, o retorno não fala
+
+- **WHEN** a narração está desligada e o Guerreiro(a) responde uma pergunta da sondagem
+- **THEN** o símbolo aparece e nada é falado
+
 ### Requirement: A sondagem termina na tela de acertos e erros, com Refazer e Concluir
 
 Depois do retorno da **última** pergunta, a sondagem SHALL ser submetida sem toque, e a tela

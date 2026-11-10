@@ -164,7 +164,8 @@ Seis regras fecham o modelo:
 - **Sondagem antes de ensinar.** Toda trilha abre com uma missão de sondagem, e sem ela a
   trilha não publica. Ela mede de onde a turma parte; **não define nível**, que é percurso
   (§6), e **abre a trilha ao ser respondida, não ao ser acertada** — medir de onde se parte
-  não é filtrar quem entra.
+  não é filtrar quem entra. O Guerreiro(a) pode **refazê-la quando quiser**, e vale a tentativa
+  mais recente.
 - **Repetir para fixar.** A retomada traz de volta o que já foi cumprido, na cadência que o
   Mestre declara — o mesmo vocabulário do desafio de coleta. Ela pontua **uma vez por
   agendamento**; refazer por conta própria não rende ponto novo. O _template_ de missão sugere

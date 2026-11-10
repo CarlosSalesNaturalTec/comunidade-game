@@ -55,7 +55,8 @@ describe("sondagem", () => {
     expect(screen.queryByText(/prova/i)).not.toBeInTheDocument();
   });
 
-  it("responder chama aoResponder", async () => {
+  it("responder leva à tela final, e o Concluir chama aoResponder", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     sessionStorage.setItem(CHAVE_DE_SESSAO, "token-do-guerreiro");
     vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
       persona_id: "guerreiro-1",
@@ -104,12 +105,24 @@ describe("sondagem", () => {
     await act(async () => {
       screen.getByRole("radio", { name: "a" }).click();
     });
+    // Sem botão de enviar: o retorno de 2 s passa e a sondagem se submete
+    // sozinha, terminando no total (`RF-05-99`, `RF-05-100`).
+    expect(
+      screen.queryByRole("button", { name: /enviar respostas/i }),
+    ).not.toBeInTheDocument();
     await act(async () => {
-      screen.getByRole("button", { name: /enviar respostas/i }).click();
+      vi.advanceTimersByTime(2000);
+    });
+    expect(screen.getByText("Você acertou 0 e errou 1.")).toBeInTheDocument();
+    expect(aoResponder).not.toHaveBeenCalled();
+
+    await act(async () => {
+      screen.getByRole("button", { name: "Concluir" }).click();
     });
 
     expect(aoResponder).toHaveBeenCalled();
     expect(screen.queryByText(/não foi dessa vez/i)).not.toBeInTheDocument();
+    vi.useRealTimers();
   });
 });
 
@@ -248,6 +261,11 @@ describe("sondagem respondida por voz (RF-05-97, RF-05-98, RN-05-54)", () => {
 
     await act(async () => {
       vi.advanceTimersByTime(5000);
+    });
+    // O retorno de 2 s, falado com o áudio ligado, antes de avançar (`RF-05-99`).
+    expect(ditos.at(-1)?.text).toBe("Não foi essa.");
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
     });
 
     expect(screen.getByText("Quanto é 2 + 2?")).toBeInTheDocument();

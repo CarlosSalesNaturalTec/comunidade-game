@@ -38,6 +38,11 @@ export type NomeDeGlifo =
   // regra do sistema, não exceção: a cheia, do ponto regular, é peça
   // preenchida e vive em `EstrelaDePonto`.
   | "ponto-extra"
+  // O retorno de cada resposta da sondagem (`RF-05-99`, decisão do fundador
+  // de 2026-11-10): o visto e o xis são formas diferentes, e a cor vem do
+  // texto em volta — `--cor-sucesso` e `--cor-erro` —, nunca daqui.
+  | "acerto"
+  | "erro"
   // Os glifos de poder do documento 15 §8.4 — um por poder do catálogo do
   // documento 02 §2, mais o genérico. Quem os escolhe pelo nome do poder é
   // `GlifoDePoder`; aqui são glifos como os demais, na mesma grade.
@@ -218,6 +223,20 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
   // dá para trocar. O mesmo traçado da cheia, sem preenchimento: aqui a cor é
   // a do texto, porque `ponto-500` não é cor de traço (§3.3).
   "ponto-extra": <path d={CAMINHO_DA_ESTRELA} />,
+  // Visto dentro de um círculo: acertou.
+  acerto: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8 12.5l2.7 2.7L16 9.8" />
+    </>
+  ),
+  // Xis dentro de um círculo: não foi essa.
+  erro: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9 9l6 6M15 9l-6 6" />
+    </>
+  ),
   // O genérico do documento 15 §8.4 — losango num círculo. Não é estrela nem
   // hexágono de propósito: a estrela é a grandeza ponto do §9 e o hexágono é a
   // silhueta do badge de protagonismo do §8.3, e o genérico não pode se

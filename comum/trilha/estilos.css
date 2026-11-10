@@ -104,3 +104,42 @@
 .cg-trilha__escuta-transcricao {
   font-weight: 600;
 }
+
+/* O retorno de cada resposta da sondagem: o símbolo grande e centralizado,
+ * na cor de sucesso ou de erro dos tokens — o glifo herda pelo
+ * `currentColor` (`RF-05-99`). A forma já distingue os dois; a cor reforça. */
+.cg-trilha__retorno-da-sondagem {
+  display: flex;
+  justify-content: center;
+  min-block-size: 48px;
+  margin-block-start: var(--espaco-16);
+}
+
+.cg-trilha__retorno--acerto {
+  color: var(--cor-sucesso);
+}
+
+.cg-trilha__retorno--erro {
+  color: var(--cor-erro);
+}
+
+/* O texto do retorno é para o leitor de tela; quem vê lê o símbolo. */
+.cg-trilha__oculto {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A tela final da sondagem: o total e os dois botões lado a lado. */
+.cg-trilha__fim-da-sondagem > * + * {
+  margin-block-start: var(--espaco-16);
+}
+
+.cg-trilha__acoes-da-sondagem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-12);
+}

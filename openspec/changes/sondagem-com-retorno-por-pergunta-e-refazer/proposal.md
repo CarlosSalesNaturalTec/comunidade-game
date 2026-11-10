@@ -33,7 +33,8 @@ medida de partida que o Mestre lê.
 
 - **Retorno por pergunta** (`RF-05-99`): respondida uma pergunta — por toque ou pela janela de
   voz do `RF-05-97` —, a tela mostra por **2 segundos** um símbolo **verde de acerto** ou
-  **vermelho de erro**, com forma distinta e texto acessível, e avança sozinha para a seguinte.
+  **vermelho de erro**, com forma distinta e texto acessível — **falado** com a narração
+  ligada —, e avança sozinha para a seguinte.
   A resposta dada não se troca: some o "Pergunta anterior" e o "Enviar respostas" da sondagem.
 - **Tela final** (`RF-05-100`): depois da última pergunta a sondagem é submetida sem toque, e a
   tela mostra o **total de acertos e de erros**, segundo o núcleo, com os botões **Refazer** e

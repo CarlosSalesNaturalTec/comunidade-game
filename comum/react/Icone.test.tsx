@@ -29,6 +29,8 @@ const GLIFOS: NomeDeGlifo[] = [
   "carteira",
   "desafios",
   "coleta",
+  "acerto",
+  "erro",
 ];
 
 function desenhar(glifo: NomeDeGlifo): SVGSVGElement {
@@ -107,6 +109,10 @@ describe("Icone — o par do alternador difere pela forma (documento 15 §5)", (
     // Não é o mesmo desenho em duas cores: nenhum estado se comunica por cor
     // sozinha, e aqui nenhum dos dois declara cor alguma.
     expect(ligado).not.toBe(desligado);
+  });
+
+  it("o acerto e o erro da sondagem são desenhos diferentes (`RF-05-99`)", () => {
+    expect(desenhar("acerto").innerHTML).not.toBe(desenhar("erro").innerHTML);
   });
 
   it("a chave do momento de troca não repete o glifo do caminho da troca", () => {
