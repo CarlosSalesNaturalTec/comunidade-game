@@ -1,4 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import * as cartaApi from "comum/carta/api";
@@ -134,9 +135,12 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
     expect(apoio?.textContent).toMatch(/Acumulado/);
     expect(apoio?.textContent).toMatch(/Meu perfil público/);
 
-    // Uma decisão por tela: a carteira é leitura, e autorizar a divulgação é
-    // ato do responsável na App 07 (`RN-05-42`) — nenhum botão aqui.
-    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    // Uma decisão por tela: a única é mudar o próprio avatar (`RF-05-51`), e
+    // autorizar a divulgação segue sendo ato do responsável na App 07
+    // (`RN-05-42`) — nenhuma ação dele aqui.
+    expect(screen.queryAllByRole("button").map((botao) => botao.textContent)).toEqual([
+      "Mudar o meu avatar",
+    ]);
   });
 
   it("sem foto escolhida, a tela é a cor chapada, e nenhuma imagem é pedida", async () => {
@@ -169,5 +173,40 @@ describe("o saldo na carta não dispensa a carteira (`RF-05-82`)", () => {
 
     const carta = container.querySelector(".cg-palco__personagem");
     expect(carta?.textContent).not.toMatch(/Acumulado/i);
+  });
+});
+
+describe("mudar o próprio avatar a partir da carteira (`RF-05-51`, `RF-05-50`)", () => {
+  it("abre a montagem, salva e volta com a carta relendo a sessão", async () => {
+    await renderizarRetornando();
+    const alterar = vi
+      .spyOn(carteiraApi, "alterarMeuAvatar")
+      .mockResolvedValue({ avatar: "gravado" });
+    const usuario = userEvent.setup();
+    const leiturasAntes = vi.mocked(autenticacaoApi.eu).mock.calls.length;
+
+    await usuario.click(screen.getByRole("button", { name: "Mudar o meu avatar" }));
+    expect(await screen.findByRole("region", { name: "Meu avatar" })).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole("button", { name: "Salvar o meu avatar" }));
+
+    expect(alterar).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole("region", { name: "Minha carteira" })).toBeInTheDocument();
+    // Uma leitura da montagem e outra da carta remontada.
+    expect(vi.mocked(autenticacaoApi.eu).mock.calls.length).toBeGreaterThanOrEqual(
+      leiturasAntes + 2,
+    );
+  });
+
+  it("voltar sem salvar devolve à carteira sem gravar", async () => {
+    await renderizarRetornando();
+    const alterar = vi.spyOn(carteiraApi, "alterarMeuAvatar");
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: "Mudar o meu avatar" }));
+    await usuario.click(await screen.findByRole("button", { name: "Voltar sem salvar" }));
+
+    expect(alterar).not.toHaveBeenCalled();
+    expect(screen.getByRole("region", { name: "Minha carteira" })).toBeInTheDocument();
   });
 });

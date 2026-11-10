@@ -38,6 +38,7 @@ from .regra import (
     conferir_disponibilidade_de_nick,
     declarar_documento_do_apoiador,
     definir_avatar_do_apoiador,
+    definir_avatar_do_guerreiro,
     definir_avatar_do_mestre,
     definir_ou_trocar_nick,
     editar_artefato_do_mestre,
@@ -774,6 +775,37 @@ def ler_identidade_do_mestre(
 
     persona = sessao_bd.get(Persona, contexto.persona_id)
     return _saida_da_identidade_do_mestre(sessao_bd, persona)
+
+
+class AvatarDoGuerreiroEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    # Vazio é recusado: o avatar do Guerreiro(a) é obrigatório desde o
+    # cadastro (`RF-05-51`).
+    avatar: str = Field(min_length=1)
+
+
+class AvatarDoGuerreiroSaida(BaseModel):
+    avatar: str
+
+
+@roteador.patch("/eu/avatar")
+def alterar_avatar_do_guerreiro(
+    entrada: AvatarDoGuerreiroEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AvatarDoGuerreiroSaida:
+    """O Guerreiro(a) em sessão troca o próprio avatar. A rota não recebe
+    identificador: alcança só a persona da sessão. Outro papel recebe 403 —
+    Mestre e Apoiador têm rota própria, e a edição pela gestão é a do Admin
+    (`RF-05-51`, `RN-05-21`, `RF-02-01`, PRD-05 §9)."""
+    if contexto.papel != Papel.guerreiro:
+        raise PermissaoNegada(mensagem="Só o Guerreiro(a) altera o próprio avatar por aqui.")
+
+    persona = sessao_bd.get(Persona, contexto.persona_id)
+    definir_avatar_do_guerreiro(sessao_bd, persona, entrada.avatar)
+    sessao_bd.commit()
+    return AvatarDoGuerreiroSaida(avatar=persona.avatar)
 
 
 class ArtefatoDoMestreEntrada(BaseModel):

@@ -1,7 +1,14 @@
 import { useSessao } from "comum/autenticacao";
-import { Aviso, EstadoDaLista, FundoDeComunidade, PalcoDoPersonagem } from "comum/react";
+import {
+  Aviso,
+  Botao,
+  EstadoDaLista,
+  FundoDeComunidade,
+  PalcoDoPersonagem,
+} from "comum/react";
 import { useEffect, useState } from "react";
 import { listarMeusPontosExtras, type PontosExtras } from "../api/carteira";
+import { AlterarMeuAvatar } from "./AlterarMeuAvatar";
 import { MinhaCarta } from "./MinhaCarta";
 
 // A carteira: acumulado e saldo disponível separados e rotulados, sem soma
@@ -22,6 +29,11 @@ export function MinhaCarteira() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [pontos, definirPontos] = useState<PontosExtras | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
+  // Mudar o avatar troca o palco pela montagem; salvo, a carta é remontada
+  // pela `key` para reler `GET /v1/eu` e desenhar o avatar novo (`RF-05-51`,
+  // `RF-05-50`, design — decisão 4).
+  const [alterandoAvatar, definirAlterandoAvatar] = useState(false);
+  const [versaoDaCarta, definirVersaoDaCarta] = useState(0);
 
   useEffect(() => {
     if (!sessao) return;
@@ -79,6 +91,12 @@ export function MinhaCarteira() {
         </div>
       )}
 
+      <div className="cg-carteira__avatar">
+        <Botao variante="secundaria" onClick={() => definirAlterandoAvatar(true)}>
+          Mudar o meu avatar
+        </Botao>
+      </div>
+
       <div className="cg-carteira__perfil">
         <h2>Meu perfil público</h2>
         {sessao?.divulgacao_autorizada ? (
@@ -95,6 +113,18 @@ export function MinhaCarteira() {
     </>
   );
 
+  if (alterandoAvatar) {
+    return (
+      <AlterarMeuAvatar
+        aoVoltar={() => definirAlterandoAvatar(false)}
+        aoSalvar={() => {
+          definirVersaoDaCarta((versao) => versao + 1);
+          definirAlterandoAvatar(false);
+        }}
+      />
+    );
+  }
+
   return (
     <section className="cg-carteira-secao" aria-label="Minha carteira">
       {/* A foto registrada da comunidade entra aqui quando o núcleo passar a
@@ -103,7 +133,7 @@ export function MinhaCarteira() {
           §1). Sem foto, a tela é a cor chapada — e é exatamente a mesma. */}
       <FundoDeComunidade imagem={null}>
         <PalcoDoPersonagem rotulo="Minha carta" apoio={apoio}>
-          <MinhaCarta />
+          <MinhaCarta key={versaoDaCarta} />
         </PalcoDoPersonagem>
       </FundoDeComunidade>
     </section>

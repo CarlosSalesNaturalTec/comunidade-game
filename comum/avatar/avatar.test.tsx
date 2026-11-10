@@ -1,4 +1,6 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { Avatar } from "./Avatar";
 import {
@@ -7,7 +9,14 @@ import {
   type NomeDeCamada,
   tracoDoCatalogo,
 } from "./catalogo";
-import { AVATAR_PADRAO_DO_PROJETO, escreverAvatar, lerAvatar } from "./objeto";
+import { MontagemDoAvatar } from "./MontagemDoAvatar";
+import {
+  AVATAR_PADRAO_DO_PROJETO,
+  type AvatarDoGuerreiro,
+  escreverAvatar,
+  lerAvatar,
+  regravarAvatar,
+} from "./objeto";
 
 // As nove camadas do documento 15 §7.1, na ordem de composição.
 const CAMADAS_NA_ORDEM: NomeDeCamada[] = [
@@ -338,5 +347,75 @@ describe("a escrita monta o objeto versionado (documento 15 §7.2)", () => {
     expect(escreverAvatar({ cabelo: "inventado" }).cabelo).toBe(
       AVATAR_PADRAO_DO_PROJETO.cabelo,
     );
+  });
+});
+
+describe("a montagem do avatar por camada (`RF-04-07`, `RF-05-51`)", () => {
+  function Controlada({ inicial }: { inicial: AvatarDoGuerreiro }) {
+    const [avatar, definirAvatar] = useState(inicial);
+    return <MontagemDoAvatar avatar={avatar} aoAlterar={definirAvatar} />;
+  }
+
+  it("oferece as nove camadas, na ordem, com os traços pelo nome dizível", () => {
+    render(<MontagemDoAvatar avatar={AVATAR_PADRAO_DO_PROJETO} aoAlterar={() => {}} />);
+    const escolhas = screen.getAllByRole("combobox");
+    expect(CAMADAS_DO_AVATAR.map((camada) => camada.nome)).toEqual(CAMADAS_NA_ORDEM);
+    expect(
+      escolhas.map((escolha) => (escolha as HTMLSelectElement).labels[0]?.textContent),
+    ).toEqual(CAMADAS_DO_AVATAR.map((camada) => camada.rotulo));
+    for (const camada of CAMADAS_DO_AVATAR) {
+      const escolha = screen.getByLabelText(camada.rotulo) as HTMLSelectElement;
+      expect([...escolha.options].map((opcao) => opcao.textContent)).toEqual(
+        camada.tracos.map((traco) => traco.nome),
+      );
+    }
+  });
+
+  it("parte do avatar recebido", () => {
+    const recebido = escreverAvatar({ fundo: "moeda-100", cabelo_cor: "c5" });
+    render(<MontagemDoAvatar avatar={recebido} aoAlterar={() => {}} />);
+    expect((screen.getByLabelText("Cor do fundo") as HTMLSelectElement).value).toBe(
+      "moeda-100",
+    );
+    expect((screen.getByLabelText("Cor do cabelo") as HTMLSelectElement).value).toBe("c5");
+  });
+
+  it("escolher um traço redesenha, sem requisição alguma", async () => {
+    const buscar = vi.spyOn(globalThis, "fetch");
+    const usuario = userEvent.setup();
+    const { container } = render(<Controlada inicial={AVATAR_PADRAO_DO_PROJETO} />);
+    const antes = container.querySelector("svg")?.innerHTML;
+
+    await usuario.selectOptions(screen.getByLabelText("Cor do fundo"), "acao-100");
+
+    expect((screen.getByLabelText("Cor do fundo") as HTMLSelectElement).value).toBe(
+      "acao-100",
+    );
+    expect(container.querySelector("svg")?.innerHTML).not.toBe(antes);
+    expect(buscar).not.toHaveBeenCalled();
+    buscar.mockRestore();
+  });
+});
+
+describe("regravar o avatar preserva o que viaja ao lado dele (`RF-05-51`)", () => {
+  const novo = escreverAvatar({ fundo: "ponto-100" });
+
+  it("troca só o objeto e mantém a forma de tratamento do envelope", () => {
+    const vigente = JSON.stringify({
+      formaDeTratamento: "guerreiro",
+      avatar: escreverAvatar({ fundo: "acao-100" }),
+    });
+    expect(JSON.parse(regravarAvatar(vigente, novo))).toEqual({
+      formaDeTratamento: "guerreiro",
+      avatar: novo,
+    });
+  });
+
+  it.each([
+    ["o objeto sozinho", JSON.stringify(escreverAvatar({ fundo: "acao-100" }))],
+    ["texto livre antigo", "cabelo cacheado e boné"],
+    ["nada", null],
+  ])("grava o objeto sozinho quando o vigente é %s", (_, vigente) => {
+    expect(JSON.parse(regravarAvatar(vigente, novo))).toEqual(novo);
   });
 });

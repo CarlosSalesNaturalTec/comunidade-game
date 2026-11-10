@@ -111,3 +111,13 @@ export function listarRankingDaTurma(
     token,
   });
 }
+
+// O Guerreiro(a) troca o próprio avatar — a rota alcança só a persona da
+// sessão, e o texto viaja opaco ao núcleo (`RF-05-51`, PRD-05 §9).
+export function alterarMeuAvatar(token: string, avatar: string): Promise<{ avatar: string }> {
+  return chamarNucleo<{ avatar: string }>("/v1/eu/avatar", {
+    token,
+    metodo: "PATCH",
+    corpo: { avatar },
+  });
+}

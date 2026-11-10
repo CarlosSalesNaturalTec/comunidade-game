@@ -84,29 +84,6 @@ textarea {
   background: var(--cor-fundo-realce);
 }
 
-/* A escolha do avatar no onboarding: uma camada por vez, cada traço pelo
- * nome dizível dele, com o avatar composto à vista (documento 15 §7.1). */
-.cg-escolha-de-avatar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espaco-12);
-  border: 1px solid var(--cor-separador);
-  border-radius: var(--raio-campo);
-  padding: var(--espaco-16);
-}
-
-.cg-escolha-de-avatar legend {
-  font-weight: var(--peso-rotulo);
-}
-
-.cg-escolha-de-avatar select {
-  min-height: var(--alvo-de-toque);
-  border-radius: var(--raio-campo);
-  border: 1px solid var(--cor-borda);
-  background: var(--cor-superficie);
-  color: var(--cor-texto);
-}
-
 /* O rótulo do grupo que separa os caminhos da criança das duas ações de quem
  * opera o aparelho. Agrupa sem mudar o cartão: encerrar e abrir a troca ficam
  * no mesmo padrão dos demais, como o fundador pediu em 2026-10-14. O corpo é o
