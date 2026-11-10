@@ -1357,17 +1357,27 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
       comprovacao_entregue: null,
     });
 
+    // A sondagem não tem botão de enviar: depois do retorno de 2 s ela se
+    // submete sozinha e mostra o total (`RF-04-78`, `RF-05-99`, `RF-05-100`).
     await usuario.click(await screen.findByRole("radio", { name: "1" }));
-    await usuario.click(screen.getByRole("button", { name: /enviar respostas/i }));
+    expect(
+      screen.queryByRole("button", { name: /enviar respostas/i }),
+    ).not.toBeInTheDocument();
 
     // A entrega vai vazia: a sondagem e o quiz não têm comprovação a entregar
     // — ela é só do prático (`RF-05-91`).
-    expect(submeter).toHaveBeenCalledWith(
-      "sondagem-1",
-      [{ pergunta_id: "p1", alternativa_escolhida: 1 }],
-      "token-do-guerreiro",
-      {},
+    await waitFor(
+      () =>
+        expect(submeter).toHaveBeenCalledWith(
+          "sondagem-1",
+          [{ pergunta_id: "p1", alternativa_escolhida: 1 }],
+          "token-do-guerreiro",
+          {},
+        ),
+      { timeout: 3000 },
     );
+    expect(await screen.findByText("Você acertou 0 e errou 1.")).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: "Concluir" }));
     // A trilha já reabre no mesmo atendimento: nenhuma entrada nova é pedida.
     expect(screen.queryByLabelText(/nick/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/não foi dessa vez/i)).not.toBeInTheDocument();

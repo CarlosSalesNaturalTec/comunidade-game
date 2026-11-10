@@ -388,7 +388,10 @@ ao autor **reabrir e corrigir** o que declarou sem reenviar arquivo nem reescrev
 
 A alternativa correta e a referência da imagem NEVER SHALL sair por leitura que alcance o
 Guerreiro(a) ou qualquer persona que não seja o Mestre autor da trilha: esta leitura é
-exclusiva do autor e é por isso que as carrega. (`RF-09-118`, `RF-05-89`)
+exclusiva do autor e é por isso que as carrega. A única exceção é a alternativa correta das
+perguntas da **sondagem**, que a leitura da missão no percurso do Guerreiro(a) traz para o
+retorno por pergunta; a do desafio de desbloqueio segue só aqui. (`RF-09-118`, `RF-05-89`,
+`RN-05-57`)
 
 Cada missão devolvida por essa leitura SHALL trazer também o **conteúdo** que ela tem
 declarado — texto, imagem, link externo, vídeo e arquivo de apoio —, na ordem disposta pelo

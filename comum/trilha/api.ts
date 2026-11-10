@@ -44,9 +44,11 @@ export interface PerguntaDoDesbloqueio {
   id: string;
   ordem: number;
   enunciado: string;
-  // Nunca a alternativa correta: ela não sai do núcleo para o
-  // Guerreiro(a) (`RF-09-118`).
   alternativas: string[];
+  // Só na **sondagem**: a alternativa correta, de 1 a 4, para a tela dar o
+  // retorno de cada resposta. No desafio de desbloqueio ela nunca vem, e
+  // segue só no núcleo (`RN-05-57`, `RF-09-118`).
+  alternativa_correta?: number | null;
   // Diz apenas **se** a pergunta tem imagem; os bytes vêm da rota própria,
   // que confere quem pede (`RF-09-119`).
   imagem_referencia: string | null;

@@ -1594,6 +1594,21 @@ def submeter_desafio_de_desbloqueio(
         .filter_by(guerreiro_id=guerreiro.id, missao_id=missao.id)
         .first()
     )
+    if (
+        existente is not None
+        and missao.e_sondagem
+        and missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.quiz
+    ):
+        # A sondagem respondida **se refaz**: cada realização é tentativa nova,
+        # gravada com o placar, e vale a mais recente pelo instante. O
+        # desbloqueio segue um só, e nada credita nem define nível
+        # (`RF-05-101`, `RN-05-56`, `RN-05-47`).
+        acertos, total = _aferir_quiz(
+            sessao, guerreiro=guerreiro, missao=missao, respostas=respostas
+        )
+        return ResultadoDaSubmissaoDoDesbloqueio(
+            aprovado=True, desbloqueio=existente, acertos=acertos, total=total
+        )
     if existente is not None:
         # Enquanto o Mestre não julgou, entregar de novo **substitui** o que
         # estava, em vez de criar segundo registro — como a criação original já
@@ -1623,33 +1638,15 @@ def submeter_desafio_de_desbloqueio(
                 mensagem="O quiz não recebe comprovação: o critério dele é o corte de acertos.",
                 campo="comprovacao",
             )
-        perguntas = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
-        if not perguntas:
-            raise ErroDeValidacao(
-                mensagem="Esta missão não tem desafio de desbloqueio declarado.",
-                campo="missao_id",
-            )
-        escolhas, faladas = _conferir_respostas_do_quiz(
-            respostas, perguntas, e_sondagem=missao.e_sondagem
-        )
-        acertos = sum(
-            1 for pergunta in perguntas if escolhas[pergunta.id] == pergunta.alternativa_correta
-        )
-        _gravar_submissao(
-            sessao,
-            guerreiro_id=guerreiro.id,
-            missao_id=missao.id,
-            perguntas=perguntas,
-            escolhas=escolhas,
-            faladas=faladas,
-            acertos=acertos,
+        acertos, total = _aferir_quiz(
+            sessao, guerreiro=guerreiro, missao=missao, respostas=respostas
         )
         # A sondagem abre ao ser respondida: o corte não se aplica a ela
         # (`RN-05-46`, design — decisão 4).
-        passou = missao.e_sondagem or _passou_no_quiz(acertos, len(perguntas))
+        passou = missao.e_sondagem or _passou_no_quiz(acertos, total)
         if not passou:
             return ResultadoDaSubmissaoDoDesbloqueio(
-                aprovado=False, desbloqueio=None, acertos=acertos, total=len(perguntas)
+                aprovado=False, desbloqueio=None, acertos=acertos, total=total
             )
         desbloqueio = DesbloqueioDaMissao(
             guerreiro_id=guerreiro.id, missao_id=missao.id, cumpriu=True
@@ -1657,7 +1654,7 @@ def submeter_desafio_de_desbloqueio(
         sessao.add(desbloqueio)
         sessao.flush()
         return ResultadoDaSubmissaoDoDesbloqueio(
-            aprovado=True, desbloqueio=desbloqueio, acertos=acertos, total=len(perguntas)
+            aprovado=True, desbloqueio=desbloqueio, acertos=acertos, total=total
         )
 
     texto, presencial = _conferir_comprovacao_do_pratico(
@@ -1682,6 +1679,35 @@ def submeter_desafio_de_desbloqueio(
     sessao.add(desbloqueio)
     sessao.flush()
     return ResultadoDaSubmissaoDoDesbloqueio(aprovado=None, desbloqueio=desbloqueio)
+
+
+def _aferir_quiz(
+    sessao: Session, *, guerreiro: Persona, missao: Missao, respostas: list[dict] | None
+) -> tuple[int, int]:
+    """Confere as respostas do quiz, grava a tentativa com a resposta de cada
+    pergunta e devolve os acertos e o total (`RF-05-89`, `RN-05-47`)."""
+    perguntas = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
+    if not perguntas:
+        raise ErroDeValidacao(
+            mensagem="Esta missão não tem desafio de desbloqueio declarado.",
+            campo="missao_id",
+        )
+    escolhas, faladas = _conferir_respostas_do_quiz(
+        respostas, perguntas, e_sondagem=missao.e_sondagem
+    )
+    acertos = sum(
+        1 for pergunta in perguntas if escolhas[pergunta.id] == pergunta.alternativa_correta
+    )
+    _gravar_submissao(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        missao_id=missao.id,
+        perguntas=perguntas,
+        escolhas=escolhas,
+        faladas=faladas,
+        acertos=acertos,
+    )
+    return acertos, len(perguntas)
 
 
 _FORMAS_DE_COMPROVACAO_EM_TEXTO = frozenset(

@@ -1492,22 +1492,22 @@ def test_minhas_trilhas_devolvem_a_bibliografia_ja_gravada(
     assert bibliografia[1]["apoiador_nome"] is None
 
 
-def test_a_alternativa_correta_nao_sai_na_leitura_do_guerreiro(
+def _leitura_do_guerreiro(
     cliente,
     criar_chave,
     criar_persona,
     criar_sessao_de_teste,
     criar_trilha,
     criar_missao,
-    sessao,
+    *,
+    e_sondagem,
 ):
-    """A leitura das trilhas próprias carrega a alternativa correta porque é
-    exclusiva do Mestre autor; a do percurso do Guerreiro(a) nunca a traz
-    (`RF-09-118`, `RF-05-89`)."""
+    """Missão com quiz declarado pelo Mestre autor e lida no percurso por um
+    Guerreiro(a) inscrito; devolve as perguntas da leitura dele."""
     chave, _ = criar_chave()
     mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
-    missao = criar_missao(trilha, mestre, e_sondagem=True)
+    missao = criar_missao(trilha, mestre, e_sondagem=e_sondagem)
     token_do_mestre, _ = criar_sessao_de_teste(mestre)
     cabecalhos_do_mestre = {
         "X-Chave-Aplicacao": chave,
@@ -1545,8 +1545,52 @@ def test_a_alternativa_correta_nao_sai_na_leitura_do_guerreiro(
     )
 
     assert resposta.status_code == 200
-    perguntas = resposta.json()["desafio_de_desbloqueio"]["perguntas"]
+    return resposta.json()["desafio_de_desbloqueio"]["perguntas"]
+
+
+def test_a_alternativa_correta_nao_sai_na_leitura_do_guerreiro(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    """No desafio de desbloqueio, a leitura do percurso nunca traz a
+    alternativa correta (`RF-09-118`, `RF-05-89`, `RN-05-57`)."""
+    perguntas = _leitura_do_guerreiro(
+        cliente,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+        e_sondagem=False,
+    )
     assert perguntas and all("alternativa_correta" not in pergunta for pergunta in perguntas)
+
+
+def test_a_pergunta_da_sondagem_traz_a_correta_ao_guerreiro(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+):
+    """Só na sondagem a leitura do percurso traz a alternativa correta, para o
+    retorno por pergunta (`RN-05-57`, `RF-05-99`)."""
+    perguntas = _leitura_do_guerreiro(
+        cliente,
+        criar_chave,
+        criar_persona,
+        criar_sessao_de_teste,
+        criar_trilha,
+        criar_missao,
+        e_sondagem=True,
+    )
+    assert [pergunta["alternativa_correta"] for pergunta in perguntas] == [3]
+    assert perguntas[0]["alternativas"] == ["a", "b", "c", "d"]
 
 
 # --- Conserto: a culminância volta ao Mestre autor (`RF-09-29`, `RF-09-30`,

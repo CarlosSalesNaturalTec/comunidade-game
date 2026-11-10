@@ -418,6 +418,7 @@ dentro da mesma sessão de trabalho do aparelho.
 | `RF-04-74` | Guerreiro(a) escolhe o poder no catálogo do ciclo e inscreve-se na trilha pelo aparelho do encontro, sem teto de quantas e sem desinscrição                   | essencial  |
 | `RF-04-76` | Guerreiro(a) entrega a comprovação do desafio prático pelo aparelho do encontro, com o critério de aceite e o aviso da mídia guardada, sem divergir da App 05 | essencial  |
 | `RF-04-77` | Com o áudio ligado, a sondagem no aparelho do encontro é respondida por voz como na App 05 (`RF-05-97`, `RF-05-98`), sem divergir dela                        | essencial  |
+| `RF-04-78` | A sondagem no aparelho do encontro tem o retorno por pergunta, a tela final e o refazer da App 05 (`RF-05-99` a `RF-05-101`), sem divergir dela               | essencial  |
 
 ### 6.3 Troca por recompensa avulsa
 
@@ -887,6 +888,7 @@ janela da aula agendada; e a **forma do aviso** da exclusão do _template_, que 
 | `RF-04-75`              | 03 §§3.2, 3.4 (aparelho modesto, poucos segundos)                  |
 | `RF-04-76`              | 02 §4 (as seis formas de entrega), servindo o `RF-05-91`           |
 | `RF-04-77`              | 03 §4 (a janela da sondagem), servindo o `RF-05-97` e o `RF-05-98` |
+| `RF-04-78`              | 11 §2.2, servindo o `RF-05-99`, o `RF-05-100` e o `RF-05-101`      |
 | `RF-04-07`              | 03 §3.2 (dados coletados), 02 §9, 15 §7 (avatar)                   |
 | `RF-04-08`              | 02 §1 (nick único)                                                 |
 | `RF-04-09`              | 02 §1 (faixa de 6 a 16 anos)                                       |

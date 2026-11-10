@@ -5,6 +5,7 @@ import { useNarracao } from "../narracao/ProvedorDeNarracao";
 import { Aviso } from "../react/Aviso";
 import { Botao } from "../react/Botao";
 import { Campo } from "../react/Campo";
+import { Icone } from "../react/Icone";
 import { MidiaDoNucleo } from "../react/MidiaDoNucleo";
 import { SequenciaPaginada } from "../react/SequenciaPaginada";
 import {
@@ -41,15 +42,27 @@ interface Props {
    * motivo — nada do julgamento fica gravado sem ser lido por ele
    * (`RF-05-94`). */
   julgamento?: JulgamentoDoPratico | null;
-  /** Só a **sondagem** responde por voz: com o áudio ligado, depois de cada
-   * pergunta falada, o microfone abre pela janela de 5 s (`RF-05-97`,
-   * `RN-05-54`). Fora dela, nenhum quiz escuta. */
-  respostaPorVoz?: boolean;
+  /** A **sondagem**: só ela responde por voz — com o áudio ligado, depois de
+   * cada pergunta falada, o microfone abre pela janela de 5 s (`RF-05-97`,
+   * `RN-05-54`) — e só ela tem retorno por pergunta, avanço sozinho e a tela
+   * final com Refazer e Concluir (`RF-05-99`, `RF-05-100`). Aqui
+   * `aoDesbloquear` é o **Concluir**: a trilha só recarrega quando a criança
+   * sai da tela final, senão ela sumiria (design — decisão 8). */
+  ehSondagem?: boolean;
 }
 
 // A janela da sondagem por voz: cinco segundos, da decisão do fundador de
 // 2026-11-07 (`RF-05-97`, design — decisão 2).
 export const JANELA_DA_SONDAGEM_MS = 5000;
+
+// Quanto o símbolo de acerto ou de erro fica na tela antes de a sondagem
+// seguir sozinha (`RF-05-99`, decisão do fundador de 2026-11-10).
+export const RETORNO_DA_SONDAGEM_MS = 2000;
+
+// O texto do retorno: anunciado ao leitor de tela e, com a narração ligada,
+// falado. Sem palavra de aprovação ou reprovação (`RF-05-73`).
+const TEXTO_DO_ACERTO = "Você acertou!";
+const TEXTO_DO_ERRO = "Não foi essa.";
 
 // A escolha por toque é o número da alternativa; a resposta falada que não
 // se ligou a nenhuma segue literal (`RF-05-98`).
@@ -417,7 +430,7 @@ export function DesafioDeDesbloqueio({
   submissaoLigada = false,
   comprovacaoEntregue = null,
   julgamento = null,
-  respostaPorVoz = false,
+  ehSondagem = false,
 }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const { narrar, microfonePermitido } = useNarracao();
@@ -438,6 +451,17 @@ export function DesafioDeDesbloqueio({
   );
   const encerrarEscuta = useRef<((descartar?: boolean) => void) | null>(null);
   const [indiceDaPergunta, definirIndiceDaPergunta] = useState(0);
+  // O retorno da pergunta respondida, enquanto o símbolo está na tela, e o
+  // placar que o núcleo devolveu ao fim — só na sondagem (`RF-05-99`,
+  // `RF-05-100`).
+  const [retorno, definirRetorno] = useState<{ perguntaId: string; acertou: boolean } | null>(
+    null,
+  );
+  const [resultadoDaSondagem, definirResultadoDaSondagem] = useState<{
+    acertos: number;
+    total: number;
+  } | null>(null);
+  const temporizadorDoRetorno = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [midiaCarregando, definirMidiaCarregando] = useState(false);
   const [entregue, definirEntregue] = useState<ComprovacaoEntregue | null>(
     comprovacaoEntregue ?? null,
@@ -462,11 +486,7 @@ export function DesafioDeDesbloqueio({
   const perguntaDaVez = perguntas[Math.min(indiceDaPergunta, perguntas.length - 1)];
   const todasRespondidas = perguntas.every((pergunta) => escolhas[pergunta.id] !== undefined);
   const escutaPossivel =
-    respostaPorVoz &&
-    ehQuiz &&
-    submissaoLigada &&
-    microfonePermitido &&
-    existeTranscricaoDeFala();
+    ehSondagem && ehQuiz && submissaoLigada && microfonePermitido && existeTranscricaoDeFala();
 
   // A fala entra na **mudança do `id`** da pergunta, guardada em referência, e
   // não num efeito sobre o objeto dela: o objeto é novo a cada render de quem
@@ -492,16 +512,54 @@ export function DesafioDeDesbloqueio({
     definirEscuta(null);
     const ligada = ligarFalaAAlternativa(transcricao, pergunta.alternativas);
     const escolha: Escolha = ligada ?? { falada: transcricao };
+    // A resposta falada passa pelo mesmo retorno do toque antes de seguir;
+    // na última, a sondagem se submete sozinha (`RF-05-97`, `RF-05-99`).
+    responderNaSondagem.current(pergunta, escolha);
+  };
+
+  // Responder uma pergunta da sondagem: grava a escolha, mostra o retorno —
+  // conferido contra a alternativa correta que só a sondagem traz — e, passados
+  // os 2 s, avança ou, na última, submete. Resposta falada sem alternativa é
+  // erro (`RN-05-55`). Em referência pelo mesmo motivo do fim da escuta: o
+  // temporizador dispara fora do render.
+  const responderNaSondagem = useRef<(pergunta: Pergunta, escolha: Escolha) => void>(() => {});
+  responderNaSondagem.current = (pergunta, escolha) => {
     const novas = { ...escolhasAtuais.current, [pergunta.id]: escolha };
     definirEscolhas(novas);
+    const acertou = typeof escolha === "number" && escolha === pergunta.alternativa_correta;
+    definirRetorno({ perguntaId: pergunta.id, acertou });
+    narrar({ texto: acertou ? TEXTO_DO_ACERTO : TEXTO_DO_ERRO });
     const posicao = perguntas.findIndex((cada) => cada.id === pergunta.id);
-    if (posicao < perguntas.length - 1) {
-      definirIndiceDaPergunta(posicao + 1);
-      return;
-    }
-    // Na última, a sondagem segue sozinha (`RF-05-97`).
-    void submeter({}, null, novas);
+    if (temporizadorDoRetorno.current) clearTimeout(temporizadorDoRetorno.current);
+    temporizadorDoRetorno.current = setTimeout(() => {
+      temporizadorDoRetorno.current = null;
+      definirRetorno(null);
+      if (posicao < perguntas.length - 1) {
+        definirIndiceDaPergunta(posicao + 1);
+        return;
+      }
+      void submeter({}, null, novas);
+    }, RETORNO_DA_SONDAGEM_MS);
   };
+
+  // A tela que sai leva o temporizador junto: sondagem largada no meio não
+  // submete nada (design — decisão 5).
+  useEffect(
+    () => () => {
+      if (temporizadorDoRetorno.current) clearTimeout(temporizadorDoRetorno.current);
+    },
+    [],
+  );
+
+  function refazerASondagem() {
+    definirEscolhas({});
+    definirRetorno(null);
+    definirResultadoDaSondagem(null);
+    definirErro(null);
+    // A primeira pergunta volta a ser falada, ainda que seja a mesma.
+    perguntaFalada.current = null;
+    definirIndiceDaPergunta(0);
+  }
 
   const abrirEscuta = useRef<(pergunta: Pergunta) => void>(() => {});
   abrirEscuta.current = (pergunta) => {
@@ -590,6 +648,10 @@ export function DesafioDeDesbloqueio({
         const entregaConfirmada = await enviarArquivoDaComprovacao(arquivo, sessao.token);
         definirEntregue(entregaConfirmada ?? null);
         definirAguardandoMestre(true);
+        return;
+      }
+      if (ehSondagem) {
+        definirResultadoDaSondagem({ acertos: resultado.acertos, total: resultado.total });
         return;
       }
       if (resultado.aprovado === true) {
@@ -742,11 +804,89 @@ export function DesafioDeDesbloqueio({
   // `() => submeter()` e não `submeter`: o `onClick` passaria o evento do toque
   // como primeiro argumento, que agora é a entrega do prático — o quiz mandaria
   // um `MouseEvent` no corpo da submissão.
-  const envioDoQuiz = submissaoLigada ? (
-    <Botao onClick={() => submeter()} desabilitado={enviando || !todasRespondidas}>
-      {enviando ? "Enviando…" : "Enviar respostas"}
-    </Botao>
-  ) : undefined;
+  const envioDoQuiz =
+    submissaoLigada && !ehSondagem ? (
+      <Botao onClick={() => submeter()} desabilitado={enviando || !todasRespondidas}>
+        {enviando ? "Enviando…" : "Enviar respostas"}
+      </Botao>
+    ) : undefined;
+
+  // A pergunta como a tela a apresenta, no paginador do desafio ou sozinha na
+  // sondagem. Na sondagem, enquanto o retorno está na tela, as alternativas
+  // ficam travadas e a resposta dada não se troca (`RF-05-99`).
+  const travadaPeloRetorno = ehSondagem && (retorno !== null || enviando);
+  function perguntaNaTela(pergunta: Pergunta) {
+    return (
+      <fieldset className="cg-trilha__pergunta">
+        <legend>{pergunta.enunciado}</legend>
+        {pergunta.imagem_referencia && (
+          <MidiaDoNucleo
+            id={pergunta.id}
+            buscar={lerImagemDaPergunta}
+            token={sessao?.token ?? null}
+            tipo="imagem"
+            alt={`Imagem da pergunta: ${pergunta.enunciado}`}
+            textoDeErro="A imagem desta pergunta não abriu, mas pode responder."
+            aoMudarCarregamento={definirMidiaCarregando}
+          />
+        )}
+        <ul className="cg-trilha__alternativas">
+          {pergunta.alternativas.map((alternativa, posicao) => (
+            <li key={alternativa}>
+              <label>
+                <input
+                  type="radio"
+                  name={`pergunta-${pergunta.id}`}
+                  checked={escolhas[pergunta.id] === posicao + 1}
+                  disabled={!submissaoLigada || travadaPeloRetorno}
+                  onChange={() => {
+                    // O toque vence a voz: fecha o microfone sem
+                    // entregar a fala, e vale a alternativa (`RN-05-54`).
+                    encerrarEscuta.current?.(true);
+                    encerrarEscuta.current = null;
+                    definirEscuta(null);
+                    if (ehSondagem) {
+                      responderNaSondagem.current(pergunta, posicao + 1);
+                      return;
+                    }
+                    definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 });
+                  }}
+                />
+                {alternativa}
+              </label>
+            </li>
+          ))}
+        </ul>
+        {escuta?.perguntaId === pergunta.id && (
+          <JanelaDeEscuta
+            key={pergunta.id}
+            duracaoMs={JANELA_DA_SONDAGEM_MS}
+            transcricao={escuta.transcricao}
+          />
+        )}
+        {/* O retorno: forma distinta e texto anunciado, nunca só a cor. A
+              região é fixa para o leitor de tela anunciar o que entra nela. */}
+        {ehSondagem && (
+          <div role="status" className="cg-trilha__retorno-da-sondagem">
+            {retorno?.perguntaId === pergunta.id && (
+              <span
+                className={
+                  retorno.acertou
+                    ? "cg-trilha__retorno cg-trilha__retorno--acerto"
+                    : "cg-trilha__retorno cg-trilha__retorno--erro"
+                }
+              >
+                <Icone glifo={retorno.acertou ? "acerto" : "erro"} tamanho={48} />
+                <span className="cg-trilha__oculto">
+                  {retorno.acertou ? TEXTO_DO_ACERTO : TEXTO_DO_ERRO}
+                </span>
+              </span>
+            )}
+          </div>
+        )}
+      </fieldset>
+    );
+  }
 
   return (
     <section aria-label="Desafio de desbloqueio" className="cg-trilha__desafio">
@@ -761,7 +901,7 @@ export function DesafioDeDesbloqueio({
         </Aviso>
       )}
 
-      {ehQuiz && (
+      {ehQuiz && !ehSondagem && (
         <SequenciaPaginada
           itens={perguntas}
           rotuloDeAvancar="Próxima pergunta"
@@ -771,53 +911,35 @@ export function DesafioDeDesbloqueio({
           acoes={envioDoQuiz}
           controlesTravados={midiaCarregando}
         >
-          {(pergunta) => (
-            <fieldset className="cg-trilha__pergunta">
-              <legend>{pergunta.enunciado}</legend>
-              {pergunta.imagem_referencia && (
-                <MidiaDoNucleo
-                  id={pergunta.id}
-                  buscar={lerImagemDaPergunta}
-                  token={sessao?.token ?? null}
-                  tipo="imagem"
-                  alt={`Imagem da pergunta: ${pergunta.enunciado}`}
-                  textoDeErro="A imagem desta pergunta não abriu, mas pode responder."
-                  aoMudarCarregamento={definirMidiaCarregando}
-                />
-              )}
-              <ul className="cg-trilha__alternativas">
-                {pergunta.alternativas.map((alternativa, posicao) => (
-                  <li key={alternativa}>
-                    <label>
-                      <input
-                        type="radio"
-                        name={`pergunta-${pergunta.id}`}
-                        checked={escolhas[pergunta.id] === posicao + 1}
-                        disabled={!submissaoLigada}
-                        onChange={() => {
-                          // O toque vence a voz: fecha o microfone sem
-                          // entregar a fala, e vale a alternativa (`RN-05-54`).
-                          encerrarEscuta.current?.(true);
-                          encerrarEscuta.current = null;
-                          definirEscuta(null);
-                          definirEscolhas({ ...escolhas, [pergunta.id]: posicao + 1 });
-                        }}
-                      />
-                      {alternativa}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-              {escuta?.perguntaId === pergunta.id && (
-                <JanelaDeEscuta
-                  key={pergunta.id}
-                  duracaoMs={JANELA_DA_SONDAGEM_MS}
-                  transcricao={escuta.transcricao}
-                />
-              )}
-            </fieldset>
-          )}
+          {(pergunta) => perguntaNaTela(pergunta)}
         </SequenciaPaginada>
+      )}
+
+      {/* A sondagem não pagina: a pergunta da vez sozinha, sem avançar, sem
+          voltar e sem enviar — ela segue e se submete sozinha (`RF-05-99`). */}
+      {ehQuiz && ehSondagem && resultadoDaSondagem === null && perguntaDaVez && (
+        <>
+          {perguntaNaTela(perguntaDaVez)}
+          {enviando && <p>Enviando…</p>}
+          {erro !== null && !enviando && submissaoLigada && (
+            <Botao onClick={() => submeter()}>Tentar de novo</Botao>
+          )}
+        </>
+      )}
+
+      {ehSondagem && resultadoDaSondagem !== null && (
+        <div className="cg-trilha__fim-da-sondagem">
+          <p>
+            Você acertou {resultadoDaSondagem.acertos} e errou{" "}
+            {resultadoDaSondagem.total - resultadoDaSondagem.acertos}.
+          </p>
+          <div className="cg-trilha__acoes-da-sondagem">
+            <Botao variante="secundaria" onClick={refazerASondagem}>
+              Refazer
+            </Botao>
+            <Botao onClick={() => aoDesbloquear()}>Concluir</Botao>
+          </div>
+        </div>
       )}
 
       {/* O desafio que se cumpre por **declaração** não tem pergunta a

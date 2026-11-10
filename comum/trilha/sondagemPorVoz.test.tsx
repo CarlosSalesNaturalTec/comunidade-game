@@ -6,7 +6,7 @@ import { ProvedorDeSessao } from "../autenticacao/ContextoDeSessao";
 import * as fala from "../fala/fala";
 import { ProvedorDeNarracao, useNarracao } from "../narracao/ProvedorDeNarracao";
 import * as trilhaApi from "./api";
-import { DesafioDeDesbloqueio } from "./DesafioDeDesbloqueio";
+import { DesafioDeDesbloqueio, RETORNO_DA_SONDAGEM_MS } from "./DesafioDeDesbloqueio";
 import { JanelaDeEscuta } from "./JanelaDeEscuta";
 import { Sondagem } from "./Sondagem";
 
@@ -17,8 +17,20 @@ import { Sondagem } from "./Sondagem";
 
 const CHAVE_DE_SESSAO = "comum:teste-sondagem-por-voz";
 
-function pergunta(id: string, enunciado: string, alternativas: string[]) {
-  return { id, ordem: Number(id.slice(1)), enunciado, alternativas, imagem_referencia: null };
+function pergunta(
+  id: string,
+  enunciado: string,
+  alternativas: string[],
+  alternativa_correta = 1,
+) {
+  return {
+    id,
+    ordem: Number(id.slice(1)),
+    enunciado,
+    alternativas,
+    imagem_referencia: null,
+    alternativa_correta,
+  };
 }
 
 const SONDAGEM: trilhaApi.DesafioDeDesbloqueio = {
@@ -34,7 +46,7 @@ const SONDAGEM: trilhaApi.DesafioDeDesbloqueio = {
       "Evaporação",
       "Chuva ácida",
     ]),
-    pergunta("p2", "Quanto é 2 + 2?", ["3", "4", "5", "6"]),
+    pergunta("p2", "Quanto é 2 + 2?", ["3", "4", "5", "6"], 2),
   ],
 };
 
@@ -114,10 +126,19 @@ function sondagem(props: Partial<React.ComponentProps<typeof DesafioDeDesbloquei
       desafio={SONDAGEM}
       aoDesbloquear={vi.fn()}
       submissaoLigada
-      respostaPorVoz
+      ehSondagem
       {...props}
     />
   );
+}
+
+// Os 2 s do retorno de acerto ou de erro passam, e a sondagem segue
+// (`RF-05-99`). Relógio real, porque a fala e a janela são falsas e o
+// retorno é o único temporizador em jogo.
+async function passarORetorno() {
+  await act(async () => {
+    await new Promise((resolver) => setTimeout(resolver, RETORNO_DA_SONDAGEM_MS + 50));
+  });
 }
 
 // O fim da fala que a narração pediu por último — o que abre a janela.
@@ -181,11 +202,20 @@ describe("a sondagem fala, escuta e segue sozinha (RF-05-97)", () => {
 
     await act(async () => janelas[0].aoEncerrar("foto síntese"));
 
+    // Antes de avançar, o retorno: a resposta falada ficou marcada, e é
+    // acerto — falado com o áudio ligado (`RF-05-99`).
+    expect(screen.getByRole("radio", { name: "Fotossíntese" })).toBeChecked();
+    expect(screen.getByRole("status")).toHaveTextContent("Você acertou!");
+    expect(motor.ditos.at(-1)?.text).toBe("Você acertou!");
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+
+    await passarORetorno();
+
     expect(screen.getByText("Quanto é 2 + 2?")).toBeInTheDocument();
     expect(motor.ditos.at(-1)?.text).toContain("Quanto é 2 + 2?");
-    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
-    await usuario.click(screen.getByRole("button", { name: "Pergunta anterior" }));
-    expect(screen.getByRole("radio", { name: "Fotossíntese" })).toBeChecked();
+    expect(
+      screen.queryByRole("button", { name: "Pergunta anterior" }),
+    ).not.toBeInTheDocument();
   });
 
   it("na última pergunta a sondagem é submetida sozinha, com a forma de cada resposta", async () => {
@@ -202,10 +232,14 @@ describe("a sondagem fala, escuta e segue sozinha (RF-05-97)", () => {
     await ligarOAudio(usuario);
     await terminarAFala();
     await act(async () => janelas[0].aoEncerrar("letra a"));
+    await passarORetorno();
     await terminarAFala();
 
-    // Fala sem correspondência segue literal (`RF-05-98`).
+    // Fala sem correspondência segue literal (`RF-05-98`) — e é erro.
     await act(async () => janelas[1].aoEncerrar("não sei"));
+    expect(screen.getByRole("status")).toHaveTextContent("Não foi essa.");
+    expect(submeter).not.toHaveBeenCalled();
+    await passarORetorno();
 
     expect(submeter).toHaveBeenCalledWith(
       "sondagem-1",
@@ -216,6 +250,10 @@ describe("a sondagem fala, escuta e segue sozinha (RF-05-97)", () => {
       "token-do-guerreiro",
       {},
     );
+    // A tela final, com o placar do núcleo; a trilha só segue no Concluir.
+    expect(screen.getByText("Você acertou 1 e errou 1.")).toBeInTheDocument();
+    expect(aoDesbloquear).not.toHaveBeenCalled();
+    await usuario.click(screen.getByRole("button", { name: "Concluir" }));
     expect(aoDesbloquear).toHaveBeenCalled();
   });
 
@@ -232,8 +270,10 @@ describe("a sondagem fala, escuta e segue sozinha (RF-05-97)", () => {
     await ligarOAudio(usuario);
     await terminarAFala();
     await act(async () => janelas[0].aoEncerrar(""));
+    await passarORetorno();
     await terminarAFala();
     await act(async () => janelas[1].aoEncerrar(""));
+    await passarORetorno();
 
     expect(submeter.mock.calls[0][1]).toEqual([
       { pergunta_id: "p1", resposta_falada: "" },
@@ -274,7 +314,7 @@ describe("a sondagem fala, escuta e segue sozinha (RF-05-97)", () => {
 describe("fora da sondagem, ou sem áudio, nada escuta (RN-05-54)", () => {
   it("o desafio de desbloqueio não abre a janela", async () => {
     const usuario = userEvent.setup();
-    await renderizar(sondagem({ respostaPorVoz: false }));
+    await renderizar(sondagem({ ehSondagem: false }));
     await ligarOAudio(usuario);
     await terminarAFala();
 

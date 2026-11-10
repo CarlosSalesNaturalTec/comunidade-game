@@ -225,36 +225,39 @@ Mestre no encontro, e quem quer propor uma melhoria também.
 
 ### 6.2 Guia da trilha e progressão
 
-| ID         | Requisito                                                                                                                                                       | Prioridade |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-05-08` | Tela inicial é o menu dos caminhos, e o cartão da trilha nomeia a próxima missão; acionado, ele abre no que fazer e no que ela desbloqueia                      | essencial  |
-| `RF-05-09` | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele                                                                       | essencial  |
-| `RF-05-10` | Missão bloqueada exibe o motivo do bloqueio e o que falta para abri-la                                                                                          | essencial  |
-| `RF-05-11` | Guerreiro(a) percorre o conteúdo da missão: texto, imagens, vídeo, arquivos e bibliografia                                                                      | essencial  |
-| `RF-05-12` | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio                                                                          | essencial  |
-| `RF-05-13` | Guerreiro(a) realiza o desafio de desbloqueio e a missão seguinte abre na hora ao passar                                                                        | essencial  |
-| `RF-05-14` | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)                                                                               | essencial  |
-| `RF-05-89` | Quiz do desbloqueio é submetido com a resposta de todas as perguntas de uma vez, e a devolutiva diz quantas o Guerreiro(a) acertou                              | essencial  |
-| `RF-05-91` | Guerreiro(a) entrega a comprovação do desafio prático na forma que o Mestre autor aceitou, no mesmo ato em que declara que cumpriu                              | essencial  |
-| `RF-05-92` | Tela do prático exibe o critério de aceite junto do enunciado e avisa que a mídia fica guardada e pode ir à vitrine                                             | essencial  |
-| `RF-05-93` | Guerreiro(a) reencontra a comprovação que entregou enquanto o Mestre não julga                                                                                  | essencial  |
-| `RF-05-94` | A tela do prático apresenta o veredito do Mestre autor — se cumpriu e se vai à vitrine — e o motivo em linguagem simples, e reabre a entrega quando não cumpriu | essencial  |
-| `RF-05-15` | Progresso exibe o nível na trilha e quantas missões faltam para o próximo nível                                                                                 | essencial  |
-| `RF-05-16` | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder                                                                                  | essencial  |
-| `RF-05-17` | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto                                                                           | essencial  |
-| `RF-05-18` | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"                                                                                    | essencial  |
-| `RF-05-72` | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão                                                                          | essencial  |
-| `RF-05-73` | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                                                        | essencial  |
-| `RF-05-97` | Com o áudio ligado, a sondagem abre o microfone por 5 s depois de falar a pergunta, mostra a barra do tempo e a transcrição, e envia sozinha ao fim             | essencial  |
-| `RF-05-98` | A fala é ligada à alternativa aproximada; silêncio ou fala sem correspondência segue como transcrição literal, sem alternativa                                  | essencial  |
-| `RF-05-74` | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                                                | essencial  |
-| `RF-05-75` | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                                                    | essencial  |
-| `RF-05-76` | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva                                      | essencial  |
-| `RF-05-77` | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança                                                                         | essencial  |
-| `RF-05-78` | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão                                                                                    | essencial  |
-| `RF-05-79` | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                                                                                        | essencial  |
-| `RF-05-80` | Retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo                                                                         | essencial  |
-| `RF-05-81` | Missão opcional aparece marcada como tal e não conta no que falta para o próximo nível                                                                          | essencial  |
+| ID          | Requisito                                                                                                                                                       | Prioridade |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-05-08`  | Tela inicial é o menu dos caminhos, e o cartão da trilha nomeia a próxima missão; acionado, ele abre no que fazer e no que ela desbloqueia                      | essencial  |
+| `RF-05-09`  | Guerreiro(a) escolhe o poder entre os do catálogo do ciclo e se inscreve nas trilhas dele                                                                       | essencial  |
+| `RF-05-10`  | Missão bloqueada exibe o motivo do bloqueio e o que falta para abri-la                                                                                          | essencial  |
+| `RF-05-11`  | Guerreiro(a) percorre o conteúdo da missão: texto, imagens, vídeo, arquivos e bibliografia                                                                      | essencial  |
+| `RF-05-12`  | Bibliografia indica título, capítulo e se há exemplar disponível no seu ponto de apoio                                                                          | essencial  |
+| `RF-05-13`  | Guerreiro(a) realiza o desafio de desbloqueio e a missão seguinte abre na hora ao passar                                                                        | essencial  |
+| `RF-05-14`  | Desafio de desbloqueio não passado pode ser repetido, sem eliminar o Guerreiro(a)                                                                               | essencial  |
+| `RF-05-89`  | Quiz do desbloqueio é submetido com a resposta de todas as perguntas de uma vez, e a devolutiva diz quantas o Guerreiro(a) acertou                              | essencial  |
+| `RF-05-91`  | Guerreiro(a) entrega a comprovação do desafio prático na forma que o Mestre autor aceitou, no mesmo ato em que declara que cumpriu                              | essencial  |
+| `RF-05-92`  | Tela do prático exibe o critério de aceite junto do enunciado e avisa que a mídia fica guardada e pode ir à vitrine                                             | essencial  |
+| `RF-05-93`  | Guerreiro(a) reencontra a comprovação que entregou enquanto o Mestre não julga                                                                                  | essencial  |
+| `RF-05-94`  | A tela do prático apresenta o veredito do Mestre autor — se cumpriu e se vai à vitrine — e o motivo em linguagem simples, e reabre a entrega quando não cumpriu | essencial  |
+| `RF-05-15`  | Progresso exibe o nível na trilha e quantas missões faltam para o próximo nível                                                                                 | essencial  |
+| `RF-05-16`  | Aplicação exibe pontos, badges e recompensas conquistadas, por trilha ou poder                                                                                  | essencial  |
+| `RF-05-17`  | Guerreiro(a) inscrito em mais de uma trilha alterna entre elas preservando o contexto                                                                           | essencial  |
+| `RF-05-18`  | Resultado ainda não lançado pelo Mestre aparece como "aguardando lançamento"                                                                                    | essencial  |
+| `RF-05-72`  | Guerreiro(a) responde à missão de sondagem que abre a trilha, antes da primeira missão                                                                          | essencial  |
+| `RF-05-73`  | Resultado da sondagem não altera nível, e a tela diz que ela serve para o Mestre ajustar                                                                        | essencial  |
+| `RF-05-97`  | Com o áudio ligado, a sondagem abre o microfone por 5 s depois de falar a pergunta, mostra a barra do tempo e a transcrição, e envia sozinha ao fim             | essencial  |
+| `RF-05-98`  | A fala é ligada à alternativa aproximada; silêncio ou fala sem correspondência segue como transcrição literal, sem alternativa                                  | essencial  |
+| `RF-05-99`  | Cada resposta da sondagem mostra por 2 s o símbolo verde de acerto ou vermelho de erro, falado com a narração ligada, e avança sozinha                          | essencial  |
+| `RF-05-100` | Ao fim da sondagem, a tela mostra o total de acertos e de erros, com Refazer e Concluir                                                                         | essencial  |
+| `RF-05-101` | A sondagem já respondida se refaz quando o Guerreiro(a) quiser, sem limite, pelo rodapé da trilha                                                               | essencial  |
+| `RF-05-74`  | Guerreiro(a) entrega a produção da missão por texto, áudio ou foto do manuscrito                                                                                | essencial  |
+| `RF-05-75`  | Aplicação devolve retorno construtivo da produção, apontando o próximo passo                                                                                    | essencial  |
+| `RF-05-76`  | A foto é descartada na leitura e o áudio nem trafega — a fala é transcrita no aparelho; ficam a transcrição e a devolutiva                                      | essencial  |
+| `RF-05-77`  | Devolutiva automática não credita pontos; o resultado só existe quando o Mestre o lança                                                                         | essencial  |
+| `RF-05-78`  | Quem recusa foto ou áudio entrega ao Mestre no encontro, sem perder a missão                                                                                    | essencial  |
+| `RF-05-79`  | Missão com retomada agendada reaparece na cadência declarada pelo Mestre                                                                                        | essencial  |
+| `RF-05-80`  | Retomada pontua uma vez por agendamento; refazer por conta própria não rende ponto novo                                                                         | essencial  |
+| `RF-05-81`  | Missão opcional aparece marcada como tal e não conta no que falta para o próximo nível                                                                          | essencial  |
 
 ### 6.3 Desafios, atividades e equipes
 
@@ -411,6 +414,8 @@ aplicação do Ciclo 01 não oferece apoio escolar.
 | `RN-05-53` | O visor ao vivo da câmera é permitido na entrada; o quadro capturado nunca volta à tela, antes ou depois do descritor, e a câmera só acende depois de a entrada ser pedida                    | 12                     | 03 §3.3          |
 | `RN-05-54` | Só a sondagem responde por voz, só com o áudio ligado; ligar o áudio pede o microfone, que só capta na janela de 5 s                                                                          | —                      | 03 §§1.12, 4     |
 | `RN-05-55` | Resposta falada sem alternativa é gravada com a transcrição e como não acertada; a sondagem abre a trilha do mesmo jeito                                                                      | —                      | 11 §2.2          |
+| `RN-05-56` | Cada realização da sondagem é gravada como tentativa nova e vale a mais recente; nenhuma credita ponto nem define nível                                                                       | —                      | 11 §§2.2, 5      |
+| `RN-05-57` | Só a alternativa correta da sondagem vai ao aparelho do Guerreiro(a), para o retorno por pergunta; a do desbloqueio fica no núcleo                                                            | —                      | 11 §2.2          |
 
 `RN-05-17` (canal de sugestões) e `RN-05-19` (dano acidental ao acervo) valem **a partir do
 Ciclo 02** (§3.2), junto com os requisitos que as operacionalizam. `RN-05-25` a `RN-05-28` e
@@ -691,33 +696,34 @@ coletores distintos no recorte publicado (documento 02 §1).
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                                                                                                              |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `RF-05-01` a `RF-05-07` | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)                                                                |
-| `RN-05-48`              | 03 §1 (erro declarado pelo núcleo chega como ele é)                                                                                 |
-| `RF-05-90`              | 03 §3.4 (modelos ao fundo em aparelho modesto) e 15 §5 (estado sem depender de cor)                                                 |
-| `RN-05-49`              | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                                     |
-| `RF-05-95` e `RF-05-96` | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida) e 15 §5, aplicando à App 05 o que o `RF-04-64` já exige da App 01           |
-| `RN-05-53`              | 03 §3.3 e o invariante 12 do doc 99, que distingue o visor do quadro capturado                                                      |
-| `RF-05-97`, `RF-05-98`  | 03 §§1.12, 4 e 15 §5.1 (narração e transcrição na sondagem), decisão do fundador de 2026-11-07                                      |
-| `RN-05-54`, `RN-05-55`  | 03 §§1.12, 4 e 11 §2.2 (sondagem não define nível)                                                                                  |
-| `RN-05-50`              | 15 §9 (o trio de estrelas e a exceção da grandeza ponto), servindo o `RF-05-45`                                                     |
-| `RF-05-08` a `RF-05-18` | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                                               |
-| `RF-05-19` a `RF-05-24` | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                                   |
-| `RF-05-30` a `RF-05-38` | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                                              |
-| `RF-05-39` a `RF-05-44` | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                                                                            |
-| `RF-05-45` a `RF-05-49` | 02 §8.1 (recompensa em marco); `RF-05-47` a `RF-05-49` (acervo e ficha de vida, 05 §3) valem a partir do Ciclo 02                   |
-| `RF-05-82` a `RF-05-88` | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)                                                                  |
-| `RF-05-50` e `RF-05-51` | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                                                                              |
-| `RF-05-52` e `RF-05-53` | 11 §8.1 (rankings com pontos regulares)                                                                                             |
-| `RF-05-54` a `RF-05-56` | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge) — a partir do Ciclo 02                                               |
-| `RF-05-57`              | 03 §12 (aviso visível de coleta e área detalhada)                                                                                   |
-| `RF-05-58` a `RF-05-66` | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança) — a partir do Ciclo 02                                      |
-| `RF-05-67` e `RF-05-68` | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) — a partir do Ciclo 02                                     |
-| `RF-05-69` e `RF-05-70` | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01) — a partir do Ciclo 02                                                     |
-| `RF-05-71`              | 03 §12.2 (sessão em aparelho compartilhado)                                                                                         |
-| `RF-05-72` a `RF-05-81` | 11 §2.2 (modelo de missão) e 03 §§7, 12.2 (produção e retenção)                                                                     |
-| `RF-05-89`              | 11 §2.2 (aferição do quiz, corte de 60% e registro da tentativa)                                                                    |
-| `RF-05-91` a `RF-05-94` | 02 §4 (as seis formas de entrega) e 11 §§2.2, 8.2 (o acervo que cresce na trilha)                                                   |
-| `RN-05-51`              | 02 §4 e 03 §12 (aviso visível e alternativa a quem recusa), descendo do `RF-05-78`                                                  |
-| `RN-05-52`              | 11 §2.2 (nada aqui é reprovação persistida — o que fica é a devolutiva do Mestre, não contagem de fracasso), descendo do `RN-05-20` |
+| Requisito                                        | Origem                                                                                                                              |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `RF-05-01` a `RF-05-07`                          | 03 §1.1 (entrada por nick e imagem) e PRD-04 (onboarding e fallback)                                                                |
+| `RN-05-48`                                       | 03 §1 (erro declarado pelo núcleo chega como ele é)                                                                                 |
+| `RF-05-90`                                       | 03 §3.4 (modelos ao fundo em aparelho modesto) e 15 §5 (estado sem depender de cor)                                                 |
+| `RN-05-49`                                       | 03 §3.3 (câmera só no pedido da pessoa), descendo do `RN-05-01`                                                                     |
+| `RF-05-95` e `RF-05-96`                          | 03 §3.3 (visor ao vivo, imagem capturada nunca exibida) e 15 §5, aplicando à App 05 o que o `RF-04-64` já exige da App 01           |
+| `RN-05-53`                                       | 03 §3.3 e o invariante 12 do doc 99, que distingue o visor do quadro capturado                                                      |
+| `RF-05-97`, `RF-05-98`                           | 03 §§1.12, 4 e 15 §5.1 (narração e transcrição na sondagem), decisão do fundador de 2026-11-07                                      |
+| `RN-05-54`, `RN-05-55`                           | 03 §§1.12, 4 e 11 §2.2 (sondagem não define nível)                                                                                  |
+| `RF-05-99` a `RF-05-101`, `RN-05-56`, `RN-05-57` | 11 §§2.2, 5 (sondagem refeita, sem ponto) e 15 §5.1 (retorno falado), decisão do fundador de 2026-11-10                             |
+| `RN-05-50`                                       | 15 §9 (o trio de estrelas e a exceção da grandeza ponto), servindo o `RF-05-45`                                                     |
+| `RF-05-08` a `RF-05-18`                          | 03 §7 (guia da trilha), 11 §§2, 6 (anatomia e níveis)                                                                               |
+| `RF-05-19` a `RF-05-24`                          | 02 §5 e 11 §§4, 5 (equipes, taxonomia e desafios), 04 §3 (extras)                                                                   |
+| `RF-05-30` a `RF-05-38`                          | 02 §1 e PRD-08 (séries, locais e validade do registro)                                                                              |
+| `RF-05-39` a `RF-05-44`                          | 02 §4, 11 §7 e PRD-09 (culminância, autoria e validação)                                                                            |
+| `RF-05-45` a `RF-05-49`                          | 02 §8.1 (recompensa em marco); `RF-05-47` a `RF-05-49` (acervo e ficha de vida, 05 §3) valem a partir do Ciclo 02                   |
+| `RF-05-82` a `RF-05-88`                          | 02 §8.2 (recompensa avulsa) e 11 §5 (acumulado e saldo disponível)                                                                  |
+| `RF-05-50` e `RF-05-51`                          | 03 §12 (adesão em duas etapas), 02 §1 e 15 §7 (avatar)                                                                              |
+| `RF-05-52` e `RF-05-53`                          | 11 §8.1 (rankings com pontos regulares)                                                                                             |
+| `RF-05-54` a `RF-05-56`                          | 03 §7 (canal de sugestões) e 11 §§5, 7 (pontos extras e badge) — a partir do Ciclo 02                                               |
+| `RF-05-57`                                       | 03 §12 (aviso visível de coleta e área detalhada)                                                                                   |
+| `RF-05-58` a `RF-05-66`                          | 03 §7 (apoio escolar com corpus fechado) e 03 §4 (filtros de segurança) — a partir do Ciclo 02                                      |
+| `RF-05-67` e `RF-05-68`                          | 04 §1 (custo de _cloud_ no livro-razão) e 01 §7 (transparência sobre IA) — a partir do Ciclo 02                                     |
+| `RF-05-69` e `RF-05-70`                          | 03 §7 (descarte do áudio e ausência de teto no Ciclo 01) — a partir do Ciclo 02                                                     |
+| `RF-05-71`                                       | 03 §12.2 (sessão em aparelho compartilhado)                                                                                         |
+| `RF-05-72` a `RF-05-81`                          | 11 §2.2 (modelo de missão) e 03 §§7, 12.2 (produção e retenção)                                                                     |
+| `RF-05-89`                                       | 11 §2.2 (aferição do quiz, corte de 60% e registro da tentativa)                                                                    |
+| `RF-05-91` a `RF-05-94`                          | 02 §4 (as seis formas de entrega) e 11 §§2.2, 8.2 (o acervo que cresce na trilha)                                                   |
+| `RN-05-51`                                       | 02 §4 e 03 §12 (aviso visível e alternativa a quem recusa), descendo do `RF-05-78`                                                  |
+| `RN-05-52`                                       | 11 §2.2 (nada aqui é reprovação persistida — o que fica é a devolutiva do Mestre, não contagem de fracasso), descendo do `RN-05-20` |
