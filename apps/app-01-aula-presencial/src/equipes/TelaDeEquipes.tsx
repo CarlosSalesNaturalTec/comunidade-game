@@ -16,11 +16,6 @@ interface Props {
   aulaId: string;
   token: string;
   aoVoltar: () => void;
-  /** Presente só quando a sessão abriu por confirmação presencial — é o
-   * que autoriza o Mestre ou Admin a recadastrar a imagem de referência
-   * (`RF-04-22`, design — decisão 4). */
-  podeRecadastrarImagem?: boolean;
-  aoRecadastrarImagem?: () => void;
   /** Leva ao caminho das trilhas: da equipe escolhida — sempre uma em que
    * o Guerreiro(a) já integra — à programação do encontro (`RF-04-35`). */
   aoEscolherEquipe: (equipeId: string) => void;
@@ -36,14 +31,7 @@ function papelOuNulo(papel: string): string | null {
 // `RF-04-70`). Um Guerreiro(a) integra
 // mais de uma equipe da mesma aula (`RF-04-33`) — por isso o pertencimento
 // é um conjunto, não um valor único.
-export function TelaDeEquipes({
-  aulaId,
-  token,
-  aoVoltar,
-  podeRecadastrarImagem = false,
-  aoRecadastrarImagem,
-  aoEscolherEquipe,
-}: Props) {
+export function TelaDeEquipes({ aulaId, token, aoVoltar, aoEscolherEquipe }: Props) {
   const [equipes, definirEquipes] = useState<Equipe[] | null>(null);
   const [nome, definirNome] = useState("");
   const [papel, definirPapel] = useState("");
@@ -121,11 +109,6 @@ export function TelaDeEquipes({
       <Botao onClick={criar} desabilitado={emAndamento || nome.trim().length === 0}>
         Criar equipe
       </Botao>
-      {podeRecadastrarImagem && aoRecadastrarImagem && (
-        <Botao variante="secundaria" onClick={aoRecadastrarImagem}>
-          Recadastrar imagem deste Guerreiro(a)
-        </Botao>
-      )}
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
 
       {equipes === null ? (

@@ -23,6 +23,7 @@ const GLIFOS: NomeDeGlifo[] = [
   "encerrar",
   "momento-de-troca",
   "entregas",
+  "recadastro",
   "medalha",
   "pincel",
   "ponto-extra",

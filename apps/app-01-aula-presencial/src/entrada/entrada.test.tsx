@@ -46,7 +46,6 @@ function configurarSessao(entrarComToken = vi.fn()) {
 
 function renderizar(
   aoVoltar = vi.fn(),
-  aoAbrirSessao = vi.fn(),
   caminho: CaminhoDaEntrada = "presenca",
   aoSeguirParaTrilhas?: () => void,
 ) {
@@ -56,7 +55,6 @@ function renderizar(
       aulaId="aula-1"
       caminho={caminho}
       aoVoltar={aoVoltar}
-      aoAbrirSessao={aoAbrirSessao}
       aoSeguirParaTrilhas={aoSeguirParaTrilhas}
     />,
   );
@@ -82,7 +80,6 @@ afterEach(() => {
 describe("entrada do Guerreiro(a) por reconhecimento", () => {
   it("nick, vivacidade e descritor abrem a sessão e registram a presença no mesmo ato", async () => {
     const entrarComToken = vi.fn().mockResolvedValue(undefined);
-    const aoAbrirSessao = vi.fn();
     configurarSessao(entrarComToken);
     vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
     vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
@@ -101,7 +98,7 @@ describe("entrada do Guerreiro(a) por reconhecimento", () => {
     });
     const registrarPresenca = mockarRegistrarPresencaEcoando();
 
-    renderizar(vi.fn(), aoAbrirSessao);
+    renderizar();
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /entrar/i }));
@@ -124,7 +121,6 @@ describe("entrada do Guerreiro(a) por reconhecimento", () => {
       expect.objectContaining({ guerreiro_id: "guerreiro-1", modo: "reconhecimento" }),
       "token-de-trabalho",
     );
-    expect(aoAbrirSessao).toHaveBeenCalledWith("reconhecimento");
   });
 
   it("presença já registrada avisa e não entra nas trilhas", async () => {
@@ -308,9 +304,36 @@ describe("entrada do Guerreiro(a) por reconhecimento", () => {
 });
 
 describe("entrada do Guerreiro(a) por confirmação", () => {
+  // O recadastro serve a quem a imagem atual não reconhece: abre direto na
+  // confirmação, sem a entrada por reconhecimento, e não registra presença
+  // (`RF-04-22`, `RF-04-21`, `RN-04-37`).
+  it("o caminho do recadastro abre na confirmação e só abre a sessão", async () => {
+    const entrarComToken = vi.fn().mockResolvedValue(undefined);
+    configurarSessao(entrarComToken);
+    const existeCamera = vi.spyOn(biometriaModulo, "existeCamera");
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    const registrarPresenca = vi.spyOn(presencasApi, "registrarPresenca");
+
+    renderizar(vi.fn(), "recadastro");
+    expect(screen.getByText(/de quem é a imagem a recadastrar/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^entrar$/i })).not.toBeInTheDocument();
+
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    await vi.waitFor(() => expect(entrarComToken).toHaveBeenCalledWith("token-do-guerreiro"));
+    expect(existeCamera).not.toHaveBeenCalled();
+    expect(registrarPresenca).not.toHaveBeenCalled();
+  });
+
   it("confirma pelo nick informado, registra a presença por confirmação e entra", async () => {
     const entrarComToken = vi.fn().mockResolvedValue(undefined);
-    const aoAbrirSessao = vi.fn();
     configurarSessao(entrarComToken);
     vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
     vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
@@ -325,7 +348,7 @@ describe("entrada do Guerreiro(a) por confirmação", () => {
     });
     const registrarPresenca = mockarRegistrarPresencaEcoando();
 
-    renderizar(vi.fn(), aoAbrirSessao);
+    renderizar();
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /entrar/i }));
@@ -343,7 +366,6 @@ describe("entrada do Guerreiro(a) por confirmação", () => {
       expect.objectContaining({ guerreiro_id: "guerreiro-1", modo: "confirmacao" }),
       "token-de-trabalho",
     );
-    expect(aoAbrirSessao).toHaveBeenCalledWith("confirmacao");
   });
 
   it("nick sem correspondência é recusado sem revelar o motivo", async () => {
@@ -668,7 +690,7 @@ describe("o caminho decide quem registra a presença (RF-04-67)", () => {
     const quemSou = vi.spyOn(autenticacaoApi, "eu");
     const registrarPresenca = mockarRegistrarPresencaEcoando();
 
-    renderizar(vi.fn(), vi.fn(), "equipes");
+    renderizar(vi.fn(), "equipes");
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
@@ -690,7 +712,7 @@ describe("o caminho decide quem registra a presença (RF-04-67)", () => {
 
     // Sem câmera, a entrada já abre na confirmação humana (`RN-04-09`).
     vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
-    renderizar(vi.fn(), vi.fn(), "equipes");
+    renderizar(vi.fn(), "equipes");
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
@@ -719,7 +741,7 @@ describe("o caminho decide quem registra a presença (RF-04-67)", () => {
     });
     mockarRegistrarPresencaEcoando();
 
-    renderizar(vi.fn(), vi.fn(), "presenca");
+    renderizar(vi.fn(), "presenca");
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
@@ -748,7 +770,7 @@ describe("o desfecho da presença e o caminho das trilhas (RF-04-67, RF-04-72)",
     });
     mockarRegistrarPresencaEcoando();
 
-    renderizar(vi.fn(), vi.fn(), "presenca", aoSeguirParaTrilhas);
+    renderizar(vi.fn(), "presenca", aoSeguirParaTrilhas);
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
@@ -784,7 +806,7 @@ describe("o desfecho da presença e o caminho das trilhas (RF-04-67, RF-04-72)",
 
   it("o caminho das trilhas tem título próprio nas duas formas da entrada", async () => {
     configurarSessao();
-    renderizar(vi.fn(), vi.fn(), "trilhas");
+    renderizar(vi.fn(), "trilhas");
 
     // A forma por nick e imagem.
     expect(screen.getByText(/quem vai ver as próprias trilhas/i)).toBeInTheDocument();
@@ -794,7 +816,7 @@ describe("o desfecho da presença e o caminho das trilhas (RF-04-67, RF-04-72)",
     cleanup();
     configurarSessao();
     vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(false);
-    renderizar(vi.fn(), vi.fn(), "trilhas");
+    renderizar(vi.fn(), "trilhas");
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
@@ -817,7 +839,7 @@ describe("o desfecho da presença e o caminho das trilhas (RF-04-67, RF-04-72)",
     });
     const registrarPresenca = vi.spyOn(presencasApi, "registrarPresenca");
 
-    renderizar(vi.fn(), vi.fn(), "trilhas");
+    renderizar(vi.fn(), "trilhas");
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
@@ -876,7 +898,7 @@ describe("o foco inicial da entrada (RF-04-18, RF-04-21, RF-04-29)", () => {
 
     for (const caminho of caminhos) {
       configurarSessao();
-      renderizar(vi.fn(), vi.fn(), caminho);
+      renderizar(vi.fn(), caminho);
 
       expect(document.activeElement).toBe(screen.getByLabelText(/nick/i));
 
@@ -1113,7 +1135,7 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
     });
     mockarRegistrarPresencaEcoando();
 
-    const { container } = renderizar(vi.fn(), vi.fn(), "presenca", vi.fn());
+    const { container } = renderizar(vi.fn(), "presenca", vi.fn());
     const usuario = userEvent.setup();
     await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
     await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));

@@ -20,6 +20,9 @@ export type NomeDeGlifo =
   | "encerrar"
   | "momento-de-troca"
   | "entregas"
+  // O recadastro da imagem de referência, ato de quem opera o aparelho
+  // (`RF-04-22`, decisão do fundador de 2026-11-10).
+  | "recadastro"
   // Os símbolos das colunas da carta (documento 15 §8.1, decisão do
   // fundador de 2026-10-30). Nenhum deles é silhueta de família de badge,
   // que no cabeçalho de uma coluna afirmaria família errada (§8.3), nem o
@@ -166,6 +169,16 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <path d="M4 7.5 12 3.5l8 4v9l-8 4-8-4z" />
       <path d="M4 7.5l8 4 8-4" />
       <path d="m9 13.5 2 2 4-4" />
+    </>
+  ),
+  // O recadastro da imagem: um rosto dentro das quatro quinas de
+  // enquadramento da captura. Não é o glifo `onboarding` — pessoa com sinal de
+  // mais —, que diria cadastrar alguém novo (`RF-04-22`, documento 15 §11.1).
+  recadastro: (
+    <>
+      <path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" />
+      <circle cx="12" cy="10" r="3" />
+      <path d="M7.5 17.5c.8-1.8 2.5-3 4.5-3s3.7 1.2 4.5 3" />
     </>
   ),
   // Medalha com fita: o corpo arredondado e as duas caudas. Encabeça a coluna
