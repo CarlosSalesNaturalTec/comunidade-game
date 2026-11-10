@@ -46,6 +46,6 @@
       Documento 09 §1, "Já decididos": registrar a decisão do fundador de 2026-11-09 apontando o
       02 §8.1. PRD-04 §5, passo 6: trocar "quantidade esgotada" por "recompensa já entregue".
       O documento 99 não muda.
-- [ ] 5.2 `openspec/cronograma-de-fatias.md`, bloco do PRD-07: na linha sem número "Quantidade
+- [x] 5.2 `openspec/cronograma-de-fatias.md`, bloco do PRD-07: na linha sem número "Quantidade
       da recompensa por entrega", trocar a situação para `implementado` e pôr o slug no
       arquivamento.
