@@ -196,7 +196,7 @@ describe("a sondagem termina na tela do total, com Refazer e Concluir (RF-05-100
       "token-do-guerreiro",
       {},
     );
-    expect(screen.getByText("Você acertou 1 e errou 1.")).toBeInTheDocument();
+    expect(await screen.findByText("Você acertou 1 e errou 1.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Refazer" })).toBeInTheDocument();
     // A trilha só segue no Concluir, senão a tela final sumiria.
     expect(aoResponder).not.toHaveBeenCalled();
@@ -212,7 +212,7 @@ describe("a sondagem termina na tela do total, com Refazer e Concluir (RF-05-100
       .mockResolvedValueOnce(resultado(2));
     await renderizar(sondagem());
     await responderAsDuas("3", "5");
-    expect(screen.getByText("Você acertou 0 e errou 2.")).toBeInTheDocument();
+    expect(await screen.findByText("Você acertou 0 e errou 2.")).toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: "Refazer" }));
 
@@ -222,7 +222,7 @@ describe("a sondagem termina na tela do total, com Refazer e Concluir (RF-05-100
     }
     await responderAsDuas("2", "4");
     expect(submeter).toHaveBeenCalledTimes(2);
-    expect(screen.getByText("Você acertou 2 e errou 0.")).toBeInTheDocument();
+    expect(await screen.findByText("Você acertou 2 e errou 0.")).toBeInTheDocument();
   });
 
   it("falhando o envio, diz em linguagem simples e tenta de novo sem refazer", async () => {
@@ -233,12 +233,12 @@ describe("a sondagem termina na tela do total, com Refazer e Concluir (RF-05-100
     await renderizar(sondagem());
     await responderAsDuas("2", "4");
 
-    expect(screen.getByText(/Não foi possível enviar agora/)).toBeInTheDocument();
+    expect(await screen.findByText(/Não foi possível enviar agora/)).toBeInTheDocument();
     await usuario.click(screen.getByRole("button", { name: "Tentar de novo" }));
 
     expect(submeter).toHaveBeenCalledTimes(2);
     expect(submeter.mock.calls[1][1]).toEqual(submeter.mock.calls[0][1]);
-    expect(screen.getByText("Você acertou 2 e errou 0.")).toBeInTheDocument();
+    expect(await screen.findByText("Você acertou 2 e errou 0.")).toBeInTheDocument();
   });
 
   it("sondagem largada no meio não grava nada", async () => {
