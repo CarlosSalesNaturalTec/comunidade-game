@@ -99,6 +99,7 @@ A do documento 99 §9, com o piso de dependência de cada PRD. Os cinco PRDs em 
 | 9     | Tombamento e ficha de vida                   | `2026-08-19-tombamento-e-ficha-de-vida`              | implementado |
 | 10    | Recompensa de marco e entrega                | `2026-08-19-recompensa-de-marco-e-entrega`           | implementado |
 | —     | Desativação do ponto de apoio                | `2026-08-21-desativacao-do-ponto-de-apoio`           | implementado |
+| —     | Quantidade da recompensa por entrega         | `quantidade-da-recompensa-por-entrega` — `RF-07-13`, `RF-09-71`, `RF-09-75`, `RF-09-76`, `RF-09-84`: conserto da fatia 10 — a quantidade da recompensa de marco é o que cada Guerreiro(a) recebe, não teto da turma; sai a recusa "quantidade esgotada", que travou as entregas da aula de 2026-11-07, e entra no núcleo o "uma por Guerreiro(a)". Decisão do fundador de 2026-11-09 | em andamento |
 
 Fora do escopo entregue: **conferência de inventário** (`RF-07-20`) voltou ao documento 09 como
 pendência; **desafio extra** espera a entidade `DesafioExtra`; **empréstimo de bancada** e
