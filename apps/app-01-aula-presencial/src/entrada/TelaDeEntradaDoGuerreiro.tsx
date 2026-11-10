@@ -49,17 +49,19 @@ interface Props {
    * sessão (`RF-04-67`, design — decisão 1). */
   caminho: CaminhoDaEntrada;
   aoVoltar: () => void;
-  /** Avisa por qual caminho a sessão do Guerreiro(a) abriu — é o que
-   * autoriza o recadastro da imagem atrás da confirmação presencial
-   * (`RF-04-22`, design — decisão 4). */
-  aoAbrirSessao?: (via: "reconhecimento" | "confirmacao") => void;
   /** O segundo desfecho da presença registrada: seguir às trilhas e
    * missões, na sessão que acabou de abrir — sem pedir nick nem imagem de
    * novo (`RF-04-67`, `RF-04-72`, design — decisão 5). */
   aoSeguirParaTrilhas?: () => void;
 }
 
-export type CaminhoDaEntrada = "presenca" | "equipes" | "quiz" | "troca" | "trilhas";
+export type CaminhoDaEntrada =
+  | "presenca"
+  | "equipes"
+  | "quiz"
+  | "troca"
+  | "trilhas"
+  | "recadastro";
 
 type Tela =
   | "entrada"
@@ -119,6 +121,7 @@ const TITULO_DO_CAMINHO: Record<CaminhoDaEntrada, string> = {
   quiz: "Quem vai jogar o Quiz?",
   troca: "Quem vai trocar recompensa?",
   trilhas: "Quem vai ver as próprias trilhas?",
+  recadastro: "De quem é a imagem a recadastrar?",
 };
 
 const MENSAGENS_DO_PIN: Record<string, string> = {
@@ -148,7 +151,6 @@ export function TelaDeEntradaDoGuerreiro({
   aulaId,
   caminho,
   aoVoltar,
-  aoAbrirSessao,
   aoSeguirParaTrilhas,
 }: Props) {
   const { entrarComToken } = useSessao();
@@ -158,7 +160,12 @@ export function TelaDeEntradaDoGuerreiro({
   // aparelho (`RN-04-38`).
   const [pin, definirPin] = useState("");
   const [bloqueado, definirBloqueado] = useState(pinBloqueadoNoAparelho);
-  const [tela, definirTela] = useState<Tela>("entrada");
+  // O recadastro abre direto na confirmação presencial: ele serve a quem a
+  // imagem atual não reconhece, e só a sessão aberta assim pode chegar à
+  // captura (`RF-04-22`, `RN-04-37`, design — decisão 1).
+  const [tela, definirTela] = useState<Tela>(
+    caminho === "recadastro" ? "confirmando" : "entrada",
+  );
   const [emAndamento, definirEmAndamento] = useState(false);
   const [recusado, definirRecusado] = useState(false);
   const [falhaDePreparo, definirFalhaDePreparo] = useState(false);
@@ -186,7 +193,6 @@ export function TelaDeEntradaDoGuerreiro({
     modo: "reconhecimento" | "confirmacao",
   ): Promise<void> {
     if (caminho !== "presenca") {
-      aoAbrirSessao?.(modo);
       await entrarComToken(token);
       return;
     }
@@ -204,7 +210,6 @@ export function TelaDeEntradaDoGuerreiro({
       definirTela("presencaJaRegistrada");
       return;
     }
-    aoAbrirSessao?.(modo);
     await entrarComToken(token);
     // Registrada a presença, o desfecho oferece dois caminhos — voltar ao
     // início e seguir às trilhas e missões —, e nenhum deles leva às

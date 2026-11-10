@@ -47,6 +47,7 @@ type Caminho =
   | "quiz"
   | "trilhas"
   | "medicao"
+  | "recadastro"
   | "entregas"
   | "encerramento";
 
@@ -110,13 +111,9 @@ export function TelaInicial({
     tokenDeTrabalho,
   );
   const [caminho, definirCaminho] = useState<Caminho>("inicio");
-  // Só a sessão aberta por confirmação presencial autoriza o recadastro da
-  // imagem — nunca a de reconhecimento, que já provou que a imagem serve
-  // (`RF-04-22`, design — decisão 4).
-  const [viaDeEntrada, definirViaDeEntrada] = useState<
-    "reconhecimento" | "confirmacao" | null
-  >(null);
-  const [mostrarRecadastro, definirMostrarRecadastro] = useState(false);
+  // Gravada a nova imagem, o recadastro termina numa tela que o diz — nunca
+  // volta calado (`RF-04-22`, design — decisão 3).
+  const [imagemRecadastrada, definirImagemRecadastrada] = useState(false);
   // A equipe escolhida no caminho das trilhas — estado deste aparelho, que
   // morre com a volta ao início, nunca gravado no núcleo (`RF-04-35`,
   // documento 02 §5).
@@ -136,8 +133,7 @@ export function TelaInicial({
   function voltarAoInicio() {
     sairDoGuerreiro();
     definirCaminho("inicio");
-    definirViaDeEntrada(null);
-    definirMostrarRecadastro(false);
+    definirImagemRecadastrada(false);
     definirEquipeEscolhidaId(null);
     definirPinDaMedicaoConferido(false);
     sessionStorage.removeItem(CHAVE_DA_PARTIDA_DE_QUIZ);
@@ -159,9 +155,7 @@ export function TelaInicial({
   // (`RF-04-67`, `RF-04-28`).
   function irRegistrarPresenca() {
     sairDoGuerreiro();
-    definirViaDeEntrada(null);
     definirEquipeEscolhidaId(null);
-    definirMostrarRecadastro(false);
     definirCaminho("presenca");
   }
 
@@ -186,16 +180,6 @@ export function TelaInicial({
           aulaId={aulaId}
           tokenDoGuerreiro={sessaoDoGuerreiro.token}
           aoVoltar={voltarAoInicio}
-        />
-      );
-    }
-    if (mostrarRecadastro) {
-      return (
-        <TelaDeCaptura
-          tokenDeTrabalho={tokenDeTrabalho}
-          guerreiroId={sessaoDoGuerreiro.persona_id}
-          aoConcluir={() => definirMostrarRecadastro(false)}
-          aoVoltar={() => definirMostrarRecadastro(false)}
         />
       );
     }
@@ -224,8 +208,6 @@ export function TelaInicial({
         aulaId={aulaId}
         token={sessaoDoGuerreiro.token}
         aoVoltar={voltarAoInicio}
-        podeRecadastrarImagem={viaDeEntrada === "confirmacao"}
-        aoRecadastrarImagem={() => definirMostrarRecadastro(true)}
         aoEscolherEquipe={definirEquipeEscolhidaId}
       />
     );
@@ -294,6 +276,46 @@ export function TelaInicial({
     );
   }
 
+  // O recadastro da imagem de referência: ato de quem opera, como a medição.
+  // A entrada abre só pela confirmação presencial, e a sessão vai direto à
+  // captura, **sem a guarda de presença** — o identificador vem da sessão
+  // aberta, nunca de consulta de nick (`RF-04-22`, `RN-01-22`, `RN-04-37`,
+  // decisão do fundador de 2026-11-10).
+  if (caminho === "recadastro") {
+    if (!sessaoDoGuerreiro) {
+      return (
+        <TelaDeEntradaDoGuerreiro
+          tokenDeTrabalho={tokenDeTrabalho}
+          aulaId={aulaId}
+          caminho="recadastro"
+          aoVoltar={voltarAoInicio}
+        />
+      );
+    }
+    if (imagemRecadastrada) {
+      return (
+        <Moldura>
+          <Cabecalho
+            titulo="Imagem recadastrada"
+            acao={{ rotulo: "Voltar ao início", aoAcionar: voltarAoInicio }}
+          />
+          <Aviso tipo="sucesso">
+            A nova imagem de referência foi gravada. A anterior deixou de valer para a entrada
+            por reconhecimento.
+          </Aviso>
+        </Moldura>
+      );
+    }
+    return (
+      <TelaDeCaptura
+        tokenDeTrabalho={tokenDeTrabalho}
+        guerreiroId={sessaoDoGuerreiro.persona_id}
+        aoConcluir={() => definirImagemRecadastrada(true)}
+        aoVoltar={voltarAoInicio}
+      />
+    );
+  }
+
   // As entregas pendentes do encontro: ato de quem opera, como a medição —
   // não abre sessão de Guerreiro(a) e não passa pela guarda de presença, que
   // é dos caminhos da criança. A presença de quem recebe é conferida pelo
@@ -336,7 +358,6 @@ export function TelaInicial({
         aulaId={aulaId}
         caminho="presenca"
         aoVoltar={voltarAoInicio}
-        aoAbrirSessao={definirViaDeEntrada}
         aoSeguirParaTrilhas={() => definirCaminho("trilhas")}
       />
     );
@@ -355,7 +376,6 @@ export function TelaInicial({
           aulaId={aulaId}
           caminho={caminho}
           aoVoltar={voltarAoInicio}
-          aoAbrirSessao={definirViaDeEntrada}
         />
       );
     }
@@ -432,6 +452,15 @@ export function TelaInicial({
       rotulo: "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
       glifo: "medicao",
       aoAcionar: () => definirCaminho("medicao"),
+    },
+    // O recadastro acompanha a medição, por serem os dois atos de biometria
+    // do grupo, e aparece em toda sessão de trabalho: é do Mestre ou do Admin
+    // (`RF-04-22`, decisão do fundador de 2026-11-10).
+    {
+      chave: "recadastro",
+      rotulo: "Recadastrar imagem de Guerreiro(a)",
+      glifo: "recadastro",
+      aoAcionar: () => definirCaminho("recadastro"),
     },
     ...(podeAbrirMomentoDeTroca
       ? [

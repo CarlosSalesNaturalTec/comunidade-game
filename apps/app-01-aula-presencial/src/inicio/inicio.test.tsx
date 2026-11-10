@@ -119,6 +119,7 @@ describe("tela inicial da App 01", () => {
       "Equipes — formar a equipe e trabalhar a trilha",
       "Quiz ao Vivo — entrar com o nick e responder pela equipe",
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Recadastrar imagem de Guerreiro(a)",
       "Troca por recompensa avulsa — entregar uma recompensa do encontro",
       "Trilhas e missões — ver o seu percurso e as atividades do encontro",
     ];
@@ -451,7 +452,10 @@ describe("tela inicial da App 01", () => {
     expect(aoVoltarAoInicio).toHaveBeenCalled();
   });
 
-  it("a sessão aberta por confirmação habilita o recadastro, com o identificador vindo dela", async () => {
+  // O recadastro é ato de quem opera: mora no grupo dele, abre só pela
+  // confirmação presencial e vai direto à captura, sem a guarda de presença
+  // (`RF-04-22`, `RN-04-37`, decisão do fundador de 2026-11-10).
+  it("o recadastro mora no grupo de quem opera, e não nas equipes", async () => {
     vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
       token: "token-do-guerreiro",
       expira_em: new Date().toISOString(),
@@ -467,39 +471,26 @@ describe("tela inicial da App 01", () => {
       proximo_cursor: null,
     });
     mockarPresencaNoEncontro(true);
-    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
-    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.4, 0.5, 0.6]);
-    const enviarDescritor = vi.spyOn(descritorApi, "enviarDescritor").mockResolvedValue({
-      guerreiro_id: "guerreiro-1",
-      gravado_em: new Date().toISOString(),
-    });
 
     renderizar();
     const usuario = userEvent.setup();
+    await screen.findByText(/o que você quer fazer/i);
+    const grupo = screen.getByRole("group", { name: "Para quem opera o aparelho" });
+    expect(grupo).toContainElement(
+      screen.getByRole("button", { name: "Recadastrar imagem de Guerreiro(a)" }),
+    );
+
+    // Nem a sessão aberta por confirmação, que antes o habilitava, traz o
+    // recadastro para dentro das equipes.
     await entrarPorConfirmacao(usuario);
     await screen.findByText(/equipes desta aula/i);
-
-    const botaoDeRecadastro = screen.getByRole("button", { name: /recadastrar imagem/i });
-    await usuario.click(botaoDeRecadastro);
-    await usuario.click(await screen.findByRole("button", { name: /iniciar captura/i }));
-
-    await vi.waitFor(() =>
-      expect(enviarDescritor).toHaveBeenCalledWith(
-        "guerreiro-1",
-        { descritor: [0.4, 0.5, 0.6] },
-        "token-de-trabalho",
-      ),
-    );
-    // Nenhuma rota de nick para identificador foi chamada — o identificador
-    // veio da sessão aberta por confirmação presencial (`RN-01-22`).
-    expect(sessoesDeGuerreiroApi.confirmarSessaoDeGuerreiro).toHaveBeenCalledTimes(1);
+    expect(
+      screen.queryByRole("button", { name: /recadastrar imagem/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it("a sessão aberta por reconhecimento não oferece o recadastro", async () => {
-    vi.spyOn(biometriaModulo, "existeCamera").mockResolvedValue(true);
-    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
-    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.1, 0.2, 0.3]);
-    vi.spyOn(sessoesDeGuerreiroApi, "abrirSessaoPorReconhecimento").mockResolvedValue({
+  it("o recadastro abre só pela confirmação e segue à captura sem conferir a presença", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
       token: "token-do-guerreiro",
       expira_em: new Date().toISOString(),
       papel: "guerreiro",
@@ -509,22 +500,84 @@ describe("tela inicial da App 01", () => {
       papel: "guerreiro",
       permissoes: {},
     });
-    vi.spyOn(equipesApi, "listarEquipesDaAula").mockResolvedValue({
-      itens: [],
-      proximo_cursor: null,
+    const lerPresenca = mockarPresencaNoEncontro(false);
+    const abrirPorReconhecimento = vi.spyOn(
+      sessoesDeGuerreiroApi,
+      "abrirSessaoPorReconhecimento",
+    );
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.4, 0.5, 0.6]);
+    const enviarDescritor = vi.spyOn(descritorApi, "enviarDescritor").mockResolvedValue({
+      guerreiro_id: "guerreiro-1",
+      gravado_em: new Date().toISOString(),
     });
-    mockarPresencaNoEncontro(true);
 
     renderizar();
     const usuario = userEvent.setup();
-    await usuario.click(screen.getByRole("button", { name: /equipes —/i }));
-    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
-    await usuario.click(screen.getByRole("button", { name: /^entrar$/i }));
+    await usuario.click(
+      await screen.findByRole("button", { name: "Recadastrar imagem de Guerreiro(a)" }),
+    );
 
-    expect(await screen.findByText(/equipes desta aula/i)).toBeInTheDocument();
+    // Direto na confirmação: nenhum botão de entrar pelo reconhecimento.
+    expect(await screen.findByText(/de quem é a imagem a recadastrar/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^entrar$/i })).not.toBeInTheDocument();
+    await usuario.type(screen.getByLabelText(/nick/i), "zeferina");
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+
+    await usuario.click(await screen.findByRole("button", { name: /iniciar captura/i }));
+    await vi.waitFor(() =>
+      expect(enviarDescritor).toHaveBeenCalledWith(
+        "guerreiro-1",
+        { descritor: [0.4, 0.5, 0.6] },
+        "token-de-trabalho",
+      ),
+    );
+    // O identificador veio da sessão aberta por confirmação, sem rota de
+    // nick para identificador (`RN-01-22`), e a guarda nem foi consultada.
+    expect(sessoesDeGuerreiroApi.confirmarSessaoDeGuerreiro).toHaveBeenCalledTimes(1);
+    expect(abrirPorReconhecimento).not.toHaveBeenCalled();
+    expect(lerPresenca).not.toHaveBeenCalled();
+  });
+
+  it("gravada a imagem, o recadastro diz que gravou e termina o atendimento", async () => {
+    vi.spyOn(sessoesDeGuerreiroApi, "confirmarSessaoDeGuerreiro").mockResolvedValue({
+      token: "token-do-guerreiro",
+      expira_em: new Date().toISOString(),
+      papel: "guerreiro",
+    });
+    vi.spyOn(sessaoApi, "eu").mockResolvedValue({
+      persona_id: "guerreiro-1",
+      papel: "guerreiro",
+      permissoes: {},
+    });
+    vi.spyOn(biometriaModulo, "provarVivacidade").mockResolvedValue(true);
+    vi.spyOn(biometriaModulo, "gerarDescritor").mockResolvedValue([0.4, 0.5, 0.6]);
+    vi.spyOn(descritorApi, "enviarDescritor").mockResolvedValue({
+      guerreiro_id: "guerreiro-1",
+      gravado_em: new Date().toISOString(),
+    });
+    vi.spyOn(sessaoApi, "encerrarSessao").mockResolvedValue(undefined);
+    const aoVoltarAoInicio = vi.fn();
+
+    renderizar(aoVoltarAoInicio);
+    const usuario = userEvent.setup();
+    await usuario.click(
+      await screen.findByRole("button", { name: "Recadastrar imagem de Guerreiro(a)" }),
+    );
+    await usuario.type(await screen.findByLabelText(/nick/i), "zeferina");
+    await usuario.type(screen.getByLabelText(/pin de quem confirma/i), "4821");
+    await usuario.click(screen.getByRole("button", { name: /confirmar identidade/i }));
+    await usuario.click(await screen.findByRole("button", { name: /iniciar captura/i }));
+
     expect(
-      screen.queryByRole("button", { name: /recadastrar imagem/i }),
-    ).not.toBeInTheDocument();
+      await screen.findByText(/a nova imagem de referência foi gravada/i),
+    ).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: /voltar ao início/i }));
+
+    expect(await screen.findByText(/o que você quer fazer/i)).toBeInTheDocument();
+    expect(sessaoApi.encerrarSessao).toHaveBeenCalledWith("token-do-guerreiro");
+    expect(aoVoltarAoInicio).toHaveBeenCalled();
   });
 
   it("o caminho da troca não aparece com o momento de troca fechado", async () => {
@@ -1043,6 +1096,7 @@ describe("a ordem do menu inicial (RF-04-01)", () => {
       "Quiz ao Vivo — entrar com o nick e responder pela equipe",
       "Troca por recompensa avulsa — entregar uma recompensa do encontro",
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Recadastrar imagem de Guerreiro(a)",
       "Fechar o momento de troca",
       "Entregas pendentes do encontro — confirmar a recompensa conquistada",
       "Encerrar a sessão de trabalho",
@@ -1059,6 +1113,7 @@ describe("a ordem do menu inicial (RF-04-01)", () => {
       .filter(
         (rotulo) =>
           !rotulo.startsWith("Medição") &&
+          !rotulo.startsWith("Recadastrar") &&
           !rotulo.startsWith("Entregas") &&
           !rotulo.startsWith("Encerrar"),
       );
@@ -1122,6 +1177,7 @@ describe("a medição do limiar fica com quem opera (RF-04-63, RN-04-33)", () =>
 
     expect(naOrdem).toEqual([
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Recadastrar imagem de Guerreiro(a)",
       "Abrir o momento de troca",
       "Entregas pendentes do encontro — confirmar a recompensa conquistada",
       "Encerrar a sessão de trabalho",
@@ -1153,6 +1209,7 @@ describe("a medição do limiar fica com quem opera (RF-04-63, RN-04-33)", () =>
 
     expect(naOrdem).toEqual([
       "Medição do limiar — calibrar o reconhecimento facial deste ponto de apoio",
+      "Recadastrar imagem de Guerreiro(a)",
       "Entregas pendentes do encontro — confirmar a recompensa conquistada",
       "Encerrar a sessão de trabalho",
     ]);
