@@ -1,6 +1,5 @@
 import { EstadoDaLista } from "comum/react";
 import type { SecaoInstitucionalPublica } from "../api/leituras";
-import { ListaDeNecessidades } from "../necessidades/ListaDeNecessidades";
 import { TextoInstitucional } from "./TextoInstitucional";
 
 // As três seções institucionais do PRD-03 §6.5. O texto e o vídeo vêm do que
@@ -40,19 +39,6 @@ export function ApresentacaoDaSecao({
       ) : (
         <TextoInstitucional texto={texto} />
       )}
-    </>
-  );
-}
-
-/** As necessidades em aberto aparecem aqui **e** na porta do convite: quem
- * navega pela vitrine e não aciona a chamada também vê o que falta
- * (`RF-03-47`, design — decisão 8). É ilha: a lista muda a cada aporte, e
- * congelá-la na publicação mostraria necessidade já atendida. */
-export function NecessidadesEmAberto() {
-  return (
-    <>
-      <h3>Necessidades de recurso em aberto</h3>
-      <ListaDeNecessidades />
     </>
   );
 }

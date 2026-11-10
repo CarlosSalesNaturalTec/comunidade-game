@@ -183,7 +183,6 @@ describe("portfólio e ranking", () => {
       "Portfólio de criações originais",
       "Guerreiros e Guerreiras",
       "Apoiadores",
-      "Necessidades em aberto",
       "Mestres",
       "Comunidades Virtuais",
       "Construir sobre a API",

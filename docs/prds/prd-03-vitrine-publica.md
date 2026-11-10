@@ -60,16 +60,16 @@ hora — o sentido do fluxo é sempre esse.
 - **Área do Apoiador Desenvolvedor** — seção pública para quem quer construir sobre a API,
   com **link da documentação MkDocs**, **link da documentação da API em Swagger**,
   **formulário de solicitação de chave** e **link do repositório**.
-- **Chamada "Quero apoiar"** em **toda página individual** e no pedido de favoritar,
-  levando à porta da Área do Apoiador — pré-cadastro e caminho de apoio. O **endereço** da
-  porta não acompanha o rótulo.
+- **Chamada "Quero apoiar"** em **toda página individual**, levando à porta da Área do
+  Apoiador — pré-cadastro e caminho de apoio. A vitrine não oferece ação de favoritar nem de
+  acompanhar. O **endereço** da porta não acompanha o rótulo.
 - **Botão "Entrar"** no herói da abertura, encaminhando cada persona à sua aplicação. A
   vitrine é a **raiz do domínio** da plataforma.
 - **Área do gestor público**: bloco em destaque no recorte de gestores, explicando para que a
   plataforma serve ao município e ao estado, com os limites declarados na mesma tela.
 - **Card de Apoiador padronizado**: moldura comum, avatar centralizado, nick e **total de
   moedas em destaque**.
-- **Necessidades de recurso em aberto** das atividades sem lastro, com o caminho para apoiar.
+- **Necessidades de recurso em aberto** das atividades sem lastro, na porta da chamada.
 - **Seções institucionais** exibidas — "Quem somos" e "Contatos" — e o vídeo de apresentação.
   "Como apoiar" segue publicável pelo Admin **sem tela pública**, e a chave PIX dela chega ao
   visitante pela porta da chamada. A **nota de transparência sobre IA** fica **dentro de
@@ -125,8 +125,8 @@ fila, nunca acesso.
    trilhas, badges e níveis por poder, portfólio de criações e participação em batalhas.
 4. Navega para Mestres, Batalhas, Apoiadores e Comunidades Virtuais pelo mesmo padrão
    de lista e página, e procura um Guerreiro(a) pelo nick exato.
-5. Encontra as **necessidades de recurso em aberto** das atividades sem lastro em seção
-   própria, e a chave PIX na porta da chamada — "Como apoiar" não tem tela pública.
+5. Encontra as **necessidades de recurso em aberto** das atividades sem lastro e a chave PIX
+   na porta da chamada — "Como apoiar" não tem tela pública.
 6. Trocando de recorte, continua na mesma vitrine: muda a porta de entrada e a ordem, não o
    conteúdo nem o direito de acesso.
 
@@ -177,7 +177,7 @@ fila, nunca acesso.
 ### 5.5 Quem quer participar, entrar ou apoiar
 
 1. **Toda página individual** — de Guerreiro(a), Mestre, apoiador ou comunidade — traz a
-   chamada **"Quero apoiar"**. O pedido de favoritar leva ao mesmo lugar.
+   chamada **"Quero apoiar"**, e nenhuma ação de favoritar ou acompanhar.
 2. A chamada é **do projeto**: não oferece apoiar aquela pessoa, e a tela seguinte não carrega
    o nome nem o nick de quem estava sendo visto.
 3. Ela abre a **porta da Área do Apoiador**, que explica o que é ser Apoiador — aportar, propor
@@ -317,7 +317,6 @@ eles.
 | ---------- | -------------------------------------------------------------------------------------------- | ---------- |
 | `RF-03-38` | Vitrine não guarda favorito nem preferência do visitante, no servidor ou no aparelho         | essencial  |
 | `RF-03-39` | Toda página individual traz a chamada "Quero apoiar", que leva à Área do Apoiador            | essencial  |
-| `RF-03-40` | Ação de favoritar ou acompanhar leva à mesma porta                                           | essencial  |
 | `RF-03-41` | A chamada não vincula o apoio à pessoa exibida, e a tela seguinte não carrega quem era vista | essencial  |
 | `RF-03-42` | Porta apresenta o que é ser Apoiador e leva ao pré-cadastro da App 08                        | essencial  |
 | `RF-03-43` | Porta oferece também doar pela chave PIX e ver as necessidades de recurso em aberto          | essencial  |
@@ -566,7 +565,8 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   como condição.
 - Toda página individual traz a chamada "Quero apoiar"; clicando nela, a tela seguinte não
   cita a pessoa que estava sendo vista e leva ao pré-cadastro da App 08.
-- Pedir para favoritar chega à mesma porta; recusar devolve à navegação sem gravar nada.
+- Nenhuma página individual oferece favoritar ou acompanhar; recusar o convite devolve à
+  navegação sem gravar nada.
 - Card de Apoiador exibe avatar, nick e total de moedas na moldura comum; quem não teve aporte
   homologado não aparece, e quem está abaixo de 10 moedas aparece com o avatar padrão.
 - Depois de navegar e recarregar, a vitrine está idêntica à primeira visita: nenhum favorito,
@@ -598,6 +598,7 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 | Chamada "Quero apoiar" em toda página individual                         | 03 §8      | Chamada "Quero apoiar" nos perfis         |
 | Área do Apoiador Desenvolvedor como seção da vitrine, não nona aplicação | 03 §8      | Acesso das aplicações de terceiros        |
 | Assistente do Desenvolvedor retirado; Swagger na área (2026-11-06)       | 03 §8      | Acesso das aplicações de terceiros        |
+| Sem "Quero acompanhar"; necessidades só na porta (2026-11-10)            | 03 §8      | A vitrine não oferece "Quero acompanhar"  |
 | Modelo de IA escolhido por funcionalidade, ao menor custo                | 03 §1      | Modelos de IA do Ciclo 01                 |
 | Solicitação de chave pela vitrine, com emissão por Admin                 | 03 §8      | Acesso das aplicações de terceiros        |
 | Card de Apoiador com avatar, nick, moedas em destaque e moldura comum    | 11 §8.2    | Identidade pública do Apoiador            |
@@ -608,8 +609,8 @@ ODS por comunidade e ciclo**, base do indicador de impacto do documento 04.
 
 Duas dessas decisões **restringem regras anteriores**: a saída pública ia até a rua, e a
 vitrine tinha favoritos guardados no aparelho do visitante. A primeira foi propagada ao PRD-08,
-que a aplicava, e aos documentos 02, 03 e 08; a segunda concentrou o acompanhamento na App 08 e
-transformou a ação de favoritar em porta de entrada para o cadastro e o apoio.
+que a aplicava, e aos documentos 02, 03 e 08; a segunda concentrou o acompanhamento na App 08, e
+desde 2026-11-10 a vitrine não oferece ação de favoritar nem de acompanhar.
 
 Uma quinta decisão retirou a **publicidade** da lista de receitas (documento 04 §2) e a mandou
 para estudo de ciclo futuro, mantendo a edição do conteúdo institucional como ato de Admin no

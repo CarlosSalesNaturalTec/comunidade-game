@@ -19,10 +19,7 @@ import { SecaoDeSolicitacaoDeDados } from "../formularios/SecaoDeSolicitacaoDeDa
 import { PaginaDoGuerreiro } from "../guerreiros/PaginaDoGuerreiro";
 import { SecaoDeGuerreiros } from "../guerreiros/SecaoDeGuerreiros";
 import { RolagemAteAAncora } from "../institucional/RolagemAteAAncora";
-import {
-  ApresentacaoDaSecao,
-  NecessidadesEmAberto,
-} from "../institucional/SecoesInstitucionais";
+import { ApresentacaoDaSecao } from "../institucional/SecoesInstitucionais";
 import { useConteudoInstitucional } from "../institucional/useConteudoInstitucional";
 import {
   CAMINHO_DA_APRESENTACAO_DA_URL,
@@ -119,9 +116,6 @@ function SecoesDoRecorte({
         </Secao>
         <Secao titulo="Apoiadores">
           <SecaoDeApoiadores />
-        </Secao>
-        <Secao titulo="Necessidades em aberto">
-          <NecessidadesEmAberto />
         </Secao>
         <Secao titulo="Mestres">
           <SecaoDeMestres />

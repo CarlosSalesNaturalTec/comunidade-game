@@ -108,45 +108,36 @@ describe("o convite ao acompanhamento", () => {
   });
   afterEach(() => vi.restoreAllMocks());
 
-  it("a página do Guerreiro(a) traz a chamada e a ação de acompanhar (RF-03-39, RF-03-40)", async () => {
+  it("a página do Guerreiro(a) traz a chamada, sem ação de acompanhar (RF-03-39)", async () => {
     window.history.pushState(null, "", `/guerreiros/${NICK}`);
     render(<App />);
 
     expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Quero acompanhar" })).toBeNull();
   });
 
-  it("a página da comunidade traz a chamada e a ação de acompanhar (RF-03-39, RF-03-40)", async () => {
+  it("a página da comunidade traz a chamada, sem ação de acompanhar (RF-03-39)", async () => {
     window.history.pushState(null, "", `/comunidades/${ID_DA_COMUNIDADE}`);
     render(<App />);
 
     expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Quero acompanhar" })).toBeNull();
   });
 
-  it("a página do Mestre traz a chamada e a ação de acompanhar (RF-03-39, RF-03-40)", async () => {
+  it("a página do Mestre traz a chamada, sem ação de acompanhar (RF-03-39)", async () => {
     window.history.pushState(null, "", `/mestres/${ID_DO_MESTRE}`);
     render(<App />);
 
     expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Quero acompanhar" })).toBeNull();
   });
 
-  it("a página do Apoiador traz a chamada e a ação de acompanhar (RF-03-39, RF-03-40)", async () => {
+  it("a página do Apoiador traz a chamada, sem ação de acompanhar (RF-03-39)", async () => {
     window.history.pushState(null, "", `/apoiadores/${ID_DO_APOIADOR}`);
     render(<App />);
 
     expect(await screen.findByRole("button", { name: "Quero apoiar" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Quero acompanhar" })).toBeVisible();
-  });
-
-  it("acompanhar na página do Mestre chega à mesma porta (RF-03-40, RF-14-52)", async () => {
-    window.history.pushState(null, "", `/mestres/${ID_DO_MESTRE}`);
-    render(<App />);
-
-    await userEvent.click(await screen.findByRole("button", { name: "Quero acompanhar" }));
-
-    expect(window.location.pathname).toBe("/quero-participar");
+    expect(screen.queryByRole("button", { name: "Quero acompanhar" })).toBeNull();
   });
 
   it("a chamada convida a participar do projeto, e não a apoiar quem está na tela (RF-03-41, RN-03-25)", async () => {
@@ -159,7 +150,6 @@ describe("o convite ao acompanhamento", () => {
     expect(
       within(chamada).queryByText(new RegExp(`apoiar .*${NICK}`, "i")),
     ).not.toBeInTheDocument();
-    expect(within(chamada).getByText(/A vitrine não guarda favoritos/)).toBeVisible();
   });
 
   it("a porta não cita quem estava sendo visto, e o endereço não o carrega (RF-03-41, RN-03-25)", async () => {
@@ -175,22 +165,6 @@ describe("o convite ao acompanhamento", () => {
     expect(window.location.pathname).toBe("/quero-participar");
     expect(window.location.search).toBe("");
     expect(screen.queryByText(new RegExp(NICK))).not.toBeInTheDocument();
-  });
-
-  it("acompanhar chega à mesma porta que a chamada (RF-03-40)", async () => {
-    window.history.pushState(null, "", `/comunidades/${ID_DA_COMUNIDADE}`);
-    render(<App />);
-    const testeDeUsuario = userEvent.setup();
-
-    await testeDeUsuario.click(
-      await screen.findByRole("button", { name: "Quero acompanhar" }),
-    );
-
-    expect(
-      await screen.findByRole("heading", { name: "Quero apoiar", level: 2 }),
-    ).toBeVisible();
-    expect(window.location.pathname).toBe("/quero-participar");
-    expect(screen.queryByText(new RegExp(NOME_DA_COMUNIDADE))).not.toBeInTheDocument();
   });
 
   it("a porta explica o papel do Apoiador e declara que nada cria acesso (RF-03-42, RN-03-17)", async () => {

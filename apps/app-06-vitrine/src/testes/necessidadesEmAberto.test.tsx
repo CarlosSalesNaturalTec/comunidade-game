@@ -6,9 +6,9 @@ import { esquecerConteudoInstitucional } from "../institucional/useConteudoInsti
 import { esquecerNecessidades } from "../necessidades/useNecessidades";
 import App from "./TelaDaVitrine";
 
-// As necessidades de recurso em aberto (`RF-03-47`): aparecem na porta do
-// convite e em **seção própria da abertura** — desde 2026-10-11 elas não
-// pendem mais de "Como apoiar", que deixou de ter tela pública. Saem com tipo,
+// As necessidades de recurso em aberto (`RF-03-47`): aparecem só na porta do
+// convite (`RF-03-43`) — a seção própria da abertura saiu em 2026-11-10, e
+// "Como apoiar" não tem tela pública desde 2026-10-11. Saem com tipo,
 // quantidade que falta, valor em moedas, comunidade, ponto de apoio e o
 // horário da aula. Nenhum campo em reais e nenhuma pessoa (`RF-03-10`,
 // `RN-03-18`).
@@ -73,22 +73,19 @@ describe("as necessidades de recurso em aberto", () => {
   });
   afterEach(() => vi.restoreAllMocks());
 
-  it.each(["/quero-participar", "/"])(
-    "a necessidade sai com tudo o que o PRD pede em %s (RF-03-47)",
-    async (caminho) => {
-      comLeituras([necessidade()]);
-      window.history.pushState(null, "", caminho);
-      render(<App />);
+  it("a necessidade sai na porta com tudo o que o PRD pede (RF-03-43, RF-03-47)", async () => {
+    comLeituras([necessidade()]);
+    window.history.pushState(null, "", "/quero-participar");
+    render(<App />);
 
-      const item = within(await lista()).getByRole("listitem");
-      expect(within(item).getByRole("heading", { name: "Lanche" })).toBeVisible();
-      expect(within(item).getByText("Falta: 10")).toBeVisible();
-      expect(within(item).getByText("20.00 moedas")).toBeVisible();
-      expect(within(item).getByText("Guerreira Zeferina")).toBeVisible();
-      expect(within(item).getByText("Escola Municipal Zeferina")).toBeVisible();
-      expect(within(item).getByText(HORARIO_ESPERADO)).toBeVisible();
-    },
-  );
+    const item = within(await lista()).getByRole("listitem");
+    expect(within(item).getByRole("heading", { name: "Lanche" })).toBeVisible();
+    expect(within(item).getByText("Falta: 10")).toBeVisible();
+    expect(within(item).getByText("20.00 moedas")).toBeVisible();
+    expect(within(item).getByText("Guerreira Zeferina")).toBeVisible();
+    expect(within(item).getByText("Escola Municipal Zeferina")).toBeVisible();
+    expect(within(item).getByText(HORARIO_ESPERADO)).toBeVisible();
+  });
 
   it("nenhuma linha traz reais, e nada além dos campos do PRD aparece (RF-03-10, RN-03-18)", async () => {
     comLeituras([
@@ -136,25 +133,21 @@ describe("as necessidades de recurso em aberto", () => {
     ).toBeVisible();
   });
 
-  it("a seção da abertura aparece por si, sem passar pela porta (RF-03-47)", async () => {
-    comLeituras([necessidade()]);
+  it("a abertura não tem seção de necessidades (decisão do fundador de 2026-11-10)", async () => {
+    const leitura = comLeituras([necessidade()]);
     render(<App />);
+    await screen.findByRole("heading", { name: "Ranking", level: 2 });
 
-    // A seção é própria: tem cabeçalho de nível 2 na abertura e não depende de
-    // o visitante abrir a porta do convite nem outra seção.
-    const cabecalho = await screen.findByRole("heading", {
-      name: "Necessidades em aberto",
-      level: 2,
-    });
-    const secao = cabecalho.closest("section");
-    if (!secao) throw new Error("A seção de necessidades não foi encontrada");
+    expect(screen.queryByRole("heading", { name: "Necessidades em aberto" })).toBeNull();
     expect(
-      within(secao).getByRole("list", { name: "Necessidades de recurso em aberto" }),
-    ).toBeVisible();
+      screen.queryByRole("list", { name: "Necessidades de recurso em aberto" }),
+    ).toBeNull();
+    expect(leitura).not.toHaveBeenCalled();
   });
 
   it("nenhuma tela pública apresenta Como apoiar (RF-03-45)", async () => {
     comLeituras([necessidade()]);
+    window.history.pushState(null, "", "/quero-participar");
     render(<App />);
     await lista();
 
@@ -162,8 +155,9 @@ describe("as necessidades de recurso em aberto", () => {
     expect(screen.queryByRole("heading", { name: "Como apoiar" })).toBeNull();
   });
 
-  it("a porta e a seção da abertura compartilham uma única leitura por carga (RF-03-47)", async () => {
+  it("a porta faz uma única leitura por carga (RF-03-47)", async () => {
     const leitura = comLeituras([necessidade()]);
+    window.history.pushState(null, "", "/quero-participar");
     render(<App />);
     await lista();
 

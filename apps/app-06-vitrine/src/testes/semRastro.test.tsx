@@ -49,7 +49,7 @@ describe("a vitrine não deixa rastro no aparelho", () => {
     expect(document.cookie).toBe("");
   });
 
-  it("acompanhar, escolher modalidade e recusar não guardam favorito nenhum (RF-03-38, RN-03-15, RN-03-16)", async () => {
+  it("pedir para acompanhar, escolher modalidade e recusar não guardam favorito nenhum (RF-03-38, RN-03-15, RN-03-16)", async () => {
     esquecerConteudoInstitucional();
     esquecerNecessidades();
     vi.spyOn(leituras, "listarNecessidades").mockResolvedValue([]);
@@ -71,9 +71,7 @@ describe("a vitrine não deixa rastro no aparelho", () => {
     const tela = render(<App />);
     const testeDeUsuario = userEvent.setup();
 
-    await testeDeUsuario.click(
-      await screen.findByRole("button", { name: "Quero acompanhar" }),
-    );
+    await testeDeUsuario.click(await screen.findByRole("button", { name: "Quero apoiar" }));
     await testeDeUsuario.click(await screen.findByRole("button", { name: "Divulgação" }));
     await testeDeUsuario.click(
       screen.getByRole("button", { name: "Não quero agora, voltar à vitrine" }),
