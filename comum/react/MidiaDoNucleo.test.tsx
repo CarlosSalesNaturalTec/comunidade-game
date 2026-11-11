@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MidiaDoNucleo } from "./MidiaDoNucleo";
 
@@ -235,5 +236,95 @@ describe("MidiaDoNucleo", () => {
     unmount();
 
     expect(aoMudarCarregamento).toHaveBeenLastCalledWith(false);
+  });
+
+  describe("ampliação da imagem", () => {
+    function montar(props: Partial<Parameters<typeof MidiaDoNucleo>[0]> = {}) {
+      vi.stubGlobal("URL", {
+        ...URL,
+        createObjectURL: vi.fn(() => "blob:midia-1"),
+        revokeObjectURL: vi.fn(),
+      });
+      const buscar = vi.fn().mockResolvedValue(new Blob(["bytes"], { type: "image/png" }));
+      render(
+        <MidiaDoNucleo
+          id="midia-1"
+          buscar={buscar}
+          token="token-1"
+          tipo="imagem"
+          alt="Mapa do bairro"
+          textoDeErro="Essa imagem não abriu agora."
+          ampliavel
+          {...props}
+        />,
+      );
+      return buscar;
+    }
+
+    it("tocar na imagem a abre em tela cheia, sem nova busca", async () => {
+      const usuario = userEvent.setup();
+      const buscar = montar();
+
+      await usuario.click(
+        await screen.findByRole("button", { name: "Ampliar imagem: Mapa do bairro" }),
+      );
+
+      const dialogo = screen.getByRole("dialog", { name: "Mapa do bairro" });
+      expect(dialogo).toHaveClass("cg-dialogo--tela-cheia");
+      const ampliada = within(dialogo).getByRole("img", {
+        name: "Mapa do bairro",
+      }) as HTMLImageElement;
+      expect(ampliada.src).toBe("blob:midia-1");
+      expect(buscar).toHaveBeenCalledTimes(1);
+    });
+
+    it("fechar pelo botão ou pelo Esc devolve o foco à imagem da moldura", async () => {
+      const usuario = userEvent.setup();
+      montar();
+      const controle = await screen.findByRole("button", {
+        name: "Ampliar imagem: Mapa do bairro",
+      });
+
+      await usuario.click(controle);
+      await usuario.click(screen.getByRole("button", { name: "Fechar" }));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(controle).toHaveFocus();
+
+      await usuario.keyboard("{Enter}");
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      await usuario.keyboard("{Escape}");
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(controle).toHaveFocus();
+    });
+
+    it("sem ampliavel, a imagem não é controle", async () => {
+      montar({ ampliavel: false });
+      await screen.findByRole("img", { name: "Mapa do bairro" });
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    });
+
+    it("vídeo e áudio nunca ganham o controle de ampliar", async () => {
+      montar({ tipo: "video" });
+      await screen.findByLabelText("Mapa do bairro");
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    });
+
+    it("carregando e falha não oferecem ampliação", async () => {
+      vi.stubGlobal("URL", { ...URL, createObjectURL: vi.fn(), revokeObjectURL: vi.fn() });
+      render(
+        <MidiaDoNucleo
+          id="midia-1"
+          buscar={vi.fn().mockRejectedValue(new Error("rede"))}
+          token="token-1"
+          tipo="imagem"
+          alt="Mapa do bairro"
+          textoDeErro="Essa imagem não abriu agora."
+          ampliavel
+        />,
+      );
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+      await screen.findByText("Essa imagem não abriu agora.");
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    });
   });
 });

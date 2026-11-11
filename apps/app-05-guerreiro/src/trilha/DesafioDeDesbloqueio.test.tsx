@@ -188,6 +188,18 @@ describe("a imagem da pergunta (RF-09-119, RF-05-89)", () => {
     // A mesma moldura de tamanho fixo do conteúdo da missão (decisão do
     // fundador de 2026-09-17).
     expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+
+    // Tocar na imagem a abre em tela cheia; fechar devolve à mesma pergunta
+    // (decisão do fundador de 2026-11-11).
+    await usuario.click(
+      screen.getByRole("button", {
+        name: /ampliar imagem: imagem da pergunta: o que o gráfico mostra\?/i,
+      }),
+    );
+    expect(screen.getByRole("dialog")).toHaveClass("cg-dialogo--tela-cheia");
+    await usuario.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText("O que o gráfico mostra?")).toBeInTheDocument();
     vi.unstubAllGlobals();
   });
 

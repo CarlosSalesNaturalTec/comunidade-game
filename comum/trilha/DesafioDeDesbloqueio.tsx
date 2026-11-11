@@ -828,6 +828,7 @@ export function DesafioDeDesbloqueio({
             alt={`Imagem da pergunta: ${pergunta.enunciado}`}
             textoDeErro="A imagem desta pergunta não abriu, mas pode responder."
             aoMudarCarregamento={definirMidiaCarregando}
+            ampliavel
           />
         )}
         <ul className="cg-trilha__alternativas">

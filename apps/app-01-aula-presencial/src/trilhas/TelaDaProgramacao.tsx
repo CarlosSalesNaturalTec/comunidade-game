@@ -3,9 +3,11 @@ import {
   Botao,
   Cabecalho,
   EstadoDaLista,
+  MidiaDoNucleo,
   Moldura,
   SequenciaPaginada,
 } from "comum/react";
+import { lerArquivoDoConteudo } from "comum/trilha/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   declararEscolhaDaEquipe,
@@ -54,6 +56,9 @@ export function TelaDaProgramacao({
   const [idExibido, definirIdExibido] = useState<string | null>(null);
   const [declarando, definirDeclarando] = useState(false);
   const [mostrarAssistente, definirMostrarAssistente] = useState(false);
+  // Avançar fica travado enquanto a mídia da vez é buscada, e cede na falha
+  // — o mesmo padrão da missão do Guerreiro(a) (`comum/trilha/Missao.tsx`).
+  const [midiaCarregando, definirMidiaCarregando] = useState(false);
   const declaradaSozinhaRef = useRef<string | null>(null);
 
   const carregar = useCallback(async () => {
@@ -195,6 +200,7 @@ export function TelaDaProgramacao({
             key={item.atividade.id}
             itens={item.conteudos}
             rotuloDeAvancar="Próximo conteúdo"
+            controlesTravados={midiaCarregando}
           >
             {(conteudo) => (
               <div className="cg-conteudo-da-missao">
@@ -204,13 +210,28 @@ export function TelaDaProgramacao({
                     {conteudo.endereco}
                   </a>
                 )}
-                {conteudo.tipo === "imagem" && conteudo.referencia && (
-                  <img src={conteudo.referencia} alt="" />
-                )}
-                {conteudo.tipo === "video" && conteudo.referencia && (
-                  // biome-ignore lint/a11y/useMediaCaption: legenda é conteúdo do Mestre autor, fora desta fatia.
-                  <video src={conteudo.referencia} controls />
-                )}
+                {/* Imagem e vídeo vêm em bytes do núcleo, na moldura fixa:
+                 * `conteudo.referencia` é a chave do armazenamento, e `<img
+                 * src>` não manda a chave da aplicação que toda rota sob
+                 * `/v1` exige. A imagem abre em tela cheia ao toque
+                 * (`RF-04-35`, decisão do fundador de 2026-11-11). */}
+                {(conteudo.tipo === "imagem" || conteudo.tipo === "video") &&
+                  conteudo.referencia && (
+                    <MidiaDoNucleo
+                      id={conteudo.id}
+                      buscar={lerArquivoDoConteudo}
+                      token={token}
+                      tipo={conteudo.tipo}
+                      alt={
+                        conteudo.tipo === "imagem"
+                          ? `Conteúdo de ${item.missao_titulo}`
+                          : `Vídeo de ${item.missao_titulo}`
+                      }
+                      textoDeErro="Esse arquivo não abriu agora. Tente de novo em instantes."
+                      aoMudarCarregamento={definirMidiaCarregando}
+                      ampliavel
+                    />
+                  )}
                 {conteudo.tipo === "arquivo" && conteudo.referencia && (
                   <a href={conteudo.referencia}>Arquivo de apoio</a>
                 )}

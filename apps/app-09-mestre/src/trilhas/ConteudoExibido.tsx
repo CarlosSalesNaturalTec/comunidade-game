@@ -40,6 +40,7 @@ export function ConteudoExibido({
             : `Vídeo de ${tituloDaMissao}`
         }
         textoDeErro="Esse arquivo não abriu agora, mas segue anexado."
+        ampliavel
       />
     );
   }

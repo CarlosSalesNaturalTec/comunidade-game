@@ -3115,6 +3115,13 @@ describe("o desafio declarado reabre na Área do Mestre (RF-09-26, RF-09-118)", 
     // A mesma moldura de tamanho fixo da pré-visualização (decisão do
     // fundador de 2026-09-17).
     expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+    // E a imagem anexada amplia em tela cheia ao toque (decisão do fundador
+    // de 2026-11-11).
+    expect(
+      screen.getByRole("button", {
+        name: /ampliar imagem: imagem da pergunta 1: o que o gráfico mostra\?/i,
+      }),
+    ).toBeInTheDocument();
     vi.unstubAllGlobals();
   });
 
@@ -3473,6 +3480,15 @@ describe("a pré-visualização mostra o que o Guerreiro(a) verá (RF-09-25)", (
     // A moldura de tamanho fixo é a mesma para toda mídia do núcleo
     // (`RF-09-25`, `RF-09-119`, decisão do fundador de 2026-09-17).
     expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+
+    // Tocar na imagem a abre em tela cheia, e o toque fora fecha (decisão do
+    // fundador de 2026-11-11).
+    const usuario = userEvent.setup();
+    await usuario.click(screen.getByRole("button", { name: /ampliar imagem/i }));
+    const dialogo = screen.getByRole("dialog");
+    expect(dialogo).toHaveClass("cg-dialogo--tela-cheia");
+    await usuario.click(dialogo);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("exibe o vídeo enviado na mesma moldura de tamanho fixo da imagem", async () => {
@@ -3502,6 +3518,8 @@ describe("a pré-visualização mostra o que o Guerreiro(a) verá (RF-09-25)", (
     )) as HTMLVideoElement;
     expect(video.tagName).toBe("VIDEO");
     expect(video.closest(".cg-midia-do-nucleo")).not.toBeNull();
+    // Só a imagem amplia (decisão do fundador de 2026-11-11).
+    expect(screen.queryByRole("button", { name: /ampliar imagem/i })).not.toBeInTheDocument();
   });
 
   it("diz que o envio está pendente quando o arquivo não foi confirmado", async () => {
@@ -3545,6 +3563,7 @@ describe("a pré-visualização mostra o que o Guerreiro(a) verá (RF-09-25)", (
     expect(imagem.src).toBe("blob:imagem-da-pergunta-1");
     expect(ler).toHaveBeenCalledWith("pergunta-1", "token-do-mestre");
     expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+    expect(screen.getByRole("button", { name: /ampliar imagem/i })).toBeInTheDocument();
     vi.unstubAllGlobals();
   });
 });

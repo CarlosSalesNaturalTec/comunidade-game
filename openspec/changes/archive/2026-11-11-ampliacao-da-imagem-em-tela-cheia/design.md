@@ -38,8 +38,9 @@ da aplicação em cabeçalho. O percurso do Guerreiro(a) na App 01 já usa `comu
    de 320 × 240 já passa do alvo mínimo de toque. _Descartado:_ `onClick` no `<img>` — sem
    teclado nem papel acessível.
 3. **A ampliação abre no `Dialogo` da camada comum, com variante de tela cheia.** `Dialogo`
-   ganha duas propriedades opcionais: `telaCheia` (largura e altura até a janela, imagem em
-   `contain` limitada a `100dvw` × o que sobra abaixo do cabeçalho) e `fecharAoTocarFora`
+   ganha duas propriedades opcionais: `telaCheia` (o diálogo ocupa a janela e o corpo centraliza
+   o que sobra abaixo do cabeçalho; a imagem segue a regra `contain` da moldura, porque o diálogo
+   mora dentro dela) e `fecharAoTocarFora`
    (clique no próprio `<dialog>`, fora do corpo, fecha). O título do diálogo é o `alt` da imagem.
    Os diálogos existentes não passam nenhuma das duas e ficam como estão. _Descartado:_ um
    segundo componente de sobreposição — duplicaria foco, `Esc` e devolução do foco.
@@ -49,6 +50,10 @@ da aplicação em cabeçalho. O percurso do Guerreiro(a) na App 01 já usa `comu
    `lerArquivoDoConteudo` de `comum/trilha/api`**, a mesma leitura que o percurso do
    Guerreiro(a) já faz no aparelho, e com a mesma trava de avançar enquanto carrega, cedendo na
    falha (padrão de `comum/trilha/Missao.tsx`). Arquivo de apoio e link não mudam.
+6. **O polyfill de `showModal` dos testes passa a módulo de `comum`**
+   (`comum/testes/polyfillDoDialogo.ts`, exportado como `comum/testes/polyfill-do-dialogo`),
+   importado pela suíte de `comum` e pelas Apps 01, 05 e 09, que agora abrem diálogo. Apps 03 e
+   06 mantêm as cópias próprias — trocá-las está fora desta fatia. _Descartado:_ mais três cópias.
 
 ## Risks / Trade-offs
 
@@ -56,6 +61,10 @@ da aplicação em cabeçalho. O percurso do Guerreiro(a) na App 01 já usa `comu
   morre na desmontagem] → É o comportamento que as Apps 05 e 09 já têm, e não piora a
   programação de hoje, cuja imagem não abre nem com rede. Guardar bytes para leitura sem rede é
   escopo próprio, e vai ao fundador se for pedido.
+- [Na programação, a rota do arquivo serve só ao Mestre autor e ao Guerreiro(a) inscrito na
+  trilha, e a tela usa a sessão do Guerreiro(a) da equipe] → Quem não está inscrito na trilha
+  da atividade vê o aviso de que o arquivo não abriu, e a sequência segue livre. Alargar a
+  autorização da rota é decisão do fundador, fora desta fatia.
 - [`fecharAoTocarFora` fecharia o diálogo num clique dentro da imagem, se o alvo fosse
   confundido] → Fecha só quando o alvo do clique é o próprio `<dialog>` (o fundo), nunca a
   imagem nem o cabeçalho; o teste de `Dialogo` cobre os dois casos.

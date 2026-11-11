@@ -363,6 +363,145 @@ describe("programação do encontro (RF-04-35, RF-02-42)", () => {
     expect(screen.queryByText(/de 3/)).not.toBeInTheDocument();
   });
 
+  // A mídia sai em bytes do núcleo, na moldura fixa, e a imagem amplia em
+  // tela cheia ao toque (`RF-04-35`, decisão do fundador de 2026-11-11).
+  function conteudoDeMidia(
+    id: string,
+    tipo: "imagem" | "video" | "texto",
+    ordem: number,
+  ): ItemDaProgramacao["conteudos"][number] {
+    return {
+      id,
+      missao_id: "missao-1",
+      ordem,
+      tipo,
+      corpo: tipo === "texto" ? "Trecho seguinte." : null,
+      endereco: null,
+      referencia: tipo === "texto" ? null : `conteudos/${id}/arquivo`,
+      tamanho: null,
+      autoria: "propria",
+      fonte: null,
+    };
+  }
+
+  function prepararMidia(tipo: string) {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:conteudo-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    return vi
+      .spyOn(trilhaApi, "lerArquivoDoConteudo")
+      .mockResolvedValue(new Blob(["bytes"], { type: tipo }));
+  }
+
+  it("a imagem do conteúdo vem em bytes do núcleo, na moldura fixa, nunca pela referência", async () => {
+    const ler = prepararMidia("image/png");
+    vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([
+      item({ conteudos: [conteudoDeMidia("conteudo-1", "imagem", 1)] }),
+    ]);
+    vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
+      equipe_id: "equipe-1",
+      atividade_corrente_id: "atividade-1",
+    });
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    const imagem = (await screen.findByRole("img", {
+      name: "Conteúdo de Primeira missão",
+    })) as HTMLImageElement;
+    expect(imagem.src).toBe("blob:conteudo-1");
+    expect(ler).toHaveBeenCalledWith("conteudo-1", "token-guerreiro");
+    expect(imagem.closest(".cg-midia-do-nucleo")).not.toBeNull();
+    expect(document.querySelector('img[src="conteudos/conteudo-1/arquivo"]')).toBeNull();
+  });
+
+  it("o vídeo do conteúdo usa a mesma moldura e não amplia", async () => {
+    prepararMidia("video/mp4");
+    vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([
+      item({ conteudos: [conteudoDeMidia("conteudo-1", "video", 1)] }),
+    ]);
+    vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
+      equipe_id: "equipe-1",
+      atividade_corrente_id: "atividade-1",
+    });
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    const video = await screen.findByLabelText("Vídeo de Primeira missão");
+    expect(video.tagName).toBe("VIDEO");
+    expect(video.closest(".cg-midia-do-nucleo")).not.toBeNull();
+    expect(screen.queryByRole("button", { name: /ampliar imagem/i })).not.toBeInTheDocument();
+  });
+
+  it("a imagem que não abre avisa e libera o avançar", async () => {
+    vi.spyOn(trilhaApi, "lerArquivoDoConteudo").mockRejectedValue(new Error("caiu a rede"));
+    vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([
+      item({
+        conteudos: [
+          conteudoDeMidia("conteudo-1", "imagem", 1),
+          conteudoDeMidia("conteudo-2", "texto", 2),
+        ],
+      }),
+    ]);
+    vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
+      equipe_id: "equipe-1",
+      atividade_corrente_id: "atividade-1",
+    });
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    expect(
+      await screen.findByText("Esse arquivo não abriu agora. Tente de novo em instantes."),
+    ).toBeInTheDocument();
+    const avancar = screen.getByRole("button", { name: "Próximo conteúdo" });
+    await waitFor(() => expect(avancar).toBeEnabled());
+  });
+
+  it("tocar na imagem a abre em tela cheia; fechar volta ao mesmo conteúdo e nada é enviado", async () => {
+    prepararMidia("image/png");
+    vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([
+      item({
+        conteudos: [
+          conteudoDeMidia("conteudo-1", "imagem", 1),
+          conteudoDeMidia("conteudo-2", "texto", 2),
+        ],
+      }),
+    ]);
+    const declarar = vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
+      equipe_id: "equipe-1",
+      atividade_corrente_id: "atividade-1",
+    });
+    const busca = vi.spyOn(globalThis, "fetch");
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+    const usuario = userEvent.setup();
+    const controle = await screen.findByRole("button", {
+      name: "Ampliar imagem: Conteúdo de Primeira missão",
+    });
+    const declaracoesAntes = declarar.mock.calls.length;
+
+    await usuario.click(controle);
+    expect(screen.getByRole("dialog", { name: "Conteúdo de Primeira missão" })).toHaveClass(
+      "cg-dialogo--tela-cheia",
+    );
+    await usuario.click(screen.getByRole("button", { name: "Fechar" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(controle).toHaveFocus();
+    expect(screen.queryByText("Trecho seguinte.")).not.toBeInTheDocument();
+    expect(declarar.mock.calls.length).toBe(declaracoesAntes);
+    expect(busca).not.toHaveBeenCalled();
+  });
+
   it("nenhum dado pessoal de Guerreiro(a) aparece na tela", async () => {
     vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([item()]);
     vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
@@ -1095,6 +1234,46 @@ describe("o percurso do Guerreiro(a) no encontro (RF-04-72)", () => {
     // mais de uma (`RF-05-17`).
     expect(await screen.findByRole("heading", { name: "Horta Viva" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /trocar de trilha/i })).toBeInTheDocument();
+  });
+
+  it("a imagem do conteúdo da missão no percurso amplia em tela cheia (RF-04-73)", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:conteudo-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    vi.spyOn(trilhaApi, "lerArquivoDoConteudo").mockResolvedValue(
+      new Blob(["bytes"], { type: "image/png" }),
+    );
+    const trilha = trilhaPublicaComMissao();
+    trilha.missoes[1].conteudos = [
+      {
+        id: "conteudo-1",
+        ordem: 1,
+        tipo: "imagem",
+        corpo: null,
+        endereco: null,
+        referencia: "conteudos/conteudo-1/arquivo",
+        autoria: "propria",
+        fonte: null,
+      },
+    ];
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilha);
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+
+    await renderizarPercurso();
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      await screen.findByRole("button", {
+        name: /ampliar imagem: conteúdo de primeira missão/i,
+      }),
+    );
+    expect(screen.getByRole("dialog")).toHaveClass("cg-dialogo--tela-cheia");
+    await usuario.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   // --- Fatia 27: o rodapé da tela da missão (`RF-04-72`, `RF-04-74`)

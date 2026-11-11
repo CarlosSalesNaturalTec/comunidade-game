@@ -193,6 +193,34 @@
   background: rgb(0 0 0 / 0.4);
 }
 
+/* Variante de tela cheia — a imagem ampliada da moldura fixa: inteira, sem
+ * corte, no maior tamanho que a janela comporta (decisão do fundador de
+ * 2026-11-11). */
+.cg-dialogo--tela-cheia {
+  width: 100dvw;
+  height: 100dvh;
+  max-width: 100dvw;
+  max-height: 100dvh;
+  margin: 0;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cg-dialogo--tela-cheia:not([open]) {
+  display: none;
+}
+
+.cg-dialogo--tela-cheia .cg-dialogo__corpo {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .cg-dialogo__cabecalho {
   display: flex;
   align-items: center;
@@ -290,6 +318,23 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+/* A imagem ampliável é botão do tamanho da moldura: o alvo de toque é a
+ * moldura inteira, e o foco fica visível pelo `:focus-visible` de cada app
+ * (documento 15 §5; decisão do fundador de 2026-11-11). A imagem dentro
+ * dele, e a ampliada no diálogo — que também mora na moldura —, seguem a
+ * regra de cima: inteira, em `contain`. */
+.cg-midia-do-nucleo__ampliar {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-in;
 }
 
 /* `NavegacaoDeAreas` — alvo de toque de ao menos 48 px e a saída sempre
