@@ -286,6 +286,59 @@ describe("arquivo do conteúdo da missão", () => {
     )) as HTMLVideoElement;
     expect(video.tagName).toBe("VIDEO");
     expect(video.closest(".cg-midia-do-nucleo")).not.toBeNull();
+    // Só a imagem amplia: o vídeo fica com os controles nativos (decisão do
+    // fundador de 2026-11-11).
+    expect(screen.queryByRole("button", { name: /ampliar imagem/i })).not.toBeInTheDocument();
+  });
+
+  it("tocar na imagem a abre em tela cheia, e fechar volta ao mesmo conteúdo", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:conteudo-1"),
+      revokeObjectURL: vi.fn(),
+    });
+    vi.spyOn(trilhaApi, "lerArquivoDoConteudo").mockResolvedValue(
+      new Blob(["bytes"], { type: "image/png" }),
+    );
+    const missao = missaoComConteudo({
+      id: "conteudo-1",
+      ordem: 1,
+      tipo: "imagem",
+      corpo: null,
+      endereco: null,
+      referencia: "conteudos/conteudo-1/arquivo",
+      autoria: "propria",
+      fonte: null,
+    });
+    missao.conteudos.push({
+      id: "conteudo-2",
+      ordem: 2,
+      tipo: "texto",
+      corpo: "Segundo parágrafo.",
+      endereco: null,
+      referencia: null,
+      autoria: "propria",
+      fonte: null,
+    });
+    await renderizar(MISSAO_ABERTA, missao);
+    const usuario = userEvent.setup();
+
+    await usuario.click(
+      await screen.findByRole("button", {
+        name: /ampliar imagem: conteúdo de primeira missão/i,
+      }),
+    );
+    expect(screen.getByRole("dialog", { name: /conteúdo de primeira missão/i })).toHaveClass(
+      "cg-dialogo--tela-cheia",
+    );
+
+    await usuario.click(screen.getByRole("button", { name: "Fechar" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /ampliar imagem: conteúdo de primeira missão/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Segundo parágrafo.")).not.toBeInTheDocument();
+    vi.unstubAllGlobals();
   });
 
   it("envio não concluído não aparece quebrado nem pede bytes", async () => {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Aviso } from "./Aviso";
+import { Dialogo } from "./Dialogo";
 import { EstadoDaLista } from "./EstadoDaLista";
 
 interface Props {
@@ -25,6 +26,11 @@ interface Props {
    * Apps 05 e 09, onde o token chega depois, e trava na App 06, que nunca
    * terá um. */
   semSessao?: boolean;
+  /** A **imagem** vira controle que a abre em tela cheia, inteira e sem
+   * corte, reaproveitando os bytes já buscados. Só vale para imagem: vídeo e
+   * áudio têm os controles nativos. Desligada por padrão — a vitrine não a
+   * pede (decisão do fundador de 2026-11-11). */
+  ampliavel?: boolean;
 }
 
 // Busca a mídia do núcleo em bytes: nenhuma rota sob `/v1` aceita
@@ -32,9 +38,9 @@ interface Props {
 // aplicação em cabeçalho. Monta uma URL de objeto local e a revoga ao
 // desmontar, para não vazar memória em tela com muita mídia. Exibe numa
 // moldura de tamanho fixo (`--largura-de-miniatura` × `--altura-de-miniatura`),
-// com o conteúdo inteiro visível — nunca cortado — e sem oferecer
-// ampliação (`RF-09-25`, `RF-05-11`, `RF-09-119`, decisão do fundador de
-// 2026-09-17). Falhar em carregar nunca impede o resto da tela de
+// com o conteúdo inteiro visível — nunca cortado (`RF-09-25`, `RF-05-11`,
+// `RF-09-119`, decisão do fundador de 2026-09-17). Com `ampliavel`, a imagem
+// abre em tela cheia ao toque (decisão do fundador de 2026-11-11). Falhar em carregar nunca impede o resto da tela de
 // funcionar: a moldura mostra o aviso de erro que o chamador escolher.
 //
 // O resultado é guardado **junto do `id` que o produziu**, e não solto: numa
@@ -53,7 +59,9 @@ export function MidiaDoNucleo({
   textoDeErro,
   aoMudarCarregamento,
   semSessao = false,
+  ampliavel = false,
 }: Props) {
+  const [ampliada, definirAmpliada] = useState(false);
   const [resultado, definirResultado] = useState<{
     id: string;
     endereco: string | null;
@@ -99,12 +107,37 @@ export function MidiaDoNucleo({
     <div className="cg-midia-do-nucleo">
       {daVez?.naoAbriu && <Aviso tipo="atencao">{textoDeErro}</Aviso>}
       {carregando && <EstadoDaLista>Carregando…</EstadoDaLista>}
-      {daVez?.endereco && tipo === "imagem" && (
+      {daVez?.endereco && tipo === "imagem" && !ampliavel && (
         <img
           src={daVez.endereco}
           alt={alt}
           onError={() => definirResultado({ id, endereco: null, naoAbriu: true })}
         />
+      )}
+      {daVez?.endereco && tipo === "imagem" && ampliavel && (
+        <>
+          <button
+            type="button"
+            className="cg-midia-do-nucleo__ampliar"
+            aria-label={`Ampliar imagem: ${alt}`}
+            onClick={() => definirAmpliada(true)}
+          >
+            <img
+              src={daVez.endereco}
+              alt={alt}
+              onError={() => definirResultado({ id, endereco: null, naoAbriu: true })}
+            />
+          </button>
+          <Dialogo
+            aberto={ampliada}
+            titulo={alt}
+            aoFechar={() => definirAmpliada(false)}
+            telaCheia
+            fecharAoTocarFora
+          >
+            <img src={daVez.endereco} alt={alt} />
+          </Dialogo>
+        </>
       )}
       {daVez?.endereco && tipo === "video" && (
         // biome-ignore lint/a11y/useMediaCaption: legenda do vídeo do Mestre não é declarada no Ciclo 01 — o PRD-09 não a prevê.

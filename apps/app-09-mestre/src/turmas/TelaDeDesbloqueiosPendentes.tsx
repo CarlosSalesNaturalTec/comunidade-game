@@ -80,6 +80,7 @@ function ProducaoEntregue({
           tipo={midia}
           alt={`Produção entregue por ${pendente.guerreiro_nome ?? "este Guerreiro(a)"}`}
           textoDeErro="A produção entregue não abriu. Você ainda pode julgar."
+          ampliavel
         />
       )}
       {entregue.tem_arquivo && midia === null && (

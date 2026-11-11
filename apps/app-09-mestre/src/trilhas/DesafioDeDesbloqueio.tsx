@@ -500,6 +500,7 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
                         tipo="imagem"
                         alt={`Imagem da pergunta ${indice + 1}: ${pergunta.enunciado}`}
                         textoDeErro="Essa imagem não abriu agora, mas segue anexada."
+                        ampliavel
                       />
                     )}
                     <Botao

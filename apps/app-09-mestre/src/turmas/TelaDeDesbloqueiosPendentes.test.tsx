@@ -131,6 +131,18 @@ describe("a produção entregue aparece na bancada (RF-09-132)", () => {
     expect(
       await screen.findByRole("img", { name: /produção entregue por Guerreira Ana/i }),
     ).toBeInTheDocument();
+
+    // A foto entregue amplia em tela cheia ao toque (decisão do fundador de
+    // 2026-11-11).
+    const usuario = userEvent.setup();
+    await usuario.click(
+      screen.getByRole("button", {
+        name: /ampliar imagem: produção entregue por Guerreira Ana/i,
+      }),
+    );
+    expect(screen.getByRole("dialog")).toHaveClass("cg-dialogo--tela-cheia");
+    await usuario.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("a entrega no encontro é dita como tal, nunca como entrega faltando", async () => {

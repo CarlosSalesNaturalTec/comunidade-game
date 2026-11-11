@@ -2,6 +2,9 @@ import { cleanup } from "@testing-library/react";
 import * as biometria from "comum/biometria";
 import { afterEach, beforeEach, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
+// O `Dialogo` da imagem ampliada da moldura fixa abre por `showModal`, que o
+// jsdom não tem (decisão do fundador de 2026-11-11).
+import "comum/testes/polyfill-do-dialogo";
 
 // O jsdom não tem câmera: preparar a captura e acoplar o espelho falhariam em
 // toda tela que abre a câmera, por fato do ambiente e não por escolha do

@@ -677,9 +677,14 @@ nunca apresentado como quebrado. (`RF-05-11`, `RF-05-12`)
 Toda imagem e todo vídeo que a aplicação busca do núcleo em bytes — o conteúdo da missão e a
 imagem da pergunta do desafio de desbloqueio — SHALL ser exibidos numa moldura de **tamanho
 fixo**, igual para os dois casos, sem crescer além dela: a imagem ou o vídeo inteiro cabe
-dentro da moldura, sem ser cortado para preenchê-la, e o espaço que sobrar fica em branco. A
-moldura NEVER SHALL oferecer ampliação nem abrir a mídia em tamanho maior. (`RF-05-11`,
-`RF-09-119`, decisão do fundador de 2026-09-17)
+dentro da moldura, sem ser cortado para preenchê-la, e o espaço que sobrar fica em branco.
+(`RF-05-11`, `RF-09-119`, decisão do fundador de 2026-09-17)
+
+A **imagem** na moldura SHALL ser um controle que, acionado por toque, clique ou teclado, a abre
+**inteira, sem corte, no maior tamanho que a tela comporta**, sobre a tela atual; fecha pelo
+botão **"Fechar"**, pela tecla `Esc` e pelo toque fora dela, devolvendo o foco à imagem.
+Ampliar NEVER SHALL trocar o item da sequência nem gravar coisa alguma, e o **vídeo** NEVER
+SHALL ganhar a ampliação. (`RF-05-11`, `RF-05-13`, decisão do fundador de 2026-11-11)
 
 Enquanto a mídia da vez está sendo buscada, a moldura SHALL **dizer que está carregando** e
 NEVER SHALL apresentar a mídia de **outro** item nem o erro de outro item: alcançado um item
@@ -706,10 +711,22 @@ sequência, sob pena de a rede ruim virar beco sem saída. (decisão do fundador
 - **WHEN** o Guerreiro(a) abre o desafio de desbloqueio de uma pergunta que tem imagem
 - **THEN** a imagem aparece na mesma moldura de tamanho fixo que o conteúdo da missão usa
 
+#### Scenario: Tocar na imagem a abre em tela cheia
+
+- **WHEN** o Guerreiro(a) toca numa imagem do conteúdo da missão ou da pergunta do desbloqueio
+- **THEN** a imagem abre inteira, sem corte, no maior tamanho que a tela comporta
+
+#### Scenario: A imagem ampliada fecha e devolve o foco
+
+- **WHEN** a imagem está ampliada e o Guerreiro(a) aciona "Fechar", tecla `Esc` ou toca fora
+  dela
+- **THEN** a imagem ampliada fecha, o foco volta à imagem na moldura e o item da sequência é o
+  mesmo
+
 #### Scenario: A moldura não amplia ao ser tocada
 
-- **WHEN** o Guerreiro(a) toca numa imagem ou num vídeo exibidos em moldura fixa
-- **THEN** nada se amplia; a mídia permanece no mesmo tamanho
+- **WHEN** o Guerreiro(a) toca num vídeo exibido em moldura fixa
+- **THEN** a moldura não amplia o vídeo; só os controles nativos dele respondem
 
 #### Scenario: A moldura diz que está carregando
 

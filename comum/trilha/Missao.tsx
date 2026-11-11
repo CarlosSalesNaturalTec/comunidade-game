@@ -97,6 +97,7 @@ function ConteudoDaMissao({
         }
         textoDeErro="Esse arquivo não abriu agora. Tente de novo em instantes."
         aoMudarCarregamento={aoMudarCarregamento}
+        ampliavel
       />
     );
   }

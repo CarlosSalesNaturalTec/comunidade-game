@@ -21,7 +21,8 @@
     "./fala": "./fala/indice.ts",
     "./narracao": "./narracao/indice.ts",
     "./trilha": "./trilha/indice.ts",
-    "./trilha/api": "./trilha/api.ts"
+    "./trilha/api": "./trilha/api.ts",
+    "./testes/polyfill-do-dialogo": "./testes/polyfillDoDialogo.ts"
   },
   "files": [
     "tokens.css",
