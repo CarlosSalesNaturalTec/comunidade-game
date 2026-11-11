@@ -951,6 +951,7 @@ def criar_missao(sessao):
         desafio_pratico_forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None,
         desafio_pratico_criterio_de_aceite: str | None = None,
         desafio_pratico_titulo_curto: str | None = None,
+        materiais: list[str] | None = None,
     ) -> Missao:
         missao = Missao(
             trilha_id=trilha.id,
@@ -964,6 +965,7 @@ def criar_missao(sessao):
             desafio_pratico_forma_de_comprovacao=desafio_pratico_forma_de_comprovacao,
             desafio_pratico_criterio_de_aceite=desafio_pratico_criterio_de_aceite,
             desafio_pratico_titulo_curto=desafio_pratico_titulo_curto,
+            materiais=materiais or [],
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )

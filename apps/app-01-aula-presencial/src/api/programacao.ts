@@ -41,6 +41,9 @@ export interface ItemDaProgramacao {
   atividade: AtividadeDoEncontro;
   missao_id: string;
   missao_titulo: string;
+  // Os materiais que a aula da missão pede, como o Mestre autor os declarou;
+  // lista vazia é missão sem materiais (`RF-04-79`).
+  missao_materiais: string[];
   trilha_id: string;
   trilha_titulo: string;
   conteudos: ConteudoDaMissao[];

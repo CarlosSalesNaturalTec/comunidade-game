@@ -149,15 +149,16 @@ apenas consome conteúdo não é missão.
 
 Toda missão declara:
 
-| Elemento                    | Regra                                                                                      |
-| --------------------------- | ------------------------------------------------------------------------------------------ |
-| **Obrigatória ou opcional** | Declarado pelo Mestre. Só as obrigatórias contam no percurso do nível (§6)                 |
-| **Conteúdo**                | O que se ensina, com a bibliografia de apoio                                               |
-| **Ao menos uma atividade**  | E toda atividade exige **produção** do Guerreiro(a): escrever, falar ou construir          |
-| **Desafio de desbloqueio**  | Quiz ou desafio prático que abre a missão seguinte — fato do Guerreiro(a) na trilha        |
-| **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                                    |
-| **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto                        |
-| **Etiqueta ODS**            | Opcional em qualquer ciclo; só quando a missão toca objetivo diferente do da trilha (§2.1) |
+| Elemento                    | Regra                                                                                                |
+| --------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Obrigatória ou opcional** | Declarado pelo Mestre. Só as obrigatórias contam no percurso do nível (§6)                           |
+| **Conteúdo**                | O que se ensina, com a bibliografia de apoio                                                         |
+| **Ao menos uma atividade**  | E toda atividade exige **produção** do Guerreiro(a): escrever, falar ou construir                    |
+| **Desafio de desbloqueio**  | Quiz ou desafio prático que abre a missão seguinte — fato do Guerreiro(a) na trilha                  |
+| **Retomada**                | Cadência da revisão espaçada, quando o Mestre a declara                                              |
+| **Recompensa**              | Quando o Mestre declara que aquele desbloqueio libera algo concreto                                  |
+| **Etiqueta ODS**            | Opcional em qualquer ciclo; só quando a missão toca objetivo diferente do da trilha (§2.1)           |
+| **Materiais**               | O que a aula da missão pede (cola, jumpers, papel), só pelo nome; opcional e sem travar a publicação |
 
 Seis regras fecham o modelo:
 

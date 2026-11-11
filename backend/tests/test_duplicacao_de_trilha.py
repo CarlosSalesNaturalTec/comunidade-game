@@ -20,7 +20,9 @@ def _montar_trilha_com_missao_e_atividade(
     autor = criar_persona(Papel.mestre)
     poder = criar_poder(autor)
     trilha = criar_trilha(autor, poder=poder, situacao=SituacaoDaTrilha.publicada)
-    missao = criar_missao(trilha, autor, posicao=1, cadencia_de_retomada=[2, 7, 21])
+    missao = criar_missao(
+        trilha, autor, posicao=1, cadencia_de_retomada=[2, 7, 21], materiais=["papel", "cola"]
+    )
     criar_atividade(missao, autor, titulo="Atividade original")
     return autor, trilha, missao
 
@@ -46,6 +48,7 @@ def test_mestre_duplica_trilha_publicada_de_outro_autor(
     missao_copiada = missoes_da_copia[0]
     assert missao_copiada.titulo == missao.titulo
     assert missao_copiada.cadencia_de_retomada == [2, 7, 21]
+    assert missao_copiada.materiais == ["papel", "cola"]
 
     atividades_da_copia = sessao.query(Atividade).filter_by(missao_id=missao_copiada.id).all()
     assert len(atividades_da_copia) == 1

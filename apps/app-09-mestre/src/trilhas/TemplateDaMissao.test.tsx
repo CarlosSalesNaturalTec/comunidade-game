@@ -53,6 +53,7 @@ function missao(sobrescreve: Partial<MissaoDaTrilha> = {}): MissaoDaTrilha {
     e_sondagem: false,
     etapa_do_ciclo: "abertura",
     cadencia_de_retomada: null,
+    materiais: [],
     atividades: [],
     etiquetas_ods: [],
     ...sobrescreve,

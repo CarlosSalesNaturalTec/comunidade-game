@@ -106,6 +106,7 @@ const TRILHA_COM_DESAFIO: TrilhaDoMestre = {
       e_sondagem: false,
       etapa_do_ciclo: "abertura",
       cadencia_de_retomada: null,
+      materiais: [],
       atividades: [],
       etiquetas_ods: [],
       desafios_de_coleta: [

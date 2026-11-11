@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao } from "comum/autenticacao";
@@ -67,6 +67,7 @@ function item(sobrescreve: Partial<ItemDaProgramacao> = {}): ItemDaProgramacao {
     },
     missao_id: "missao-1",
     missao_titulo: "Primeira missão",
+    missao_materiais: [],
     trilha_id: "trilha-1",
     trilha_titulo: "Trilha Um",
     conteudos: [
@@ -225,6 +226,42 @@ describe("programação do encontro (RF-04-35, RF-02-42)", () => {
     );
 
     expect(await screen.findByText(/ainda não tem atividade declarada/i)).toBeInTheDocument();
+  });
+
+  it("a missão mostra os materiais para a aula (RF-04-79)", async () => {
+    vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([
+      item({ missao_materiais: ["cola", "papel"] }),
+    ]);
+    vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
+      equipe_id: "equipe-1",
+      atividade_corrente_id: "atividade-1",
+    });
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    const lista = await screen.findByRole("list", { name: "Materiais para a aula" });
+    expect(
+      within(lista)
+        .getAllByRole("listitem")
+        .map((li) => li.textContent),
+    ).toEqual(["cola", "papel"]);
+  });
+
+  it("missão sem materiais não mostra o rótulo (RF-04-79)", async () => {
+    vi.spyOn(programacaoApi, "obterProgramacaoDoEncontro").mockResolvedValue([item()]);
+    vi.spyOn(programacaoApi, "declararEscolhaDaEquipe").mockResolvedValue({
+      equipe_id: "equipe-1",
+      atividade_corrente_id: "atividade-1",
+    });
+
+    render(
+      <TelaDaProgramacao equipeId="equipe-1" token="token-guerreiro" aoVoltar={vi.fn()} />,
+    );
+
+    expect(await screen.findByText("Primeira missão")).toBeInTheDocument();
+    expect(screen.queryByText("Materiais para a aula")).not.toBeInTheDocument();
   });
 
   it("o conteúdo de terceiro sai com a fonte", async () => {

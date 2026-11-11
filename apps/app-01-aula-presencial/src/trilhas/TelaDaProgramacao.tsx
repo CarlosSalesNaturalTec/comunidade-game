@@ -172,6 +172,20 @@ export function TelaDaProgramacao({
         <section aria-label="Missão do dia">
           <h2>{item.missao_titulo}</h2>
 
+          {/* Os materiais da aula, só para ler: nada se grava nem se envia
+           * (`RF-04-79`). Missão sem materiais não mostra o rótulo. */}
+          {item.missao_materiais?.length > 0 && (
+            <>
+              <h3>Materiais para a aula</h3>
+              <ul aria-label="Materiais para a aula">
+                {item.missao_materiais.map((material, indice) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: nomes podem se repetir
+                  <li key={`${indice}-${material}`}>{material}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
           <h3>Conteúdo</h3>
           {/* Um conteúdo por vez: a equipe de crianças lê o que está à
            * frente, não a pilha inteira (`RF-04-35`, documento 15 §6.4). A
