@@ -686,9 +686,9 @@ para o apoio escolar.
 
 Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
 recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
-recebido" do documento 09). Nesta aplicação
-ela entra pelo registro feito em casa e pelo acompanhamento dele (`RF-05-102`, `RF-05-103`);
-o julgamento é presencial, no aparelho do encontro (PRD-04).
+recebido" do documento 09). Nesta aplicação ela entra pelo registro feito em casa e pelo
+acompanhamento dele (`RF-05-102`, `RF-05-103`); o julgamento é presencial, no aparelho do
+encontro (PRD-04).
 
 ## 14. Pendências que permanecem
 

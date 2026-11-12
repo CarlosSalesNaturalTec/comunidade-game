@@ -224,6 +224,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-84` | Núcleo guarda o registro de customização do kit recebido — mídia só do kit e descrição — e só o aceita para kit cujo prático declarante foi aprovado                                                                     | essencial  |
 | `RF-01-85` | Núcleo credita 1 ponto extra, e nenhum regular, na customização aprovada pelo Mestre da aula, e leva o registro ao acervo na trilha em que o kit foi recebido                                                            | essencial  |
 | `RF-01-86` | Núcleo expira no fim do ciclo o registro de customização não julgado, e aceita o cancelamento pelo próprio Guerreiro(a) antes disso                                                                                      | essencial  |
+| `RF-01-87` | Núcleo credita 1 ponto extra, e nenhum regular, por bem recebido cuja conservação o Mestre da aula validou, uma vez por item e por encontro                                                                              | essencial  |
 | `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                                                 | essencial  |
 | `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                                                   | essencial  |
 | `RF-01-40` | Núcleo mantém a etiqueta ODS da trilha — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                                             | essencial  |
@@ -652,9 +653,10 @@ e o dos desafios de desbloqueio de cada trilha.
 
 Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
 recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
-recebido" do documento 09). No núcleo ela
-entra pela guarda do registro, pelo crédito e pela expiração (`RF-01-84` a `RF-01-86`) e pela
-exclusão entre conservação e customização no mesmo encontro (`RN-01-66`).
+recebido" do documento 09). No núcleo ela entra pela guarda do registro, pelo crédito e pela
+expiração (`RF-01-84` a `RF-01-86`), pelo crédito da conservação do bem recebido, que ainda
+não existia no núcleo (`RF-01-87`), e pela exclusão entre as duas no mesmo encontro
+(`RN-01-66`).
 
 ## 14. Pendências que permanecem
 
@@ -716,3 +718,4 @@ antes no documento 09.
 | `RF-01-67` e `RF-01-68`                         | 03 §1.1 (credencial do sensor)                                 |
 | `RN-01-53`                                      | 03 §1.1 (credencial como registro do aparelho)                 |
 | `RF-01-84` a `RF-01-86` e `RN-01-66`            | 11 §5 e 02 §4 (customização do kit recebido)                   |
+| `RF-01-87`                                      | 11 §5 (conservação do bem recebido)                            |

@@ -623,9 +623,8 @@ entidade e não como contrato.
 
 Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
 recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
-recebido" do documento 09). Na vitrine
-ela entra como terceira fonte do acervo (`RF-03-88`), sob o mesmo portão de aprovação e
-autorização do responsável.
+recebido" do documento 09). Na vitrine ela entra como terceira fonte do acervo (`RF-03-88`),
+sob o mesmo portão de aprovação e autorização do responsável.
 
 ## 14. Pendências que permanecem
 

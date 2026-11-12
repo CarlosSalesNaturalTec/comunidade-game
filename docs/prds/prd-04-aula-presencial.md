@@ -339,7 +339,7 @@ dentro da mesma sessão de trabalho do aparelho.
    ausente — é apresentada **como ela vem**, em linguagem simples.
 7. Encontro **sem pendência alguma** diz que não há, e não apresenta erro.
 
-### 5.13 Julgar a customização do kit recebido, no encontro
+### 5.13 Validar a conservação e julgar a customização, no encontro
 
 1. A criança que customizou um kit recebido registra foto ou vídeo **só do kit, sem rosto**, e
    a descrição por voz ou texto — em casa, na App 05, ou no próprio percurso, no aparelho.
@@ -348,7 +348,10 @@ dentro da mesma sessão de trabalho do aparelho.
 3. O Mestre da aula põe o kit ao lado do registro novo e do último aprovado do mesmo kit; sem
    registro, captura ali, com a descrição dita ou escrita pela criança.
 4. Aprovada, rende 1 ponto extra e entra no acervo; reprovada, volta com o motivo e pode ser
-   reenviada. O item que já pontuou pela conservação no encontro não pontua de novo.
+   reenviada.
+5. Na mesma fila, a pedido da criança, o Mestre valida a **conservação** de cada bem recebido
+   — livro, camisa, kit —, 1 ponto extra por item. Para o kit, escolhe por item conservação ou
+   customização: no mesmo encontro, o item pontua por uma só.
 
 ## 6. Requisitos funcionais
 
@@ -396,45 +399,46 @@ dentro da mesma sessão de trabalho do aparelho.
 
 ### 6.2 Trilhas e equipes
 
-| ID         | Requisito                                                                                                                                                                                                                     | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-04-29` | Caminho das equipes abre sessão do Guerreiro(a) por nick e imagem                                                                                                                                                             | essencial  |
-| `RF-04-68` | Caminhos das equipes, do quiz e da troca só abrem para quem tem presença registrada no encontro, e o núcleo recusa equipe da aula sem ela                                                                                     | essencial  |
-| `RF-04-30` | Guerreiro(a) cria equipe da aula, entra em equipe existente e sai dela, sem aprovação de terceiro                                                                                                                             | essencial  |
-| `RF-04-31` | Aplicação recusa o sexto integrante e o segundo familiar de 17 anos ou mais                                                                                                                                                   | essencial  |
-| `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                                                                                                                                | essencial  |
-| `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                                                                                                                                     | essencial  |
-| `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                                                                                                                                 | essencial  |
-| `RF-04-34` | Tela mostra as equipes da aula pelo nome e pelo avatar e nick dos integrantes, sem qualquer dado pessoal                                                                                                                      | essencial  |
-| `RF-04-69` | Equipe nasce com nome obrigatório, de até 20 caracteres e único na aula — ou na trilha                                                                                                                                        | essencial  |
-| `RF-04-70` | Qualquer integrante renomeia a equipe, com a mesma regra do nome, enquanto a composição puder mudar                                                                                                                           | essencial  |
-| `RF-04-61` | Guerreiro(a) forma a equipe da trilha no aparelho, com os mesmos limites de composição da aula                                                                                                                                | essencial  |
-| `RF-04-62` | Mestre presente homologa a equipe da trilha, e a composição fica fixa a partir da homologação                                                                                                                                 | essencial  |
-| `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                                                                                                                                    | essencial  |
-| `RF-04-46` | Aplicação devolve retorno construtivo e descarta foto e áudio na leitura                                                                                                                                                      | essencial  |
-| `RF-04-47` | Devolutiva automática não credita pontos; o resultado é lançado pelo Mestre                                                                                                                                                   | essencial  |
-| `RF-04-35` | Aplicação mostra à equipe a missão em que está, o conteúdo e a atividade do dia                                                                                                                                               | essencial  |
-| `RF-04-36` | Assistente de trilhas responde por voz ou texto, apenas a partir do corpus cadastrado pelos Mestres                                                                                                                           | essencial  |
-| `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro                                                                                                                             | essencial  |
-| `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                                                                                                                                    | essencial  |
-| `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala — salvo a janela da sondagem do `RF-04-77`; não há captação do áudio ambiente                                                                                  | essencial  |
-| `RF-04-40` | Áudio da pergunta não chega ao núcleo: a fala é transcrita no aparelho e só a transcrição trafega                                                                                                                             | essencial  |
-| `RF-04-41` | Aparelho da equipe disputante recebe a pergunta da partida simultaneamente aos demais                                                                                                                                         | essencial  |
-| `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                                                                                                                                    | essencial  |
-| `RF-04-43` | Aparelho envia uma única resposta por pergunta, válida para todos os integrantes, e recusa a segunda                                                                                                                          | essencial  |
-| `RF-04-44` | Resultado da pergunta aparece para a equipe quando quem conduz a partida o libera                                                                                                                                             | essencial  |
-| `RF-04-58` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis                                                                                                                 | essencial  |
-| `RF-04-72` | Guerreiro(a) alcança o próprio percurso — trilhas inscritas, missão em que está, a seguinte trancada com o motivo — e as atividades das equipes dele na aula                                                                  | essencial  |
-| `RF-04-73` | Guerreiro(a) responde à missão de sondagem, que abre a trilha, e submete o desafio de desbloqueio da missão no aparelho do encontro                                                                                           | essencial  |
-| `RF-04-74` | Guerreiro(a) escolhe o poder no catálogo do ciclo e inscreve-se na trilha pelo aparelho do encontro, sem teto de quantas e sem desinscrição                                                                                   | essencial  |
-| `RF-04-76` | Guerreiro(a) entrega a comprovação do desafio prático pelo aparelho do encontro, com o critério de aceite e o aviso da mídia guardada, sem divergir da App 05                                                                 | essencial  |
-| `RF-04-77` | Com o áudio ligado, a sondagem no aparelho do encontro é respondida por voz como na App 05 (`RF-05-97`, `RF-05-98`), sem divergir dela                                                                                        | essencial  |
-| `RF-04-78` | A sondagem no aparelho do encontro tem o retorno por pergunta, a tela final e o refazer da App 05 (`RF-05-99` a `RF-05-101`), sem divergir dela                                                                               | essencial  |
-| `RF-04-79` | A programação do encontro mostra, junto da missão, os materiais que o Mestre autor declarou para a aula (`RF-09-140`)                                                                                                         | essencial  |
-| `RF-04-80` | Guerreiro(a) registra, no próprio percurso do aparelho do encontro, a customização de kit recebido — foto ou vídeo só do kit e descrição por voz ou texto — e cancela o registro pendente, sem divergir da App 05             | essencial  |
-| `RF-04-81` | Com a sessão de trabalho aberta por Mestre, o aparelho oferece as customizações a julgar do encontro — só de quem tem presença registrada —, com o registro novo, a descrição e o último registro aprovado do kit lado a lado | essencial  |
-| `RF-04-82` | O Mestre da aula aprova ou reprova a customização com motivo em linguagem simples; sem registro prévio, captura ali a foto ou o vídeo do kit, com a descrição da criança                                                      | essencial  |
-| `RF-04-83` | Aprovada a customização, o aparelho confirma o ponto extra e a entrada no acervo; recusa do núcleo — item já pontuado no encontro, kit sem prático aprovado — aparece como vem                                                | essencial  |
+| ID         | Requisito                                                                                                                                                                                                                           | Prioridade |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-04-29` | Caminho das equipes abre sessão do Guerreiro(a) por nick e imagem                                                                                                                                                                   | essencial  |
+| `RF-04-68` | Caminhos das equipes, do quiz e da troca só abrem para quem tem presença registrada no encontro, e o núcleo recusa equipe da aula sem ela                                                                                           | essencial  |
+| `RF-04-30` | Guerreiro(a) cria equipe da aula, entra em equipe existente e sai dela, sem aprovação de terceiro                                                                                                                                   | essencial  |
+| `RF-04-31` | Aplicação recusa o sexto integrante e o segundo familiar de 17 anos ou mais                                                                                                                                                         | essencial  |
+| `RF-04-32` | Equipe é vinculada à aula em andamento e se encerra com ela, preservando o histórico realizado                                                                                                                                      | essencial  |
+| `RF-04-33` | Guerreiro(a) integra mais de uma equipe no mesmo encontro                                                                                                                                                                           | essencial  |
+| `RF-04-59` | Cada integrante declara o seu papel na formação da equipe, e ele vale para o encontro inteiro                                                                                                                                       | essencial  |
+| `RF-04-34` | Tela mostra as equipes da aula pelo nome e pelo avatar e nick dos integrantes, sem qualquer dado pessoal                                                                                                                            | essencial  |
+| `RF-04-69` | Equipe nasce com nome obrigatório, de até 20 caracteres e único na aula — ou na trilha                                                                                                                                              | essencial  |
+| `RF-04-70` | Qualquer integrante renomeia a equipe, com a mesma regra do nome, enquanto a composição puder mudar                                                                                                                                 | essencial  |
+| `RF-04-61` | Guerreiro(a) forma a equipe da trilha no aparelho, com os mesmos limites de composição da aula                                                                                                                                      | essencial  |
+| `RF-04-62` | Mestre presente homologa a equipe da trilha, e a composição fica fixa a partir da homologação                                                                                                                                       | essencial  |
+| `RF-04-45` | Equipe entrega a produção da missão por texto, áudio ou foto do manuscrito                                                                                                                                                          | essencial  |
+| `RF-04-46` | Aplicação devolve retorno construtivo e descarta foto e áudio na leitura                                                                                                                                                            | essencial  |
+| `RF-04-47` | Devolutiva automática não credita pontos; o resultado é lançado pelo Mestre                                                                                                                                                         | essencial  |
+| `RF-04-35` | Aplicação mostra à equipe a missão em que está, o conteúdo e a atividade do dia                                                                                                                                                     | essencial  |
+| `RF-04-36` | Assistente de trilhas responde por voz ou texto, apenas a partir do corpus cadastrado pelos Mestres                                                                                                                                 | essencial  |
+| `RF-04-37` | Pergunta fora do corpus recebe recusa explicada, com orientação de procurar um Mestre no encontro                                                                                                                                   | essencial  |
+| `RF-04-38` | Pergunta de tarefa escolar é encaminhada à App 05, sem ser respondida aqui                                                                                                                                                          | essencial  |
+| `RF-04-39` | Microfone abre por ação do Guerreiro(a) e fecha ao fim da fala — salvo a janela da sondagem do `RF-04-77`; não há captação do áudio ambiente                                                                                        | essencial  |
+| `RF-04-40` | Áudio da pergunta não chega ao núcleo: a fala é transcrita no aparelho e só a transcrição trafega                                                                                                                                   | essencial  |
+| `RF-04-41` | Aparelho da equipe disputante recebe a pergunta da partida simultaneamente aos demais                                                                                                                                               | essencial  |
+| `RF-04-42` | Na partida, o Guerreiro(a) joga por uma única equipe, ainda que integre outras no encontro                                                                                                                                          | essencial  |
+| `RF-04-43` | Aparelho envia uma única resposta por pergunta, válida para todos os integrantes, e recusa a segunda                                                                                                                                | essencial  |
+| `RF-04-44` | Resultado da pergunta aparece para a equipe quando quem conduz a partida o libera                                                                                                                                                   | essencial  |
+| `RF-04-58` | Sem rede, o conteúdo já carregado continua legível; equipe, assistente e resposta de quiz ficam indisponíveis                                                                                                                       | essencial  |
+| `RF-04-72` | Guerreiro(a) alcança o próprio percurso — trilhas inscritas, missão em que está, a seguinte trancada com o motivo — e as atividades das equipes dele na aula                                                                        | essencial  |
+| `RF-04-73` | Guerreiro(a) responde à missão de sondagem, que abre a trilha, e submete o desafio de desbloqueio da missão no aparelho do encontro                                                                                                 | essencial  |
+| `RF-04-74` | Guerreiro(a) escolhe o poder no catálogo do ciclo e inscreve-se na trilha pelo aparelho do encontro, sem teto de quantas e sem desinscrição                                                                                         | essencial  |
+| `RF-04-76` | Guerreiro(a) entrega a comprovação do desafio prático pelo aparelho do encontro, com o critério de aceite e o aviso da mídia guardada, sem divergir da App 05                                                                       | essencial  |
+| `RF-04-77` | Com o áudio ligado, a sondagem no aparelho do encontro é respondida por voz como na App 05 (`RF-05-97`, `RF-05-98`), sem divergir dela                                                                                              | essencial  |
+| `RF-04-78` | A sondagem no aparelho do encontro tem o retorno por pergunta, a tela final e o refazer da App 05 (`RF-05-99` a `RF-05-101`), sem divergir dela                                                                                     | essencial  |
+| `RF-04-79` | A programação do encontro mostra, junto da missão, os materiais que o Mestre autor declarou para a aula (`RF-09-140`)                                                                                                               | essencial  |
+| `RF-04-80` | Guerreiro(a) registra, no próprio percurso do aparelho do encontro, a customização de kit recebido — foto ou vídeo só do kit e descrição por voz ou texto — e cancela o registro pendente, sem divergir da App 05                   | essencial  |
+| `RF-04-81` | Com a sessão de trabalho aberta por Mestre, o aparelho oferece as customizações a julgar do encontro — só de quem tem presença registrada —, com o registro novo, a descrição e o último registro aprovado do kit lado a lado       | essencial  |
+| `RF-04-82` | O Mestre da aula aprova ou reprova a customização com motivo em linguagem simples; sem registro prévio, captura ali a foto ou o vídeo do kit, com a descrição da criança                                                            | essencial  |
+| `RF-04-83` | Aprovada a customização, o aparelho confirma o ponto extra e a entrada no acervo; recusa do núcleo — item já pontuado no encontro, kit sem prático aprovado — aparece como vem                                                      | essencial  |
+| `RF-04-84` | Na mesma fila, o Mestre da aula valida, a pedido do Guerreiro(a), a conservação de cada bem recebido — 1 ponto extra por item, uma vez por encontro (`RF-09-113`) —, escolhendo por item conservação ou customização, nunca as duas | essencial  |
 
 ### 6.3 Troca por recompensa avulsa
 
@@ -873,10 +877,12 @@ Três recortes acompanham as decisões, e ficam registrados para não voltarem �
 
 Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
 recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
-recebido" do documento 09). Nesta aplicação
-ela entra pelo registro no percurso da criança (`RF-04-80`) e pela fila do Mestre da aula
-(`RF-04-81` a `RF-04-83`), no molde da entrega da recompensa de marco: o julgamento compara o
-kit real com o registro, e por isso é sempre presencial — a App 09 não tem essa fila.
+recebido" do documento 09). Nesta aplicação ela entra pelo registro no percurso da criança
+(`RF-04-80`) e pela fila do Mestre da aula (`RF-04-81` a `RF-04-83`), no molde da entrega da
+recompensa de marco: o julgamento compara o kit real com o registro, e por isso é sempre
+presencial — a App 09 não tem essa fila. Na mesma decisão, a validação da conservação do bem
+recebido (`RF-09-113`) passa da App 09 para essa fila (`RF-04-84`): o Mestre escolhe ali, por
+item, conservação ou customização.
 
 ## 14. Pendências que permanecem
 
@@ -948,3 +954,4 @@ janela da aula agendada; e a **forma do aviso** da exclusão do _template_, que 
 | `RF-04-72` e `RF-04-73` | 03 §3 (percurso, sondagem e desbloqueio no encontro)               |
 | `RF-04-74`              | 03 §3 e 11 §2 (inscrição na trilha no encontro)                    |
 | `RF-04-80` a `RF-04-83` | 11 §5 e 02 §4 (customização do kit recebido)                       |
+| `RF-04-84`              | 11 §5 (conservação do bem recebido), servindo o `RF-09-113`        |
