@@ -313,7 +313,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-63` | A recusa da mídia pública é 404 e indistinguível entre a criação inexistente e a que não passa no portão                                                                                                        | —          | 03 §10      |
 | `RN-01-64` | O estorno da presença anulada tira o valor do acumulado e do saldo disponível, que para em zero; a anulação nunca é recusada por falta de saldo                                                                 | 23         | 11 §5       |
 | `RN-01-65` | Presença gravada antes de 2026-11-06 não credita nem estorna: não há crédito retroativo                                                                                                                         | —          | 11 §5       |
-| `RN-01-66` | O mesmo item pontua uma vez por encontro, pela conservação ou pela customização, nunca pelas duas; o robô montado é um item só                                                                                  | —          | 11 §5       |
+| `RN-01-66` | O mesmo bem recebido — a recompensa de marco entregue — pontua uma vez por encontro, pela conservação ou pela customização, nunca pelas duas; tratar o robô montado como um item é escolha do Mestre da aula    | —          | 11 §5       |
 
 ## 8. Modelo de dados
 

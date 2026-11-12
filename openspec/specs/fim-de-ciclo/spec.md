@@ -16,7 +16,7 @@ documentos 02 §1 e 09)
 #### Scenario: O Admin encerra o ciclo
 
 - **WHEN** um Admin executa o ato de encerramento do ciclo corrente
-- **THEN** o núcleo dispara os dois efeitos do encerramento e responde com o resultado deles
+- **THEN** o núcleo dispara os efeitos do encerramento e responde com o resultado de cada um
 
 #### Scenario: O ato não declara o ciclo seguinte
 
@@ -52,3 +52,20 @@ do ato, e nada do que já está publicado SHALL mudar por causa dele. (`RN-02-30
 - **WHEN** o encerramento do ciclo é executado
 - **THEN** nenhum valor de indicador é gravado, e nenhuma leitura pública passa a servir valor
   congelado
+
+### Requirement: O encerramento expira os registros de customização pendentes
+
+O encerramento do ciclo SHALL passar a **expirado** todo registro de customização do kit ainda
+**pendente**, e responder **quantos** expirou. Registro aprovado, reprovado ou cancelado NEVER
+SHALL ser tocado, e nenhum ponto é creditado nem debitado. Encerrar de novo sem pendente novo
+não altera nada. (`RF-01-86`, `RF-05-103`, documento 11 §5)
+
+#### Scenario: O pendente expira no fim do ciclo
+
+- **WHEN** o Admin encerra o ciclo e há registro de customização pendente
+- **THEN** o registro passa a expirado, e a resposta diz quantos expiraram
+
+#### Scenario: O julgado não expira
+
+- **WHEN** o Admin encerra o ciclo e há registro de customização aprovado
+- **THEN** o registro segue aprovado, e o acervo não muda

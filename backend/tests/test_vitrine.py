@@ -2504,3 +2504,161 @@ def test_acervo_na_carta_nao_cresce_em_consultas_com_os_itens(
         criar_criacao_original(criar_trilha(mestre), guerreiro, guerreiro=guerreiro)
         comprovacao_aprovada(guerreiro)
     assert _contar() == antes
+
+
+# --- A terceira fonte do acervo: a customização do kit recebido ---
+# `RF-03-88`, decisão do fundador de 2026-11-12.
+
+
+def _customizacao(sessao, configuracao, cenario, *, situacao="aprovado", julgado_em=None):
+    from nucleo.armazenamento.fabrica import obter_porta_de_armazenamento
+    from nucleo.cuidado_do_bem.modelo import (
+        RegistroDeCustomizacao,
+        SituacaoDoRegistroDeCustomizacao,
+    )
+
+    registro = RegistroDeCustomizacao(
+        entrega_de_recompensa_id=cenario.entrega_do_kit.id,
+        guerreiro_id=cenario.guerreiro.id,
+        descricao="Robô pintado de azul com asas de EVA",
+        situacao=SituacaoDoRegistroDeCustomizacao(situacao),
+        midia_tipo_do_arquivo="image/png",
+        julgado_em=julgado_em or datetime.now(UTC),
+        aula_id=cenario.aula.id,
+        julgado_por_id=cenario.mestre.id,
+        autor_id=cenario.guerreiro.id,
+        papel_do_autor="guerreiro",
+    )
+    sessao.add(registro)
+    sessao.flush()
+    registro.midia_referencia = f"customizacoes/{registro.id}/midia"
+    obter_porta_de_armazenamento(configuracao).gravar(
+        referencia=registro.midia_referencia, conteudo=b"kit-azul"
+    )
+    sessao.commit()
+    return registro
+
+
+def _autorizar(cenario, criar_persona, criar_nick, criar_vinculo, criar_consentimento, nick):
+    criar_nick(cenario.guerreiro, nick)
+    admin = criar_persona(Papel.admin)
+    responsavel = criar_persona(Papel.responsavel, criada_por=admin)
+    criar_vinculo(responsavel, cenario.guerreiro, cadastrado_por=admin)
+    criar_consentimento(
+        responsavel, cenario.guerreiro, tipo=TIPO, decisao=DecisaoDeConsentimento.concede
+    )
+
+
+def test_customizacao_aprovada_aparece_no_acervo(
+    cliente,
+    sessao,
+    configuracao,
+    cenario,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+):
+    _autorizar(cenario, criar_persona, criar_nick, criar_vinculo, criar_consentimento, "pintora")
+    registro = _customizacao(sessao, configuracao, cenario)
+
+    chave = cenario.chave
+    (item,) = _acervo(cliente, chave)["itens"]
+
+    assert item["id"] == str(registro.id)
+    assert item["fonte"] == "customizacao_do_kit"
+    assert item["titulo"] == "Robô pintado de azul com asas de EVA"
+    assert item["trilha"] == cenario.trilha.nome
+    assert item["tipo"] == "imagem"
+    assert item["producao"] is None
+    assert [autor["nick"] for autor in item["autores"]] == ["pintora"]
+
+
+def test_as_tres_fontes_saem_na_mesma_lista_por_data(
+    cliente,
+    sessao,
+    configuracao,
+    cenario,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    comprovacao_aprovada,
+    criar_criacao_original,
+):
+    _autorizar(
+        cenario, criar_persona, criar_nick, criar_vinculo, criar_consentimento, "tres-fontes"
+    )
+    agora = datetime.now(UTC)
+    comprovacao = comprovacao_aprovada(cenario.guerreiro, julgado_em=agora - timedelta(days=2))
+    criacao = criar_criacao_original(
+        cenario.trilha, cenario.mestre, guerreiro=cenario.guerreiro, producao="Robô final."
+    )
+    criacao.situacao = SituacaoDaCriacaoOriginal.validada
+    criacao.validado_em = agora - timedelta(days=1)
+    sessao.commit()
+    customizacao = _customizacao(sessao, configuracao, cenario, julgado_em=agora)
+
+    chave = cenario.chave
+    itens = _acervo(cliente, chave)["itens"]
+
+    assert [(item["fonte"], item["id"]) for item in itens] == [
+        ("customizacao_do_kit", str(customizacao.id)),
+        ("criacao_original", str(criacao.id)),
+        ("comprovacao_do_pratico", str(comprovacao.id)),
+    ]
+
+
+@pytest.mark.parametrize("situacao", ["reprovado", "pendente"])
+def test_customizacao_nao_aprovada_nao_aparece(
+    cliente,
+    sessao,
+    configuracao,
+    cenario,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+    situacao,
+):
+    _autorizar(cenario, criar_persona, criar_nick, criar_vinculo, criar_consentimento, "fora")
+    registro = _customizacao(sessao, configuracao, cenario, situacao=situacao)
+
+    chave = cenario.chave
+
+    assert _acervo(cliente, chave)["itens"] == []
+    endereco = f"/v1/vitrine/customizacoes/{registro.id}/arquivo"
+    assert cliente.get(endereco, headers={"X-Chave-Aplicacao": chave}).status_code == 404
+
+
+def test_customizacao_de_quem_nao_autorizou_nao_aparece(cliente, sessao, configuracao, cenario):
+    registro = _customizacao(sessao, configuracao, cenario)
+
+    chave = cenario.chave
+
+    assert _acervo(cliente, chave)["itens"] == []
+    endereco = f"/v1/vitrine/customizacoes/{registro.id}/arquivo"
+    assert cliente.get(endereco, headers={"X-Chave-Aplicacao": chave}).status_code == 404
+
+
+def test_a_midia_da_customizacao_aprovada_e_servida_sem_sessao(
+    cliente,
+    sessao,
+    configuracao,
+    cenario,
+    criar_persona,
+    criar_nick,
+    criar_vinculo,
+    criar_consentimento,
+):
+    _autorizar(cenario, criar_persona, criar_nick, criar_vinculo, criar_consentimento, "midia")
+    registro = _customizacao(sessao, configuracao, cenario)
+
+    chave = cenario.chave
+    resposta = cliente.get(
+        f"/v1/vitrine/customizacoes/{registro.id}/arquivo", headers={"X-Chave-Aplicacao": chave}
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.content == b"kit-azul"
+    assert resposta.headers["content-type"] == "image/png"

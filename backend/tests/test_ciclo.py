@@ -47,7 +47,7 @@ def test_encerramento_expurga_motivo_preservando_valor_data_e_autor(
     )
     sessao.commit()
 
-    quantidade = encerrar_ciclo(sessao)
+    quantidade = encerrar_ciclo(sessao).ocorrencias_expurgadas
 
     assert quantidade == 1
     expurgada = sessao.get(OcorrenciaDeConduta, ocorrencia.id)
@@ -105,15 +105,15 @@ def test_encerrar_duas_vezes_seguidas_nao_altera_nada_na_segunda(
     _lancar(sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro)
     sessao.commit()
 
-    primeira = encerrar_ciclo(sessao)
-    segunda = encerrar_ciclo(sessao)
+    primeira = encerrar_ciclo(sessao).ocorrencias_expurgadas
+    segunda = encerrar_ciclo(sessao).ocorrencias_expurgadas
 
     assert primeira == 1
     assert segunda == 0
 
 
 def test_encerramento_sem_ocorrencia_nova_nao_tem_o_que_fazer(sessao):
-    assert encerrar_ciclo(sessao) == 0
+    assert encerrar_ciclo(sessao).ocorrencias_expurgadas == 0
 
 
 def test_admin_encerra_o_ciclo_pela_rota(
@@ -166,3 +166,44 @@ def test_quem_nao_e_admin_nao_encerra_o_ciclo(
     )
 
     assert resposta.status_code == PermissaoNegada.status_code
+
+
+# ---------------------------------------------------------------------------
+# O encerramento expira os registros de customização pendentes (`RF-01-86`).
+# ---------------------------------------------------------------------------
+
+
+def test_o_pendente_expira_e_o_julgado_fica(sessao, cenario):
+    from nucleo.cuidado_do_bem.modelo import (
+        RegistroDeCustomizacao,
+        SituacaoDoRegistroDeCustomizacao,
+    )
+    from nucleo.cuidado_do_bem.regra import registrar_customizacao
+
+    aprovado = registrar_customizacao(
+        sessao,
+        operador=cenario.guerreiro,
+        entrega_de_recompensa_id=cenario.entrega_do_kit.id,
+        descricao="Pintei de azul.",
+    )
+    aprovado.situacao = SituacaoDoRegistroDeCustomizacao.aprovado
+    sessao.flush()
+    pendente = registrar_customizacao(
+        sessao,
+        operador=cenario.guerreiro,
+        entrega_de_recompensa_id=cenario.entrega_do_kit.id,
+        descricao="Agora com rodas.",
+    )
+    sessao.commit()
+
+    resultado = encerrar_ciclo(sessao)
+
+    assert resultado.customizacoes_expiradas == 1
+    sessao.expire_all()
+    assert sessao.get(RegistroDeCustomizacao, pendente.id).situacao == (
+        SituacaoDoRegistroDeCustomizacao.expirado
+    )
+    assert sessao.get(RegistroDeCustomizacao, aprovado.id).situacao == (
+        SituacaoDoRegistroDeCustomizacao.aprovado
+    )
+    assert encerrar_ciclo(sessao).customizacoes_expiradas == 0

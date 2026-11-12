@@ -15,6 +15,7 @@ from ..configuracao import Configuracao, obter_configuracao
 from ..criacoes_originais.modelo import (
     CriacaoOriginal,
 )
+from ..cuidado_do_bem.modelo import RegistroDeCustomizacao
 from ..erros import ErroDeValidacao, NaoEncontrado
 from ..ods.regra import cobertura_por_comunidade, comunidades_com_cobertura
 from ..paginacao import (
@@ -40,6 +41,7 @@ from .publico import (
     buscar_persona_guerreiro_publica_por_nick,
     condicoes_de_comprovacao_publica,
     condicoes_de_criacao_publica,
+    condicoes_de_customizacao_publica,
     mestres_responsaveis_por_poder,
     montar_cartas_de_apoiador,
     montar_cartas_de_mestre,
@@ -319,6 +321,29 @@ def ler_arquivo_publico_da_comprovacao(
     )
 
 
+@roteador.get("/vitrine/customizacoes/{id_do_registro}/arquivo")
+def ler_arquivo_publico_da_customizacao(
+    id_do_registro: uuid.UUID,
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """Os bytes da customização do kit em público, sob o **mesmo** portão da
+    listagem — `condicoes_de_customizacao_publica` —, e 404 em toda recusa,
+    como a comprovação irmã (`RF-03-88`, `RN-03-41`)."""
+    registro = (
+        sessao_bd.query(RegistroDeCustomizacao)
+        .filter(RegistroDeCustomizacao.id == id_do_registro)
+        .filter(*condicoes_de_customizacao_publica(sessao_bd))
+        .first()
+    )
+    if registro is None or registro.midia_referencia is None:
+        raise NaoEncontrado(mensagem="Customização não encontrada.")
+    return Response(
+        content=armazenamento.ler(referencia=registro.midia_referencia),
+        media_type=registro.midia_tipo_do_arquivo or "application/octet-stream",
+    )
+
+
 def _posicao_do_acervo(cursor: str) -> tuple[datetime, uuid.UUID]:
     """A posição do keyset do acervo, `(data de aprovação, id)` descendente.
 
@@ -387,9 +412,24 @@ def listar_criacoes_publicas(
         .all()
     )
 
+    customizacoes_bd = sessao_bd.query(RegistroDeCustomizacao).filter(
+        *condicoes_de_customizacao_publica(sessao_bd)
+    )
+    if posicao is not None:
+        customizacoes_bd = customizacoes_bd.filter(
+            tuple_(RegistroDeCustomizacao.julgado_em, RegistroDeCustomizacao.id) < posicao
+        )
+    customizacoes = (
+        customizacoes_bd.order_by(
+            RegistroDeCustomizacao.julgado_em.desc(), RegistroDeCustomizacao.id.desc()
+        )
+        .limit(teto)
+        .all()
+    )
+
     acervo = [
         (item.validada_em, item.id, item)
-        for item, _ in montar_itens_do_acervo(sessao_bd, criacoes, comprovacoes)
+        for item, _ in montar_itens_do_acervo(sessao_bd, criacoes, comprovacoes, customizacoes)
     ]
 
     proximo_cursor = None

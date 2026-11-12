@@ -24,6 +24,8 @@ from ..pontuacao.regra import (
     creditar_pontuacao_do_desbloqueio_pratico,
     missoes_concluidas_pelo_guerreiro,
 )
+from ..recompensas_de_marco.modelo import RecompensaDeMarco
+from ..recursos.modelo import TipoDeRecurso
 from ..tempo import agora
 from .modelo import (
     LIMITE_DA_RESPOSTA_FALADA,
@@ -1030,6 +1032,7 @@ def declarar_desafio_de_desbloqueio(
     forma_de_comprovacao: str | None = None,
     criterio_de_aceite: str | None = None,
     titulo_curto: str | None = None,
+    kit_apresentado_id: uuid.UUID | None = None,
 ) -> Missao:
     """Só o Mestre autor da trilha declara — declarar de novo substitui o
     anterior, com as perguntas dele, como `declarar_cadencia_de_retomada` já
@@ -1041,6 +1044,10 @@ def declarar_desafio_de_desbloqueio(
     de aceite** e o **título curto** da vitrine (`RF-09-129` a `RF-09-131`,
     `RN-09-50`). Missão sem desafio segue publicável — esta declaração nunca é
     trava de publicação.
+
+    Desde 2026-11-12 o prático declara, opcional, o **kit que apresenta** — uma
+    recompensa de marco da mesma trilha; declarar de novo o substitui, e o quiz
+    nunca o tem (`RF-09-141`).
     """
     if missao is None:
         raise NaoEncontrado(mensagem="Missão não encontrada.")
@@ -1061,12 +1068,18 @@ def declarar_desafio_de_desbloqueio(
             criterio_de_aceite=criterio_de_aceite,
             titulo_curto=titulo_curto,
         )
+        if kit_apresentado_id is not None:
+            raise ErroDeValidacao(
+                mensagem="O quiz não declara o kit apresentado: o campo é só do prático.",
+                campo="kit_apresentado_id",
+            )
     else:
         if not enunciado or not enunciado.strip():
             raise ErroDeValidacao(mensagem="Desafio prático exige um enunciado.", campo="enunciado")
         forma_valida = _conferir_forma_de_comprovacao(forma_de_comprovacao)
         criterio_valido = _conferir_criterio_de_aceite(criterio_de_aceite)
         titulo_valido = _conferir_titulo_curto(titulo_curto)
+        kit_valido = _conferir_kit_apresentado(sessao, missao, kit_apresentado_id)
 
     vigentes = perguntas_do_desbloqueio(sessao, missao_id=missao.id)
     imagens = _conferir_imagens_declaradas(
@@ -1089,6 +1102,7 @@ def declarar_desafio_de_desbloqueio(
         missao.desafio_pratico_forma_de_comprovacao = None
         missao.desafio_pratico_criterio_de_aceite = None
         missao.desafio_pratico_titulo_curto = None
+        missao.desafio_pratico_kit_id = None
         for ordem, (pergunta, imagem) in enumerate(
             zip(perguntas_validas, imagens, strict=True), start=1
         ):
@@ -1112,9 +1126,48 @@ def declarar_desafio_de_desbloqueio(
         missao.desafio_pratico_forma_de_comprovacao = forma_valida
         missao.desafio_pratico_criterio_de_aceite = criterio_valido
         missao.desafio_pratico_titulo_curto = titulo_valido
+        missao.desafio_pratico_kit_id = kit_valido
 
     sessao.flush()
     return missao
+
+
+def _conferir_kit_apresentado(
+    sessao: Session, missao: Missao, kit_apresentado_id: uuid.UUID | None
+) -> uuid.UUID | None:
+    """O kit é opcional; declarado, precisa ser recompensa de marco da **mesma
+    trilha** da missão (`RF-09-141`)."""
+    if kit_apresentado_id is None:
+        return None
+    recompensa = sessao.get(RecompensaDeMarco, kit_apresentado_id)
+    if recompensa is None or recompensa.trilha_id != missao.trilha_id:
+        raise ErroDeValidacao(
+            mensagem="O kit apresentado precisa ser uma recompensa de marco desta trilha.",
+            campo="kit_apresentado_id",
+        )
+    return recompensa.id
+
+
+@dataclass
+class KitApresentado:
+    recompensa_de_marco_id: uuid.UUID
+    tipo_de_recurso_nome: str
+
+
+def kit_apresentado_da_missao(sessao: Session, missao: Missao) -> KitApresentado | None:
+    """O kit que o prático declarou, com o nome do tipo de recurso, para as
+    leituras que já servem os campos do prático (`RF-09-141`)."""
+    if missao.desafio_pratico_kit_id is None:
+        return None
+    linha = (
+        sessao.query(RecompensaDeMarco.id, TipoDeRecurso.nome)
+        .join(TipoDeRecurso, TipoDeRecurso.id == RecompensaDeMarco.tipo_de_recurso_id)
+        .filter(RecompensaDeMarco.id == missao.desafio_pratico_kit_id)
+        .first()
+    )
+    if linha is None:
+        return None
+    return KitApresentado(recompensa_de_marco_id=linha[0], tipo_de_recurso_nome=linha[1])
 
 
 # Os três campos do prático: a recusa é **por campo**, para que a tela do

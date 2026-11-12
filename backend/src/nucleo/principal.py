@@ -29,6 +29,7 @@ from .consentimentos.rotas import roteador as roteador_de_consentimentos
 from .conteudo_institucional.rotas import roteador as roteador_de_conteudo_institucional
 from .conteudos.rotas import roteador as roteador_de_conteudos
 from .criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
+from .cuidado_do_bem.rotas import roteador as roteador_do_cuidado_do_bem
 from .culminancias.rotas import roteador as roteador_de_culminancias
 from .desafios_extras.rotas import roteador as roteador_de_desafios_extras
 from .efetividade_do_apoio.rotas import roteador as roteador_de_efetividade_do_apoio
@@ -224,6 +225,7 @@ incluir_roteador_de_dados(app, roteador_de_catalogo_avulso)
 incluir_roteador_de_dados(app, roteador_de_trocas)
 incluir_roteador_de_dados(app, roteador_de_patrimonio)
 incluir_roteador_de_dados(app, roteador_de_recompensas_de_marco)
+incluir_roteador_de_dados(app, roteador_do_cuidado_do_bem)
 incluir_roteador_de_dados(app, roteador_de_trilhas)
 incluir_roteador_de_dados(app, roteador_de_atividades)
 incluir_roteador_de_dados(app, roteador_de_culminancias)
