@@ -476,7 +476,10 @@ prático de desbloqueio** pede comprovação do que o Guerreiro(a) produziu, e a
 aprovada entra no acervo junto da criação da culminância. Na área do próprio Guerreiro(a) o
 acervo exibe **tudo** que ele criou; em **vitrine pública** entra apenas o que o Mestre
 aprovou **e** tem autorização de divulgação do responsável. A produção das atividades da
-missão é guardada, mas não é item de acervo: ela não passa por aprovação.
+missão é guardada, mas não é item de acervo: ela não passa por aprovação. A terceira fonte é o
+**registro aprovado da customização do kit recebido** (documento 11 §5): quem o aprova é o
+**Mestre da aula**, não o autor da trilha, e ele entra na trilha em que o kit foi recebido, com
+a descrição da criança como título.
 
 ### Desafios extras propostos por Apoiadores e Mestres
 

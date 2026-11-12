@@ -270,6 +270,7 @@ eles.
 | `RF-03-85` | Cada linha abre a produção na própria linha — imagem, áudio, vídeo, texto, link externo ou arquivo                                                      | essencial  |
 | `RF-03-86` | A coluna de criações originais da carta lista o acervo público do Guerreiro(a), do mais recente ao mais antigo, com título e data                       | essencial  |
 | `RF-03-87` | A página do Guerreiro(a) mantém o portfólio abaixo da carta, com a linha do portfólio da vitrine, que abre a produção                                   | essencial  |
+| `RF-03-88` | Portfólio inclui o registro aprovado da customização do kit recebido, na trilha em que o kit foi recebido, com a descrição da criança como título       | essencial  |
 | `RF-03-09` | Ranking público exibe apenas pontos regulares e apenas quem tem divulgação autorizada                                                                   | essencial  |
 | `RF-03-10` | Aporte de Apoiador é exibido em moedas da plataforma, nunca em reais                                                                                    | essencial  |
 | `RF-03-11` | Busca por nick exato devolve a página pública; nick inexistente e nick sem autorização têm a mesma resposta                                             | essencial  |
@@ -618,6 +619,14 @@ para estudo de ciclo futuro, mantendo a edição do conteúdo institucional como
 PRD-02. O PRD-01 ganhou a rota pública da solicitação de participação, que existia como
 entidade e não como contrato.
 
+### Decisões de 2026-11-12
+
+Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
+recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
+recebido" do documento 09). Na vitrine
+ela entra como terceira fonte do acervo (`RF-03-88`), sob o mesmo portão de aprovação e
+autorização do responsável.
+
 ## 14. Pendências que permanecem
 
 Nenhuma.
@@ -662,3 +671,4 @@ IA apontando para ela.
 | `RF-03-67`                                       | 03 §8 (Área do Desenvolvedor e documentação da API)                       |
 | `RF-03-73` a `RF-03-77`                          | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
 | `RF-03-84` a `RF-03-87`, `RN-03-41` a `RN-03-43` | 11 §§2.2, 5, 8.2 (o acervo, os dois vereditos, a linha e a carta) e 02 §4 |
+| `RF-03-88`                                       | 02 §4 (terceira fonte do acervo) e 11 §5                                  |

@@ -289,14 +289,16 @@ com a fusão das aplicações e **não são reaproveitados**.
 
 ### 6.5 Criação original e portfólio
 
-| ID         | Requisito                                                                                     | Prioridade |
-| ---------- | --------------------------------------------------------------------------------------------- | ---------- |
-| `RF-05-39` | Culminância exibe o que a criação precisa ser e o critério de validação do Mestre autor       | essencial  |
-| `RF-05-40` | Guerreiro(a) entrega a criação original em texto, imagem, vídeo, arquivo ou link              | essencial  |
-| `RF-05-41` | Criação de equipe registra o papel de cada integrante na entrega                              | essencial  |
-| `RF-05-42` | Criação devolvida para ajuste preserva a autoria e exibe o motivo em linguagem simples        | essencial  |
-| `RF-05-43` | Portfólio reúne as criações validadas do Guerreiro(a), com trilha, data e autoria             | essencial  |
-| `RF-05-44` | Portfólio indica quais criações estão públicas e quais dependem de autorização do responsável | essencial  |
+| ID          | Requisito                                                                                                                                                                                                        | Prioridade |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-05-39`  | Culminância exibe o que a criação precisa ser e o critério de validação do Mestre autor                                                                                                                          | essencial  |
+| `RF-05-40`  | Guerreiro(a) entrega a criação original em texto, imagem, vídeo, arquivo ou link                                                                                                                                 | essencial  |
+| `RF-05-41`  | Criação de equipe registra o papel de cada integrante na entrega                                                                                                                                                 | essencial  |
+| `RF-05-42`  | Criação devolvida para ajuste preserva a autoria e exibe o motivo em linguagem simples                                                                                                                           | essencial  |
+| `RF-05-43`  | Portfólio reúne as criações validadas do Guerreiro(a), com trilha, data e autoria                                                                                                                                | essencial  |
+| `RF-05-44`  | Portfólio indica quais criações estão públicas e quais dependem de autorização do responsável                                                                                                                    | essencial  |
+| `RF-05-102` | Guerreiro(a) registra em casa a customização de kit recebido cuja customização está aberta — foto ou vídeo só do kit e descrição por voz ou texto —, avisado de que, aprovada, vai ao acervo e pode ir à vitrine | essencial  |
+| `RF-05-103` | Guerreiro(a) acompanha o registro — aguardando a aula, aprovado ou reprovado com motivo —, reenvia o reprovado e cancela o pendente, que expira no fim do ciclo                                                  | essencial  |
 
 ### 6.6 Recompensas, acervo e perfil
 
@@ -680,6 +682,14 @@ na App 03 (PRD-02). Com a fusão das aplicações, a `RespostaDeQuiz` passou ao 
 `ConsultaDeApoio` deu lugar à `ConsultaAoAssistente`, que o PRD-04 cria e esta aplicação usa
 para o apoio escolar.
 
+### Decisões de 2026-11-12
+
+Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
+recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
+recebido" do documento 09). Nesta aplicação
+ela entra pelo registro feito em casa e pelo acompanhamento dele (`RF-05-102`, `RF-05-103`);
+o julgamento é presencial, no aparelho do encontro (PRD-04).
+
 ## 14. Pendências que permanecem
 
 - **Catálogo de qual marco entrega qual recompensa** no Ciclo 01: a regra está decidida, o
@@ -727,3 +737,4 @@ coletores distintos no recorte publicado (documento 02 §1).
 | `RF-05-91` a `RF-05-94`                          | 02 §4 (as seis formas de entrega) e 11 §§2.2, 8.2 (o acervo que cresce na trilha)                                                   |
 | `RN-05-51`                                       | 02 §4 e 03 §12 (aviso visível e alternativa a quem recusa), descendo do `RF-05-78`                                                  |
 | `RN-05-52`                                       | 11 §2.2 (nada aqui é reprovação persistida — o que fica é a devolutiva do Mestre, não contagem de fracasso), descendo do `RN-05-20` |
+| `RF-05-102` e `RF-05-103`                        | 11 §5 e 02 §4 (customização do kit recebido)                                                                                        |

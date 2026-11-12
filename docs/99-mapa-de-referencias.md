@@ -152,6 +152,7 @@ doc 15**.
 | Técnicas de gamificação admitidas e vedadas no apoio                       | 14 §9                                      | 04, 08, 12                     |
 | Apoio em código como aporte (**proposta**)                                 | 04 §1 e 14 §3                              | 03 §1, 08, 09, 11 §8.4         |
 | Desafios extras (aberto e direcionado)                                     | 04 §3                                      | 02, 08, 11, 12                 |
+| Customização do kit recebido (ponto extra e acervo)                        | 11 §5                                      | 02 §4                          |
 | Acervo Include e kits MDF (inventário, regime misto, guarda)               | 05 §3                                      | 02, 04, 09, 10                 |
 | Encontro assíncrono                                                        | 05 §4                                      | 03, 08, 11                     |
 | Quiz ao Vivo                                                               | 05 §5                                      | 03, 08, 11                     |
@@ -205,6 +206,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Quiz ao Vivo                                | 05 §5                     | PRD-02, 04, 09                     |
 | Batalhas e telemetria                       | 02 §6 + 07                | PRD-10, 01, 09, 02, 04             |
 | Culminância e criação original              | 02 §4                     | PRD-01, 02, 03, 05, 09, 12, 10     |
+| Customização do kit recebido                | 11 §5                     | PRD-01, 03, 04, 05, 09             |
 | Motor de pontuação                          | 11 §5                     | PRD-01, 02, 05, 09                 |
 | Níveis 1–5 / Mestre Aprendiz                | 11 §6                     | PRD-01, 05                         |
 | Badges                                      | 11 §7                     | PRD-01, 03, 05, 12                 |
@@ -263,8 +265,9 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
    reais** e termina em **criação original** apresentada publicamente, com autoria creditada.
    As três são trava de publicação da trilha, não recomendação; a etiqueta ODS se junta a elas
    a partir do Ciclo 02, no nível da trilha (§20). O **portfólio é o acervo** do Guerreiro(a):
-   reúne as comprovações aprovadas dos desafios práticos e a criação da culminância, exibe
-   **tudo** na área dele e, em público, **só o aprovado e autorizado**.
+   reúne as comprovações aprovadas dos desafios práticos, a criação da culminância e os
+   registros aprovados de customização do kit recebido, exibe **tudo** na área dele e, em
+   público, **só o aprovado e autorizado**.
 6. **A coleta pontua de forma recorrente enquanto a série estiver ativa**; interrompida,
    cessa o cômputo sem perder os pontos já creditados.
 7. **Dados do território: guarda permanente com o coletor identificado**; anonimização
