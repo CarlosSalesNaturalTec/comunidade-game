@@ -14,7 +14,8 @@
     "perguntas": null,
     "forma_de_comprovacao": "imagem",
     "criterio_de_aceite": "Em foto ou vídeo não deve aparecer o rosto da criança.",
-    "titulo_curto": "Robô de sucata"
+    "titulo_curto": "Robô de sucata",
+    "kit_apresentado": null
   },
   "comprovacao_entregue": {
     "forma": "imagem",
