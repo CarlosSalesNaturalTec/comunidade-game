@@ -186,7 +186,9 @@ Seis regras fecham o modelo:
   declarar que cumpriu, e o **Mestre autor julga** em **dois vereditos**: se **cumpriu**, que
   abre a missão seguinte e credita o ponto (§5), e se a entrega é **publicável**, que a leva
   ou não à vitrine. Enquanto não julga, a missão aguarda, nunca reprovada; não passando, o
-  Guerreiro(a) refaz sem punição, e o motivo lhe chega em linguagem simples.
+  Guerreiro(a) refaz sem punição, e o motivo lhe chega em linguagem simples. Quando o prático
+  apresenta um **kit recebido** como recompensa de missão, o Mestre autor declara qual: a
+  comprovação aprovada é o primeiro registro daquele kit, e abre a customização dele (§5).
 - **Toda tentativa fica registrada**, com o que o Guerreiro(a) respondeu em cada pergunta e
   se acertou — na sondagem como nos desbloqueios. É desse registro que sai a medida do que a
   trilha ensinou, ao fim do ciclo (documento 10).
@@ -289,6 +291,7 @@ Tabela única das fontes de pontos da plataforma:
 | **Batalha**                                                 | 10 por disputar, +10 à equipe vencedora, +5 ao melhor desempenho na telemetria | Regular                                                                                     | Automático (ponte Nexus → API) ou gestão   |
 | Badge de conduta (ex.: Guardião do Acervo)                  | 20 + **20 extras** + badge, uma vez por ciclo                                  | Regular **e Extra**                                                                         | Mestre/gestão                              |
 | **Conservação e uso do bem recebido** (livro, camisa, kit)  | 1 por item apresentado, por encontro presencial                                | **Extra** — computado isoladamente                                                          | Mestre, a pedido do Guerreiro(a) na aula   |
+| **Customização do kit recebido**                            | 1 por item apresentado, por encontro presencial — não soma com a conservação   | **Extra** — computado isoladamente                                                          | Mestre da aula, ao comparar com o kit      |
 | **Presença registrada em aula presencial**                  | 5, uma vez por aula                                                            | **Extra** — computado isoladamente                                                          | Automático (registro da presença)          |
 | **Valorizar a criação dos colegas e cuidar dos mais novos** | 5, uma vez por encontro presencial                                             | **Extra** — computado isoladamente                                                          | Mestre, ao observar                        |
 | **Pactuação do Código de Conduta** da comunidade            | 10, uma vez por ciclo                                                          | **Extra** — computado isoladamente                                                          | Mestre/gestão, ao registrar o código       |
@@ -361,6 +364,17 @@ uma vez por encontro**: quem leva livro, camisa e kit em bom estado soma 3 no di
 livro não pontua duas vezes no mesmo encontro. O badge **Guardião do Acervo** segue sendo o
 reconhecimento do cuidado com o **material comum**, uma vez por ciclo (§7), e rende pontos
 regulares **e extras** — cuidar do que é de todos vale tanto quanto cuidar do que é seu.
+
+**Customizar o kit recebido também pontua, e cada vez precisa ser nova.** Vale para o kit
+recebido como recompensa de missão — camisa, livro e kit de alimentos ficam fora — e só depois
+de aprovado o desafio prático que o apresenta (§2.2). O Guerreiro(a) registra foto ou vídeo
+**só do kit, sem rosto**, com a descrição da customização por voz ou texto, em casa ou no
+aparelho do encontro, e leva o kit à aula. O **Mestre da aula** compara o kit com o registro e
+com o último registro aprovado dele; sem registro prévio, captura na hora. Aprovado, rende
+**1 ponto extra** e o registro entra no acervo (documento 02 §4); reprovado, o motivo volta à
+criança, que pode reenviar. **O robô montado é um item só**, e **no mesmo encontro o item
+pontua pela conservação ou pela customização, nunca pelas duas** — o teto do encontro não
+muda. Registro não apresentado expira no fim do ciclo, e o Guerreiro(a) pode cancelá-lo antes.
 
 **Sondagem e retomada valem como qualquer atividade** do seu formato — não têm tabela própria.
 A retomada pontua **uma vez por agendamento**; refazer por conta própria não rende ponto novo.

@@ -325,29 +325,30 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.4 Desafios, coleta e culminância
 
-| ID          | Requisito                                                                                                                                                                                                         | Prioridade |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-26`  | Mestre cria o desafio de desbloqueio da missão, na forma de quiz ou de desafio prático                                                                                                                            | essencial  |
-| `RF-09-27`  | Mestre cria desafio de coleta declarando o que se mede, a cadência, a vigência e a granularidade                                                                                                                  | essencial  |
-| `RF-09-28`  | Desafio de coleta declara quantos registros pontuam por período de cadência                                                                                                                                       | essencial  |
-| `RF-09-29`  | Mestre define a culminância: o que a criação original precisa ser e o critério de validação                                                                                                                       | essencial  |
-| `RF-09-30`  | Culminância declara se a criação é individual ou de equipe                                                                                                                                                        | essencial  |
-| `RF-09-31`  | Mestre valida a criação original entregue, creditando autoria e liberando o badge de autoria                                                                                                                      | essencial  |
-| `RF-09-32`  | Criação de equipe registra o papel de cada integrante, com crédito individual preservado                                                                                                                          | essencial  |
-| `RF-09-33`  | Criação validada só aparece no portfólio público se o responsável tiver autorizado a divulgação                                                                                                                   | essencial  |
-| `RF-09-34`  | Mestre recusa a criação com motivo, devolvendo-a para ajuste sem perder a autoria                                                                                                                                 | essencial  |
-| `RF-09-35`  | Mestre audita por amostragem semanal os registros de coleta e invalida com motivo                                                                                                                                 | essencial  |
-| `RF-09-117` | No desafio de desbloqueio em forma de prático, o Mestre autor julga se o Guerreiro(a) que declarou tê-lo cumprido passou, abrindo a missão seguinte para ele; no quiz, o núcleo afere sozinho (documento 11 §2.2) | essencial  |
-| `RF-09-118` | Quiz do desbloqueio aceita quantas perguntas o Mestre declarar, cada uma com quatro alternativas e uma correta                                                                                                    | essencial  |
-| `RF-09-119` | Mestre anexa a cada pergunta do quiz uma imagem opcional de até 1 MB                                                                                                                                              | essencial  |
-| `RF-09-120` | Mestre grava, corrige e remove cada pergunta do quiz isoladamente — na sondagem como no desbloqueio —, sem regravar o quiz inteiro                                                                                | essencial  |
-| `RF-09-129` | No desafio de desbloqueio prático, o Mestre autor declara que forma de comprovação aceita — uma entre as seis formas de entrega do Guerreiro(a)                                                                   | essencial  |
-| `RF-09-130` | No desafio prático, o Mestre autor declara o critério de aceite, em texto livre, que o Guerreiro(a) lê ao entregar e sob o qual é julgado                                                                         | essencial  |
-| `RF-09-131` | No desafio prático, o Mestre autor declara um título curto, que é o que a vitrine exibe ao lado do nick do Guerreiro(a)                                                                                           | essencial  |
-| `RF-09-132` | A bancada dos desafios práticos a julgar exibe a produção entregue e o critério de aceite, ao lado do Guerreiro(a), da missão e do momento da declaração                                                          | essencial  |
-| `RF-09-133` | O julgamento do desafio prático tem dois vereditos: cumpriu, que abre a missão seguinte, e publicável, que leva ou não a entrega à vitrine pública                                                                | essencial  |
-| `RF-09-134` | O Mestre autor registra, no julgamento, o motivo em linguagem simples, que o Guerreiro(a) lê                                                                                                                      | essencial  |
-| `RF-09-135` | Julgar que o Guerreiro(a) cumpriu o desafio prático credita a ele 5 pontos regulares na trilha da missão (documento 11 §5)                                                                                        | essencial  |
+| ID          | Requisito                                                                                                                                                                                                                                                                                                           | Prioridade |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-26`  | Mestre cria o desafio de desbloqueio da missão, na forma de quiz ou de desafio prático                                                                                                                                                                                                                              | essencial  |
+| `RF-09-27`  | Mestre cria desafio de coleta declarando o que se mede, a cadência, a vigência e a granularidade                                                                                                                                                                                                                    | essencial  |
+| `RF-09-28`  | Desafio de coleta declara quantos registros pontuam por período de cadência                                                                                                                                                                                                                                         | essencial  |
+| `RF-09-29`  | Mestre define a culminância: o que a criação original precisa ser e o critério de validação                                                                                                                                                                                                                         | essencial  |
+| `RF-09-30`  | Culminância declara se a criação é individual ou de equipe                                                                                                                                                                                                                                                          | essencial  |
+| `RF-09-31`  | Mestre valida a criação original entregue, creditando autoria e liberando o badge de autoria                                                                                                                                                                                                                        | essencial  |
+| `RF-09-32`  | Criação de equipe registra o papel de cada integrante, com crédito individual preservado                                                                                                                                                                                                                            | essencial  |
+| `RF-09-33`  | Criação validada só aparece no portfólio público se o responsável tiver autorizado a divulgação                                                                                                                                                                                                                     | essencial  |
+| `RF-09-34`  | Mestre recusa a criação com motivo, devolvendo-a para ajuste sem perder a autoria                                                                                                                                                                                                                                   | essencial  |
+| `RF-09-35`  | Mestre audita por amostragem semanal os registros de coleta e invalida com motivo                                                                                                                                                                                                                                   | essencial  |
+| `RF-09-117` | No desafio de desbloqueio em forma de prático, o Mestre autor julga se o Guerreiro(a) que declarou tê-lo cumprido passou, abrindo a missão seguinte para ele; no quiz, o núcleo afere sozinho (documento 11 §2.2)                                                                                                   | essencial  |
+| `RF-09-118` | Quiz do desbloqueio aceita quantas perguntas o Mestre declarar, cada uma com quatro alternativas e uma correta                                                                                                                                                                                                      | essencial  |
+| `RF-09-119` | Mestre anexa a cada pergunta do quiz uma imagem opcional de até 1 MB                                                                                                                                                                                                                                                | essencial  |
+| `RF-09-120` | Mestre grava, corrige e remove cada pergunta do quiz isoladamente — na sondagem como no desbloqueio —, sem regravar o quiz inteiro                                                                                                                                                                                  | essencial  |
+| `RF-09-129` | No desafio de desbloqueio prático, o Mestre autor declara que forma de comprovação aceita — uma entre as seis formas de entrega do Guerreiro(a)                                                                                                                                                                     | essencial  |
+| `RF-09-130` | No desafio prático, o Mestre autor declara o critério de aceite, em texto livre, que o Guerreiro(a) lê ao entregar e sob o qual é julgado                                                                                                                                                                           | essencial  |
+| `RF-09-131` | No desafio prático, o Mestre autor declara um título curto, que é o que a vitrine exibe ao lado do nick do Guerreiro(a)                                                                                                                                                                                             | essencial  |
+| `RF-09-132` | A bancada dos desafios práticos a julgar exibe a produção entregue e o critério de aceite, ao lado do Guerreiro(a), da missão e do momento da declaração                                                                                                                                                            | essencial  |
+| `RF-09-133` | O julgamento do desafio prático tem dois vereditos: cumpriu, que abre a missão seguinte, e publicável, que leva ou não a entrega à vitrine pública                                                                                                                                                                  | essencial  |
+| `RF-09-134` | O Mestre autor registra, no julgamento, o motivo em linguagem simples, que o Guerreiro(a) lê                                                                                                                                                                                                                        | essencial  |
+| `RF-09-135` | Julgar que o Guerreiro(a) cumpriu o desafio prático credita a ele 5 pontos regulares na trilha da missão (documento 11 §5)                                                                                                                                                                                          | essencial  |
+| `RF-09-141` | No desafio prático, o Mestre autor declara, opcionalmente, qual kit recebido como recompensa de missão da trilha o prático apresenta; a comprovação aprovada vira o primeiro registro do kit e abre a customização dele. Distinguir o kit da camisa e do livro é responsabilidade do Mestre autor, nessa declaração | essencial  |
 
 ### 6.5 Banco do Quiz ao Vivo
 
@@ -362,22 +363,22 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 6.6 Minhas turmas e lançamentos
 
-| ID          | Requisito                                                                                                                                                                                           | Prioridade |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-42`  | Mestre vê apenas as suas turmas, as suas atividades e os Guerreiros e Guerreiras delas                                                                                                              | essencial  |
-| `RF-09-43`  | Mestre lança a atividade realizada que propôs, com data, participantes e equipes                                                                                                                    | essencial  |
-| `RF-09-44`  | Mestre atribui o resultado: realizada, com mérito ou mérito extra por auxílio aos colegas                                                                                                           | essencial  |
-| `RF-09-45`  | Mestre registra presença do seu encontro e ajusta o que o App 01 não capturou                                                                                                                       | essencial  |
-| `RF-09-46`  | Mestre lança pontuação negativa da sua aula com motivo, efetivada sem revisão de Admin                                                                                                              | essencial  |
-| `RF-09-47`  | Lançamento não é editável; correção é ajuste que referencia o original                                                                                                                              | essencial  |
-| `RF-09-48`  | Toda escrita do Mestre entra na trilha de auditoria com autor, papel, data e hora                                                                                                                   | essencial  |
-| `RF-09-49`  | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                                                                                                                            | essencial  |
-| `RF-09-50`  | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                                                                                                                             | desejável  |
-| `RF-09-73`  | Minhas atividades separa as presenciais do encontro das on-line entre encontros, trazendo a aula que cada presencial declarou                                                                       | essencial  |
-| `RF-09-74`  | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante                                                                                                                    | essencial  |
-| `RF-09-75`  | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre: na App 09 a fila é da **comunidade**; na App 01, a do **encontro** — só quem tem presença registrada naquela aula | essencial  |
-| `RF-09-76`  | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão: na App 09 ele **escolhe** o ponto de apoio; no encontro, o recurso sai do **ponto de apoio da aula**              | essencial  |
-| `RF-09-113` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro                                                                  | essencial  |
+| ID          | Requisito                                                                                                                                                                                              | Prioridade |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-09-42`  | Mestre vê apenas as suas turmas, as suas atividades e os Guerreiros e Guerreiras delas                                                                                                                 | essencial  |
+| `RF-09-43`  | Mestre lança a atividade realizada que propôs, com data, participantes e equipes                                                                                                                       | essencial  |
+| `RF-09-44`  | Mestre atribui o resultado: realizada, com mérito ou mérito extra por auxílio aos colegas                                                                                                              | essencial  |
+| `RF-09-45`  | Mestre registra presença do seu encontro e ajusta o que o App 01 não capturou                                                                                                                          | essencial  |
+| `RF-09-46`  | Mestre lança pontuação negativa da sua aula com motivo, efetivada sem revisão de Admin                                                                                                                 | essencial  |
+| `RF-09-47`  | Lançamento não é editável; correção é ajuste que referencia o original                                                                                                                                 | essencial  |
+| `RF-09-48`  | Toda escrita do Mestre entra na trilha de auditoria com autor, papel, data e hora                                                                                                                      | essencial  |
+| `RF-09-49`  | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                                                                                                                               | essencial  |
+| `RF-09-50`  | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                                                                                                                                | desejável  |
+| `RF-09-73`  | Minhas atividades separa as presenciais do encontro das on-line entre encontros, trazendo a aula que cada presencial declarou                                                                          | essencial  |
+| `RF-09-74`  | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante                                                                                                                       | essencial  |
+| `RF-09-75`  | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre: na App 09 a fila é da **comunidade**; na App 01, a do **encontro** — só quem tem presença registrada naquela aula    | essencial  |
+| `RF-09-76`  | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão: na App 09 ele **escolhe** o ponto de apoio; no encontro, o recurso sai do **ponto de apoio da aula**                 | essencial  |
+| `RF-09-113` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro, no aparelho do encontro (PRD-04 `RF-04-84`), e não nesta aplicação | essencial  |
 
 ### 6.7 Validações, filas e propostas
 
@@ -516,6 +517,7 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-59` | Correção ou exclusão que deixa trilha publicada sem sondagem ou sem desafio de coleta é aceita e despublica a trilha no mesmo ato, com o Mestre autor como autor da situação e motivo gerado pelo núcleo que nomeia a missão e a trava | 5                      | 03 §11         |
 | `RN-09-60` | O pendente da missão carimbada — entregas a julgar, recompensa de marco a entregar, desafio extra — segue visível ao Mestre para ser resolvido                                                                                         | —                      | 03 §11         |
 | `RN-09-61` | Os materiais da missão são lista só de nomes, opcional; não travam a publicação e se corrigem em qualquer situação da trilha, só pelo Mestre autor (`RN-09-56`)                                                                        | —                      | 11 §2.2        |
+| `RN-09-62` | A conservação do `RF-09-113` e a customização do kit recebido não pontuam o mesmo item no mesmo encontro: é uma ou outra                                                                                                               | —                      | 11 §5          |
 
 ## 8. Modelo de dados
 
@@ -797,6 +799,16 @@ Correção de rastreabilidade, não decisão: a `SugestaoDeEstrutura` da tabela 
 o atributo "custo de _cloud_ lançado" — o `RF-09-90` e a `RN-09-07` proíbem medir o consumo do
 modelo por ato, e a coluna só existiria para ficar vazia.
 
+### Decisões de 2026-11-12
+
+Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
+recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
+recebido" do documento 09). Nesta aplicação ela entra pela declaração do kit no prático
+(`RF-09-141`) e pela exclusão entre conservação e customização (`RN-09-62`). O julgamento da
+customização é do Mestre da aula e acontece no aparelho do encontro (PRD-04), não aqui — e a
+validação da conservação (`RF-09-113`) vai junto para lá, na mesma fila, para o Mestre escolher
+por item uma ou outra.
+
 ## 14. Pendências que permanecem
 
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
@@ -873,3 +885,4 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-132` a `RF-09-135`, `RN-09-52` a `RN-09-55` | 02 §4 e 11 §§2.2, 5 (os dois vereditos, o motivo e os 5 pontos do prático) |
 | `RF-09-136` a `RF-09-139`, `RN-09-56` a `RN-09-60` | 03 §11 (a missão se corrige, se move e se exclui)                          |
 | `RF-09-140` e `RN-09-61`                           | 11 §2.2 (os materiais da missão)                                           |
+| `RF-09-141` e `RN-09-62`                           | 11 §§2.2, 5 (customização do kit recebido)                                 |

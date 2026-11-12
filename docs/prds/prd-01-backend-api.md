@@ -221,6 +221,10 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-80` | Núcleo serve a mídia da produção da missão a quem pode vê-la, e nunca em rota pública                                                                                                                                    | essencial  |
 | `RF-01-82` | Núcleo credita 5 pontos extras, e nenhum regular, na presença registrada em aula presencial, nos dois modos de comprovação                                                                                               | essencial  |
 | `RF-01-83` | Núcleo estorna, na anulação da presença, os pontos extras que ela creditou                                                                                                                                               | essencial  |
+| `RF-01-84` | Núcleo guarda o registro de customização do kit recebido — mídia só do kit e descrição — e só o aceita para kit cujo prático declarante foi aprovado                                                                     | essencial  |
+| `RF-01-85` | Núcleo credita 1 ponto extra, e nenhum regular, na customização aprovada pelo Mestre da aula, e leva o registro ao acervo na trilha em que o kit foi recebido                                                            | essencial  |
+| `RF-01-86` | Núcleo expira no fim do ciclo o registro de customização não julgado, e aceita o cancelamento pelo próprio Guerreiro(a) antes disso                                                                                      | essencial  |
+| `RF-01-87` | Núcleo credita 1 ponto extra, e nenhum regular, por bem recebido cuja conservação o Mestre da aula validou, uma vez por item e por encontro                                                                              | essencial  |
 | `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                                                 | essencial  |
 | `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                                                   | essencial  |
 | `RF-01-40` | Núcleo mantém a etiqueta ODS da trilha — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                                             | essencial  |
@@ -309,6 +313,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-63` | A recusa da mídia pública é 404 e indistinguível entre a criação inexistente e a que não passa no portão                                                                                                        | —          | 03 §10      |
 | `RN-01-64` | O estorno da presença anulada tira o valor do acumulado e do saldo disponível, que para em zero; a anulação nunca é recusada por falta de saldo                                                                 | 23         | 11 §5       |
 | `RN-01-65` | Presença gravada antes de 2026-11-06 não credita nem estorna: não há crédito retroativo                                                                                                                         | —          | 11 §5       |
+| `RN-01-66` | O mesmo item pontua uma vez por encontro, pela conservação ou pela customização, nunca pelas duas; o robô montado é um item só                                                                                  | —          | 11 §5       |
 
 ## 8. Modelo de dados
 
@@ -644,6 +649,15 @@ e o dos desafios de desbloqueio de cada trilha.
 | Confirmação de identidade no encontro exige o PIN de 4 dígitos de quem confirma                      | 03 §1.1           | Confirmação de identidade no encontro exige o PIN do adulto |
 | A leitura da sessão devolve ao Guerreiro(a) o próprio nick e avatar                                  | 11 §8.2           | `GET /v1/eu` devolve nick e avatar do Guerreiro(a)          |
 
+### Decisões de 2026-11-12
+
+Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customização do kit
+recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
+recebido" do documento 09). No núcleo ela entra pela guarda do registro, pelo crédito e pela
+expiração (`RF-01-84` a `RF-01-86`), pelo crédito da conservação do bem recebido, que ainda
+não existia no núcleo (`RF-01-87`), e pela exclusão entre as duas no mesmo encontro
+(`RN-01-66`).
+
 ## 14. Pendências que permanecem
 
 Nenhuma: as quatro que restavam foram decididas e estão na tabela de §13. Pendência nova entra
@@ -703,3 +717,5 @@ antes no documento 09.
 | `RN-01-52`                                      | 03 §12.2 (prazo de guarda do motivo)                           |
 | `RF-01-67` e `RF-01-68`                         | 03 §1.1 (credencial do sensor)                                 |
 | `RN-01-53`                                      | 03 §1.1 (credencial como registro do aparelho)                 |
+| `RF-01-84` a `RF-01-86` e `RN-01-66`            | 11 §5 e 02 §4 (customização do kit recebido)                   |
+| `RF-01-87`                                      | 11 §5 (conservação do bem recebido)                            |
