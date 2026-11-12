@@ -234,7 +234,7 @@ export function TelaDaVitrine() {
           2026-10-10). */}
       <Cabecalho
         titulo="Boas-vindas!"
-        subtitulo="Tudo aqui é aberto — sem cadastro e sem login."
+        subtitulo="Este é um jogo em que as partidas acontecem na vida real"
       />
       <nav className="cg-recortes" aria-label="Recortes de leitura">
         {RECORTES.map((recorte) => (

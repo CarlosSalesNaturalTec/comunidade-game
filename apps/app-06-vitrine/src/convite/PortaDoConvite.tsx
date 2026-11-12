@@ -29,6 +29,14 @@ export function PortaDoConvite({ irPara = navegarPara, voltar = voltarOuIrParaAR
   return (
     <Moldura>
       <div className="cg-vitrine cg-convite">
+        {/* A porta abre pela doação sem cadastro, com título do mesmo nível de
+            "Quero apoiar"; o garfo do que a pessoa traz vem logo depois
+            (`RF-03-78`, `RF-03-43`, decisão do fundador de 2026-11-12). */}
+        <section>
+          <h2>Doar sem se cadastrar</h2>
+          <ChavePix />
+        </section>
+
         <h2>Quero apoiar</h2>
         <p>
           O apoio é ao projeto, nunca a uma pessoa: nada aqui vincula o que você traz a um
@@ -70,11 +78,6 @@ export function PortaDoConvite({ irPara = navegarPara, voltar = voltarOuIrParaAR
               aoVoltar={() => definirEscolhida(null)}
             />
           )}
-        </section>
-
-        <section>
-          <h3>Doar sem se cadastrar</h3>
-          <ChavePix />
         </section>
 
         <section>

@@ -17,7 +17,9 @@ describe("a vitrine abre pública, no recorte padrão", () => {
     // `MarcaDoProjeto`, logo acima, e repeti-lo no cabeçalho o punha duas
     // vezes no topo (decisão do fundador de 2026-10-10).
     expect(screen.getByRole("heading", { name: "Boas-vindas!", level: 1 })).toBeVisible();
-    expect(screen.getByText(/sem cadastro e sem login/i)).toBeVisible();
+    expect(
+      screen.getByText("Este é um jogo em que as partidas acontecem na vida real"),
+    ).toBeVisible();
     expect(screen.queryByLabelText(/senha/i)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /cadastrar|criar conta|sair/i })).toBeNull();
   });

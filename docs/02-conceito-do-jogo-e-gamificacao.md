@@ -128,11 +128,11 @@ cadastra continua sendo um Admin.
 texto livre de apresentação. Instituição representada e links comprobatórios são opcionais.
 **Prazo de resposta ao solicitante: 7 dias.**
 
-**A pergunta de entrada é o que a pessoa traz.** A chamada "Quero apoiar" abre com essa
-escolha e encaminha conforme a resposta, pedindo o comprobatório que cabe a cada modalidade —
-descrição e foto do bem, disponibilidade do serviço, amostra do conteúdo, repositório e
-portfólio de quem apoia em código, artefatos da habilidade de quem quer ensinar. A tabela de
-modalidades e destinos está no documento 14.
+**A pergunta de entrada é o que a pessoa traz.** A chamada "Quero apoiar" abre pela doação
+sem cadastro, pela chave PIX; logo depois faz essa pergunta e encaminha conforme a resposta,
+pedindo o comprobatório que cabe a cada modalidade — descrição e foto do bem, disponibilidade
+do serviço, amostra do conteúdo, repositório e portfólio de quem apoia em código, artefatos da
+habilidade de quem quer ensinar. A tabela de modalidades e destinos está no documento 14.
 
 **Duas portas, conforme o que a pessoa traz.** Quem se apresenta sem transferência em dinheiro
 — apoio em material, serviço, conteúdo, código ou divulgação, e quem quer ser Mestre — usa

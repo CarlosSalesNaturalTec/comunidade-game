@@ -181,12 +181,13 @@ fila, nunca acesso.
 2. A chamada é **do projeto**: não oferece apoiar aquela pessoa, e a tela seguinte não carrega
    o nome nem o nick de quem estava sendo visto.
 3. Ela abre a **porta da Área do Apoiador**, que explica o que é ser Apoiador — aportar, propor
-   desafios extras, acompanhar favoritos — e abre com a pergunta **o que a pessoa traz**,
+   desafios extras, acompanhar favoritos — e pergunta **o que a pessoa traz**,
    encaminhando cada modalidade ao destino dela (documento 14 §10): dinheiro ao
    **pré-cadastro**, onde a pessoa se identifica sem documento, escolhe o que vai aportar e
    anexa o comprovante; as demais ao formulário de participação.
-4. A mesma tela mostra o caminho de quem não quer se cadastrar agora: **doar pela chave PIX** e
-   ver as **necessidades de recurso em aberto**.
+4. A mesma tela mostra o caminho de quem não quer se cadastrar agora: **doar pela chave PIX** —
+   a primeira seção da tela, antes de "Quero apoiar" — e ver as **necessidades de recurso em
+   aberto**.
 5. A tela diz que o pré-cadastro **não cria cadastro nem acesso**: um Admin valida o
    comprovante, com prazo de 7 dias, e só então ele aparece na lista da vitrine.
 6. Quem desiste volta à navegação sem preencher nada, e nada é gravado sobre a visita.
@@ -321,7 +322,7 @@ eles.
 | `RF-03-42` | Porta apresenta o que é ser Apoiador e leva ao pré-cadastro da App 08                        | essencial  |
 | `RF-03-43` | Porta oferece também doar pela chave PIX e ver as necessidades de recurso em aberto          | essencial  |
 | `RF-03-44` | Recusar o convite devolve o visitante à navegação, sem gravar nada sobre a visita            | essencial  |
-| `RF-03-78` | Porta abre perguntando o que a pessoa traz e encaminha cada modalidade ao destino dela       | essencial  |
+| `RF-03-78` | Porta abre pela doação sem cadastro, pergunta o que a pessoa traz e encaminha a modalidade   | essencial  |
 
 ### 6.5 Institucional e transparência
 

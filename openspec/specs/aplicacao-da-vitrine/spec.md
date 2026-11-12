@@ -1198,15 +1198,17 @@ nem em estado da aplicação —, e nenhuma tela dela SHALL citar essa pessoa. (
 - **THEN** ela convida a participar do projeto, e não a apoiar a pessoa ou a comunidade da
   página
 
-### Requirement: A porta abre com o garfo do que a pessoa traz e encaminha
+### Requirement: A porta pergunta o que a pessoa traz e encaminha
 
-A porta SHALL abrir perguntando **o que a pessoa traz** e SHALL encaminhar conforme a resposta:
+A porta SHALL perguntar **o que a pessoa traz**, logo depois da doação sem cadastro, e SHALL
+encaminhar conforme a resposta:
 quem traz **dinheiro** ao **pré-cadastro da App 08**; quem traz **insumo, equipamento ou
 alimento, serviço, conteúdo educacional, código, divulgação** ou a **pretensão de ensinar** ao
 **formulário de solicitação de participação da vitrine**. A porta SHALL nomear, em cada
 modalidade, o comprobatório que ela pede. O encaminhamento NEVER SHALL exigir campo que o
-formulário não tem, e a escolha da modalidade NEVER SHALL ser guardada. (`RF-03-42`, documento 14
-§§10, 11, documento 02 §1, decisão do fundador de 2026-09-29)
+formulário não tem, e a escolha da modalidade NEVER SHALL ser guardada. (`RF-03-78`,
+`RF-03-42`, documento 14 §§10, 11, documento 02 §1, decisões do fundador de 2026-09-29 e de
+2026-11-12)
 
 #### Scenario: Quem traz dinheiro vai ao pré-cadastro
 
@@ -1248,16 +1250,23 @@ de **7 dias**. A porta NEVER SHALL pedir credencial, senha ou documento do visit
 
 A porta SHALL oferecer, a quem não quer se cadastrar agora, os dois caminhos que dispensam
 cadastro: **doar pela chave PIX** da pessoa jurídica vinculada, a que o conteúdo institucional
-guarda na seção "Como apoiar", e **ver as necessidades de recurso em aberto**. A chave PIX
-SHALL vir do que o núcleo devolve, e nenhum valor SHALL ficar escrito na aplicação. Sendo a
-porta o **único** lugar público onde a chave aparece, a porta NEVER SHALL deixar de oferecê-la
-quando o núcleo a devolve. (`RF-03-43`, `RF-03-46`, PRD-03 §5.5, decisão do fundador de
-2026-10-11)
+guarda na seção "Como apoiar", e **ver as necessidades de recurso em aberto**. A doação SHALL
+ser a **primeira seção** da porta, antes de "Quero apoiar" e do que é ser Apoiador, com título
+do mesmo nível. A chave PIX SHALL vir do que o núcleo devolve, e nenhum valor SHALL ficar
+escrito na aplicação. Sendo a porta o **único** lugar público onde a chave aparece, a porta
+NEVER SHALL deixar de oferecê-la quando o núcleo a devolve. (`RF-03-43`, `RF-03-46`,
+`RF-03-78`, PRD-03 §5.5, decisões do fundador de 2026-10-11 e de 2026-11-12)
 
 #### Scenario: Quem não quer se cadastrar encontra o PIX
 
 - **WHEN** o visitante abre a porta e o núcleo devolve a seção "Como apoiar" publicada
 - **THEN** a porta mostra a chave PIX e o titular, sem pedir cadastro
+
+#### Scenario: A porta abre pela doação
+
+- **WHEN** o visitante abre a porta
+- **THEN** o primeiro título da página é "Doar sem se cadastrar", seguido do título "Quero
+  apoiar", ambos do mesmo nível
 
 #### Scenario: A porta mostra o que falta hoje
 

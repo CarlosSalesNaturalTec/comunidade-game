@@ -90,7 +90,12 @@ describe("o institucional sai no documento servido", () => {
 
     // O que o documento da porta garante é o **lugar** da chave, servido em
     // HTML real: o bloco existe e se anuncia antes de o JS correr.
-    expect(ler("quero-participar.html")).toContain("Doar sem se cadastrar");
+    const porta = ler("quero-participar.html");
+    expect(porta).toContain("Doar sem se cadastrar");
+    // A doação abre a porta, antes de "Quero apoiar" (`RF-03-78`).
+    expect(porta.indexOf("Doar sem se cadastrar")).toBeLessThan(
+      porta.indexOf("<h2>Quero apoiar"),
+    );
   });
 });
 

@@ -5,6 +5,8 @@ cujas partidas acontecem na vida real. Ela conecta **Guerreiros e Guerreiras**, 
 **Apoiadores** em torno de trilhas de aprendizagem que terminam em criação própria e em dados
 reais sobre o território onde essas pessoas moram.
 
+**Plataforma:** [comunidadegame.org](https://comunidadegame.org)
+
 > Interação digital com comunidades para oferecer orientação educacional, informação e geração
 > de dados que auxiliem na tomada de decisões — e para que essas ações e esses dados retornem
 > como impacto positivo para a própria comunidade.
