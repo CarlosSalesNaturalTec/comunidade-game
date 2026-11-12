@@ -357,24 +357,26 @@ disponível, que para em zero se já foi trocado. Presença registrada antes de 
 rende nem estorna.
 
 **Cuidar do que recebeu pontua, e quem pede é o Guerreiro(a).** Apresentar ao Mestre, no
-encontro presencial, o livro, a camisa, o kit ou outro bem recebido **em bom estado e em uso**
-vale **1 ponto extra por item**. O Guerreiro(a) pede a validação durante a aula, o Mestre
-confere e lança — não há conferência automática nem lançamento de ofício. **Cada item pontua
-uma vez por encontro**: quem leva livro, camisa e kit em bom estado soma 3 no dia, e o mesmo
-livro não pontua duas vezes no mesmo encontro. O badge **Guardião do Acervo** segue sendo o
-reconhecimento do cuidado com o **material comum**, uma vez por ciclo (§7), e rende pontos
-regulares **e extras** — cuidar do que é de todos vale tanto quanto cuidar do que é seu.
+encontro presencial, o livro, a camisa ou o kit recebido como **recompensa de marco** — o item
+do catálogo avulso fica fora — **em bom estado e em uso** vale **1 ponto extra por item**. O
+Guerreiro(a) pede a validação durante a aula, o Mestre confere e lança — não há conferência
+automática nem lançamento de ofício. **Cada item pontua uma vez por encontro**: quem leva
+livro, camisa e kit em bom estado soma 3 no dia, e o mesmo livro não pontua duas vezes no mesmo
+encontro. O badge **Guardião do Acervo** segue sendo o reconhecimento do cuidado com o
+**material comum**, uma vez por ciclo (§7), e rende pontos regulares **e extras** — cuidar do
+que é de todos vale tanto quanto cuidar do que é seu.
 
 **Customizar o kit recebido também pontua, e cada vez precisa ser nova.** Vale para o kit
 recebido como recompensa de missão — camisa, livro e kit de alimentos ficam fora — e só depois
 de aprovado o desafio prático que o apresenta (§2.2). O Guerreiro(a) registra foto ou vídeo
 **só do kit, sem rosto**, com a descrição da customização por voz ou texto, em casa ou no
 aparelho do encontro, e leva o kit à aula. O **Mestre da aula** compara o kit com o registro e
-com o último registro aprovado dele; sem registro prévio, captura na hora. Aprovado, rende
-**1 ponto extra** e o registro entra no acervo (documento 02 §4); reprovado, o motivo volta à
-criança, que pode reenviar. **O robô montado é um item só**, e **no mesmo encontro o item
-pontua pela conservação ou pela customização, nunca pelas duas** — o teto do encontro não
-muda. Registro não apresentado expira no fim do ciclo, e o Guerreiro(a) pode cancelá-lo antes.
+com o último registro aprovado dele; sem registro prévio, captura na hora. Aprovado, rende **1
+ponto extra** e o registro entra no acervo (documento 02 §4); reprovado, o motivo volta à
+criança, que pode reenviar. **O robô montado é um item só**, e quem o trata assim é o Mestre da
+aula, ao escolher o kit que o representa; **no mesmo encontro o item pontua pela conservação ou
+pela customização, nunca pelas duas** — o teto do encontro não muda. Registro não apresentado
+expira no fim do ciclo, e o Guerreiro(a) pode cancelá-lo antes.
 
 **Sondagem e retomada valem como qualquer atividade** do seu formato — não têm tabela própria.
 A retomada pontua **uma vez por agendamento**; refazer por conta própria não rende ponto novo.
