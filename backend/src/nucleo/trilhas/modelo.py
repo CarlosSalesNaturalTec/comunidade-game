@@ -159,6 +159,17 @@ class Missao(Base, ComAutoria):
     )
     desafio_pratico_criterio_de_aceite: Mapped[str | None] = mapped_column(Text, nullable=True)
     desafio_pratico_titulo_curto: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    # O kit que o prático apresenta: uma recompensa de marco da mesma trilha,
+    # opcional. Aprovado o prático, a comprovação é o primeiro registro do kit
+    # e abre a customização dele (`RF-09-141`, documento 11 §2.2). O núcleo
+    # não distingue kit de camisa ou livro — vale a declaração do Mestre autor.
+    desafio_pratico_kit_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey(
+            "recompensa_de_marco.id", use_alter=True, name="fk_missao_desafio_pratico_kit_id"
+        ),
+        nullable=True,
+    )
 
     __table_args__ = (
         UniqueConstraint(

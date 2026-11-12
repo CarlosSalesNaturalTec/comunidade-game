@@ -17,6 +17,7 @@ from ..criacoes_originais.modelo import (
     SituacaoDaCriacaoOriginal,
     TipoDeProducaoDaCriacaoOriginal,
 )
+from ..cuidado_do_bem.modelo import RegistroDeCustomizacao, SituacaoDoRegistroDeCustomizacao
 from ..desafios_extras.modelo import (
     ConclusaoDeDesafioExtra,
     DesafioExtra,
@@ -32,6 +33,7 @@ from ..poder_sustentador.regra import contagem_de_absorcoes_de, moedas_acumulada
 from ..poderes.modelo import Poder
 from ..pontuacao.modelo import Badge, Nivel
 from ..pontuacao.regra import consulta_de_ranking
+from ..recompensas_de_marco.modelo import EntregaDeRecompensa, RecompensaDeMarco
 from ..selos_do_apoiador.regra import derivar_sustento, listar_selos
 from ..trilhas.modelo import DesbloqueioDaMissao, Missao, SituacaoDaTrilha, Trilha
 
@@ -175,13 +177,15 @@ class PoderComNivelSaida(BaseModel):
 
 
 class FonteDoAcervo(enum.StrEnum):
-    """As **duas** fontes do acervo público (documento 99 §6, invariante 5):
-    a criação da culminância e a comprovação aprovada do desafio prático. A
-    produção das **atividades** da missão não está aqui, e nunca estará: ela
-    não tem ato de aprovação do Mestre (`RN-03-42`)."""
+    """As **três** fontes do acervo público (documento 99 §6, invariante 5):
+    a criação da culminância, a comprovação aprovada do desafio prático e,
+    desde 2026-11-12, o registro aprovado da customização do kit recebido
+    (`RF-03-88`). A produção das **atividades** da missão não está aqui, e
+    nunca estará: ela não tem ato de aprovação do Mestre (`RN-03-42`)."""
 
     criacao_original = "criacao_original"
     comprovacao_do_pratico = "comprovacao_do_pratico"
+    customizacao_do_kit = "customizacao_do_kit"
 
 
 class CriacaoPublicaSaida(BaseModel):
@@ -284,6 +288,37 @@ def condicoes_de_comprovacao_publica(sessao: Session):
     )
 
 
+def condicoes_de_customizacao_publica(sessao: Session):
+    """O portão da customização do kit em público: registro **aprovado** pelo
+    Mestre da aula, mídia confirmada e autorização de divulgação vigente do
+    Guerreiro(a) (`RF-03-88`, `RN-03-41`). Uma função só, para a listagem e
+    para a rota de bytes, como as duas fontes irmãs."""
+    return (
+        RegistroDeCustomizacao.situacao == SituacaoDoRegistroDeCustomizacao.aprovado,
+        RegistroDeCustomizacao.midia_referencia.is_not(None),
+        RegistroDeCustomizacao.julgado_em.is_not(None),
+        condicao_de_autorizacao_vigente(sessao, RegistroDeCustomizacao.guerreiro_id),
+    )
+
+
+def _trilhas_das_customizacoes(
+    sessao: Session, entregas_ids: Iterable[uuid.UUID]
+) -> dict[uuid.UUID, tuple[uuid.UUID, str]]:
+    """A trilha de cada entrega — a da recompensa de marco que é o kit —, num
+    só round-trip (`RF-03-88`)."""
+    ids = list(entregas_ids)
+    if not ids:
+        return {}
+    linhas = (
+        sessao.query(EntregaDeRecompensa.id, Trilha.id, Trilha.nome)
+        .join(RecompensaDeMarco, RecompensaDeMarco.id == EntregaDeRecompensa.recompensa_de_marco_id)
+        .join(Trilha, Trilha.id == RecompensaDeMarco.trilha_id)
+        .filter(EntregaDeRecompensa.id.in_(ids))
+        .all()
+    )
+    return {entrega_id: (trilha_id, nome) for entrega_id, trilha_id, nome in linhas}
+
+
 class DesafioPraticoDaMissao(NamedTuple):
     """O que a missão empresta à linha do acervo: o **título curto** e a
     **forma de comprovação** que o Mestre autor declarou no desafio prático, e
@@ -328,6 +363,7 @@ def montar_itens_do_acervo(
     sessao: Session,
     criacoes: Iterable[CriacaoOriginal],
     comprovacoes: Iterable[DesbloqueioDaMissao],
+    customizacoes: Iterable[RegistroDeCustomizacao] = (),
 ) -> list[tuple[CriacaoPublicaSaida, list[uuid.UUID]]]:
     """O item do acervo público, um só para a listagem da vitrine e para a
     carta do Guerreiro(a), cada um com as personas creditadas — o
@@ -339,6 +375,7 @@ def montar_itens_do_acervo(
     saem num round-trip por tabela (sem N+1)."""
     criacoes = [criacao for criacao in criacoes if criacao.validado_em is not None]
     comprovacoes = [c for c in comprovacoes if c.julgado_em is not None]
+    customizacoes = [c for c in customizacoes if c.julgado_em is not None]
 
     equipe_ids = {criacao.equipe_id for criacao in criacoes if criacao.equipe_id is not None}
     integrantes_por_equipe: dict[uuid.UUID, list[uuid.UUID]] = {}
@@ -358,6 +395,7 @@ def montar_itens_do_acervo(
     todas_as_personas_ids = {
         persona_id for criacao in criacoes for persona_id in _creditados(criacao)
     } | {comprovacao.guerreiro_id for comprovacao in comprovacoes}
+    todas_as_personas_ids |= {customizacao.guerreiro_id for customizacao in customizacoes}
     avatares_e_nicks = buscar_avatares_e_nicks(sessao, todas_as_personas_ids)
     trilhas = nomes_de_trilha(sessao, {criacao.trilha_id for criacao in criacoes})
     desafios = desafios_praticos_das_missoes(
@@ -413,6 +451,36 @@ def montar_itens_do_acervo(
                     autores=_autores([comprovacao.guerreiro_id]),
                 ),
                 [comprovacao.guerreiro_id],
+            )
+        )
+    trilhas_dos_kits = _trilhas_das_customizacoes(
+        sessao, {customizacao.entrega_de_recompensa_id for customizacao in customizacoes}
+    )
+    for customizacao in customizacoes:
+        trilha_do_kit = trilhas_dos_kits.get(customizacao.entrega_de_recompensa_id)
+        if trilha_do_kit is None:
+            continue
+        tipo = (
+            TipoDeProducaoDaCriacaoOriginal.video
+            if (customizacao.midia_tipo_do_arquivo or "").startswith("video/")
+            else TipoDeProducaoDaCriacaoOriginal.imagem
+        )
+        itens.append(
+            (
+                CriacaoPublicaSaida(
+                    id=customizacao.id,
+                    fonte=FonteDoAcervo.customizacao_do_kit,
+                    # A descrição da criança é o título (documento 02 §4,
+                    # decisão do fundador, 2026-11-12).
+                    titulo=customizacao.descricao,
+                    tipo=tipo,
+                    trilha_id=trilha_do_kit[0],
+                    trilha=trilha_do_kit[1],
+                    validada_em=customizacao.julgado_em,
+                    producao=None,
+                    autores=_autores([customizacao.guerreiro_id]),
+                ),
+                [customizacao.guerreiro_id],
             )
         )
     itens.sort(key=lambda linha: (linha[0].validada_em, linha[0].id), reverse=True)
@@ -508,9 +576,20 @@ def _criacoes_na_carta(
         .all()
     )
 
+    customizacoes = (
+        sessao.query(RegistroDeCustomizacao)
+        .filter(
+            *condicoes_de_customizacao_publica(sessao),
+            RegistroDeCustomizacao.guerreiro_id.in_(ids),
+        )
+        .all()
+    )
+
     da_pagina = set(ids)
     por_guerreiro: dict[uuid.UUID, list[CriacaoPublicaSaida]] = {}
-    for item, creditados in montar_itens_do_acervo(sessao, criacoes.values(), comprovacoes):
+    for item, creditados in montar_itens_do_acervo(
+        sessao, criacoes.values(), comprovacoes, customizacoes
+    ):
         for persona_id in creditados:
             if persona_id in da_pagina:
                 por_guerreiro.setdefault(persona_id, []).append(item)

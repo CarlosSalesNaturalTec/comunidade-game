@@ -253,3 +253,63 @@ def test_estorno_de_valor_zero_nao_toca_a_conta(sessao, criar_persona):
     assert estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=0) is None
     conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro.id).one()
     assert (conta.acumulado, conta.saldo_disponivel) == (10, 10)
+
+
+# ---------------------------------------------------------------------------
+# O cuidado com o bem recebido é fonte só extra (`RF-01-85`, `RF-01-87`,
+# documento 11 §5).
+# ---------------------------------------------------------------------------
+
+
+def _regulares(sessao, guerreiro):
+    from nucleo.pontuacao.modelo import PontoRegular
+
+    return sessao.query(PontoRegular).filter_by(guerreiro_id=guerreiro.id).count()
+
+
+def test_a_conservacao_credita_1_extra_e_nenhum_regular(sessao, cenario):
+    from nucleo.cuidado_do_bem.regra import validar_conservacao
+
+    validar_conservacao(
+        sessao,
+        operador=cenario.mestre,
+        aula_id=cenario.aula.id,
+        guerreiro_id=cenario.guerreiro.id,
+        entrega_de_recompensa_id=cenario.entrega_do_livro.id,
+    )
+    sessao.commit()
+
+    conta = sessao.query(PontoExtra).filter_by(guerreiro_id=cenario.guerreiro.id).one()
+    assert (conta.acumulado, conta.saldo_disponivel) == (1, 1)
+    assert _regulares(sessao, cenario.guerreiro) == 0
+
+
+@pytest.mark.parametrize(("aprovado", "esperado"), [(True, 1), (False, 0)])
+def test_a_customizacao_aprovada_credita_1_extra_e_a_reprovada_nada(
+    sessao, cenario, aprovado, esperado
+):
+    from nucleo.cuidado_do_bem.regra import julgar_customizacao, registrar_customizacao
+
+    registro = registrar_customizacao(
+        sessao,
+        operador=cenario.guerreiro,
+        entrega_de_recompensa_id=cenario.entrega_do_kit.id,
+        descricao="Pintei de azul.",
+    )
+    registro.midia_referencia = "customizacoes/teste/midia"
+    registro.midia_tipo_do_arquivo = "image/png"
+    sessao.commit()
+
+    julgar_customizacao(
+        sessao,
+        registro,
+        operador=cenario.mestre,
+        aula_id=cenario.aula.id,
+        aprovado=aprovado,
+        motivo=None if aprovado else "Apareceu o rosto.",
+    )
+    sessao.commit()
+
+    conta = sessao.query(PontoExtra).filter_by(guerreiro_id=cenario.guerreiro.id).first()
+    assert (conta.acumulado if conta else 0) == esperado
+    assert _regulares(sessao, cenario.guerreiro) == 0

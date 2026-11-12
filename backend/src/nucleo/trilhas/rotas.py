@@ -69,6 +69,7 @@ from .regra import (
     fatos_da_atividade,
     inscrever_na_trilha,
     julgar_desafio_pratico,
+    kit_apresentado_da_missao,
     ler_arquivo_da_comprovacao,
     ler_imagem_da_pergunta,
     listar_desbloqueios_praticos_pendentes,
@@ -344,6 +345,24 @@ def _saida_das_perguntas_ao_autor(
     ]
 
 
+class KitApresentadoSaida(BaseModel):
+    """O kit que o prático apresenta: a recompensa de marco e o nome do tipo
+    de recurso dela (`RF-09-141`)."""
+
+    recompensa_de_marco_id: uuid.UUID
+    tipo_de_recurso_nome: str
+
+
+def _saida_do_kit(sessao: Session, missao: Missao) -> KitApresentadoSaida | None:
+    kit = kit_apresentado_da_missao(sessao, missao)
+    if kit is None:
+        return None
+    return KitApresentadoSaida(
+        recompensa_de_marco_id=kit.recompensa_de_marco_id,
+        tipo_de_recurso_nome=kit.tipo_de_recurso_nome,
+    )
+
+
 class MissaoDoMestreSaida(MissaoSaida):
     """Só a saída de `GET /v1/trilhas/minhas` traz o desafio de coleta e o
     desafio de desbloqueio aninhados — a trilha pública e as demais rotas de
@@ -366,6 +385,7 @@ class MissaoDoMestreSaida(MissaoSaida):
     desafio_pratico_forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None
     desafio_pratico_criterio_de_aceite: str | None = None
     desafio_pratico_titulo_curto: str | None = None
+    desafio_pratico_kit_apresentado: KitApresentadoSaida | None = None
 
 
 class TrilhaDoMestreSaida(TrilhaSaida):
@@ -510,6 +530,7 @@ def listar_minhas_trilhas_rota(
                     ),
                     desafio_pratico_criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
                     desafio_pratico_titulo_curto=missao.desafio_pratico_titulo_curto,
+                    desafio_pratico_kit_apresentado=_saida_do_kit(sessao_bd, missao),
                     perguntas_do_desbloqueio=_saida_das_perguntas_ao_autor(
                         perguntas_por_missao.get(missao.id, [])
                     ),
@@ -985,6 +1006,7 @@ class DesafioDeDesbloqueioSaida(BaseModel):
     forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None
     criterio_de_aceite: str | None = None
     titulo_curto: str | None = None
+    kit_apresentado: KitApresentadoSaida | None = None
 
 
 class ComprovacaoDoPraticoSaida(BaseModel):
@@ -1103,6 +1125,7 @@ def _saida_do_desafio_de_desbloqueio(
         forma_de_comprovacao=missao.desafio_pratico_forma_de_comprovacao,
         criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
         titulo_curto=missao.desafio_pratico_titulo_curto,
+        kit_apresentado=_saida_do_kit(sessao, missao),
     )
 
 
@@ -1169,6 +1192,9 @@ class DeclararDesafioDeDesbloqueioEntrada(BaseModel):
     forma_de_comprovacao: str | None = None
     criterio_de_aceite: str | None = None
     titulo_curto: str | None = None
+    # Opcional, só do prático: a recompensa de marco da trilha que ele
+    # apresenta como kit (`RF-09-141`).
+    kit_apresentado_id: uuid.UUID | None = None
 
 
 class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
@@ -1183,6 +1209,7 @@ class MissaoComDesafioDeDesbloqueioSaida(MissaoSaida):
     desafio_pratico_forma_de_comprovacao: TipoDeProducaoDaCriacaoOriginal | None = None
     desafio_pratico_criterio_de_aceite: str | None = None
     desafio_pratico_titulo_curto: str | None = None
+    desafio_pratico_kit_apresentado: KitApresentadoSaida | None = None
 
 
 @roteador.post("/missoes/{id_da_missao}/desbloqueio")
@@ -1211,6 +1238,7 @@ def declarar_desafio_de_desbloqueio_rota(
         forma_de_comprovacao=entrada.forma_de_comprovacao,
         criterio_de_aceite=entrada.criterio_de_aceite,
         titulo_curto=entrada.titulo_curto,
+        kit_apresentado_id=entrada.kit_apresentado_id,
     )
     sessao_bd.commit()
     perguntas = perguntas_do_desbloqueio(sessao_bd, missao_id=missao.id)
@@ -1222,6 +1250,7 @@ def declarar_desafio_de_desbloqueio_rota(
         desafio_pratico_forma_de_comprovacao=missao.desafio_pratico_forma_de_comprovacao,
         desafio_pratico_criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
         desafio_pratico_titulo_curto=missao.desafio_pratico_titulo_curto,
+        desafio_pratico_kit_apresentado=_saida_do_kit(sessao_bd, missao),
     )
 
 

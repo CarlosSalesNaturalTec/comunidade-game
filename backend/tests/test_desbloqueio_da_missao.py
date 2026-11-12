@@ -14,6 +14,7 @@ from nucleo.trilhas.modelo import (
     SituacaoDaTrilha,
     SubmissaoDoDesbloqueio,
     TipoDeDesafioDeDesbloqueio,
+    Trilha,
 )
 from nucleo.trilhas.regra import (
     acrescentar_pergunta_do_desbloqueio,
@@ -2966,3 +2967,198 @@ def test_a_sondagem_recusa_resposta_falada_fora_da_forma(
         )
     sessao.rollback()
     assert sessao.query(SubmissaoDoDesbloqueio).filter_by(missao_id=sondagem.id).count() == 0
+
+
+# ---------------------------------------------------------------------------
+# O kit que o prático apresenta (`RF-09-141`, decisão do fundador de
+# 2026-11-12).
+# ---------------------------------------------------------------------------
+
+
+def _kit_da_trilha(criar_tipo_de_recurso, criar_recompensa_de_marco, mestre, trilha, missao):
+    tipo = criar_tipo_de_recurso(mestre, nome="Kit MDF do robô")
+    return criar_recompensa_de_marco(mestre, trilha, missao, tipo)
+
+
+def test_o_pratico_declara_o_kit_que_apresenta(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_recurso,
+    criar_recompensa_de_marco,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    sondagem = criar_missao(trilha, mestre, posicao=1)
+    montagem = criar_missao(trilha, mestre, posicao=2)
+    kit = _kit_da_trilha(criar_tipo_de_recurso, criar_recompensa_de_marco, mestre, trilha, sondagem)
+
+    declarada = _declarar_pratico_cru(sessao, mestre, montagem, kit_apresentado_id=kit.id)
+    sessao.commit()
+
+    assert declarada.desafio_pratico_kit_id == kit.id
+
+
+def test_o_kit_e_opcional_e_redeclarar_sem_ele_o_apaga(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_recurso,
+    criar_recompensa_de_marco,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    kit = _kit_da_trilha(criar_tipo_de_recurso, criar_recompensa_de_marco, mestre, trilha, missao)
+
+    _declarar_pratico_cru(sessao, mestre, missao, kit_apresentado_id=kit.id)
+    sessao.commit()
+    redeclarada = _declarar_pratico_cru(sessao, mestre, missao)
+    sessao.commit()
+
+    assert redeclarada.desafio_pratico_kit_id is None
+
+
+def test_kit_de_outra_trilha_e_recusado(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_recurso,
+    criar_recompensa_de_marco,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    outra = criar_trilha(mestre, nome="Outra trilha")
+    missao_da_outra = criar_missao(outra, mestre)
+    kit_alheio = _kit_da_trilha(
+        criar_tipo_de_recurso, criar_recompensa_de_marco, mestre, outra, missao_da_outra
+    )
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        _declarar_pratico_cru(sessao, mestre, missao, kit_apresentado_id=kit_alheio.id)
+
+    assert erro.value.campo == "kit_apresentado_id"
+    sessao.rollback()
+    assert missao.tipo_do_desafio_de_desbloqueio is None
+
+
+def test_o_quiz_nao_declara_kit(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_recurso,
+    criar_recompensa_de_marco,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    kit = _kit_da_trilha(criar_tipo_de_recurso, criar_recompensa_de_marco, mestre, trilha, missao)
+
+    with pytest.raises(ErroDeValidacao) as erro:
+        declarar_desafio_de_desbloqueio(
+            sessao,
+            operador=mestre,
+            missao=missao,
+            tipo="quiz",
+            perguntas=[{"enunciado": "P", "alternativas": ALTERNATIVAS, "alternativa_correta": 1}],
+            kit_apresentado_id=kit.id,
+        )
+
+    assert erro.value.campo == "kit_apresentado_id"
+
+
+def test_virar_quiz_apaga_o_kit_do_pratico(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_recurso,
+    criar_recompensa_de_marco,
+):
+    mestre = criar_persona(Papel.mestre)
+    trilha = criar_trilha(mestre)
+    missao = criar_missao(trilha, mestre)
+    kit = _kit_da_trilha(criar_tipo_de_recurso, criar_recompensa_de_marco, mestre, trilha, missao)
+    _declarar_pratico_cru(sessao, mestre, missao, kit_apresentado_id=kit.id)
+    sessao.commit()
+
+    virou_quiz = _declarar_quiz(sessao, mestre, missao)
+    sessao.commit()
+
+    assert virou_quiz.desafio_pratico_kit_id is None
+
+
+def test_a_leitura_traz_o_kit_ao_mestre_autor_e_ao_percurso(
+    cliente,
+    sessao,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_recurso,
+    criar_recompensa_de_marco,
+):
+    missao, mestre, _, cabecalhos_guerreiro, cabecalhos_mestre, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "imagem",
+    )
+    trilha = sessao.get(Trilha, missao.trilha_id)
+    kit = _kit_da_trilha(criar_tipo_de_recurso, criar_recompensa_de_marco, mestre, trilha, missao)
+
+    declarada = cliente.post(
+        f"/v1/missoes/{missao.id}/desbloqueio",
+        json={
+            "tipo": "pratico",
+            "enunciado": "Monte o robô.",
+            "forma_de_comprovacao": "imagem",
+            "criterio_de_aceite": CRITERIO,
+            "titulo_curto": "Robô",
+            "kit_apresentado_id": str(kit.id),
+        },
+        headers=cabecalhos_mestre,
+    )
+    assert declarada.status_code == 200, declarada.text
+    esperado = {"recompensa_de_marco_id": str(kit.id), "tipo_de_recurso_nome": "Kit MDF do robô"}
+    assert declarada.json()["desafio_pratico_kit_apresentado"] == esperado
+
+    minhas = cliente.get("/v1/trilhas/minhas", headers=cabecalhos_mestre).json()
+    missoes = [m for t in minhas if t["id"] == str(trilha.id) for m in t["missoes"]]
+    assert missoes[0]["desafio_pratico_kit_apresentado"] == esperado
+
+    percurso = cliente.get(
+        f"/v1/eu/trilhas/{missao.trilha_id}/missoes/{missao.posicao}",
+        headers=cabecalhos_guerreiro,
+    ).json()
+    assert percurso["desafio_de_desbloqueio"]["kit_apresentado"] == esperado
+
+
+def test_sem_kit_a_leitura_traz_nulo(
+    cliente, sessao, criar_chave, criar_persona, criar_sessao_de_teste, criar_trilha, criar_missao
+):
+    missao, _, _, cabecalhos_guerreiro, _, _ = _cenario_do_pratico_por_http(
+        sessao,
+        criar_persona,
+        criar_trilha,
+        criar_missao,
+        criar_chave,
+        criar_sessao_de_teste,
+        "imagem",
+    )
+
+    percurso = cliente.get(
+        f"/v1/eu/trilhas/{missao.trilha_id}/missoes/{missao.posicao}",
+        headers=cabecalhos_guerreiro,
+    ).json()
+
+    assert percurso["desafio_de_desbloqueio"]["kit_apresentado"] is None

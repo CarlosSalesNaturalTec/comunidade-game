@@ -5,6 +5,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
+from types import SimpleNamespace
 from typing import Annotated
 
 import pytest
@@ -110,6 +111,7 @@ from nucleo.trilhas.modelo import (
     Missao,
     ModalidadeDeAtividade,
     SituacaoDaTrilha,
+    TipoDeDesafioDeDesbloqueio,
     Trilha,
 )
 from nucleo.trocas.modelo import Troca
@@ -308,6 +310,7 @@ def app(sessao, configuracao):
     from nucleo.conteudo_institucional.rotas import roteador as roteador_de_conteudo_institucional
     from nucleo.conteudos.rotas import roteador as roteador_de_conteudos
     from nucleo.criacoes_originais.rotas import roteador as roteador_de_criacoes_originais
+    from nucleo.cuidado_do_bem.rotas import roteador as roteador_do_cuidado_do_bem
     from nucleo.culminancias.rotas import roteador as roteador_de_culminancias
     from nucleo.desafios_extras.rotas import roteador as roteador_de_desafios_extras
     from nucleo.efetividade_do_apoio.rotas import roteador as roteador_de_efetividade_do_apoio
@@ -387,6 +390,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_trilhas)
     incluir_roteador_de_dados(aplicacao, roteador_de_atividades)
     incluir_roteador_de_dados(aplicacao, roteador_de_culminancias)
+    incluir_roteador_de_dados(aplicacao, roteador_do_cuidado_do_bem)
     incluir_roteador_de_dados(aplicacao, roteador_de_criacoes_originais)
     incluir_roteador_de_dados(aplicacao, roteador_de_ods)
     incluir_roteador_de_dados(aplicacao, roteador_de_resultados)
@@ -2204,3 +2208,90 @@ def montar_cenario_de_entrada(
         )
 
     return _montar
+
+
+@pytest.fixture
+def cenario(  # o cuidado com o bem recebido (`RF-01-84` a `RF-01-87`)
+    sessao,
+    criar_chave,
+    criar_comunidade,
+    criar_persona,
+    criar_vinculo_do_mestre,
+    criar_sessao_de_teste,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_recurso,
+    criar_recompensa_de_marco,
+    criar_entrega_de_recompensa,
+    criar_ponto_de_apoio,
+    criar_lancamento,
+    criar_desbloqueio_da_missao,
+    criar_aula,
+    criar_presenca,
+):
+    """Uma trilha cuja missão 1 entrega o kit e a missão 2 tem o prático que o
+    apresenta, já aprovado; um livro entregue sem prático declarante; uma aula
+    da comunidade com o Guerreiro(a) presente."""
+    comunidade = criar_comunidade()
+    mestre = criar_persona(Papel.mestre)
+    criar_vinculo_do_mestre(mestre, comunidade)
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    trilha = criar_trilha(mestre, situacao=SituacaoDaTrilha.publicada)
+    sondagem = criar_missao(trilha, mestre, posicao=1)
+    montagem = criar_missao(
+        trilha,
+        mestre,
+        posicao=2,
+        desafio_pratico_criterio_de_aceite="Só o kit, sem rosto.",
+        desafio_pratico_titulo_curto="Robô montado",
+    )
+    tipo_kit = criar_tipo_de_recurso(mestre, nome="Kit MDF do robô")
+    tipo_livro = criar_tipo_de_recurso(mestre, nome="Livro de apoio")
+    kit = criar_recompensa_de_marco(mestre, trilha, sondagem, tipo_kit)
+    livro = criar_recompensa_de_marco(mestre, trilha, sondagem, tipo_livro)
+    montagem.tipo_do_desafio_de_desbloqueio = TipoDeDesafioDeDesbloqueio.pratico
+    montagem.desafio_pratico_kit_id = kit.id
+    sessao.commit()
+
+    ponto = criar_ponto_de_apoio(mestre, comunidade)
+    entrega_do_kit = criar_entrega_de_recompensa(
+        mestre, kit, guerreiro, ponto, criar_lancamento(mestre, tipo_kit, ponto)
+    )
+    entrega_do_livro = criar_entrega_de_recompensa(
+        mestre, livro, guerreiro, ponto, criar_lancamento(mestre, tipo_livro, ponto)
+    )
+    desbloqueio = criar_desbloqueio_da_missao(
+        guerreiro,
+        montagem,
+        cumpriu=True,
+        julgado_por=mestre,
+        julgado_em=datetime.now(UTC),
+        comprovacao_referencia="desbloqueios-praticos/x/comprovacao",
+        comprovacao_tipo_do_arquivo="image/png",
+    )
+    aula = criar_aula(mestre, comunidade, ponto_de_apoio=ponto)
+    criar_presenca(aula, guerreiro)
+
+    chave, _ = criar_chave()
+
+    def cabecalhos(persona):
+        token, _ = criar_sessao_de_teste(persona)
+        return {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    return SimpleNamespace(
+        comunidade=comunidade,
+        mestre=mestre,
+        guerreiro=guerreiro,
+        trilha=trilha,
+        montagem=montagem,
+        kit=kit,
+        entrega_do_kit=entrega_do_kit,
+        entrega_do_livro=entrega_do_livro,
+        desbloqueio=desbloqueio,
+        aula=aula,
+        ponto=ponto,
+        chave=chave,
+        cabecalhos=cabecalhos,
+        do_guerreiro=cabecalhos(guerreiro),
+        do_mestre=cabecalhos(mestre),
+    )
