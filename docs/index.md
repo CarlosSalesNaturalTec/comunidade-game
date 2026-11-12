@@ -5,6 +5,8 @@ cujas partidas acontecem na vida real. Esta pasta é a documentação de referê
 projeto — cada documento tem um assunto próprio e não repete o que já está definido em
 outro.
 
+**Plataforma:** [comunidadegame.org](https://comunidadegame.org)
+
 ## Índice
 
 | #   | Documento                                                                        | Assunto                                                                                                               |

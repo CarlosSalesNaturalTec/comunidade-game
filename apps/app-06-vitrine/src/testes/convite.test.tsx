@@ -167,6 +167,15 @@ describe("o convite ao acompanhamento", () => {
     expect(screen.queryByText(new RegExp(NICK))).not.toBeInTheDocument();
   });
 
+  it("a porta abre pela doação, antes de Quero apoiar, ambos de nível 2 (RF-03-78, RF-03-43)", async () => {
+    window.history.pushState(null, "", "/quero-participar");
+    render(<App />);
+
+    await screen.findByRole("heading", { name: "Quero apoiar", level: 2 });
+    const titulos = screen.getAllByRole("heading", { level: 2 }).map((t) => t.textContent);
+    expect(titulos.slice(0, 2)).toEqual(["Doar sem se cadastrar", "Quero apoiar"]);
+  });
+
   it("a porta explica o papel do Apoiador e declara que nada cria acesso (RF-03-42, RN-03-17)", async () => {
     window.history.pushState(null, "", "/quero-participar");
     render(<App />);
