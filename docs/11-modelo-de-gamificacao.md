@@ -336,6 +336,13 @@ esses dois, ele só cresce.
 Trocar **não enfraquece o personagem** no App 04 nem apaga histórico: o jogo lê o acumulado,
 não o saldo, e segue **sem debitar nada** (§8.4).
 
+**Todo movimento de ponto vira lançamento no histórico do Guerreiro(a).** Cada crédito e cada
+débito, regular ou extra — estorno, troca e ocorrência de conduta inclusos —, fica registrado
+com data, origem, valor e trilha ou poder, e nunca se apaga. Leem o histórico, com o saldo
+disponível e o motivo da conduta, o próprio Guerreiro(a), o Mestre com vínculo vigente na
+comunidade dele e o Admin. O pontuado antes de o histórico existir aparece numa **linha de
+saldo anterior** por conta, com o total da data da implantação.
+
 **Recompensa de marco nunca é comprada** — continua conquistada ao atingir o marco da trilha,
 como manda o documento 02 §8. O que a troca alcança é a **recompensa avulsa** do catálogo, que
 é outra coisa: item de prateleira, com lastro e estoque, entregue no encontro presencial.
