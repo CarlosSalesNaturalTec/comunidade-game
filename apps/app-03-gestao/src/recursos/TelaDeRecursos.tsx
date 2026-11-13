@@ -128,6 +128,13 @@ export function TelaDeRecursos() {
     return (id: string) => porId.get(id) ?? id;
   }, [tipos]);
 
+  // A unidade sai do catálogo já carregado; tipo fora dele mostra só o
+  // número (design — decisão 3).
+  const unidadeDoTipoDeRecurso = useMemo(() => {
+    const porId = new Map(tipos.map((tipo) => [tipo.id, tipo.unidade]));
+    return (id: string) => porId.get(id);
+  }, [tipos]);
+
   const nomeDaComunidade = useMemo(() => {
     const porId = new Map(comunidades.map((comunidade) => [comunidade.id, comunidade.nome]));
     return (id: string) => porId.get(id) ?? id;
@@ -148,7 +155,7 @@ export function TelaDeRecursos() {
   }
 
   return (
-    <Moldura>
+    <Moldura variante="densa">
       <Cabecalho titulo="Recursos" />
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
@@ -179,11 +186,16 @@ export function TelaDeRecursos() {
       <ListaDeNecessidades
         necessidades={necessidades}
         nomeDoTipoDeRecurso={nomeDoTipoDeRecurso}
+        unidadeDoTipoDeRecurso={unidadeDoTipoDeRecurso}
         nomeDaComunidade={nomeDaComunidade}
         nomeDoPontoDeApoio={nomeDoPontoDeApoio}
       />
 
-      <ListaDeSaldosDisponiveis gruposDeSaldo={gruposDeSaldo} />
+      <ListaDeSaldosDisponiveis
+        gruposDeSaldo={gruposDeSaldo}
+        nomeDaComunidade={nomeDaComunidade}
+        unidadeDoTipoDeRecurso={unidadeDoTipoDeRecurso}
+      />
 
       <h2>Missões do Apoiador</h2>
       {!mostrarFormularioDeMissao && (
