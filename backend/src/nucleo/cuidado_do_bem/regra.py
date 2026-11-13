@@ -349,6 +349,46 @@ def ler_arquivo_da_customizacao(
     )
 
 
+def ler_arquivo_do_ultimo_aprovado(
+    sessao: Session,
+    entrega: EntregaDeRecompensa | None,
+    *,
+    operador: Persona,
+    armazenamento: PortaDeArmazenamento,
+) -> ArquivoDaCustomizacao:
+    """O "antes" do kit, pela rota do bem: a customização aprovada mais recente
+    ou, sem nenhuma, a comprovação do prático que abriu a customização. Vai ao
+    Guerreiro(a) dono e ao Mestre da comunidade dele, que é quem julga no
+    encontro — a rota da comprovação segue só do autor da trilha (`RF-04-81`,
+    decisão do fundador de 2026-11-13)."""
+    if entrega is None:
+        raise NaoEncontrado(mensagem="Bem recebido não encontrado.")
+    if entrega.guerreiro_id != operador.id and not _mestre_da_comunidade_do_guerreiro(
+        sessao, operador, entrega.guerreiro_id
+    ):
+        raise PermissaoNegada(
+            mensagem="O último registro aprovado é servido ao Guerreiro(a) e ao Mestre da "
+            "comunidade dele."
+        )
+    desbloqueio = desbloqueio_que_abre_a_customizacao(sessao, entrega)
+    if desbloqueio is None:
+        raise NaoEncontrado(mensagem="A customização deste bem ainda não abriu.")
+    ultimo = ultimo_registro_aprovado(sessao, entrega, desbloqueio)
+    if ultimo.fonte == "customizacao_do_kit":
+        registro = sessao.get(RegistroDeCustomizacao, ultimo.id)
+        referencia = registro.midia_referencia
+        tipo_mime = registro.midia_tipo_do_arquivo
+    else:
+        referencia = desbloqueio.comprovacao_referencia
+        tipo_mime = desbloqueio.comprovacao_tipo_do_arquivo
+    if referencia is None:
+        raise NaoEncontrado(mensagem="O último registro aprovado não tem mídia.")
+    return ArquivoDaCustomizacao(
+        bytes_do_arquivo=armazenamento.ler(referencia=referencia),
+        tipo_mime=tipo_mime or "application/octet-stream",
+    )
+
+
 def cancelar_customizacao(
     sessao: Session, registro: RegistroDeCustomizacao | None, *, operador: Persona
 ) -> RegistroDeCustomizacao:

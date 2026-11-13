@@ -23,6 +23,9 @@ export type NomeDeGlifo =
   // O recadastro da imagem de referência, ato de quem opera o aparelho
   // (`RF-04-22`, decisão do fundador de 2026-11-10).
   | "recadastro"
+  // O cuidado com o bem recebido no encontro: conservação e customizações a
+  // julgar (`RF-04-81`, `RF-04-84`).
+  | "cuidado"
   // Os símbolos das colunas da carta (documento 15 §8.1, decisão do
   // fundador de 2026-10-30). Nenhum deles é silhueta de família de badge,
   // que no cabeçalho de uma coluna afirmaria família errada (§8.3), nem o
@@ -184,6 +187,16 @@ const GLIFOS: Record<NomeDeGlifo, ReactElement> = {
       <path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" />
       <circle cx="12" cy="10" r="3" />
       <path d="M7.5 17.5c.8-1.8 2.5-3 4.5-3s3.7 1.2 4.5 3" />
+    </>
+  ),
+  // O cuidado com o bem recebido: a lupa do Mestre sobre o kit na mão. Não é
+  // o glifo `entregas` — o pacote com visto —, que diria entregar o bem, e não
+  // conferi-lo (`RF-04-81`, `RF-04-84`, documento 15 §11.1).
+  cuidado: (
+    <>
+      <rect x="3" y="3" width="12" height="12" rx="2" />
+      <circle cx="15.5" cy="15.5" r="4" />
+      <path d="m18.5 18.5 3 3" />
     </>
   ),
   // Medalha com fita: o corpo arredondado e as duas caudas. Encabeça a coluna

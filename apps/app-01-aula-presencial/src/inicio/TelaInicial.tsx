@@ -13,6 +13,7 @@ import {
 } from "comum/react";
 import { useState } from "react";
 import { TelaDeMedicaoDoLimiar } from "../bancada/TelaDeMedicaoDoLimiar";
+import { TelaDoCuidadoNoEncontro } from "../cuidado/TelaDoCuidadoNoEncontro";
 import { AreaDetalhadaDeDireitos } from "../direitos/AreaDetalhadaDeDireitos";
 import { GuardaDePresenca } from "../entrada/GuardaDePresenca";
 import { TelaDeEntradaDoGuerreiro } from "../entrada/TelaDeEntradaDoGuerreiro";
@@ -49,6 +50,7 @@ type Caminho =
   | "medicao"
   | "recadastro"
   | "entregas"
+  | "cuidado"
   | "encerramento";
 
 interface Props {
@@ -330,6 +332,19 @@ export function TelaInicial({
     );
   }
 
+  // A fila do cuidado do encontro: ato de quem opera, como as entregas — sem
+  // sessão de Guerreiro(a) nem guarda de presença; a presença de cada um é a
+  // que o núcleo já recorta na fila (`RF-04-81`, `RF-04-84`).
+  if (caminho === "cuidado") {
+    return (
+      <TelaDoCuidadoNoEncontro
+        tokenDeTrabalho={tokenDeTrabalho}
+        aulaId={aulaId}
+        aoVoltar={() => definirCaminho("inicio")}
+      />
+    );
+  }
+
   // O encerramento da sessão de trabalho, alcançado só daqui: a tela inicial é
   // a que aparece entre um atendimento e o seguinte, e fora dela quem está com
   // o aparelho é uma criança no meio do dela (`RF-04-71`, `RF-04-28`, design —
@@ -489,6 +504,15 @@ export function TelaInicial({
             rotulo: "Entregas pendentes do encontro — confirmar a recompensa conquistada",
             glifo: "entregas" as const,
             aoAcionar: () => definirCaminho("entregas"),
+          },
+          // A fila do cuidado vem logo depois das entregas, com a mesma
+          // guarda: o julgamento e a conservação são do Mestre da aula, e o
+          // núcleo recusaria o Admin de todo modo (`RF-04-81`, `RF-04-84`).
+          {
+            chave: "cuidado",
+            rotulo: "Customizações a julgar — conservação e customização dos bens recebidos",
+            glifo: "cuidado" as const,
+            aoAcionar: () => definirCaminho("cuidado"),
           },
         ]
       : []),

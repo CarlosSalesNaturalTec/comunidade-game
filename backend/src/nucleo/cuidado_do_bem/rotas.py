@@ -12,6 +12,7 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..erros import PermissaoNegada
 from ..personas.modelo import Papel, Persona
+from ..recompensas_de_marco.modelo import EntregaDeRecompensa
 from ..vitrine.publico import AvatarENickSaida, buscar_avatares_e_nicks
 from .modelo import (
     FonteDaPontuacaoDoBem,
@@ -29,6 +30,7 @@ from .regra import (
     fila_do_cuidado,
     julgar_customizacao,
     ler_arquivo_da_customizacao,
+    ler_arquivo_do_ultimo_aprovado,
     registrar_customizacao,
     registros_do_guerreiro,
     validar_conservacao,
@@ -314,6 +316,24 @@ def ler_arquivo_da_customizacao_rota(
     arquivo = ler_arquivo_da_customizacao(
         sessao_bd,
         sessao_bd.get(RegistroDeCustomizacao, id_do_registro),
+        operador=_operador(sessao_bd, contexto),
+        armazenamento=armazenamento,
+    )
+    return Response(content=arquivo.bytes_do_arquivo, media_type=arquivo.tipo_mime)
+
+
+@roteador.get("/entregas-de-recompensa/{id_da_entrega}/ultimo-aprovado/arquivo")
+def ler_arquivo_do_ultimo_aprovado_rota(
+    id_da_entrega: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    armazenamento: Annotated[PortaDeArmazenamento, Depends(dependencia_de_armazenamento)],
+) -> Response:
+    """`RF-04-81`: os bytes do "antes" do kit, nas duas fontes, ao Guerreiro(a)
+    dono e ao Mestre da comunidade dele."""
+    arquivo = ler_arquivo_do_ultimo_aprovado(
+        sessao_bd,
+        sessao_bd.get(EntregaDeRecompensa, id_da_entrega),
         operador=_operador(sessao_bd, contexto),
         armazenamento=armazenamento,
     )

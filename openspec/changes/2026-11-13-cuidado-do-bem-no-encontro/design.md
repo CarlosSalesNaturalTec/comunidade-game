@@ -38,7 +38,7 @@ para `comum/` — a fatia 35 e a fatia 18 do PRD-05 decidem isso quando houver o
    | customização fechada                  | validar conservação                        |
    | aberta, sem pendente                  | validar conservação; capturar customização |
    | aberta, com pendente com mídia        | validar conservação; aprovar; reprovar     |
-   | aberta, com pendente sem mídia        | validar conservação; aguarda o envio       |
+   | aberta, com pendente sem mídia        | validar conservação; enviar a mídia        |
 
    Escolher conservação **ou** customização é escolher o botão: o núcleo garante a `RN-01-66`, e
    a fila relida esconde as ações do bem que pontuou.

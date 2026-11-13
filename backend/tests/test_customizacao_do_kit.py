@@ -369,3 +369,88 @@ def test_aprovacao_grava_a_pontuacao_do_bem_pela_customizacao(cliente, sessao, c
     assert sessao.get(RegistroDeCustomizacao, registro["id"]).situacao == (
         SituacaoDoRegistroDeCustomizacao.aprovado
     )
+
+
+# ---------------------------------------------------------------------------
+# O "antes" do kit, pela rota do bem (`RF-04-81`, decisão de 2026-11-13)
+# ---------------------------------------------------------------------------
+
+
+def _rota_do_antes(entrega):
+    return f"/v1/entregas-de-recompensa/{entrega.id}/ultimo-aprovado/arquivo"
+
+
+def _gravar_comprovacao(configuracao, cenario, corpo=b"PNG-do-pratico"):
+    from nucleo.armazenamento.fabrica import obter_porta_de_armazenamento
+
+    obter_porta_de_armazenamento(configuracao).gravar(
+        referencia=cenario.desbloqueio.comprovacao_referencia, conteudo=corpo
+    )
+
+
+def _mestre_nao_autor(cenario, criar_persona, criar_vinculo_do_mestre):
+    outro = criar_persona(Papel.mestre)
+    criar_vinculo_do_mestre(outro, cenario.comunidade)
+    return cenario.cabecalhos(outro)
+
+
+def test_mestre_nao_autor_ve_a_comprovacao_do_pratico_como_antes(
+    cliente, configuracao, cenario, criar_persona, criar_vinculo_do_mestre
+):
+    _gravar_comprovacao(configuracao, cenario)
+    do_mestre_da_aula = _mestre_nao_autor(cenario, criar_persona, criar_vinculo_do_mestre)
+
+    resposta = cliente.get(_rota_do_antes(cenario.entrega_do_kit), headers=do_mestre_da_aula)
+
+    assert resposta.status_code == 200, resposta.text
+    assert resposta.content == b"PNG-do-pratico"
+    assert resposta.headers["content-type"].startswith("image/png")
+
+
+def test_depois_da_primeira_aprovacao_o_antes_e_a_customizacao(
+    cliente, configuracao, cenario, criar_persona, criar_vinculo_do_mestre
+):
+    _gravar_comprovacao(configuracao, cenario)
+    registro = _registrar_com_midia(cliente, cenario)
+    assert _julgar(cliente, cenario, registro["id"]).status_code == 200
+
+    resposta = cliente.get(
+        _rota_do_antes(cenario.entrega_do_kit),
+        headers=_mestre_nao_autor(cenario, criar_persona, criar_vinculo_do_mestre),
+    )
+
+    assert resposta.status_code == 200, resposta.text
+    assert resposta.content == b"PNG-de-teste"
+
+
+def test_o_antes_nao_e_servido_a_mestre_de_outra_comunidade_nem_a_outro_guerreiro(
+    cliente, configuracao, cenario, criar_persona, criar_comunidade, criar_vinculo_do_mestre
+):
+    _gravar_comprovacao(configuracao, cenario)
+    alheio = criar_persona(Papel.mestre)
+    criar_vinculo_do_mestre(alheio, criar_comunidade())
+    outro_guerreiro = criar_persona(Papel.guerreiro, comunidade=cenario.comunidade)
+    rota = _rota_do_antes(cenario.entrega_do_kit)
+
+    assert cliente.get(rota, headers=cenario.cabecalhos(alheio)).status_code == 403
+    assert cliente.get(rota, headers=cenario.cabecalhos(outro_guerreiro)).status_code == 403
+    assert cliente.get(rota, headers=cenario.do_guerreiro).status_code == 200
+
+
+def test_bem_sem_customizacao_aberta_nao_tem_antes(cliente, cenario):
+    resposta = cliente.get(_rota_do_antes(cenario.entrega_do_livro), headers=cenario.do_mestre)
+
+    assert resposta.status_code == 404
+
+
+def test_a_rota_da_comprovacao_segue_so_do_autor(
+    cliente, configuracao, cenario, criar_persona, criar_vinculo_do_mestre
+):
+    _gravar_comprovacao(configuracao, cenario)
+    rota = f"/v1/missoes/{cenario.montagem.id}/desbloqueios/{cenario.guerreiro.id}/comprovacao"
+
+    resposta = cliente.get(
+        rota, headers=_mestre_nao_autor(cenario, criar_persona, criar_vinculo_do_mestre)
+    )
+
+    assert resposta.status_code == 403
