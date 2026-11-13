@@ -4277,6 +4277,14 @@ describe("correção e movimento da missão (RF-09-136, RF-09-137, RF-09-139)", 
     return item as HTMLElement;
   }
 
+  // O controle de mostrar e ocultar da missão inteira, pelo título da linha
+  // recolhida — os blocos internos da missão também dizem "Mostrar".
+  function controleDaMissao(tituloDaLinha: string): HTMLElement {
+    const controle = screen.getByText(tituloDaLinha).closest("summary");
+    if (!controle) throw new Error(`Controle de ${tituloDaLinha} não encontrado`);
+    return controle as HTMLElement;
+  }
+
   function correcao(
     missaoCorrigida: MissaoDaTrilha,
     situacao = "rascunho",
@@ -4344,6 +4352,8 @@ describe("correção e movimento da missão (RF-09-136, RF-09-137, RF-09-139)", 
     });
     const usuario = await abrirTrilha(trilha({ missoes: [primeira, segunda] }));
 
+    // Com duas missões na etapa, cada uma nasce recolhida (`RF-09-142`).
+    await usuario.click(controleDaMissao("2. Segunda missão"));
     await usuario.click(
       within(linhaDa("Segunda missão")).getByRole("button", { name: /^subir$/i }),
     );
@@ -4355,6 +4365,75 @@ describe("correção e movimento da missão (RF-09-136, RF-09-137, RF-09-139)", 
         .map((elemento) => elemento.textContent);
       expect(titulos).toEqual(["Segunda missão", "Primeira missão"]);
     });
+  });
+
+  it("etapa com várias missões nasce com todas recolhidas (RF-09-142)", async () => {
+    await abrirTrilha(
+      trilha({
+        missoes: [
+          missao({ id: "m1", titulo: "Primeira missão", posicao: 1 }),
+          missao({ id: "m2", titulo: "Segunda missão", posicao: 2, obrigatoria: false }),
+        ],
+      }),
+    );
+
+    expect(screen.getByText("1. Primeira missão")).toBeInTheDocument();
+    expect(screen.getByText("2. Segunda missão")).toBeInTheDocument();
+    expect(screen.getByText(/^Opcional · Dificuldade/)).toBeInTheDocument();
+    expect(within(controleDaMissao("1. Primeira missão")).getByText("Mostrar")).toBeVisible();
+    expect(within(controleDaMissao("2. Segunda missão")).getByText("Mostrar")).toBeVisible();
+    expect(screen.queryByRole("button", { name: /corrigir missão/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /pré-visualizar missão/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("mostrar abre só a missão escolhida e o controle passa a ocultar (RF-09-142)", async () => {
+    const usuario = await abrirTrilha(
+      trilha({
+        missoes: [
+          missao({ id: "m1", titulo: "Primeira missão", posicao: 1 }),
+          missao({ id: "m2", titulo: "Segunda missão", posicao: 2 }),
+        ],
+      }),
+    );
+
+    await usuario.click(controleDaMissao("2. Segunda missão"));
+
+    expect(
+      within(linhaDa("Segunda missão")).getByRole("button", { name: /corrigir missão/i }),
+    ).toBeInTheDocument();
+    expect(
+      within(controleDaMissao("2. Segunda missão")).getByText("Ocultar"),
+    ).toBeInTheDocument();
+    expect(
+      within(linhaDa("Primeira missão")).queryByRole("button", { name: /corrigir missão/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(controleDaMissao("1. Primeira missão")).getByText("Mostrar"),
+    ).toBeInTheDocument();
+  });
+
+  it("etapa com uma só missão fica aberta, sem mostrar e ocultar da missão (RF-09-142)", async () => {
+    await abrirTrilha(trilha({ missoes: [missao()] }));
+
+    expect(screen.queryByText("1. Primeira missão")).not.toBeInTheDocument();
+    expect(
+      within(linhaDa("Primeira missão")).getByRole("button", { name: /corrigir missão/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("a linha recolhida declara a sondagem (RF-09-142)", async () => {
+    await abrirTrilha(
+      trilha({
+        missoes: [
+          missao({ id: "m1", titulo: "Sondagem inicial", posicao: 1, e_sondagem: true }),
+          missao({ id: "m2", titulo: "Segunda missão", posicao: 2 }),
+        ],
+      }),
+    );
+
+    expect(screen.getByText(/^Sondagem · Obrigatória · Dificuldade/)).toBeInTheDocument();
   });
 
   it("a recusa do movimento aparece com o motivo do núcleo", async () => {

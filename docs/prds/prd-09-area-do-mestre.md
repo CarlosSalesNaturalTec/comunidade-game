@@ -287,6 +287,7 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-138` | Mestre exclui missão da trilha, em qualquer situação dela                                                                                      | essencial  |
 | `RF-09-139` | Antes de confirmar a correção ou a exclusão que despublica a trilha, a tela diz que ela sai do ar e qual trava fica faltando                   | essencial  |
 | `RF-09-140` | Mestre declara, ao criar e ao corrigir a missão, os materiais necessários para a aula dela (cola, jumpers, papel)                              | essencial  |
+| `RF-09-142` | Com mais de uma missão na etapa aberta, cada missão inteira se mostra e se oculta, e nasce oculta; sozinha, fica aberta                        | essencial  |
 
 ### 6.2 Template de missão
 
@@ -809,6 +810,12 @@ customização é do Mestre da aula e acontece no aparelho do encontro (PRD-04),
 validação da conservação (`RF-09-113`) vai junto para lá, na mesma fila, para o Mestre escolher
 por item uma ou outra.
 
+### Decisões de 2026-11-13
+
+Decisão do fundador de 2026-11-13, em `/opsx:propose`: na tela da trilha, a missão inteira
+recolhe quando a etapa aberta tem mais de uma (documento 15 §6.1; linha "A missão inteira
+recolhe na etapa com mais de uma" do documento 09) — `RF-09-142`.
+
 ## 14. Pendências que permanecem
 
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
@@ -886,3 +893,4 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-136` a `RF-09-139`, `RN-09-56` a `RN-09-60` | 03 §11 (a missão se corrige, se move e se exclui)                          |
 | `RF-09-140` e `RN-09-61`                           | 11 §2.2 (os materiais da missão)                                           |
 | `RF-09-141` e `RN-09-62`                           | 11 §§2.2, 5 (customização do kit recebido)                                 |
+| `RF-09-142`                                        | 15 §6.1 (a missão inteira recolhe na etapa)                                |

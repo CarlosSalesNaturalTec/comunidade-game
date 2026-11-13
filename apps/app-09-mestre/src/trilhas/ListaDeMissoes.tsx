@@ -121,6 +121,18 @@ function resumoDaRecompensa(quantidade: number): string {
     : "Nenhuma recompensa declarada para este marco.";
 }
 
+// A linha recolhida da missão: a etapa fica de fora, porque é a página
+// aberta (`RF-09-142`, design — decisão 1).
+function resumoDaMissao(missao: MissaoDaTrilha): string {
+  return [
+    missao.e_sondagem ? "Sondagem" : null,
+    missao.obrigatoria ? "Obrigatória" : "Opcional",
+    `Dificuldade ${missao.nivel_de_dificuldade}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 // A trilha em rascunho existe sem sondagem — a marcação só distingue quando
 // o Mestre a declara (`RF-09-81`, design — decisões).
 export function ListaDeMissoes({
@@ -210,209 +222,229 @@ export function ListaDeMissoes({
     definirGravadoEm((atual) => ({ ...atual, [chave]: new Date() }));
   }
 
+  // Com mais de uma missão na etapa, cada missão inteira vira bloco
+  // recolhível que nasce fechado; sozinha, ela segue aberta, sem o bloco
+  // (`RF-09-142`, documento 15 §6.1, design — decisões 1 a 3).
+  const recolherMissoes = missoesNaOrdem.length > 1;
+
+  function corpoDaMissao(missao: MissaoDaTrilha) {
+    return (
+      <>
+        <div className="lista-de-missoes__linha">
+          <span className="lista-de-missoes__posicao">{missao.posicao}.</span>
+          <span className="lista-de-missoes__titulo">{missao.titulo}</span>
+          {missao.e_sondagem && <span className="lista-de-missoes__sondagem">Sondagem</span>}
+          <span className="lista-de-missoes__etapa">
+            {ROTULO_DA_ETAPA[missao.etapa_do_ciclo] ?? missao.etapa_do_ciclo}
+          </span>
+          <span className="lista-de-missoes__obrigatoriedade">
+            {missao.obrigatoria ? "Obrigatória" : "Opcional"}
+          </span>
+          <span className="lista-de-missoes__dificuldade">
+            Dificuldade {missao.nivel_de_dificuldade}
+          </span>
+        </div>
+        {missao.materiais && missao.materiais.length > 0 && (
+          <p className="lista-de-missoes__materiais">
+            Materiais para a aula: {missao.materiais.join(", ")}
+          </p>
+        )}
+
+        <div className="lista-de-missoes__atos">
+          <Botao
+            variante="secundaria"
+            onClick={() =>
+              definirMissaoEmCorrecao(missaoEmCorrecao === missao.id ? null : missao.id)
+            }
+          >
+            Corrigir missão
+          </Botao>
+          <Botao
+            variante="secundaria"
+            desabilitado={movendo}
+            onClick={() => mover(missao, "cima")}
+          >
+            Subir
+          </Botao>
+          <Botao
+            variante="secundaria"
+            desabilitado={movendo}
+            onClick={() => mover(missao, "baixo")}
+          >
+            Descer
+          </Botao>
+        </div>
+        {recusaDoMovimento[missao.id] && (
+          <Aviso tipo="erro">{recusaDoMovimento[missao.id]}</Aviso>
+        )}
+
+        {missaoEmCorrecao === missao.id && (
+          <FormularioDeMissao
+            idDaTrilha={idDaTrilha}
+            proximaPosicao={missao.posicao}
+            etapaInicial={missao.etapa_do_ciclo}
+            missao={missao}
+            trilhaPublicada={trilhaPublicada}
+            onSalvo={() => definirMissaoEmCorrecao(null)}
+            onCorrigida={(correcao) => {
+              definirMissaoEmCorrecao(null);
+              marcarGravado(`${missao.id}:missao`);
+              onCorrigirMissao?.(correcao);
+            }}
+            onCancelar={() => definirMissaoEmCorrecao(null)}
+          />
+        )}
+        <MarcaDeGravacao instante={gravadoEm[`${missao.id}:missao`] ?? null} />
+
+        <BlocoRecolhivel
+          titulo="Template da missão"
+          resumo="Sugestão de estrutura por IA para esta missão."
+        >
+          <TemplateDaMissao missao={missao} onAtualizada={onAtualizarMissao} />
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel titulo="Conteúdo" resumo={resumoDosConteudos(missao)}>
+          <BlocoDeConteudo missao={missao} onAtualizada={onAtualizarMissao} />
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel titulo="Bibliografia" resumo={resumoDaBibliografia(missao)}>
+          <Bibliografia
+            idDaMissao={missao.id}
+            entradas={missao.bibliografia ?? []}
+            onSalva={(bibliografia) =>
+              onAtualizarMissao({
+                ...missao,
+                bibliografia: [...(missao.bibliografia ?? []), bibliografia],
+              })
+            }
+          />
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel titulo="Cadência de retomada" resumo={resumoDaCadencia(missao)}>
+          <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel titulo="Atividades" resumo={resumoDasAtividades(missao)}>
+          <BlocoDeAtividades missao={missao} onAtualizada={onAtualizarMissao} />
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel
+          titulo={missao.e_sondagem ? "Sondagem" : "Desafio de desbloqueio"}
+          resumo={resumoDoDesafioDeDesbloqueio(missao)}
+        >
+          <DesafioDeDesbloqueio
+            missao={missao}
+            onAtualizada={onAtualizarMissao}
+            missoes={missoes}
+            tiposDeRecurso={tiposDeRecurso}
+            recompensasDeMarco={recompensasDeMarco}
+          />
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel
+          titulo="Recompensa pelo desbloqueio"
+          resumo={resumoDaRecompensa(
+            recompensasDeMarco.filter((r) => r.missao_id === missao.id).length,
+          )}
+        >
+          <DeclaracaoDeRecompensa
+            idDaTrilha={idDaTrilha}
+            missao={missao}
+            tiposDeRecurso={tiposDeRecurso}
+            recompensas={recompensasDeMarco.filter((r) => r.missao_id === missao.id)}
+            onDeclarada={onDeclararRecompensa}
+          />
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel
+          titulo="Desafios de coleta"
+          resumo={resumoDosDesafiosDeColeta(missao)}
+        >
+          <section aria-label={`Desafios de coleta de ${missao.titulo}`}>
+            {(missao.desafios_de_coleta ?? []).length === 0 ? (
+              <p>Esta missão ainda não tem desafio de coleta declarado.</p>
+            ) : (
+              <ul>
+                {(missao.desafios_de_coleta ?? []).map((desafio) => {
+                  const tipo = tipoPorId.get(desafio.tipo_de_coleta_id);
+                  return (
+                    <li key={desafio.id}>
+                      {tipo ? tipo.nome : "Tipo de coleta"} ·{" "}
+                      {ROTULO_DA_CADENCIA_DE_COLETA[desafio.cadencia]} ·{" "}
+                      {rotuloDoNivel(desafio.granularidade_exigida)} ·{" "}
+                      {desafio.registros_que_pontuam_por_periodo} registro(s) por período
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {missaoComFormularioDeColeta === missao.id ? (
+              <FormularioDeDesafioDeColeta
+                idDaMissao={missao.id}
+                tiposDeColeta={tiposDeColeta}
+                onSalvo={(desafio) => {
+                  definirMissaoComFormularioDeColeta(null);
+                  marcarGravado(`${missao.id}:coleta`);
+                  onAtualizarMissao({
+                    ...missao,
+                    desafios_de_coleta: [...(missao.desafios_de_coleta ?? []), desafio],
+                  });
+                }}
+                onCancelar={() => definirMissaoComFormularioDeColeta(null)}
+              />
+            ) : (
+              <Botao
+                variante="secundaria"
+                onClick={() => definirMissaoComFormularioDeColeta(missao.id)}
+              >
+                Novo desafio de coleta
+              </Botao>
+            )}
+            <MarcaDeGravacao instante={gravadoEm[`${missao.id}:coleta`] ?? null} />
+          </section>
+        </BlocoRecolhivel>
+
+        <BlocoRecolhivel titulo="ODS da missão" resumo={resumoDasEtiquetasDaMissao(missao)}>
+          <EtiquetasOds
+            alvo="missao"
+            id={missao.id}
+            etiquetas={missao.etiquetas_ods}
+            onSalvo={(etiquetas) => onAtualizarMissao({ ...missao, etiquetas_ods: etiquetas })}
+          />
+        </BlocoRecolhivel>
+
+        {missaoEmPreVisualizacao === missao.id ? (
+          <PreVisualizacaoDaMissao
+            missao={missao}
+            autorNome={nickDoMestre}
+            onFechar={() => definirMissaoEmPreVisualizacao(null)}
+          />
+        ) : (
+          <Botao
+            variante="secundaria"
+            onClick={() => definirMissaoEmPreVisualizacao(missao.id)}
+          >
+            Pré-visualizar missão
+          </Botao>
+        )}
+      </>
+    );
+  }
+
   return (
     <ul className="lista-de-missoes" aria-label="Missões da trilha">
       {missoesNaOrdem.map((missao) => (
         <li key={missao.id} className="lista-de-missoes__item">
-          <div className="lista-de-missoes__linha">
-            <span className="lista-de-missoes__posicao">{missao.posicao}.</span>
-            <span className="lista-de-missoes__titulo">{missao.titulo}</span>
-            {missao.e_sondagem && <span className="lista-de-missoes__sondagem">Sondagem</span>}
-            <span className="lista-de-missoes__etapa">
-              {ROTULO_DA_ETAPA[missao.etapa_do_ciclo] ?? missao.etapa_do_ciclo}
-            </span>
-            <span className="lista-de-missoes__obrigatoriedade">
-              {missao.obrigatoria ? "Obrigatória" : "Opcional"}
-            </span>
-            <span className="lista-de-missoes__dificuldade">
-              Dificuldade {missao.nivel_de_dificuldade}
-            </span>
-          </div>
-          {missao.materiais && missao.materiais.length > 0 && (
-            <p className="lista-de-missoes__materiais">
-              Materiais para a aula: {missao.materiais.join(", ")}
-            </p>
-          )}
-
-          <div className="lista-de-missoes__atos">
-            <Botao
-              variante="secundaria"
-              onClick={() =>
-                definirMissaoEmCorrecao(missaoEmCorrecao === missao.id ? null : missao.id)
-              }
+          {recolherMissoes ? (
+            <BlocoRecolhivel
+              titulo={`${missao.posicao}. ${missao.titulo}`}
+              resumo={resumoDaMissao(missao)}
             >
-              Corrigir missão
-            </Botao>
-            <Botao
-              variante="secundaria"
-              desabilitado={movendo}
-              onClick={() => mover(missao, "cima")}
-            >
-              Subir
-            </Botao>
-            <Botao
-              variante="secundaria"
-              desabilitado={movendo}
-              onClick={() => mover(missao, "baixo")}
-            >
-              Descer
-            </Botao>
-          </div>
-          {recusaDoMovimento[missao.id] && (
-            <Aviso tipo="erro">{recusaDoMovimento[missao.id]}</Aviso>
-          )}
-
-          {missaoEmCorrecao === missao.id && (
-            <FormularioDeMissao
-              idDaTrilha={idDaTrilha}
-              proximaPosicao={missao.posicao}
-              etapaInicial={missao.etapa_do_ciclo}
-              missao={missao}
-              trilhaPublicada={trilhaPublicada}
-              onSalvo={() => definirMissaoEmCorrecao(null)}
-              onCorrigida={(correcao) => {
-                definirMissaoEmCorrecao(null);
-                marcarGravado(`${missao.id}:missao`);
-                onCorrigirMissao?.(correcao);
-              }}
-              onCancelar={() => definirMissaoEmCorrecao(null)}
-            />
-          )}
-          <MarcaDeGravacao instante={gravadoEm[`${missao.id}:missao`] ?? null} />
-
-          <BlocoRecolhivel
-            titulo="Template da missão"
-            resumo="Sugestão de estrutura por IA para esta missão."
-          >
-            <TemplateDaMissao missao={missao} onAtualizada={onAtualizarMissao} />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="Conteúdo" resumo={resumoDosConteudos(missao)}>
-            <BlocoDeConteudo missao={missao} onAtualizada={onAtualizarMissao} />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="Bibliografia" resumo={resumoDaBibliografia(missao)}>
-            <Bibliografia
-              idDaMissao={missao.id}
-              entradas={missao.bibliografia ?? []}
-              onSalva={(bibliografia) =>
-                onAtualizarMissao({
-                  ...missao,
-                  bibliografia: [...(missao.bibliografia ?? []), bibliografia],
-                })
-              }
-            />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="Cadência de retomada" resumo={resumoDaCadencia(missao)}>
-            <CadenciaDeRetomada missao={missao} onAtualizada={onAtualizarMissao} />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="Atividades" resumo={resumoDasAtividades(missao)}>
-            <BlocoDeAtividades missao={missao} onAtualizada={onAtualizarMissao} />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel
-            titulo={missao.e_sondagem ? "Sondagem" : "Desafio de desbloqueio"}
-            resumo={resumoDoDesafioDeDesbloqueio(missao)}
-          >
-            <DesafioDeDesbloqueio
-              missao={missao}
-              onAtualizada={onAtualizarMissao}
-              missoes={missoes}
-              tiposDeRecurso={tiposDeRecurso}
-              recompensasDeMarco={recompensasDeMarco}
-            />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel
-            titulo="Recompensa pelo desbloqueio"
-            resumo={resumoDaRecompensa(
-              recompensasDeMarco.filter((r) => r.missao_id === missao.id).length,
-            )}
-          >
-            <DeclaracaoDeRecompensa
-              idDaTrilha={idDaTrilha}
-              missao={missao}
-              tiposDeRecurso={tiposDeRecurso}
-              recompensas={recompensasDeMarco.filter((r) => r.missao_id === missao.id)}
-              onDeclarada={onDeclararRecompensa}
-            />
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel
-            titulo="Desafios de coleta"
-            resumo={resumoDosDesafiosDeColeta(missao)}
-          >
-            <section aria-label={`Desafios de coleta de ${missao.titulo}`}>
-              {(missao.desafios_de_coleta ?? []).length === 0 ? (
-                <p>Esta missão ainda não tem desafio de coleta declarado.</p>
-              ) : (
-                <ul>
-                  {(missao.desafios_de_coleta ?? []).map((desafio) => {
-                    const tipo = tipoPorId.get(desafio.tipo_de_coleta_id);
-                    return (
-                      <li key={desafio.id}>
-                        {tipo ? tipo.nome : "Tipo de coleta"} ·{" "}
-                        {ROTULO_DA_CADENCIA_DE_COLETA[desafio.cadencia]} ·{" "}
-                        {rotuloDoNivel(desafio.granularidade_exigida)} ·{" "}
-                        {desafio.registros_que_pontuam_por_periodo} registro(s) por período
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-
-              {missaoComFormularioDeColeta === missao.id ? (
-                <FormularioDeDesafioDeColeta
-                  idDaMissao={missao.id}
-                  tiposDeColeta={tiposDeColeta}
-                  onSalvo={(desafio) => {
-                    definirMissaoComFormularioDeColeta(null);
-                    marcarGravado(`${missao.id}:coleta`);
-                    onAtualizarMissao({
-                      ...missao,
-                      desafios_de_coleta: [...(missao.desafios_de_coleta ?? []), desafio],
-                    });
-                  }}
-                  onCancelar={() => definirMissaoComFormularioDeColeta(null)}
-                />
-              ) : (
-                <Botao
-                  variante="secundaria"
-                  onClick={() => definirMissaoComFormularioDeColeta(missao.id)}
-                >
-                  Novo desafio de coleta
-                </Botao>
-              )}
-              <MarcaDeGravacao instante={gravadoEm[`${missao.id}:coleta`] ?? null} />
-            </section>
-          </BlocoRecolhivel>
-
-          <BlocoRecolhivel titulo="ODS da missão" resumo={resumoDasEtiquetasDaMissao(missao)}>
-            <EtiquetasOds
-              alvo="missao"
-              id={missao.id}
-              etiquetas={missao.etiquetas_ods}
-              onSalvo={(etiquetas) =>
-                onAtualizarMissao({ ...missao, etiquetas_ods: etiquetas })
-              }
-            />
-          </BlocoRecolhivel>
-
-          {missaoEmPreVisualizacao === missao.id ? (
-            <PreVisualizacaoDaMissao
-              missao={missao}
-              autorNome={nickDoMestre}
-              onFechar={() => definirMissaoEmPreVisualizacao(null)}
-            />
+              {corpoDaMissao(missao)}
+            </BlocoRecolhivel>
           ) : (
-            <Botao
-              variante="secundaria"
-              onClick={() => definirMissaoEmPreVisualizacao(missao.id)}
-            >
-              Pré-visualizar missão
-            </Botao>
+            corpoDaMissao(missao)
           )}
         </li>
       ))}
