@@ -69,7 +69,7 @@ function renderizarTelaInicial(papelDeTrabalho: string) {
 // O cartão é do Mestre, no molde da chave do momento de troca: o Admin nunca
 // confirma entrega (`RF-04-71`, `RF-04-49`, `RN-02-17`, design — decisão 4).
 describe("o caminho das entregas na tela inicial (RF-04-71, RN-02-17)", () => {
-  it("aparece ao Mestre, entre a chave da troca e o encerramento", async () => {
+  it("aparece ao Mestre, entre a chave da troca e a fila do cuidado", async () => {
     renderizarTelaInicial("mestre");
 
     await screen.findByText(/o que você quer fazer/i);
@@ -80,7 +80,10 @@ describe("o caminho das entregas na tela inicial (RF-04-71, RN-02-17)", () => {
     // No mesmo padrão dos demais, com glifo ao lado do rótulo.
     expect(cartao.querySelector("svg")).not.toBeNull();
     const cartoes = Array.from(document.querySelectorAll(".cg-caminho"));
-    expect(cartoes[cartoes.length - 2]).toBe(cartao);
+    // Depois das entregas vem a fila do cuidado, e o encerramento fecha
+    // (`RF-04-81`).
+    expect(cartoes[cartoes.length - 3]).toBe(cartao);
+    expect(cartoes[cartoes.length - 2].textContent).toMatch(/customizações a julgar/i);
     expect(cartoes[cartoes.length - 1].textContent).toMatch(/encerrar a sessão de trabalho/i);
   });
 
