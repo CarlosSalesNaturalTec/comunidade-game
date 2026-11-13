@@ -74,6 +74,14 @@ export interface BibliografiaDaMissao {
 
 export type TipoDeDesafioDeDesbloqueio = "quiz" | "pratico";
 
+// A recompensa de marco que o prático apresenta como kit. O núcleo não
+// distingue kit de camisa ou livro: vale a declaração do Mestre autor
+// (`RF-09-141`).
+export interface KitApresentado {
+  recompensa_de_marco_id: string;
+  tipo_de_recurso_nome: string;
+}
+
 // As seis formas de entrega do Guerreiro(a) (documento 02 §4) — no desafio
 // prático, o Mestre autor aceita **uma** delas como comprovação
 // (`RF-09-129`).
@@ -160,6 +168,9 @@ export interface MissaoDaTrilha {
   desafio_pratico_forma_de_comprovacao?: FormaDeComprovacao | null;
   desafio_pratico_criterio_de_aceite?: string | null;
   desafio_pratico_titulo_curto?: string | null;
+  // O kit que o prático apresenta — a recompensa de marco da trilha e o nome
+  // do tipo de recurso dela. Nulo sem kit e no quiz (`RF-09-141`).
+  desafio_pratico_kit_apresentado?: KitApresentado | null;
   atividades: AtividadeDaMissao[];
   // As etiquetas **próprias** da missão: a leitura não cai para as da
   // trilha, ainda que a missão sem etiqueta própria responda por elas nos
@@ -517,6 +528,9 @@ export interface DeclararDesafioDeDesbloqueioEntrada {
   forma_de_comprovacao?: FormaDeComprovacao | null;
   criterio_de_aceite?: string | null;
   titulo_curto?: string | null;
+  // Opcional, só do prático: declarar de novo substitui o kit, inclusive por
+  // nenhum, de modo que a tela o reenvia a cada declaração (`RF-09-141`).
+  kit_apresentado_id?: string | null;
 }
 
 // Só o Mestre autor declara — a posse, a exigência de ao menos uma pergunta
