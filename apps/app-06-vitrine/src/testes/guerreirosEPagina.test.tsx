@@ -244,6 +244,20 @@ describe("o acervo na carta e na página do Guerreiro(a)", () => {
     };
   }
 
+  function customizacao(nick: string, descricao: string, validada_em: string): CriacaoPublica {
+    return {
+      id: `k-${descricao}`,
+      fonte: "customizacao_do_kit",
+      titulo: descricao,
+      tipo: "imagem",
+      trilha_id: "t-3",
+      trilha: "Trilha dos Robôs",
+      validada_em,
+      producao: null,
+      autores: [{ avatar: "avatar-de-teste", nick }],
+    };
+  }
+
   function comAcervo(nick: string, criacoes: CriacaoPublica[]) {
     comLeituras({ guerreiros: [{ ...guerreiro(nick), criacoes }] });
     window.history.pushState(null, "", `/guerreiros/${nick}`);
@@ -316,5 +330,44 @@ describe("o acervo na carta e na página do Guerreiro(a)", () => {
 
     await usuario.click(screen.getByRole("button", { name: "Ler a produção" }));
     expect(await screen.findByText("Comprovação de Mapa da rua.")).toBeVisible();
+  });
+
+  it("a customização aprovada aparece na carta pela descrição e pela data (RF-03-86, RF-03-88)", async () => {
+    comAcervo("customizou", [
+      customizacao("customizou", "Robô com braço de garrafa", "2026-11-12T10:00:00Z"),
+    ]);
+
+    await screen.findByRole("heading", { name: "customizou", level: 2 });
+    expect(colunaDaCarta()).toEqual(["Robô com braço de garrafa — 12/11/2026"]);
+  });
+
+  it("o portfólio da página traz a customização, com a trilha do kit, e abre a mídia (RF-03-87, RF-03-88)", async () => {
+    vi.stubGlobal("URL", {
+      ...URL,
+      createObjectURL: vi.fn(() => "blob:producao-do-acervo"),
+      revokeObjectURL: vi.fn(),
+    });
+    const buscar = vi
+      .spyOn(leituras, "lerArquivoDoAcervo")
+      .mockResolvedValue(new Blob([new Uint8Array([1])], { type: "image/png" }));
+    const usuario = userEvent.setup();
+    comAcervo("mostra-kit", [
+      customizacao("mostra-kit", "Robô com braço de garrafa", "2026-11-12T10:00:00Z"),
+    ]);
+
+    const portfolio = await screen.findByRole("list", { name: "Portfólio de mostra-kit" });
+    expect(portfolio.textContent).toContain("Robô com braço de garrafa");
+    expect(portfolio.textContent).toContain("Trilha dos Robôs");
+
+    await usuario.click(within(portfolio).getByRole("button", { name: "Ver a imagem" }));
+    const imagem = await within(portfolio).findByRole("img", {
+      name: "Produção de Robô com braço de garrafa",
+    });
+    expect(imagem).toHaveAttribute("src", "blob:producao-do-acervo");
+    expect(buscar).toHaveBeenCalledWith({
+      id: "k-Robô com braço de garrafa",
+      fonte: "customizacao_do_kit",
+    });
+    vi.unstubAllGlobals();
   });
 });
