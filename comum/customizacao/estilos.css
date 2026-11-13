@@ -21,3 +21,9 @@
 .cg-customizacao__aviso-detalhe {
   margin-block-start: var(--espaco-8);
 }
+
+.cg-customizacao__kit {
+  display: grid;
+  gap: var(--espaco-8);
+  justify-items: start;
+}

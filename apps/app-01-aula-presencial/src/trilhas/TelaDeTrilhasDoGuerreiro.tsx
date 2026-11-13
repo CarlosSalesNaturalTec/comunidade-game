@@ -1,3 +1,10 @@
+import {
+  CustomizacaoDoKit,
+  type FormularioAberto,
+  lerMinhasCustomizacoes,
+  type MinhasCustomizacoes,
+  ultimoRegistroDoKit,
+} from "comum/customizacao";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { EscolhaDoPoder, GuiaDaTrilha } from "comum/trilha";
 import { listarMinhasTrilhas, type TrilhaComProximaMissao } from "comum/trilha/api";
@@ -24,6 +31,11 @@ const MENSAGEM_SEM_EQUIPE_NA_AULA =
   "Você ainda não está em nenhuma equipe deste encontro. Volte ao início e escolha Equipes " +
   "para entrar numa.";
 
+// A mesma frase da App 05: a falha só da customização não esconde o percurso
+// (`RF-04-80`, design — decisão 4).
+const MENSAGEM_DE_FALHA_DA_CUSTOMIZACAO =
+  "Não foi possível carregar a customização dos seus kits agora. Tente de novo em instantes.";
+
 const MENSAGEM_SEM_ATIVIDADE_DA_EQUIPE =
   "A sua equipe deste encontro ainda não tem atividade declarada. Peça a um Mestre para " +
   "verificar.";
@@ -38,6 +50,11 @@ const MENSAGEM_SEM_ATIVIDADE_DA_EQUIPE =
 // trilha ao ser respondida e o **desafio de desbloqueio** (`RF-04-73`,
 // `RF-04-74`). A **entrega individual** da produção NUNCA: a entrega desta
 // aplicação é por equipe, no caminho das equipes (`RF-04-45`, `RF-05-74`).
+//
+// A **customização do kit recebido** também se registra aqui, pela própria
+// criança, com o mesmo bloco da App 05 — registro, acompanhamento e
+// cancelamento —, e vai à fila do cuidado do encontro (`RF-04-80`, PRD-04
+// §5.13.1).
 export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
   const { semRede } = useEstadoDeRede();
   const [trilhas, definirTrilhas] = useState<TrilhaComProximaMissao[] | null>(null);
@@ -45,6 +62,20 @@ export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
   const [escolhidaId, definirEscolhidaId] = useState<string | null>(null);
   const [mostrarCatalogo, definirMostrarCatalogo] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
+  const [customizacoes, definirCustomizacoes] = useState<MinhasCustomizacoes | null>(null);
+  const [erroDaCustomizacao, definirErroDaCustomizacao] = useState(false);
+
+  // Leitura à parte das do percurso: a falha dela vira aviso único e não
+  // derruba as trilhas; depois de registrar ou cancelar, só ela é lida de novo
+  // (`RF-04-80`, design — decisão 4).
+  const lerCustomizacoes = useCallback(async () => {
+    try {
+      definirCustomizacoes(await lerMinhasCustomizacoes(token));
+      definirErroDaCustomizacao(false);
+    } catch {
+      definirErroDaCustomizacao(true);
+    }
+  }, [token]);
 
   // Nada é enfileirado aqui: sem rede o caminho simplesmente não abre, como
   // nos das equipes, do quiz e da troca (`RF-04-58`, `RF-04-68`).
@@ -75,7 +106,8 @@ export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
   useEffect(() => {
     if (semRede) return;
     carregar();
-  }, [carregar, semRede]);
+    lerCustomizacoes();
+  }, [carregar, lerCustomizacoes, semRede]);
 
   // Feita a inscrição, o percurso daquela trilha abre no mesmo atendimento
   // — na sondagem, porque é ela a próxima missão que o núcleo devolve
@@ -124,6 +156,20 @@ export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
     );
   }
 
+  // As atividades do encontro e, ao lado, os kits a customizar — nos três
+  // estados do percurso (`RF-04-72`, `RF-04-80`, design — decisão 3).
+  const blocosDoEncontro = (
+    <>
+      <AtividadesDaAula aulaId={aulaId} equipes={equipes} />
+      <CustomizacaoDosKits
+        customizacoes={customizacoes}
+        falhou={erroDaCustomizacao}
+        token={token}
+        aoMudar={lerCustomizacoes}
+      />
+    </>
+  );
+
   // Sem inscrição alguma, o catálogo de poderes do ciclo é o desfecho — não
   // um aviso de que inscrever-se acontece noutro lugar (`RF-04-74`, design
   // — decisão 6).
@@ -136,7 +182,7 @@ export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
           acao={{ rotulo: "Voltar", aoAcionar: aoVoltar }}
         />
         <EscolhaDoPoder aoInscrever={aoInscrever} inscricaoLigada />
-        <AtividadesDaAula aulaId={aulaId} equipes={equipes} />
+        {blocosDoEncontro}
       </Moldura>
     );
   }
@@ -163,7 +209,7 @@ export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
             Escolher outro poder
           </Botao>
         </section>
-        <AtividadesDaAula aulaId={aulaId} equipes={equipes} />
+        {blocosDoEncontro}
       </Moldura>
     );
   }
@@ -183,7 +229,7 @@ export function TelaDeTrilhasDoGuerreiro({ aulaId, token, aoVoltar }: Props) {
         aoAtualizarTrilhas={() => carregar(escolhida.id)}
         aoTrocarDeTrilha={temOutraTrilha ? () => definirEscolhidaId(null) : undefined}
         submissaoDoDesbloqueioLigada
-        atividadesDoEncontro={<AtividadesDaAula aulaId={aulaId} equipes={equipes} />}
+        atividadesDoEncontro={blocosDoEncontro}
         aoEscolherOutroPoder={temOutraTrilha ? undefined : () => definirMostrarCatalogo(true)}
       />
     </Moldura>
@@ -220,6 +266,54 @@ function AtividadesDaAula({ aulaId, equipes }: { aulaId: string; equipes: MinhaE
           </div>
         ))
       )}
+    </section>
+  );
+}
+
+// Os kits recebidos com customização aberta, cada um com a situação e a ação
+// do bloco da camada comum — o mesmo da App 05, para não divergir. Sem kit
+// aberto a seção não se monta; um formulário aberto por vez (`RF-04-80`,
+// design — decisões 1 e 3).
+function CustomizacaoDosKits({
+  customizacoes,
+  falhou,
+  token,
+  aoMudar,
+}: {
+  customizacoes: MinhasCustomizacoes | null;
+  falhou: boolean;
+  token: string;
+  aoMudar: () => Promise<void>;
+}) {
+  const [formularioAberto, definirFormularioAberto] = useState<FormularioAberto | null>(null);
+
+  if (falhou) {
+    return <Aviso tipo="atencao">{MENSAGEM_DE_FALHA_DA_CUSTOMIZACAO}</Aviso>;
+  }
+  const abertos = customizacoes?.kits_abertos.filter((kit) => kit.customizacao_aberta) ?? [];
+  if (customizacoes === null || abertos.length === 0) return null;
+
+  return (
+    <section aria-label="Customização dos seus kits" className="cg-trilha__atividades-da-aula">
+      <h2>Customização dos seus kits</h2>
+      <ul>
+        {abertos.map((kit) => (
+          <li key={kit.entrega_de_recompensa_id}>
+            <h3>
+              {kit.tipo_de_recurso_nome} — {kit.trilha_nome}
+            </h3>
+            <CustomizacaoDoKit
+              kit={kit}
+              ultimo={ultimoRegistroDoKit(kit, customizacoes.registros)}
+              token={token}
+              formularioAberto={formularioAberto}
+              abrirFormulario={definirFormularioAberto}
+              fecharFormulario={() => definirFormularioAberto(null)}
+              aoMudar={aoMudar}
+            />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

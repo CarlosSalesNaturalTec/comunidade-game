@@ -1,165 +1,20 @@
-import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
+import { ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import {
-  cancelarCustomizacao,
+  CustomizacaoDoKit,
+  type FormularioAberto,
   type KitAberto,
   lerMinhasCustomizacoes,
   type MinhasCustomizacoes,
-  RegistroDaCustomizacao,
-  type RegistroDeCustomizacao,
+  ultimoRegistroDoKit,
 } from "comum/customizacao";
-import { Aviso, Botao, EstadoDaLista } from "comum/react";
+import { Aviso, EstadoDaLista } from "comum/react";
 import { descreverRecompensa } from "comum/trilha";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { listarMinhasRecompensas, type RecompensaConquistada } from "../api/carteira";
 
 function formatarData(valorIso: string): string {
   return new Date(valorIso).toLocaleDateString("pt-BR");
-}
-
-/** O registro mais recente do kit, pela data em que foi registrado — é ele
- * que decide a ação do cartão (design — decisão 3). */
-function ultimoRegistroDoKit(
-  kit: KitAberto,
-  registros: RegistroDeCustomizacao[],
-): RegistroDeCustomizacao | null {
-  const doKit = registros.filter(
-    (registro) => registro.entrega_de_recompensa_id === kit.entrega_de_recompensa_id,
-  );
-  if (doKit.length === 0) return kit.pendente;
-  return doKit.reduce((maisRecente, registro) =>
-    registro.registrado_em > maisRecente.registrado_em ? registro : maisRecente,
-  );
-}
-
-interface FormularioAberto {
-  entregaId: string;
-  registroId: string | null;
-}
-
-// A customização do kit aberto, no próprio cartão da conquista: a situação do
-// último registro e a ação que cabe — registrar, retomar o envio, aguardar a
-// aula e cancelar, ler o motivo e enviar de novo (`RF-05-102`, `RF-05-103`,
-// resposta do fundador de 2026-11-13).
-function CustomizacaoDoKit({
-  kit,
-  ultimo,
-  token,
-  formularioAberto,
-  abrirFormulario,
-  fecharFormulario,
-  aoMudar,
-}: {
-  kit: KitAberto;
-  ultimo: RegistroDeCustomizacao | null;
-  token: string;
-  formularioAberto: FormularioAberto | null;
-  abrirFormulario: (formulario: FormularioAberto) => void;
-  fecharFormulario: () => void;
-  aoMudar: () => Promise<void>;
-}) {
-  const [erro, definirErro] = useState<string | null>(null);
-  const [cancelando, definirCancelando] = useState(false);
-  const entregaId = kit.entrega_de_recompensa_id;
-
-  if (formularioAberto?.entregaId === entregaId) {
-    return (
-      <RegistroDaCustomizacao
-        entregaDeRecompensaId={entregaId}
-        registroIdInicial={formularioAberto.registroId}
-        token={token}
-        aoConcluir={async () => {
-          fecharFormulario();
-          await aoMudar();
-        }}
-        aoCancelar={fecharFormulario}
-      />
-    );
-  }
-
-  async function cancelar(registroId: string) {
-    definirErro(null);
-    definirCancelando(true);
-    try {
-      await cancelarCustomizacao(registroId, token);
-    } catch (erroCapturado) {
-      definirErro(
-        erroCapturado instanceof ErroDaApi
-          ? erroCapturado.message
-          : "Não foi possível cancelar agora. Tente de novo em instantes.",
-      );
-    } finally {
-      definirCancelando(false);
-    }
-    await aoMudar();
-  }
-
-  const registrarNovo = (rotulo: string) => (
-    <Botao
-      variante="secundaria"
-      onClick={() => abrirFormulario({ entregaId, registroId: null })}
-    >
-      {rotulo}
-    </Botao>
-  );
-
-  let conteudo: ReactNode;
-  if (ultimo === null || ultimo.situacao === "cancelado" || ultimo.situacao === "expirado") {
-    conteudo = registrarNovo("Registrar a customização");
-  } else if (ultimo.situacao === "pendente" && !ultimo.tem_midia) {
-    conteudo = (
-      <>
-        <p>Falta enviar a foto ou o vídeo da sua customização.</p>
-        <Botao onClick={() => abrirFormulario({ entregaId, registroId: ultimo.id })}>
-          Enviar a foto ou o vídeo
-        </Botao>
-        <Botao
-          variante="secundaria"
-          onClick={() => cancelar(ultimo.id)}
-          desabilitado={cancelando}
-        >
-          Cancelar
-        </Botao>
-      </>
-    );
-  } else if (ultimo.situacao === "pendente") {
-    conteudo = (
-      <>
-        <Aviso tipo="andamento">
-          Aguardando a aula: mostre o kit ao Mestre no encontro. Se não for apresentado até o
-          fim do ciclo, este registro expira.
-        </Aviso>
-        <Botao
-          variante="secundaria"
-          onClick={() => cancelar(ultimo.id)}
-          desabilitado={cancelando}
-        >
-          Cancelar
-        </Botao>
-      </>
-    );
-  } else if (ultimo.situacao === "reprovado") {
-    conteudo = (
-      <>
-        <Aviso tipo="atencao">O Mestre pediu um ajuste: {ultimo.motivo_do_julgamento}</Aviso>
-        {registrarNovo("Enviar de novo")}
-      </>
-    );
-  } else {
-    conteudo = (
-      <>
-        <Aviso tipo="sucesso">Aprovado pelo Mestre.</Aviso>
-        {registrarNovo("Registrar a customização")}
-      </>
-    );
-  }
-
-  return (
-    <div className="cg-cartao-de-conquista__customizacao">
-      {conteudo}
-      {erro && <Aviso tipo="erro">{erro}</Aviso>}
-    </div>
-  );
 }
 
 // As recompensas de marco conquistadas — o Mestre confirma a entrega, e

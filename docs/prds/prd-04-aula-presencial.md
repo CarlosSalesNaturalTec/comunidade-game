@@ -598,6 +598,17 @@ Mestre na sessão de trabalho:
 | GET    | `/v1/eu/pontos-extras`  | sessão do Guerreiro(a)                       | Exibir o saldo disponível de pontos extras (PRD-07 §9)         |
 | POST   | `/v1/aulas/{id}/trocas` | sessão de trabalho                           | Confirmar a entrega, com o `guerreiro_id` da sessão aninhada   |
 
+Rotas do registro da customização pela criança, no percurso (`RF-04-80`), todas na **sessão do
+Guerreiro(a)** — as mesmas da App 05 (PRD-05 §9):
+
+| Método | Rota                                        | Uso nesta aplicação                                                |
+| ------ | ------------------------------------------- | ------------------------------------------------------------------ |
+| GET    | `/v1/eu/customizacoes`                      | Kits com customização aberta e os próprios registros, com situação |
+| POST   | `/v1/eu/customizacoes`                      | Registrar a customização do kit, com a descrição                   |
+| POST   | `/v1/customizacoes/{id}/envios`             | Abrir a sessão de envio da foto ou do vídeo do kit                 |
+| POST   | `/v1/customizacoes/{id}/envios/confirmacao` | Confirmar o envio; só então o registro aguarda o Mestre da aula    |
+| POST   | `/v1/customizacoes/{id}/cancelamento`       | Cancelar o próprio registro pendente                               |
+
 Erros previstos: nenhuma aula vigente (200 com lista vazia — é o que mantém a aplicação
 fechada); nick já usado (422, com as variações sugeridas no corpo); idade fora da faixa (422);
 imagem não reconhecida (401, sem revelar se o nick existe); captura sem consentimento registrado

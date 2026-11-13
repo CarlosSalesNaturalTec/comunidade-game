@@ -12,4 +12,9 @@ export {
   lerMinhasCustomizacoes,
   registrarMinhaCustomizacao,
 } from "./api";
+export {
+  CustomizacaoDoKit,
+  type FormularioAberto,
+  ultimoRegistroDoKit,
+} from "./CustomizacaoDoKit";
 export { AVISO_DA_CUSTOMIZACAO, RegistroDaCustomizacao } from "./RegistroDaCustomizacao";
