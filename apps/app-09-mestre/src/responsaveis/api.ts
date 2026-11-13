@@ -6,7 +6,7 @@ export interface GuerreiroVinculavel {
   avatar: string;
 }
 
-interface ListaDeGuerreirosVinculaveis {
+export interface ListaDeGuerreirosVinculaveis {
   itens: GuerreiroVinculavel[];
   proximo_cursor: string | null;
 }
@@ -16,8 +16,12 @@ interface ListaDeGuerreirosVinculaveis {
 // (`RF-09-62`, `RN-09-18`).
 export function listarGuerreirosVinculaveis(
   token: string,
+  cursor: string | null = null,
 ): Promise<ListaDeGuerreirosVinculaveis> {
-  return chamarNucleo<ListaDeGuerreirosVinculaveis>("/v1/guerreiros/vinculaveis", { token });
+  const caminho = cursor
+    ? `/v1/guerreiros/vinculaveis?cursor=${encodeURIComponent(cursor)}`
+    : "/v1/guerreiros/vinculaveis";
+  return chamarNucleo<ListaDeGuerreirosVinculaveis>(caminho, { token });
 }
 
 export interface ResponsavelCriado {

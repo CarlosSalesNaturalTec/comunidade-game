@@ -380,6 +380,8 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-75`  | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre: na App 09 a fila é da **comunidade**; na App 01, a do **encontro** — só quem tem presença registrada naquela aula    | essencial  |
 | `RF-09-76`  | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão: na App 09 ele **escolhe** o ponto de apoio; no encontro, o recurso sai do **ponto de apoio da aula**                 | essencial  |
 | `RF-09-113` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro, no aparelho do encontro (PRD-04 `RF-04-84`), e não nesta aplicação | essencial  |
+| `RF-09-143` | Mestre abre a ficha de cada Guerreiro(a) ativo das comunidades do seu vínculo vigente, por nick e avatar                                                                                               | essencial  |
+| `RF-09-144` | A ficha exibe o histórico de pontuação — data, origem, valor, trilha ou poder e motivo da conduta — e os saldos regular e extra                                                                        | essencial  |
 
 ### 6.7 Validações, filas e propostas
 
@@ -602,6 +604,7 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | PATCH  | `/v1/atividades/{id}`                                     | Mestre       | Corrige título, descrição, modalidade, formato e produção esperada                                                     |
 | DELETE | `/v1/atividades/{id}`                                     | Mestre       | Carimba a atividade; partida de quiz aberta impede a remoção                                                           |
 | GET    | `/v1/atividades/{id}/fatos`                               | Mestre       | Quantos fatos já apontam para a atividade, antes de confirmar remoção                                                  |
+| GET    | `/v1/guerreiros/{id}/historico-de-pontuacao`              | Mestre       | Histórico de pontuação e saldos do Guerreiro(a) da comunidade do vínculo (PRD-01 §9)                                   |
 | PATCH  | `/v1/missoes/{id}`                                        | Mestre       | Corrige título, dificuldade, obrigatoriedade, etapa, sondagem e materiais; despublica se quebrar trava                 |
 | POST   | `/v1/missoes/{id}/ordem`                                  | Mestre       | Troca a posição da missão com a vizinha, para cima ou para baixo                                                       |
 | DELETE | `/v1/missoes/{id}`                                        | Mestre       | Carimba a missão e sobe as seguintes; despublica se quebrar trava                                                      |
@@ -816,6 +819,10 @@ Decisão do fundador de 2026-11-13, em `/opsx:propose`: na tela da trilha, a mis
 recolhe quando a etapa aberta tem mais de uma (documento 15 §6.1; linha "A missão inteira
 recolhe na etapa com mais de uma" do documento 09) — `RF-09-142`.
 
+No mesmo dia: o Mestre abre a ficha do Guerreiro(a) da comunidade do seu vínculo e lê ali o
+histórico de pontuação, com os saldos (documento 11 §5; linha "Histórico de pontuação do
+Guerreiro(a)" do documento 09) — `RF-09-143` e `RF-09-144`.
+
 ## 14. Pendências que permanecem
 
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
@@ -894,3 +901,4 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-140` e `RN-09-61`                           | 11 §2.2 (os materiais da missão)                                           |
 | `RF-09-141` e `RN-09-62`                           | 11 §§2.2, 5 (customização do kit recebido)                                 |
 | `RF-09-142`                                        | 15 §6.1 (a missão inteira recolhe na etapa)                                |
+| `RF-09-143` e `RF-09-144`                          | 11 §5 (histórico de pontuação do Guerreiro(a))                             |

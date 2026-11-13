@@ -38,6 +38,7 @@ from .erros import CorpoDeErro, ErroDeAplicacao, ErroInterno
 from .evolucao.rotas import roteador as roteador_de_evolucao
 from .favoritos.rotas import roteador as roteador_de_favoritos
 from .fila.rotas import roteador as roteador_de_fila
+from .historico_de_pontuacao.rotas import roteador as roteador_de_historico_de_pontuacao
 from .jogos.rotas import roteador as roteador_de_jogos
 from .livro_razao.rotas import roteador as roteador_de_livro_razao
 from .locais.rotas import roteador as roteador_de_locais
@@ -237,6 +238,7 @@ incluir_roteador_de_dados(app, roteador_de_quiz)
 incluir_roteador_de_dados(app, roteador_de_equipes)
 incluir_roteador_de_dados(app, roteador_de_consentimentos)
 incluir_roteador_de_dados(app, roteador_de_ponto_extra)
+incluir_roteador_de_dados(app, roteador_de_historico_de_pontuacao)
 incluir_roteador_de_dados(app, roteador_de_conteudos)
 incluir_roteador_de_dados(app, roteador_de_bibliografias)
 incluir_roteador_de_dados(app, roteador_de_painel_do_dia)

@@ -225,6 +225,9 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-85` | Núcleo credita 1 ponto extra, e nenhum regular, na customização aprovada pelo Mestre da aula, e leva o registro ao acervo na trilha em que o kit foi recebido                                                            | essencial  |
 | `RF-01-86` | Núcleo expira no fim do ciclo o registro de customização não julgado, e aceita o cancelamento pelo próprio Guerreiro(a) antes disso                                                                                      | essencial  |
 | `RF-01-87` | Núcleo credita 1 ponto extra, e nenhum regular, por bem recebido cuja conservação o Mestre da aula validou, uma vez por item e por encontro                                                                              | essencial  |
+| `RF-01-88` | Núcleo grava cada crédito e débito de ponto regular e de ponto extra como lançamento de pontuação, com data, origem, valor, conta e trilha ou poder, na mesma transação do movimento                                     | essencial  |
+| `RF-01-89` | Núcleo serve o histórico de pontuação do Guerreiro(a), do mais recente ao mais antigo, com o saldo regular por trilha ou poder e as duas contas de ponto extra                                                           | essencial  |
+| `RF-01-90` | Núcleo abre o histórico de cada conta já existente com uma linha de saldo anterior, no valor do total na data da implantação                                                                                             | essencial  |
 | `RF-01-38` | Núcleo recusa o sexto integrante e o segundo familiar de 17 anos ou mais na mesma equipe                                                                                                                                 | essencial  |
 | `RF-01-39` | Núcleo aceita o Guerreiro(a) em várias equipes da aula e em uma só por partida de quiz                                                                                                                                   | essencial  |
 | `RF-01-40` | Núcleo mantém a etiqueta ODS da trilha — objetivo de 1 a 18, com meta opcional — declarada pelo Mestre autor                                                                                                             | essencial  |
@@ -314,6 +317,8 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-64` | O estorno da presença anulada tira o valor do acumulado e do saldo disponível, que para em zero; a anulação nunca é recusada por falta de saldo                                                                 | 23         | 11 §5       |
 | `RN-01-65` | Presença gravada antes de 2026-11-06 não credita nem estorna: não há crédito retroativo                                                                                                                         | —          | 11 §5       |
 | `RN-01-66` | O mesmo bem recebido — a recompensa de marco entregue — pontua uma vez por encontro, pela conservação ou pela customização, nunca pelas duas; tratar o robô montado como um item é escolha do Mestre da aula    | —          | 11 §5       |
+| `RN-01-67` | O lançamento de pontuação nunca é editado nem removido, e o valor dele é o que de fato moveu a conta: o débito que para em zero registra só o que debitou                                                       | 23         | 11 §5       |
+| `RN-01-68` | Leem o histórico de pontuação, com o saldo disponível, só o próprio Guerreiro(a), o Mestre com vínculo vigente na comunidade dele e o Admin                                                                     | 23         | 11 §5       |
 
 ## 8. Modelo de dados
 
@@ -459,6 +464,8 @@ Convenções válidas para todas as rotas:
 | DELETE | `/v1/chaves/{id}`                                      | Admin                            | Revoga a chave, com motivo e autoria                                              |
 | GET    | `/v1/chaves`                                           | Admin                            | Chaves emitidas, com prazo, URL apresentada e situação                            |
 | GET    | `/v1/criacoes/{id}/arquivo`                            | creditado, Mestre autor ou Admin | Bytes da mídia da criação original, com o tipo MIME do envio                      |
+| GET    | `/v1/eu/historico-de-pontuacao`                        | Guerreiro(a)                     | Histórico de pontuação e saldos do próprio, sem identificador de persona          |
+| GET    | `/v1/guerreiros/{id}/historico-de-pontuacao`           | Mestre do vínculo ou Admin       | Histórico de pontuação e saldos do Guerreiro(a), com o motivo da conduta          |
 | GET    | `/v1/vitrine/criacoes/{id}/arquivo`                    | pública                          | Bytes da mídia da criação validada cujos creditados autorizaram; 404 fora disso   |
 | POST   | `/v1/producoes/{id}/arquivo`                           | autor ou equipe                  | Abre a sessão de envio da foto ou do áudio da produção da missão                  |
 | PATCH  | `/v1/producoes/{id}/arquivo`                           | autor ou equipe                  | Confirma o envio; só então a produção serve bytes                                 |
@@ -658,6 +665,13 @@ expiração (`RF-01-84` a `RF-01-86`), pelo crédito da conservação do bem rec
 não existia no núcleo (`RF-01-87`), e pela exclusão entre as duas no mesmo encontro
 (`RN-01-66`).
 
+### Decisões de 2026-11-13
+
+Decisão do fundador de 2026-11-13, em `/opsx:propose`: todo movimento de ponto vira
+lançamento no **histórico de pontuação**, lido pelo próprio Guerreiro(a), pelo Mestre do vínculo
+e pelo Admin, com o saldo disponível (documento 11 §5; linha "Histórico de pontuação do
+Guerreiro(a)" do documento 09) — `RF-01-88` a `RF-01-90`, `RN-01-67` e `RN-01-68`.
+
 ## 14. Pendências que permanecem
 
 Nenhuma: as quatro que restavam foram decididas e estão na tabela de §13. Pendência nova entra
@@ -665,57 +679,58 @@ antes no documento 09.
 
 ## 15. Rastreabilidade
 
-| Requisito                                       | Origem                                                         |
-| ----------------------------------------------- | -------------------------------------------------------------- |
-| `RF-01-01`, `RF-01-31`                          | 03 §1 (API versionada)                                         |
-| `RF-01-02` e `RF-01-03`                         | 03 §1 (consulta sem login, escrita autenticada)                |
-| `RF-01-04` a `RF-01-08`                         | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa)               |
-| `RF-01-73` e `RN-01-56`                         | 03 §3.3 (limiar medido por ponto de apoio)                     |
-| `RN-01-57`                                      | 03 §3.3 (limiar emprestado fora do encontro)                   |
-| `RF-01-74` e `RN-01-58`                         | 03 §1.1 (quem abre a sessão fora do encontro)                  |
-| `RF-01-75` e `RN-01-59`                         | 03 §1.1 (PIN de confirmação do adulto)                         |
-| `RF-01-76`                                      | 11 §8.2 (a carta do Guerreiro(a) exige nick)                   |
-| `RF-01-77`                                      | 02 §4 (a entrega aceita áudio)                                 |
-| `RF-01-78` e `RN-01-60`                         | 02 §4 e 99 §6 (o acervo exibe o que foi criado)                |
-| `RF-01-79` e `RN-01-61`                         | 02 §4 e 03 §1.12 (mídia guardada, texto na devolutiva)         |
-| `RF-01-80` e `RN-01-62`                         | 02 §4 (a produção da missão não é item de acervo)              |
-| `RF-01-81` e `RN-01-63`                         | 02 §4 e 03 §10 (portão público e recusa opaca)                 |
-| `RF-01-82`, `RF-01-83`, `RN-01-64` e `RN-01-65` | 11 §§1 e 5 e 99 §6 (presença rende extra; estorno na anulação) |
-| `RF-01-09` a `RF-01-12`                         | 03 §1.1 (como o adulto entra)                                  |
-| `RF-01-61`                                      | 02 §1 (o fundador é o primeiro Admin)                          |
-| `RF-01-13` a `RF-01-15`                         | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)                       |
-| `RF-01-16` e `RF-01-17`                         | 03 §§5, 11 (fronteira App 03 × App 09)                         |
-| `RF-01-18`                                      | 03 §1 (instância única)                                        |
-| `RF-01-19`                                      | 03 §12 (LGPD e consentimentos)                                 |
-| `RF-01-20` e `RF-01-21`                         | 02 §§3–5 e 11 §§2, 4–7                                         |
-| `RF-01-62`, `RN-01-54`                          | 02 §2 (catálogo de poderes, com o papel declarado)             |
-| `RF-01-22`                                      | 11 §8.4 (contrato dos jogos)                                   |
-| `RF-01-23`                                      | PRD-08                                                         |
-| `RF-01-24`, `RF-01-60`                          | PRD-07                                                         |
-| `RF-01-56` a `RF-01-59`                         | 11 §5 (acumulado e saldo disponível de extras)                 |
-| `RF-01-69`, `RF-01-70`                          | 11 §5 (o débito não desfaz percurso)                           |
-| `RN-01-55`                                      | 11 §5 e 99 §6 (débito por fato desfeito)                       |
-| `RF-01-25` e `RF-01-26`                         | 02 §§1, 4 e 03 §§7, 9–11                                       |
-| `RF-01-27` a `RF-01-30`                         | 03 §1 (princípios de arquitetura)                              |
-| `RF-01-32`                                      | 03 §§3, 5 (App 01 habilitado pela aula agendada)               |
-| `RF-01-71`                                      | 05 §2 (a aula acontece num ponto de apoio)                     |
-| `RF-01-72`                                      | 05 §4 (quem cancela o encontro agendado)                       |
-| `RF-01-33` e `RF-01-34`                         | 02 §1 e 03 §10 (acompanhamento por nick)                       |
-| `RF-01-35`                                      | 03 §7 (apoio escolar com corpus fechado)                       |
-| `RF-01-36`                                      | 05 §5 e 11 §5 (resposta e pontuação do quiz)                   |
-| `RF-01-37` a `RF-01-39`                         | 02 §5 e 05 §5 (equipe formada na aula e quiz)                  |
-| `RF-01-63`, `RF-01-64`                          | 02 §§4, 5 (equipe fixa da trilha e crédito)                    |
-| `RN-01-44`                                      | 02 §5 (uma por trilha, fixa após homologação)                  |
-| `RF-01-40` a `RF-01-45`                         | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)                     |
-| `RF-01-46`, `RF-01-47`                          | 03 §12.3 (entrega de dados aprovada por Admin)                 |
-| `RF-01-66`                                      | 03 §12.3 (formato, licença e critério da entrega)              |
-| `RF-01-48`, `RF-01-54`                          | 03 §1 (chave obrigatória em toda chamada)                      |
-| `RF-01-49` a `RF-01-53`                         | 03 §8 (solicitação, emissão, prazo e revogação)                |
-| `RN-01-51`                                      | 03 §8 (ambiente e identidade da chave de terceiro)             |
-| `RF-01-55`                                      | 03 §§1, 8 (cota por faixa de chave)                            |
-| `RF-01-65`                                      | 03 §§1, 8 (freio por origem e sem escala)                      |
-| `RN-01-52`                                      | 03 §12.2 (prazo de guarda do motivo)                           |
-| `RF-01-67` e `RF-01-68`                         | 03 §1.1 (credencial do sensor)                                 |
-| `RN-01-53`                                      | 03 §1.1 (credencial como registro do aparelho)                 |
-| `RF-01-84` a `RF-01-86` e `RN-01-66`            | 11 §5 e 02 §4 (customização do kit recebido)                   |
-| `RF-01-87`                                      | 11 §5 (conservação do bem recebido)                            |
+| Requisito                                        | Origem                                                         |
+| ------------------------------------------------ | -------------------------------------------------------------- |
+| `RF-01-01`, `RF-01-31`                           | 03 §1 (API versionada)                                         |
+| `RF-01-02` e `RF-01-03`                          | 03 §1 (consulta sem login, escrita autenticada)                |
+| `RF-01-04` a `RF-01-08`                          | 03 §§1.1, 3.2 e 3.3 (nick e imagem, alternativa)               |
+| `RF-01-73` e `RN-01-56`                          | 03 §3.3 (limiar medido por ponto de apoio)                     |
+| `RN-01-57`                                       | 03 §3.3 (limiar emprestado fora do encontro)                   |
+| `RF-01-74` e `RN-01-58`                          | 03 §1.1 (quem abre a sessão fora do encontro)                  |
+| `RF-01-75` e `RN-01-59`                          | 03 §1.1 (PIN de confirmação do adulto)                         |
+| `RF-01-76`                                       | 11 §8.2 (a carta do Guerreiro(a) exige nick)                   |
+| `RF-01-77`                                       | 02 §4 (a entrega aceita áudio)                                 |
+| `RF-01-78` e `RN-01-60`                          | 02 §4 e 99 §6 (o acervo exibe o que foi criado)                |
+| `RF-01-79` e `RN-01-61`                          | 02 §4 e 03 §1.12 (mídia guardada, texto na devolutiva)         |
+| `RF-01-80` e `RN-01-62`                          | 02 §4 (a produção da missão não é item de acervo)              |
+| `RF-01-81` e `RN-01-63`                          | 02 §4 e 03 §10 (portão público e recusa opaca)                 |
+| `RF-01-82`, `RF-01-83`, `RN-01-64` e `RN-01-65`  | 11 §§1 e 5 e 99 §6 (presença rende extra; estorno na anulação) |
+| `RF-01-09` a `RF-01-12`                          | 03 §1.1 (como o adulto entra)                                  |
+| `RF-01-61`                                       | 02 §1 (o fundador é o primeiro Admin)                          |
+| `RF-01-13` a `RF-01-15`                          | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)                       |
+| `RF-01-16` e `RF-01-17`                          | 03 §§5, 11 (fronteira App 03 × App 09)                         |
+| `RF-01-18`                                       | 03 §1 (instância única)                                        |
+| `RF-01-19`                                       | 03 §12 (LGPD e consentimentos)                                 |
+| `RF-01-20` e `RF-01-21`                          | 02 §§3–5 e 11 §§2, 4–7                                         |
+| `RF-01-62`, `RN-01-54`                           | 02 §2 (catálogo de poderes, com o papel declarado)             |
+| `RF-01-22`                                       | 11 §8.4 (contrato dos jogos)                                   |
+| `RF-01-23`                                       | PRD-08                                                         |
+| `RF-01-24`, `RF-01-60`                           | PRD-07                                                         |
+| `RF-01-56` a `RF-01-59`                          | 11 §5 (acumulado e saldo disponível de extras)                 |
+| `RF-01-69`, `RF-01-70`                           | 11 §5 (o débito não desfaz percurso)                           |
+| `RN-01-55`                                       | 11 §5 e 99 §6 (débito por fato desfeito)                       |
+| `RF-01-25` e `RF-01-26`                          | 02 §§1, 4 e 03 §§7, 9–11                                       |
+| `RF-01-27` a `RF-01-30`                          | 03 §1 (princípios de arquitetura)                              |
+| `RF-01-32`                                       | 03 §§3, 5 (App 01 habilitado pela aula agendada)               |
+| `RF-01-71`                                       | 05 §2 (a aula acontece num ponto de apoio)                     |
+| `RF-01-72`                                       | 05 §4 (quem cancela o encontro agendado)                       |
+| `RF-01-33` e `RF-01-34`                          | 02 §1 e 03 §10 (acompanhamento por nick)                       |
+| `RF-01-35`                                       | 03 §7 (apoio escolar com corpus fechado)                       |
+| `RF-01-36`                                       | 05 §5 e 11 §5 (resposta e pontuação do quiz)                   |
+| `RF-01-37` a `RF-01-39`                          | 02 §5 e 05 §5 (equipe formada na aula e quiz)                  |
+| `RF-01-63`, `RF-01-64`                           | 02 §§4, 5 (equipe fixa da trilha e crédito)                    |
+| `RN-01-44`                                       | 02 §5 (uma por trilha, fixa após homologação)                  |
+| `RF-01-40` a `RF-01-45`                          | 11 §2.1 e 04 §4 (etiqueta ODS e cobertura)                     |
+| `RF-01-46`, `RF-01-47`                           | 03 §12.3 (entrega de dados aprovada por Admin)                 |
+| `RF-01-66`                                       | 03 §12.3 (formato, licença e critério da entrega)              |
+| `RF-01-48`, `RF-01-54`                           | 03 §1 (chave obrigatória em toda chamada)                      |
+| `RF-01-49` a `RF-01-53`                          | 03 §8 (solicitação, emissão, prazo e revogação)                |
+| `RN-01-51`                                       | 03 §8 (ambiente e identidade da chave de terceiro)             |
+| `RF-01-55`                                       | 03 §§1, 8 (cota por faixa de chave)                            |
+| `RF-01-65`                                       | 03 §§1, 8 (freio por origem e sem escala)                      |
+| `RN-01-52`                                       | 03 §12.2 (prazo de guarda do motivo)                           |
+| `RF-01-67` e `RF-01-68`                          | 03 §1.1 (credencial do sensor)                                 |
+| `RN-01-53`                                       | 03 §1.1 (credencial como registro do aparelho)                 |
+| `RF-01-84` a `RF-01-86` e `RN-01-66`             | 11 §5 e 02 §4 (customização do kit recebido)                   |
+| `RF-01-87`                                       | 11 §5 (conservação do bem recebido)                            |
+| `RF-01-88` a `RF-01-90`, `RN-01-67` e `RN-01-68` | 11 §5 (histórico de pontuação do Guerreiro(a))                 |

@@ -7,6 +7,7 @@ interface Props {
   guerreiros: GuerreiroDaLista[] | null;
   comunidades: ComunidadeDaLista[];
   onEditar: (guerreiro: GuerreiroDaLista) => void;
+  onAbrirFicha: (guerreiro: GuerreiroDaLista) => void;
 }
 
 function formatarData(valorComFuso: string): string {
@@ -20,7 +21,7 @@ function formatarData(valorComFuso: string): string {
 // (`RN-02-22`, invariante 12 do documento 99 §6). A comunidade do vínculo
 // vigente é leitura, sem caminho de troca — não há transferência no Ciclo
 // 01 (`RF-02-15`, `RN-02-06`).
-export function ListaDeGuerreiros({ guerreiros, comunidades, onEditar }: Props) {
+export function ListaDeGuerreiros({ guerreiros, comunidades, onEditar, onAbrirFicha }: Props) {
   if (guerreiros === null) {
     return <EstadoDaLista>Carregando Guerreiros e Guerreiras…</EstadoDaLista>;
   }
@@ -72,9 +73,14 @@ export function ListaDeGuerreiros({ guerreiros, comunidades, onEditar }: Props) 
       chave: "acoes",
       rotulo: "Ações",
       renderizar: (guerreiro) => (
-        <Botao variante="secundaria" onClick={() => onEditar(guerreiro)}>
-          Editar
-        </Botao>
+        <>
+          <Botao variante="secundaria" onClick={() => onAbrirFicha(guerreiro)}>
+            Ficha
+          </Botao>
+          <Botao variante="secundaria" onClick={() => onEditar(guerreiro)}>
+            Editar
+          </Botao>
+        </>
       ),
     },
   ];

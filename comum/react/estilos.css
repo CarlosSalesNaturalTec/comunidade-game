@@ -914,3 +914,29 @@
   margin: 0;
   color: var(--cor-texto-secundario);
 }
+
+/* Histórico de pontuação (`RF-09-144`, `RF-02-116`, `RF-05-104`). */
+.cg-historico-de-pontuacao__saldos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-16);
+}
+
+.cg-historico-de-pontuacao__lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cg-historico-de-pontuacao__item {
+  padding: var(--espaco-8) 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.cg-historico-de-pontuacao__data {
+  font-variant-numeric: tabular-nums;
+}
+
+.cg-historico-de-pontuacao__motivo {
+  margin: var(--espaco-4) 0 0;
+}

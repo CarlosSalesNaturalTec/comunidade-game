@@ -415,9 +415,9 @@ São três grandezas distintas e **nunca podem ser confundidas na tela**:
   na mesma família `ponto-500`. A grandeza ponto é sempre **uma** estrela, e é a contagem que
   separa as duas — o trio nunca aparece sem o nome do que foi conquistado ao lado. Decisão do
   fundador, 2026-10-19.
-- Do ponto extra, a superfície pública mostra o **acumulado**; a tela de troca e a carta do
-  próprio Guerreiro(a) mostram o **saldo disponível**, e os dois nunca aparecem sem rótulo que
-  os separe.
+- Do ponto extra, a superfície pública mostra o **acumulado**; a tela de troca, a carta do
+  próprio Guerreiro(a) e o histórico de pontuação mostram o **saldo disponível**, e os dois
+  nunca aparecem sem rótulo que os separe.
 - Na carta, a frase de desempenho leva a **estrela cheia** e a seção do saldo a **vazada**, ambas
   na cor do texto: o amarelo é preenchimento de ficha, não traço (§3.3).
 - **Real não aparece** fora da tela onde se paga, e ali sempre ao lado do equivalente em moedas.

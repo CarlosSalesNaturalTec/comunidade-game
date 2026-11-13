@@ -93,13 +93,16 @@ o desfecho da fila de avaliação. O crédito SHALL ocorrer uma única vez por s
 - **WHEN** o desfecho **adotada** é gravado para uma sugestão que já creditou os extras
 - **THEN** o núcleo não credita novamente
 
-### Requirement: O Guerreiro(a) lê as duas contas de ponto extra, e ninguém as lê por ele
+### Requirement: O Guerreiro(a) lê as duas contas de ponto extra, e o adulto só pelo histórico
 
 O núcleo SHALL devolver ao **Guerreiro(a) em sessão** as suas duas contas de ponto extra — o
 **acumulado** e o **saldo disponível** —, numa rota que NEVER SHALL receber identificador de
 persona: ela alcança apenas quem está autenticado nela. Persona de papel **Mestre**, **Admin**,
-**Apoiador** ou **responsável** SHALL receber **403**: nenhum adulto lê o saldo de uma criança,
-nem o Mestre que entrega o item da troca.
+**Apoiador** ou **responsável** SHALL receber **403** nessa rota.
+
+O **Mestre com vínculo vigente na comunidade** do Guerreiro(a) e o **Admin** SHALL ler as duas
+contas **pelo histórico de pontuação** (capacidade `historico-de-pontuacao`), e só por ele.
+Apoiador e responsável NEVER SHALL ler o saldo disponível de uma criança.
 
 Guerreiro(a) que ainda não recebeu ponto extra algum SHALL receber as duas contas em **zero**,
 e não um erro — quem nunca ganhou tem saldo, e ele é nenhum.
@@ -107,7 +110,7 @@ e não um erro — quem nunca ganhou tem saldo, e ele é nenhum.
 A leitura NEVER SHALL alcançar o contrato de leitura dos jogos, que segue devolvendo apenas o
 **acumulado**, sem persona e sem sessão: o saldo disponível continua fora dele, e trocar por
 recompensa avulsa continua sem enfraquecer o personagem. (`RF-04-51`, `RF-05-82`, `RF-01-22`,
-`RN-01-39`, `RN-01-40`, `RN-01-41`, invariantes 8 e 23)
+`RN-01-39`, `RN-01-40`, `RN-01-41`, `RN-01-68`, invariantes 8 e 23)
 
 #### Scenario: O Guerreiro(a) lê as próprias contas
 
@@ -121,13 +124,19 @@ recompensa avulsa continua sem enfraquecer o personagem. (`RF-04-51`, `RF-05-82`
 
 #### Scenario: O Mestre não lê o saldo de uma criança
 
-- **WHEN** um Mestre em sessão tenta consultar os pontos extras por essa rota
+- **WHEN** um Mestre em sessão tenta consultar os pontos extras pela rota do Guerreiro(a)
 - **THEN** o núcleo responde 403 e nada do saldo é devolvido
 
 #### Scenario: O Admin não lê o saldo por esta rota
 
-- **WHEN** um Admin em sessão tenta consultar os pontos extras por essa rota
+- **WHEN** um Admin em sessão tenta consultar os pontos extras pela rota do Guerreiro(a)
 - **THEN** o núcleo responde 403 e nada do saldo é devolvido
+
+#### Scenario: O Mestre do vínculo lê o saldo pelo histórico
+
+- **WHEN** um Mestre com vínculo vigente na comunidade do Guerreiro(a) lê o histórico de
+  pontuação dele
+- **THEN** o núcleo devolve o acumulado e o saldo disponível, separados
 
 #### Scenario: A rota não aponta para outra criança
 

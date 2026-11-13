@@ -13,6 +13,7 @@ from nucleo.criacoes_originais.regra import (
 from nucleo.culminancias.modelo import ModalidadeDaCulminancia
 from nucleo.equipes.regra import entrar_na_equipe
 from nucleo.erros import DebitoDePontoRegularRecusado, ErroDeValidacao, PermissaoNegada
+from nucleo.historico_de_pontuacao.modelo import OrigemDoLancamento
 from nucleo.personas.modelo import Papel
 from nucleo.pontuacao.modelo import Badge, Nivel, PontoRegular, TipoDeBadge
 from nucleo.pontuacao.regra import creditar_ponto_regular, debitar_ponto_regular
@@ -239,7 +240,14 @@ def test_credito_de_ponto_regular_com_valor_nao_positivo_e_recusado(
     trilha = criar_trilha(mestre)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
-        creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=0)
+        creditar_ponto_regular(
+            sessao,
+            guerreiro_id=guerreiro.id,
+            trilha_id=trilha.id,
+            valor=0,
+            origem=OrigemDoLancamento.resultado,
+            referencia_id=None,
+        )
     assert excinfo.value.campo == "valor"
     assert sessao.query(PontoRegular).count() == 0
 
@@ -251,7 +259,14 @@ def test_ponto_regular_recusa_ficar_negativo_pelo_orm(sessao, criar_persona, cri
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
 
-    conta = creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    conta = creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=10,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     conta.total = 5
@@ -276,7 +291,14 @@ def test_ponto_regular_recusa_negativo_e_remocao_direto_no_banco(
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
 
-    conta = creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    conta = creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=10,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     with conexao.begin_nested():
@@ -304,11 +326,25 @@ def test_debito_de_ponto_regular_com_valor_nao_positivo_e_recusado(
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=5)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=5,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     with pytest.raises(ErroDeValidacao) as excinfo:
-        debitar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=0)
+        debitar_ponto_regular(
+            sessao,
+            guerreiro_id=guerreiro.id,
+            trilha_id=trilha.id,
+            valor=0,
+            origem=OrigemDoLancamento.ocorrencia_de_conduta,
+            referencia_id=None,
+        )
     assert excinfo.value.campo == "valor"
 
 
@@ -318,10 +354,24 @@ def test_debito_maior_que_o_saldo_para_em_zero(sessao, criar_persona, criar_tril
     mestre = criar_persona(Papel.mestre)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(mestre)
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=5)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=5,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
-    conta = debitar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    conta = debitar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=10,
+        origem=OrigemDoLancamento.ocorrencia_de_conduta,
+        referencia_id=None,
+    )
     sessao.commit()
 
     assert conta.total == 0
@@ -348,7 +398,14 @@ def test_debito_nao_derruba_nivel_nem_badge_ja_conquistados(
         .one()
     )
 
-    debitar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    debitar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=10,
+        origem=OrigemDoLancamento.ocorrencia_de_conduta,
+        referencia_id=None,
+    )
     sessao.commit()
 
     conta = (
@@ -1041,7 +1098,14 @@ def test_pratico_nao_cumprido_nao_credita_nem_debita(
     mestre, guerreiro, trilha, _, desbloqueio = _pratico_declarado_e_entregue(
         sessao, criar_persona, criar_trilha, criar_missao
     )
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=10)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=10,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     julgar_desafio_pratico(

@@ -8,6 +8,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import * as carteiraApi from "../api/carteira";
 import { MinhaCarteira } from "./MinhaCarteira";
 
+vi.mock("comum/pontuacao", async () => {
+  const real = await vi.importActual<typeof import("comum/pontuacao")>("comum/pontuacao");
+  return { ...real, lerMeuHistoricoDePontuacao: vi.fn() };
+});
+
+import { lerMeuHistoricoDePontuacao } from "comum/pontuacao";
+
 const CHAVE_DE_SESSAO = "app-05:teste-minha-carteira";
 
 async function renderizar(divulgacaoAutorizada?: boolean) {
@@ -137,8 +144,10 @@ describe("a carta domina a tela da Arena (documento 15 §6)", () => {
 
     // Uma decisão por tela: a única é mudar o próprio avatar (`RF-05-51`), e
     // autorizar a divulgação segue sendo ato do responsável na App 07
-    // (`RN-05-42`) — nenhuma ação dele aqui.
+    // (`RN-05-42`) — nenhuma ação dele aqui. "Como cheguei aqui" só abre a
+    // leitura do próprio histórico (`RF-05-104`): é caminho, não decisão.
     expect(screen.queryAllByRole("button").map((botao) => botao.textContent)).toEqual([
+      "Como cheguei aqui",
       "Mudar o meu avatar",
     ]);
   });
@@ -208,5 +217,75 @@ describe("mudar o próprio avatar a partir da carteira (`RF-05-51`, `RF-05-50`)"
 
     expect(alterar).not.toHaveBeenCalled();
     expect(screen.getByRole("region", { name: "Minha carteira" })).toBeInTheDocument();
+  });
+});
+
+describe("histórico de pontuação do próprio Guerreiro(a) (RF-05-104)", () => {
+  it("abre pela carteira, com a conduta e o motivo e a linha de saldo anterior", async () => {
+    vi.spyOn(carteiraApi, "listarMeusPontosExtras").mockResolvedValue({
+      acumulado: 0,
+      saldo_disponivel: 0,
+    });
+    vi.mocked(lerMeuHistoricoDePontuacao).mockResolvedValue({
+      saldos: {
+        regular: [{ trilha_id: "t1", poder_id: null, nome: "Robótica", total: 15 }],
+        extra: { acumulado: 0, saldo_disponivel: 0 },
+      },
+      itens: [
+        {
+          id: "l2",
+          registrado_em: "2026-11-12T13:00:00Z",
+          conta: "regular",
+          origem: "ocorrencia_de_conduta",
+          valor: -5,
+          valor_no_acumulado: null,
+          trilha_id: "t1",
+          poder_id: null,
+          nome_da_trilha_ou_poder: "Robótica",
+          detalhe: null,
+          motivo: "Desrespeitou um colega.",
+        },
+        {
+          id: "l1",
+          registrado_em: "2026-11-01T13:00:00Z",
+          conta: "regular",
+          origem: "saldo_anterior",
+          valor: 20,
+          valor_no_acumulado: null,
+          trilha_id: "t1",
+          poder_id: null,
+          nome_da_trilha_ou_poder: "Robótica",
+          detalhe: null,
+          motivo: null,
+        },
+      ],
+      proximo_cursor: null,
+    });
+
+    await renderizar(true);
+    await userEvent.click(await screen.findByRole("button", { name: "Como cheguei aqui" }));
+
+    expect(await screen.findByText("Motivo: Desrespeitou um colega.")).toBeInTheDocument();
+    expect(screen.getByText("Saldo anterior ao histórico")).toBeInTheDocument();
+    expect(lerMeuHistoricoDePontuacao).toHaveBeenCalledWith("token-do-guerreiro", null);
+  });
+
+  it("avisa quando ainda não há lançamento", async () => {
+    vi.spyOn(carteiraApi, "listarMeusPontosExtras").mockResolvedValue({
+      acumulado: 0,
+      saldo_disponivel: 0,
+    });
+    vi.mocked(lerMeuHistoricoDePontuacao).mockResolvedValue({
+      saldos: { regular: [], extra: { acumulado: 0, saldo_disponivel: 0 } },
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    await renderizar(true);
+    await userEvent.click(await screen.findByRole("button", { name: "Como cheguei aqui" }));
+
+    expect(
+      await screen.findByText("Ainda não há lançamento de pontuação."),
+    ).toBeInTheDocument();
   });
 });

@@ -4,6 +4,7 @@ import pytest
 
 from nucleo.ciclo.regra import encerrar_ciclo
 from nucleo.erros import PermissaoNegada
+from nucleo.historico_de_pontuacao.modelo import OrigemDoLancamento
 from nucleo.ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
 from nucleo.ocorrencias_de_conduta.regra import (
     VALOR_DA_OCORRENCIA_DE_CONDUTA,
@@ -40,7 +41,14 @@ def test_encerramento_expurga_motivo_preservando_valor_data_e_autor(
     atividade = criar_atividade(missao, mestre)
     aula = criar_aula(mestre, comunidade)
 
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=20)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=20,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
     ocorrencia = _lancar(
         sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro
@@ -73,7 +81,14 @@ def test_encerramento_nao_desfaz_o_debito(
 
     from nucleo.pontuacao.regra import creditar_ponto_regular
 
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=20)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=20,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
     _lancar(sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro)
     sessao.commit()

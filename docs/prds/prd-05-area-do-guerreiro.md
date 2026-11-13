@@ -302,20 +302,21 @@ com a fusão das aplicações e **não são reaproveitados**.
 
 ### 6.6 Recompensas, acervo e perfil
 
-| ID         | Requisito                                                                                           | Prioridade |
-| ---------- | --------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-05-45` | Marco alcançado avisa a recompensa conquistada e que a entrega é confirmada pelo Mestre             | essencial  |
-| `RF-05-46` | Aplicação não oferece nenhuma forma de comprar recompensa de marco, com pontos de qualquer natureza | essencial  |
-| `RF-05-82` | Aplicação exibe, separados, o acumulado e o saldo disponível de pontos extras                       | essencial  |
-| `RF-05-83` | Aplicação exibe o catálogo avulso da comunidade, com preço em pontos extras e estoque               | essencial  |
-| `RF-05-87` | Aplicação informa que a troca é feita presencialmente, com o Mestre, ao fim do encontro             | essencial  |
-| `RF-05-88` | Aplicação exibe o histórico de trocas do Guerreiro(a), com item, preço e data                       | essencial  |
-| `RF-05-86` | Aplicação não oferece troca nem reserva de item do catálogo avulso                                  | essencial  |
-| `RF-05-47` | Acervo do Guerreiro(a) distingue o exemplar próprio da linha Alpha dos permanentes em uso           | essencial  |
-| `RF-05-48` | Exemplar permanente exibe a ficha de vida: quem usou, quando e em que estado voltou                 | essencial  |
-| `RF-05-49` | Tela do acervo informa que dano acidental não gera pontuação negativa nem dívida                    | essencial  |
-| `RF-05-50` | Guerreiro(a) vê o estado do seu perfil público e se a divulgação foi autorizada                     | essencial  |
-| `RF-05-51` | Guerreiro(a) escolhe e altera as características do próprio avatar                                  | desejável  |
+| ID          | Requisito                                                                                                                   | Prioridade |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-05-45`  | Marco alcançado avisa a recompensa conquistada e que a entrega é confirmada pelo Mestre                                     | essencial  |
+| `RF-05-46`  | Aplicação não oferece nenhuma forma de comprar recompensa de marco, com pontos de qualquer natureza                         | essencial  |
+| `RF-05-82`  | Aplicação exibe, separados, o acumulado e o saldo disponível de pontos extras                                               | essencial  |
+| `RF-05-104` | Aplicação exibe ao Guerreiro(a) o próprio histórico de pontuação — data, origem, valor, trilha ou poder e motivo da conduta | essencial  |
+| `RF-05-83`  | Aplicação exibe o catálogo avulso da comunidade, com preço em pontos extras e estoque                                       | essencial  |
+| `RF-05-87`  | Aplicação informa que a troca é feita presencialmente, com o Mestre, ao fim do encontro                                     | essencial  |
+| `RF-05-88`  | Aplicação exibe o histórico de trocas do Guerreiro(a), com item, preço e data                                               | essencial  |
+| `RF-05-86`  | Aplicação não oferece troca nem reserva de item do catálogo avulso                                                          | essencial  |
+| `RF-05-47`  | Acervo do Guerreiro(a) distingue o exemplar próprio da linha Alpha dos permanentes em uso                                   | essencial  |
+| `RF-05-48`  | Exemplar permanente exibe a ficha de vida: quem usou, quando e em que estado voltou                                         | essencial  |
+| `RF-05-49`  | Tela do acervo informa que dano acidental não gera pontuação negativa nem dívida                                            | essencial  |
+| `RF-05-50`  | Guerreiro(a) vê o estado do seu perfil público e se a divulgação foi autorizada                                             | essencial  |
+| `RF-05-51`  | Guerreiro(a) escolhe e altera as características do próprio avatar                                                          | desejável  |
 
 `RF-05-47` a `RF-05-49`, do acervo do Guerreiro(a), valem **a partir do Ciclo 02** (§3.2); a
 aplicação do Ciclo 01 não os atende.
@@ -504,6 +505,7 @@ aparecem aqui apenas quando o ato é do Guerreiro(a).
 | GET    | `/v1/eu/retomadas`                                            | Guerreiro(a)        | Missões que voltaram para revisão espaçada, com o prazo                                  |
 | GET    | `/v1/eu/progresso`                                            | Guerreiro(a)        | Pontos, nível por trilha ou poder, badges e o que falta                                  |
 | GET    | `/v1/eu/pontos-extras`                                        | Guerreiro(a)        | Acumulado e saldo disponível de pontos extras do próprio (PRD-07 §9)                     |
+| GET    | `/v1/eu/historico-de-pontuacao`                               | Guerreiro(a)        | Histórico de pontuação e saldos do próprio (PRD-01 §9)                                   |
 | GET    | `/v1/eu/desafios`                                             | Guerreiro(a)        | Desafios semanais e extras vigentes e elegíveis                                          |
 | GET    | `/v1/eu/equipes`                                              | Guerreiro(a)        | Equipes de que participa, com papel e atividades                                         |
 | GET    | `/v1/series-de-coleta/minhas`                                 | Guerreiro(a)        | Séries de coleta, próxima medição, situação e pontos rendidos                            |
@@ -695,6 +697,12 @@ recebido" do documento 09). Nesta aplicação ela entra pelo registro feito em c
 acompanhamento dele (`RF-05-102`, `RF-05-103`); o julgamento é presencial, no aparelho do
 encontro (PRD-04).
 
+### Decisões de 2026-11-13
+
+Decisão do fundador de 2026-11-13, em `/opsx:propose`: o Guerreiro(a) lê o próprio histórico
+de pontuação, com o motivo da conduta (documento 11 §5; linha "Histórico de pontuação do
+Guerreiro(a)" do documento 09) — `RF-05-104`.
+
 ## 14. Pendências que permanecem
 
 - **Catálogo de qual marco entrega qual recompensa** no Ciclo 01: a regra está decidida, o
@@ -743,3 +751,4 @@ coletores distintos no recorte publicado (documento 02 §1).
 | `RN-05-51`                                       | 02 §4 e 03 §12 (aviso visível e alternativa a quem recusa), descendo do `RF-05-78`                                                  |
 | `RN-05-52`                                       | 11 §2.2 (nada aqui é reprovação persistida — o que fica é a devolutiva do Mestre, não contagem de fracasso), descendo do `RN-05-20` |
 | `RF-05-102` e `RF-05-103`                        | 11 §5 e 02 §4 (customização do kit recebido)                                                                                        |
+| `RF-05-104`                                      | 11 §5 (histórico de pontuação do Guerreiro(a))                                                                                      |

@@ -7,6 +7,7 @@ import { TelaDeCriacoesAValidar } from "./criacoesOriginais/TelaDeCriacoesAValid
 import { TelaDeDesafiosExtras } from "./desafiosExtras/TelaDeDesafiosExtras";
 import { ProvedorDeDireitos } from "./direitos/ContextoDeDireitos";
 import { TelaDeDireitos } from "./direitos/TelaDeDireitos";
+import { TelaDeGuerreiros } from "./guerreiros/TelaDeGuerreiros";
 import { TelaDoPerfil } from "./perfil/TelaDoPerfil";
 import { TelaDePropostas } from "./propostas/TelaDePropostas";
 import { TelaDoBancoDeQuiz } from "./quiz/TelaDoBancoDeQuiz";
@@ -34,6 +35,7 @@ type Area =
   | "propostas"
   | "recursos"
   | "responsaveis"
+  | "guerreiros"
   | "perfil"
   | "direitos";
 
@@ -101,6 +103,7 @@ function Conteudo() {
     { chave: "propostas", rotulo: "Propostas" },
     { chave: "recursos", rotulo: "Recursos" },
     { chave: "responsaveis", rotulo: "Responsáveis" },
+    { chave: "guerreiros", rotulo: "Guerreiros e Guerreiras" },
     { chave: "perfil", rotulo: "Meu perfil" },
     { chave: "direitos", rotulo: "Direitos e dados" },
   ];
@@ -126,6 +129,7 @@ function Conteudo() {
       {area === "propostas" && <TelaDePropostas />}
       {area === "recursos" && <TelaDeRecursos />}
       {area === "responsaveis" && <TelaDeResponsaveis />}
+      {area === "guerreiros" && <TelaDeGuerreiros />}
       {area === "perfil" && <TelaDoPerfil />}
       {area === "direitos" && <TelaDeDireitos />}
     </ProvedorDeDireitos>

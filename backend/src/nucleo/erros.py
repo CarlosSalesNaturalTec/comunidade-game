@@ -148,6 +148,12 @@ class LancamentoImutavel(ErroDeAplicacao):
     mensagem = "Lançamento é somente inserção; a correção se faz por lançamento de ajuste."
 
 
+class LancamentoDePontuacaoImutavel(ErroDeAplicacao):
+    status_code = 409
+    codigo = "lancamento_de_pontuacao_imutavel"
+    mensagem = "Lançamento de pontuação é somente inserção; a correção se faz por fato novo."
+
+
 class OcorrenciaDeCondutaImutavel(ErroDeAplicacao):
     status_code = 409
     codigo = "ocorrencia_de_conduta_imutavel"

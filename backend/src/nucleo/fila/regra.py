@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..erros import ConjuntoDeDadosNaoLiberado, DocumentoPessoalRecusado, ErroDeValidacao
+from ..historico_de_pontuacao.modelo import OrigemDoLancamento
 from ..personas.modelo import Papel, Persona
 from ..personas.regra import conferir_disponibilidade_de_nick
 from ..ponto_extra.regra import creditar_ponto_extra
@@ -356,7 +357,11 @@ def avaliar_sugestao(
         sugestao.descartar_em = sugestao.decidido_em + PRAZO_DE_DESCARTE_DA_TRANSCRICAO_NAO_ADOTADA
     elif sugestao.creditado_em is None and sugestao.papel_do_autor == Papel.guerreiro.value:
         creditar_ponto_extra(
-            sessao, guerreiro_id=sugestao.autor_id, valor=PONTOS_EXTRAS_DA_PROPOSTA_ADOTADA
+            sessao,
+            guerreiro_id=sugestao.autor_id,
+            valor=PONTOS_EXTRAS_DA_PROPOSTA_ADOTADA,
+            origem=OrigemDoLancamento.proposta_adotada,
+            referencia_id=sugestao.id,
         )
         conceder_badge_de_protagonismo(sessao, guerreiro_id=sugestao.autor_id)
         sugestao.creditado_em = sugestao.decidido_em
