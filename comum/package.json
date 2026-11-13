@@ -15,6 +15,7 @@
     "./carta": "./carta/indice.ts",
     "./carta/api": "./carta/api.ts",
     "./customizacao": "./customizacao/indice.ts",
+    "./customizacao/api": "./customizacao/api.ts",
     "./autenticacao": "./autenticacao/indice.ts",
     "./autenticacao/api": "./autenticacao/api.ts",
     "./biometria": "./biometria/indice.ts",

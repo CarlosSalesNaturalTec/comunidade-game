@@ -4,6 +4,7 @@ import { ErroDaApi } from "comum/api";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import { escreverAvatar } from "comum/avatar";
+import * as customizacaoApi from "comum/customizacao/api";
 import { ProvedorDeNarracao, useNarracao } from "comum/narracao";
 import * as trilhaApi from "comum/trilha/api";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -1160,6 +1161,16 @@ function minhaEquipe(sobrescreve: Partial<MinhaEquipe> = {}): MinhaEquipe {
   };
 }
 
+// Sem kit aberto, por padrão: o cenário da customização (`RF-04-80`) é quem
+// a declara, antes de montar.
+function semCustomizacaoAberta() {
+  if (vi.isMockFunction(customizacaoApi.lerMinhasCustomizacoes)) return;
+  vi.spyOn(customizacaoApi, "lerMinhasCustomizacoes").mockResolvedValue({
+    kits_abertos: [],
+    registros: [],
+  });
+}
+
 // O palco do caminho: o estado de rede do aparelho e a sessão do
 // Guerreiro(a) em volta da tela, e a tela montada só quando `montar` pede —
 // é isso que deixa o cenário sem rede começar já sem rede, como acontece no
@@ -1181,6 +1192,7 @@ function PalcoDoPercurso({ montar }: { montar: boolean }) {
 }
 
 async function renderizarPercurso(offline = false) {
+  semCustomizacaoAberta();
   sessionStorage.setItem(CHAVE_DE_SESSAO_DO_PERCURSO, "token-do-guerreiro");
   vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({
     persona_id: "guerreiro-1",
@@ -1770,6 +1782,164 @@ describe("a sondagem e o desbloqueio no encontro (RF-04-73)", () => {
 });
 
 // ---------------------------------------------------------------------------
+// A customização do kit registrada pela criança no percurso — fatia 35 do
+// PRD-04 (`RF-04-80`, PRD-04 §5.13.1).
+
+describe("a customização do kit no percurso do encontro (RF-04-80)", () => {
+  const KIT_ABERTO: customizacaoApi.KitAberto = {
+    entrega_de_recompensa_id: "entrega-kit",
+    recompensa_de_marco_id: "recompensa-kit",
+    tipo_de_recurso_nome: "Kit de robótica",
+    trilha_nome: "Robô Educa",
+    customizacao_aberta: true,
+    pendente: null,
+  };
+
+  function registroDoKit(
+    sobrescreve: Partial<customizacaoApi.RegistroDeCustomizacao> = {},
+  ): customizacaoApi.RegistroDeCustomizacao {
+    return {
+      id: "registro-1",
+      entrega_de_recompensa_id: "entrega-kit",
+      descricao: "Pintei o robô de azul",
+      situacao: "pendente",
+      tem_midia: true,
+      tipo_do_arquivo: "image/jpeg",
+      motivo_do_julgamento: null,
+      registrado_em: "2026-11-13T10:00:00Z",
+      ...sobrescreve,
+    };
+  }
+
+  function percursoComUmaTrilha() {
+    vi.spyOn(trilhaApi, "listarMinhasTrilhas").mockResolvedValue([trilhaInscrita()]);
+    vi.spyOn(trilhaApi, "obterMissaoNoPercurso").mockResolvedValue(missaoNoPercurso());
+    vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
+    vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([minhaEquipe()]);
+  }
+
+  function regiaoDaCustomizacao() {
+    return screen.findByRole("region", { name: "Customização dos seus kits" });
+  }
+
+  it("o kit aberto aparece no percurso, pela sessão do Guerreiro(a), e oferece o registro", async () => {
+    percursoComUmaTrilha();
+    const ler = vi
+      .spyOn(customizacaoApi, "lerMinhasCustomizacoes")
+      .mockResolvedValue({ kits_abertos: [KIT_ABERTO], registros: [] });
+
+    await renderizarPercurso();
+
+    const regiao = await regiaoDaCustomizacao();
+    expect(within(regiao).getByText("Kit de robótica — Robô Educa")).toBeInTheDocument();
+    expect(
+      within(regiao).getByRole("button", { name: "Registrar a customização" }),
+    ).toBeInTheDocument();
+    expect(ler).toHaveBeenCalledWith("token-do-guerreiro");
+  });
+
+  it("sem kit aberto, o percurso segue como antes, sem bloco de customização", async () => {
+    percursoComUmaTrilha();
+    vi.spyOn(customizacaoApi, "lerMinhasCustomizacoes").mockResolvedValue({
+      kits_abertos: [{ ...KIT_ABERTO, customizacao_aberta: false }],
+      registros: [],
+    });
+
+    await renderizarPercurso();
+
+    expect(
+      await screen.findByRole("region", { name: /atividades do encontro/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Customização dos seus kits" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("registrada e enviada a mídia, o kit passa a aguardar a aula", async () => {
+    percursoComUmaTrilha();
+    const pendente = registroDoKit();
+    vi.spyOn(customizacaoApi, "lerMinhasCustomizacoes")
+      .mockResolvedValueOnce({ kits_abertos: [KIT_ABERTO], registros: [] })
+      .mockResolvedValue({
+        kits_abertos: [{ ...KIT_ABERTO, pendente }],
+        registros: [pendente],
+      });
+    const registrar = vi
+      .spyOn(customizacaoApi, "registrarMinhaCustomizacao")
+      .mockResolvedValue({ ...pendente, tem_midia: false });
+    const enviar = vi
+      .spyOn(customizacaoApi, "enviarMidiaDaCustomizacao")
+      .mockResolvedValue(pendente);
+    const usuario = userEvent.setup();
+
+    await renderizarPercurso();
+    const regiao = await regiaoDaCustomizacao();
+    await usuario.click(
+      within(regiao).getByRole("button", { name: "Registrar a customização" }),
+    );
+    await usuario.type(
+      within(regiao).getByLabelText("O que você customizou no kit"),
+      "Pintei o robô de azul",
+    );
+    await usuario.upload(
+      within(regiao).getByLabelText("Foto ou vídeo do kit"),
+      new File(["x"], "kit.jpg", { type: "image/jpeg" }),
+    );
+    await usuario.click(
+      within(regiao).getByRole("button", { name: "Registrar a customização" }),
+    );
+
+    expect(await within(regiao).findByText(/Aguardando a aula/)).toBeInTheDocument();
+    expect(registrar.mock.calls[0]).toContain("token-do-guerreiro");
+    expect(enviar.mock.calls[0][0]).toBe("registro-1");
+  });
+
+  it("o pendente se cancela no encontro e o kit volta a oferecer o registro", async () => {
+    percursoComUmaTrilha();
+    const pendente = registroDoKit();
+    vi.spyOn(customizacaoApi, "lerMinhasCustomizacoes")
+      .mockResolvedValueOnce({
+        kits_abertos: [{ ...KIT_ABERTO, pendente }],
+        registros: [pendente],
+      })
+      .mockResolvedValue({
+        kits_abertos: [KIT_ABERTO],
+        registros: [{ ...pendente, situacao: "cancelado" }],
+      });
+    const cancelar = vi
+      .spyOn(customizacaoApi, "cancelarCustomizacao")
+      .mockResolvedValue({ ...pendente, situacao: "cancelado" });
+    const usuario = userEvent.setup();
+
+    await renderizarPercurso();
+    const regiao = await regiaoDaCustomizacao();
+    await usuario.click(within(regiao).getByRole("button", { name: "Cancelar" }));
+
+    expect(cancelar).toHaveBeenCalledWith("registro-1", "token-do-guerreiro");
+    expect(
+      await within(regiao).findByRole("button", { name: "Registrar a customização" }),
+    ).toBeInTheDocument();
+  });
+
+  it("a customização que não carrega avisa sem esconder trilhas nem atividades", async () => {
+    percursoComUmaTrilha();
+    vi.spyOn(customizacaoApi, "lerMinhasCustomizacoes").mockRejectedValue(
+      new TypeError("rede"),
+    );
+
+    await renderizarPercurso();
+
+    expect(
+      await screen.findByText(/Não foi possível carregar a customização dos seus kits/),
+    ).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Robô Educa" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: /atividades do encontro/i }),
+    ).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // A recompensa de desbloqueio no aparelho do encontro — fatia 10 do PRD-05,
 // decisão do fundador de 2026-10-19 (`RF-04-72`, `RF-04-73`, `RF-05-45`,
 // `RN-05-50`).
@@ -1944,6 +2114,7 @@ describe("a pergunta da sondagem é falada no encontro", () => {
     );
     vi.spyOn(trilhaApi, "obterTrilhaPublica").mockResolvedValue(trilhaPublicaComMissao());
     vi.spyOn(equipesApi, "listarMinhasEquipes").mockResolvedValue([]);
+    semCustomizacaoAberta();
 
     sessionStorage.setItem(CHAVE_DE_SESSAO_DO_PERCURSO, "token-do-guerreiro");
     vi.spyOn(autenticacaoApi, "eu").mockResolvedValue({

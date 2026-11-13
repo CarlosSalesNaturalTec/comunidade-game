@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ProvedorDeSessao } from "comum/autenticacao";
 import * as autenticacaoApi from "comum/autenticacao/api";
 import * as customizacaoApi from "comum/customizacao";
+import * as customizacaoRotas from "comum/customizacao/api";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as carteiraApi from "../api/carteira";
 import { Conquistas } from "./Conquistas";
@@ -26,7 +27,7 @@ async function renderizar() {
 }
 
 beforeEach(() => {
-  vi.spyOn(customizacaoApi, "lerMinhasCustomizacoes").mockResolvedValue({
+  vi.spyOn(customizacaoRotas, "lerMinhasCustomizacoes").mockResolvedValue({
     kits_abertos: [],
     registros: [],
   });
@@ -172,7 +173,7 @@ describe("customização do kit na lista de conquistas (RF-05-102, RF-05-103)", 
       KIT_CONQUISTADO,
       CAMISA_CONQUISTADA,
     ]);
-    vi.mocked(customizacaoApi.lerMinhasCustomizacoes).mockResolvedValue({
+    vi.mocked(customizacaoRotas.lerMinhasCustomizacoes).mockResolvedValue({
       kits_abertos: [KIT_ABERTO],
       registros: [],
     });
@@ -190,7 +191,7 @@ describe("customização do kit na lista de conquistas (RF-05-102, RF-05-103)", 
 
   it("o registro abre no cartão, com o aviso antes do envio", async () => {
     vi.spyOn(carteiraApi, "listarMinhasRecompensas").mockResolvedValue([KIT_CONQUISTADO]);
-    vi.mocked(customizacaoApi.lerMinhasCustomizacoes).mockResolvedValue({
+    vi.mocked(customizacaoRotas.lerMinhasCustomizacoes).mockResolvedValue({
       kits_abertos: [KIT_ABERTO],
       registros: [],
     });
@@ -210,7 +211,7 @@ describe("customização do kit na lista de conquistas (RF-05-102, RF-05-103)", 
   it("o pendente aguarda a aula, diz que expira e, cancelado, volta a oferecer o registro", async () => {
     vi.spyOn(carteiraApi, "listarMinhasRecompensas").mockResolvedValue([KIT_CONQUISTADO]);
     const pendente = registro({});
-    vi.mocked(customizacaoApi.lerMinhasCustomizacoes)
+    vi.mocked(customizacaoRotas.lerMinhasCustomizacoes)
       .mockResolvedValueOnce({
         kits_abertos: [{ ...KIT_ABERTO, pendente }],
         registros: [pendente],
@@ -220,7 +221,7 @@ describe("customização do kit na lista de conquistas (RF-05-102, RF-05-103)", 
         registros: [{ ...pendente, situacao: "cancelado" }],
       });
     const cancelar = vi
-      .spyOn(customizacaoApi, "cancelarCustomizacao")
+      .spyOn(customizacaoRotas, "cancelarCustomizacao")
       .mockResolvedValue({ ...pendente, situacao: "cancelado" });
     const usuario = userEvent.setup();
 
@@ -239,7 +240,7 @@ describe("customização do kit na lista de conquistas (RF-05-102, RF-05-103)", 
   it("o pendente sem mídia oferece retomar o envio do mesmo registro", async () => {
     vi.spyOn(carteiraApi, "listarMinhasRecompensas").mockResolvedValue([KIT_CONQUISTADO]);
     const pendente = registro({ tem_midia: false, tipo_do_arquivo: null });
-    vi.mocked(customizacaoApi.lerMinhasCustomizacoes).mockResolvedValue({
+    vi.mocked(customizacaoRotas.lerMinhasCustomizacoes).mockResolvedValue({
       kits_abertos: [{ ...KIT_ABERTO, pendente }],
       registros: [pendente],
     });
@@ -256,7 +257,7 @@ describe("customização do kit na lista de conquistas (RF-05-102, RF-05-103)", 
 
   it("o reprovado mostra o motivo e Enviar de novo abre um registro novo", async () => {
     vi.spyOn(carteiraApi, "listarMinhasRecompensas").mockResolvedValue([KIT_CONQUISTADO]);
-    vi.mocked(customizacaoApi.lerMinhasCustomizacoes).mockResolvedValue({
+    vi.mocked(customizacaoRotas.lerMinhasCustomizacoes).mockResolvedValue({
       kits_abertos: [KIT_ABERTO],
       registros: [
         registro({
@@ -283,7 +284,9 @@ describe("customização do kit na lista de conquistas (RF-05-102, RF-05-103)", 
 
   it("a falha só das customizações não esconde as conquistas", async () => {
     vi.spyOn(carteiraApi, "listarMinhasRecompensas").mockResolvedValue([KIT_CONQUISTADO]);
-    vi.mocked(customizacaoApi.lerMinhasCustomizacoes).mockRejectedValue(new TypeError("rede"));
+    vi.mocked(customizacaoRotas.lerMinhasCustomizacoes).mockRejectedValue(
+      new TypeError("rede"),
+    );
 
     await renderizar();
 
