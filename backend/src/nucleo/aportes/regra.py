@@ -20,7 +20,7 @@ from ..missoes_do_apoiador.regra import concluir_se_fechou
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
-from ..recursos.regra import consultar_valor_de_referencia
+from ..recursos.regra import consultar_valor_de_referencia, exigir_tipo_de_recurso_ativo
 from ..reservas.regra import confirmar_aulas_pendentes
 from ..tempo import agora
 from .modelo import (
@@ -247,6 +247,8 @@ def registrar_aporte(
         raise ErroDeValidacao(mensagem="Aporte exige o provedor.", campo="provedor_id")
     if provedor.id == operador.id:
         raise PermissaoNegada(mensagem="Quem homologa o aporte não pode ser o próprio provedor.")
+    # Registrar e homologar aporte é escolha nova de tipo (`RF-07-52`).
+    exigir_tipo_de_recurso_ativo(tipo)
 
     if solicitacao_de_participacao is not None:
         ja_homologada = (
@@ -352,6 +354,10 @@ def registrar_aporte_por_absorcao(
     (`RF-07-28`)."""
     if operador.papel not in (Papel.mestre, Papel.admin):
         raise PermissaoNegada(mensagem="Só Mestre ou Admin registram aporte por absorção.")
+    # Sem aula, o tipo é escolha nova; com aula, segue a necessidade já
+    # publicada e é aceito mesmo desativado (`RF-07-52`, design — decisão 6).
+    if aula is None:
+        exigir_tipo_de_recurso_ativo(tipo)
 
     eh_servico = tipo is not None and tipo.natureza == NaturezaDoRecurso.servico
     exige_valor_de_origem = (

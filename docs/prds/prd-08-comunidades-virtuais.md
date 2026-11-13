@@ -168,6 +168,7 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 | `RF-08-28` | Saída pública e entrega aprovada agregam ao nível acima recorte com menos de três coletores                                    | essencial  |
 | `RF-08-30` | Rota pública lista as comunidades com os quatro indicadores do documento 02 §1                                                 | essencial  |
 | `RF-08-31` | Comunidade abaixo do piso de coletores sai na lista sem os quatro indicadores                                                  | essencial  |
+| `RF-08-32` | Admin altera todos os campos do tipo de coleta, desativa e reativa; o registro já gravado não muda                             | essencial  |
 | `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3                                            | desejável  |
 | `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define                                   | essencial  |
 | `RF-08-22` | Guerreiro(a) solicita a inclusão de local ausente, e a solicitação entra na fila de aprovação                                  | essencial  |
@@ -210,6 +211,7 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 | `RN-08-25` | A granularidade exigida é declarada livremente no desafio; o teto da comunidade é conferido na abertura da série                             | —          | 02 §1    |
 | `RN-08-28` | A comunidade é o topo da hierarquia: abaixo do piso ela permanece na lista, e o que se omite é o indicador, nunca a comunidade               | 7          | 02 §1    |
 | `RN-08-29` | Os quatro indicadores se calculam como o documento 02 §1 define; enquanto o ciclo corre, o de séries ativas se apura no instante da consulta | —          | 02 §1    |
+| `RN-08-30` | Só se exclui tipo de coleta que nenhum desafio escolheu; o usado é recusado e se desativa                                                    | —          | 02 §1    |
 
 ## 8. Modelo de dados
 
@@ -267,6 +269,9 @@ todas elas, como define o PRD-01; escrita é autenticada.
 | POST   | `/comunidades`                                | Admin           | Cria comunidade vazia                                     |
 | POST   | `/Guerreiros e Guerreiras/{id}/transferencia` | Admin           | Transfere Guerreiro(a) de comunidade — fora do Ciclo 01   |
 | POST   | `/tipos-de-coleta`                            | Admin           | Cadastra tipo de coleta no catálogo                       |
+| PATCH  | `/tipos-de-coleta/{id}`                       | Admin           | Altera qualquer campo do tipo de coleta                   |
+| POST   | `/tipos-de-coleta/{id}/desativacao`           | Admin           | Desativa o tipo; `…/reativacao` reativa                   |
+| DELETE | `/tipos-de-coleta/{id}`                       | Admin           | Exclui o tipo que nenhum desafio escolheu                 |
 | POST   | `/desafios-de-coleta`                         | Mestre          | Cria desafio de coleta vinculado a uma missão             |
 | POST   | `/series`                                     | Guerreiro(a)    | Abre série individual para um desafio e um local          |
 | GET    | `/series/minhas`                              | Guerreiro(a)    | Séries do Guerreiro(a), estado e pontos que rendem        |
@@ -405,5 +410,6 @@ origem do registro.
 | `RF-08-28`, `RN-08-24`  | 02 §1 (piso de três coletores no recorte)                                     |
 | `RF-08-30`, `RN-08-29`  | 02 §1 (os quatro indicadores e o cálculo de cada um)                          |
 | `RF-08-31`, `RN-08-28`  | 02 §1 (a comunidade é o topo e não sobe de nível)                             |
+| `RF-08-32`, `RN-08-30`  | 02 §1 e 09 §1 (edição e exclusão do catálogo de tipos de coleta)              |
 | `RN-08-23`              | 03 §1.1 (credencial do sensor)                                                |
 | `RN-08-25`              | 02 §1 (granularidade exigida do desafio)                                      |

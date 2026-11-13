@@ -7,6 +7,7 @@ import { type AdultoDaLista, listarApoiadores, listarMestres } from "../personas
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
 import {
   type AporteRegistrado,
+  apenasAtivos,
   listarTiposDeRecurso,
   registrarAporte,
   type TipoDeRecurso,
@@ -69,7 +70,8 @@ export function RegistroDeAporte({ onRegistrado }: Props) {
       definirComunidades(pagina.itens);
       definirComunidadeId((atual) => atual || (pagina.itens[0]?.id ?? ""));
     });
-    listarTiposDeRecurso(sessao.token).then(definirTipos);
+    // Escolha nova: o tipo desativado não é oferecido (`RF-07-52`).
+    listarTiposDeRecurso(sessao.token).then((lista) => definirTipos(apenasAtivos(lista)));
   }, [sessao]);
 
   useEffect(() => {

@@ -60,6 +60,7 @@ const TIPO_LANCHE: TipoDeRecurso = {
   natureza: "consumivel",
   unidade: "unidade",
   exige_comprovante: false,
+  ativo: true,
   valor_em_moedas: "2.00",
   vigencia_inicio: "2026-01-01",
 };
@@ -70,6 +71,7 @@ const TIPO_OFICINA: TipoDeRecurso = {
   natureza: "servico",
   unidade: "hora",
   exige_comprovante: false,
+  ativo: true,
   valor_em_moedas: "5.00",
   vigencia_inicio: "2026-01-01",
 };

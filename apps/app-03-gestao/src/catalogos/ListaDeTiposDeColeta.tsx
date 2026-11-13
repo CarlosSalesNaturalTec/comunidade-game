@@ -1,16 +1,19 @@
 import { EstadoDaLista } from "comum/react";
+import type { ReactNode } from "react";
 import { ROTULO_DA_FORMA_DE_REGISTRO, type TipoDeColeta } from "./api";
 import "./Catalogos.css";
 
 interface Props {
   tipos: TipoDeColeta[] | null;
+  // As ações de escrita, só para o Admin (`RF-02-114`, `RF-02-115`).
+  acoes?: (tipo: TipoDeColeta) => ReactNode;
 }
 
 // Lista densa do temperamento Operação (documento 15 §6). O tipo
 // desativado segue na lista, distinguido por rótulo textual e nunca só por
 // cor: é o que o núcleo já recusa em desafio novo (`RF-02-108`,
 // `RF-08-06`).
-export function ListaDeTiposDeColeta({ tipos }: Props) {
+export function ListaDeTiposDeColeta({ tipos, acoes }: Props) {
   if (tipos === null) {
     return <EstadoDaLista>Carregando tipos de coleta…</EstadoDaLista>;
   }
@@ -42,6 +45,7 @@ export function ListaDeTiposDeColeta({ tipos }: Props) {
               </span>
             )}
           </div>
+          {acoes?.(tipo)}
         </li>
       ))}
     </ul>

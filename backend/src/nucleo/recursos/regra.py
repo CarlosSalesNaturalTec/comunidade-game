@@ -3,8 +3,9 @@ from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
-from ..erros import ErroDeValidacao, PermissaoNegada
+from ..erros import ErroDeValidacao, PermissaoNegada, TipoEmUso
 from ..personas.modelo import Papel, Persona
+from ..referencias import esta_em_uso
 from .modelo import NaturezaDoRecurso, PrecoDeReferencia, TipoDeRecurso, ValorDeReferencia
 
 PISO_DE_PONTOS_EXTRAS = 25
@@ -224,3 +225,95 @@ def consultar_precos_de_referencia(
         .order_by(PrecoDeReferencia.vigencia_inicio.desc(), PrecoDeReferencia.registrado_em.desc())
         .all()
     )
+
+
+def _exigir_admin(operador: Persona, mensagem: str) -> None:
+    if operador.papel != Papel.admin:
+        raise PermissaoNegada(mensagem=mensagem)
+
+
+def alterar_tipo_de_recurso(
+    sessao: Session,
+    tipo: TipoDeRecurso,
+    *,
+    operador: Persona,
+    nome: str | None = None,
+    unidade: str | None = None,
+    exige_comprovante: bool | None = None,
+    natureza: str | None = None,
+) -> TipoDeRecurso:
+    """Só Admin altera nome, unidade e a marca de exige comprovante. A
+    natureza nunca se altera — decide se há valor de origem em reais a
+    declarar —, e as vigências de valor e de preço não são tocadas
+    (`RF-07-51`, design — decisão 2)."""
+    _exigir_admin(operador, "Só o Admin altera tipo de recurso.")
+    if natureza is not None:
+        raise ErroDeValidacao(
+            mensagem="A natureza do tipo de recurso não se altera.", campo="natureza"
+        )
+    if nome is not None and not nome.strip():
+        raise ErroDeValidacao(mensagem="Tipo de recurso exige nome.", campo="nome")
+    if unidade is not None and not unidade.strip():
+        raise ErroDeValidacao(mensagem="Tipo de recurso exige unidade.", campo="unidade")
+    if nome is not None:
+        tipo.nome = nome
+    if unidade is not None:
+        tipo.unidade = unidade
+    if exige_comprovante is not None:
+        tipo.exige_comprovante = exige_comprovante
+    sessao.flush()
+    return tipo
+
+
+def desativar_tipo_de_recurso(
+    sessao: Session, tipo: TipoDeRecurso, *, operador: Persona
+) -> TipoDeRecurso:
+    """Desativado sai só da escolha nova; o que já existe segue inalterado
+    (`RF-07-52`). Desativar o já desativado não tem efeito."""
+    _exigir_admin(operador, "Só o Admin desativa tipo de recurso.")
+    tipo.ativo = False
+    sessao.flush()
+    return tipo
+
+
+def reativar_tipo_de_recurso(
+    sessao: Session, tipo: TipoDeRecurso, *, operador: Persona
+) -> TipoDeRecurso:
+    """Volta a aceitar escolha nova (`RF-07-52`)."""
+    _exigir_admin(operador, "Só o Admin reativa tipo de recurso.")
+    tipo.ativo = True
+    sessao.flush()
+    return tipo
+
+
+def exigir_tipo_de_recurso_ativo(
+    tipo: TipoDeRecurso | None, *, campo: str = "tipo_de_recurso_id"
+) -> None:
+    """Guarda dos atos de **escolha nova** de tipo de recurso; o ato que só
+    segue fato já existente não a chama (`RF-07-52`, design — decisão 6).
+    Tipo ausente fica para a validação própria de cada ato."""
+    if tipo is not None and not tipo.ativo:
+        raise ErroDeValidacao(
+            mensagem="O tipo de recurso está desativado e não pode ser escolhido.",
+            campo=campo,
+        )
+
+
+_VIGENCIAS_DO_TIPO = frozenset({ValorDeReferencia.__tablename__, PrecoDeReferencia.__tablename__})
+
+
+def excluir_tipo_de_recurso(sessao: Session, tipo: TipoDeRecurso, *, operador: Persona) -> None:
+    """Só o tipo nunca usado sai, com as suas vigências; o usado é recusado
+    e o caminho é desativá-lo (`RN-07-40`, design — decisão 4)."""
+    _exigir_admin(operador, "Só o Admin exclui tipo de recurso.")
+    if esta_em_uso(
+        sessao,
+        tabela=TipoDeRecurso.__table__,
+        identificador=tipo.id,
+        tabelas_ignoradas=_VIGENCIAS_DO_TIPO,
+    ):
+        raise TipoEmUso(campo="tipo_de_recurso_id")
+    sessao.query(ValorDeReferencia).filter_by(tipo_de_recurso_id=tipo.id).delete()
+    sessao.query(PrecoDeReferencia).filter_by(tipo_de_recurso_id=tipo.id).delete()
+    sessao.delete(tipo)
+    sessao.flush()

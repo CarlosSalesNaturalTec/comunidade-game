@@ -3,8 +3,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Request, Response, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..armazenamento.fabrica import dependencia_de_armazenamento
@@ -16,13 +17,13 @@ from ..autenticacao import (
     exigir_persona,
 )
 from ..banco import obter_sessao
-from ..erros import PermissaoNegada
+from ..erros import NaoEncontrado, PermissaoNegada, TipoEmUso
 from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_listagem
 from ..permissoes import Operacao, conferir_permissao, exigir_permissao
 from ..personas.modelo import Credencial, Persona
 from ..tempo import DataHoraComFuso
 from ..trilhas.modelo import Missao
-from .modelo import DesafioDeColeta, RegistroDeColeta, SerieDeColeta
+from .modelo import DesafioDeColeta, RegistroDeColeta, SerieDeColeta, TipoDeColeta
 from .regra import (
     DesafioDisponivelSaida,
     DesafioPublicadoSaida,
@@ -30,6 +31,7 @@ from .regra import (
     SerieDoGuerreiroSaida,
     TipoDeColetaSaida,
     abrir_serie_de_coleta,
+    alterar_tipo_de_coleta,
     cadastrar_tipo_de_coleta,
     compor_amostra_de_auditoria,
     confirmar_registro_de_coleta,
@@ -39,9 +41,12 @@ from .regra import (
     consultar_series_do_guerreiro,
     consultar_tipos_de_coleta,
     criar_desafio_de_coleta,
+    desativar_tipo_de_coleta,
     emitir_credencial_de_dispositivo,
+    excluir_tipo_de_coleta,
     gravar_registro_de_coleta,
     invalidar_registro_de_coleta,
+    reativar_tipo_de_coleta,
     revogar_credencial_de_dispositivo,
 )
 
@@ -80,6 +85,10 @@ def cadastrar_tipo_de_coleta_rota(
         faixa_maxima=entrada.faixa_maxima,
     )
     sessao_bd.commit()
+    return _saida_do_tipo(tipo)
+
+
+def _saida_do_tipo(tipo: TipoDeColeta) -> TipoDeColetaSaida:
     return TipoDeColetaSaida(
         id=tipo.id,
         nome=tipo.nome,
@@ -89,6 +98,94 @@ def cadastrar_tipo_de_coleta_rota(
         faixa_maxima=tipo.faixa_maxima,
         ativo=tipo.ativo,
     )
+
+
+def _buscar_tipo_de_coleta(sessao_bd: Session, id_do_tipo: uuid.UUID) -> TipoDeColeta:
+    tipo = sessao_bd.get(TipoDeColeta, id_do_tipo)
+    if tipo is None:
+        raise NaoEncontrado(mensagem="Tipo de coleta não encontrado.")
+    return tipo
+
+
+class AlterarTipoDeColetaEntrada(BaseModel):
+    """Campo ausente mantém; campo nulo retira — é assim que a troca para
+    foto ou vídeo leva a unidade e a faixa embora (design — decisão 3)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str | None = None
+    forma_de_registro: str | None = None
+    unidade: str | None = None
+    faixa_minima: float | None = None
+    faixa_maxima: float | None = None
+
+
+_ESCRITA_DO_CATALOGO = Depends(exigir_permissao(Operacao.catalogo_de_tipos_de_coleta, "escreve"))
+
+
+@roteador.patch("/tipos-de-coleta/{id_do_tipo}")
+def alterar_tipo_de_coleta_rota(
+    id_do_tipo: uuid.UUID,
+    entrada: AlterarTipoDeColetaEntrada,
+    contexto: Annotated[ContextoDaSessao, _ESCRITA_DO_CATALOGO],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> TipoDeColetaSaida:
+    """Restrita ao Admin — qualquer campo, inclusive a forma de registro
+    (`RF-08-32`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    tipo = _buscar_tipo_de_coleta(sessao_bd, id_do_tipo)
+    enviados = {campo: getattr(entrada, campo) for campo in entrada.model_fields_set}
+    alterar_tipo_de_coleta(sessao_bd, tipo, operador=operador, **enviados)
+    sessao_bd.commit()
+    return _saida_do_tipo(tipo)
+
+
+@roteador.post("/tipos-de-coleta/{id_do_tipo}/desativacao")
+def desativar_tipo_de_coleta_rota(
+    id_do_tipo: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, _ESCRITA_DO_CATALOGO],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> TipoDeColetaSaida:
+    """Restrita ao Admin — o desafio já criado segue inalterado
+    (`RF-08-32`, `RF-08-06`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    tipo = _buscar_tipo_de_coleta(sessao_bd, id_do_tipo)
+    desativar_tipo_de_coleta(sessao_bd, tipo, operador=operador)
+    sessao_bd.commit()
+    return _saida_do_tipo(tipo)
+
+
+@roteador.post("/tipos-de-coleta/{id_do_tipo}/reativacao")
+def reativar_tipo_de_coleta_rota(
+    id_do_tipo: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, _ESCRITA_DO_CATALOGO],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> TipoDeColetaSaida:
+    """Restrita ao Admin (`RF-08-32`)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    tipo = _buscar_tipo_de_coleta(sessao_bd, id_do_tipo)
+    reativar_tipo_de_coleta(sessao_bd, tipo, operador=operador)
+    sessao_bd.commit()
+    return _saida_do_tipo(tipo)
+
+
+@roteador.delete("/tipos-de-coleta/{id_do_tipo}", status_code=204)
+def excluir_tipo_de_coleta_rota(
+    id_do_tipo: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, _ESCRITA_DO_CATALOGO],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> Response:
+    """Restrita ao Admin — só o tipo que nenhum desafio escolheu
+    (`RN-08-30`, design — decisão 4)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    tipo = _buscar_tipo_de_coleta(sessao_bd, id_do_tipo)
+    try:
+        excluir_tipo_de_coleta(sessao_bd, tipo, operador=operador)
+        sessao_bd.commit()
+    except IntegrityError as exc:
+        sessao_bd.rollback()
+        raise TipoEmUso(campo="tipo_de_coleta_id") from exc
+    return Response(status_code=204)
 
 
 @roteador.get("/tipos-de-coleta", response_model=PaginaDeResultado[TipoDeColetaSaida])

@@ -224,6 +224,9 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RF-02-10`  | Admin mantém o catálogo de poderes do ciclo                                                                        | essencial  |
 | `RF-02-107` | Admin cadastra e lista o catálogo de tipos de recurso, com a primeira vigência do valor no mesmo ato               | essencial  |
 | `RF-02-108` | Admin cadastra e lista o catálogo de tipos de coleta                                                               | essencial  |
+| `RF-02-113` | Admin altera nome, unidade e exige comprovante do tipo de recurso e abre vigência nova do valor e do preço         | essencial  |
+| `RF-02-114` | Admin altera todos os campos do tipo de coleta, inclusive a forma de registro                                      | essencial  |
+| `RF-02-115` | Admin desativa, reativa e exclui tipo de recurso e de coleta; só o nunca usado se exclui                           | essencial  |
 | `RF-02-99`  | Admin encerra o ciclo corrente num ato isolado, que não declara o ciclo seguinte                                   | essencial  |
 | `RF-02-100` | Encerramento expurga o motivo das ocorrências de conduta do ciclo e as tira do ranking                             | essencial  |
 | `RF-02-11`  | Admin cria Comunidade Virtual, que nasce vazia                                                                     | essencial  |
@@ -476,6 +479,13 @@ do que espera, sem rota própria para a fila (`RF-02-101`).
 | POST   | `/v1/tipos-de-recurso`                                 | Admin           | Cadastra o tipo e abre a primeira vigência do valor de referência num ato         |
 | GET    | `/v1/tipos-de-coleta`                                  | Mestre ou Admin | Catálogo de tipos de coleta, paginado, com a marca de ativo                       |
 | POST   | `/v1/tipos-de-coleta`                                  | Admin           | Cadastra o tipo de coleta com forma de registro, unidade e faixa esperada         |
+| PATCH  | `/v1/tipos-de-recurso/{id}`                            | Admin           | Altera nome, unidade e exige comprovante; a natureza não se altera                |
+| POST   | `/v1/tipos-de-recurso/{id}/valores-de-referencia`      | Admin           | Abre vigência nova do valor em moedas                                             |
+| POST   | `/v1/tipos-de-recurso/{id}/desativacao`                | Admin           | Desativa o tipo de recurso; reativação em `…/reativacao`                          |
+| DELETE | `/v1/tipos-de-recurso/{id}`                            | Admin           | Exclui o tipo nunca usado; o usado é recusado                                     |
+| PATCH  | `/v1/tipos-de-coleta/{id}`                             | Admin           | Altera qualquer campo do tipo de coleta                                           |
+| POST   | `/v1/tipos-de-coleta/{id}/desativacao`                 | Admin           | Desativa o tipo de coleta; reativação em `…/reativacao`                           |
+| DELETE | `/v1/tipos-de-coleta/{id}`                             | Admin           | Exclui o tipo que nenhum desafio escolheu; o usado é recusado                     |
 | POST   | `/v1/apoiadores/{id}/artefatos/{artefato_id}/anexacao` | Admin           | Anexa ao cadastro o documento comprobatório que o Apoiador declarou, publicando-o |
 | POST   | `/v1/missoes-do-apoiador`                              | Admin           | Publica a missão a partir de uma necessidade de recurso em aberto                 |
 | GET    | `/v1/missoes-do-apoiador`                              | Admin           | Missões publicadas em qualquer situação, com o coberto e o que falta              |
@@ -612,6 +622,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Painel do dia mostra o nome da equipe e o papel de cada integrante (`RF-02-08`)                                                  | 02 §5              | Presença e equipes em caminhos separados, e a equipe com nome  |
 | O Admin lê o institucional por rota própria de leitura, nunca por parâmetro na rota pública                                      | PRD-02 §9          | O Admin lê o conteúdo institucional por rota própria           |
 | O comprobatório pendente chega à gestão pela listagem de Apoiadores, que leva o `id` e o `publicado`                             | PRD-02 §9          | A fila do comprobatório deriva da listagem de Apoiadores       |
+| Catálogos de tipo editáveis; exclusão só do nunca usado, o usado se desativa (`RF-02-113` a `RF-02-115`)                         | 02 §1, 04 §1       | Os catálogos de tipo não têm edição nem desativação            |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.
@@ -625,12 +636,6 @@ foi definida no PRD-01 — a App 03 apenas a consulta.
   atividade — pelo Admin, e o `GET /trilhas/{id}` do PRD-09 é público e serve trilha publicada,
   não o rascunho que o Admin precisa consultar. Sem decisão, o Admin não tem por onde ler o que
   os Mestres autoram.
-- **Os catálogos de tipo não têm edição nem desativação**: o núcleo serve criar e listar, e
-  não há rota para editar tipo de recurso ou de coleta, para abrir vigência nova do valor de
-  referência — `RF-07-02` tem regra e modelo, não rota — nem para desativar tipo de coleta,
-  cuja regra existe sem rota. `TipoDeRecurso` não tem sequer a marca de ativo. Tipo cadastrado
-  é, hoje, imutável, e o de recurso sai da listagem quando a vigência fecha. Levantado pela
-  fatia 19.
 - **Atividade avulsa em aula cancelada**: o cadastro em aula já cancelada é recusado, mas falta
   decidir o que acontece com a avulsa quando a aula é cancelada **depois** dela — deixa de
   existir, fica sem efeito, ou acompanha o remarcar. Trava só esse caminho.
@@ -665,6 +670,7 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-29` a `RF-02-32`   | 04 §1 e PRD-07 (atividade, agenda e regra de lastro)                  |
 | `RF-02-33` a `RF-02-35`   | 02 §4 e 11 §5 (resultados e motor de pontuação)                       |
 | `RF-02-112`               | 11 §4 (lançamento da avulsa por aluno ou por equipe)                  |
+| `RF-02-113` a `RF-02-115` | 04 §1, 02 §1 e PRDs 07 e 08 (edição e exclusão dos catálogos de tipo) |
 | `RF-02-36`                | 03 §§3, 5 (presença vinda do onboarding)                              |
 | `RF-02-37` a `RF-02-40`   | 02 §4, 05 §3 e 13 (pontuação negativa e ajuste)                       |
 | `RF-02-41` a `RF-02-49`   | 05 §4 e 03 §5 (encontro assíncrono e painel do dia)                   |

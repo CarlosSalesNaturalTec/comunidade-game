@@ -6,8 +6,20 @@ vi.mock("comum/api", async () => {
 });
 
 import { chamarNucleo } from "comum/api";
-import { cadastrarTipoDeRecurso } from "../recursos/api";
-import { cadastrarTipoDeColeta, listarTodosOsTiposDeColeta, type TipoDeColeta } from "./api";
+import {
+  apenasAtivos,
+  cadastrarTipoDeRecurso,
+  excluirTipoDeRecurso,
+  registrarValorDeReferencia,
+  type TipoDeRecurso,
+} from "../recursos/api";
+import {
+  alterarTipoDeColeta,
+  cadastrarTipoDeColeta,
+  listarTodosOsTiposDeColeta,
+  reativarTipoDeColeta,
+  type TipoDeColeta,
+} from "./api";
 
 // As três funções que a área Catálogos estreia. O teste de tela dubla os
 // módulos inteiros, então é aqui que a rota, o método e o laço da paginação
@@ -119,5 +131,73 @@ describe("cadastrarTipoDeRecurso", () => {
       },
       token: "token-do-admin",
     });
+  });
+});
+
+describe("As chamadas de edição dos catálogos (RF-02-113 a RF-02-115)", () => {
+  it("abre vigência nova do valor pela rota do tipo", async () => {
+    dublada.mockResolvedValue({});
+    await registrarValorDeReferencia(
+      "tipo-1",
+      { valor_em_moedas: "2.50", vigencia_inicio: "2026-12-01" },
+      "token-do-admin",
+    );
+    expect(dublada).toHaveBeenCalledWith("/v1/tipos-de-recurso/tipo-1/valores-de-referencia", {
+      metodo: "POST",
+      corpo: { valor_em_moedas: "2.50", vigencia_inicio: "2026-12-01" },
+      token: "token-do-admin",
+    });
+  });
+
+  it("exclui o tipo de recurso por DELETE", async () => {
+    dublada.mockResolvedValue(undefined);
+    await excluirTipoDeRecurso("tipo-1", "token-do-admin");
+    expect(dublada).toHaveBeenCalledWith("/v1/tipos-de-recurso/tipo-1", {
+      metodo: "DELETE",
+      token: "token-do-admin",
+    });
+  });
+
+  it("altera o tipo de coleta mandando nulo para retirar a faixa", async () => {
+    dublada.mockResolvedValue(tipoDeColeta());
+    await alterarTipoDeColeta(
+      "tipo-1",
+      { forma_de_registro: "foto", unidade: null, faixa_minima: null, faixa_maxima: null },
+      "token-do-admin",
+    );
+    expect(dublada).toHaveBeenCalledWith("/v1/tipos-de-coleta/tipo-1", {
+      metodo: "PATCH",
+      corpo: {
+        forma_de_registro: "foto",
+        unidade: null,
+        faixa_minima: null,
+        faixa_maxima: null,
+      },
+      token: "token-do-admin",
+    });
+  });
+
+  it("reativa o tipo de coleta pela rota de reativação", async () => {
+    dublada.mockResolvedValue(tipoDeColeta());
+    await reativarTipoDeColeta("tipo-1", "token-do-admin");
+    expect(dublada).toHaveBeenCalledWith("/v1/tipos-de-coleta/tipo-1/reativacao", {
+      metodo: "POST",
+      token: "token-do-admin",
+    });
+  });
+
+  it("os seletores de escolha nova ficam só com os ativos", () => {
+    const base = {
+      natureza: "consumivel",
+      unidade: "kit",
+      exige_comprovante: false,
+      valor_em_moedas: "1.00",
+      vigencia_inicio: "2026-01-01",
+    };
+    const tipos: TipoDeRecurso[] = [
+      { ...base, id: "a", nome: "Ativo", ativo: true },
+      { ...base, id: "b", nome: "Desativado", ativo: false },
+    ];
+    expect(apenasAtivos(tipos).map((tipo) => tipo.id)).toEqual(["a"]);
   });
 });

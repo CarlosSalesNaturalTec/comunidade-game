@@ -19,6 +19,7 @@ from ..erros import (
     NaoEncontrado,
     PermissaoNegada,
     SerieDeColetaJaAberta,
+    TipoEmUso,
 )
 from ..locais.modelo import ORDEM_DOS_NIVEIS, Local, NivelDoLocal
 from ..locais.regra import resolver_locais_publicados
@@ -27,6 +28,7 @@ from ..ods.regra import resolver_etiquetas_da_missao
 from ..paginacao import PaginaDeResultado, codificar_cursor, decodificar_cursor
 from ..personas.modelo import Credencial, Papel, Persona, TipoDeCredencial
 from ..pontuacao.regra import creditar_pontuacao_da_coleta, estornar_pontuacao_da_coleta
+from ..referencias import esta_em_uso
 from ..tempo import agora
 from ..trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
 from ..trilhas.regra import conferir_posse_da_trilha
@@ -249,18 +251,56 @@ def _conferir_unidade_e_faixa(
             )
 
 
+class _Manter:
+    """Marca de campo **ausente** na alteração: mantém o valor atual. `None`
+    é outra coisa — retira a unidade ou a faixa (design — decisão 3)."""
+
+
+MANTER = _Manter()
+
+
 def alterar_tipo_de_coleta(
     sessao: Session,
     tipo: TipoDeColeta,
     *,
     operador: Persona,
-    nome: str | None = None,
+    nome: str | None | _Manter = MANTER,
+    forma_de_registro: str | None | _Manter = MANTER,
+    unidade: str | None | _Manter = MANTER,
+    faixa_minima: float | None | _Manter = MANTER,
+    faixa_maxima: float | None | _Manter = MANTER,
 ) -> TipoDeColeta:
+    """Só Admin altera, e qualquer campo — inclusive a forma de registro.
+    O tipo resultante passa pelas mesmas validações do cadastro; registro
+    já gravado não muda, e o registro novo segue o tipo atual (`RF-08-32`,
+    `RF-08-05`, `RF-08-12`, design — decisão 3)."""
     _exigir_admin(operador)
-    if nome is not None:
-        if not nome.strip():
-            raise ErroDeValidacao(mensagem="Tipo de coleta exige nome.", campo="nome")
-        tipo.nome = nome
+
+    novo_nome = tipo.nome if isinstance(nome, _Manter) else nome
+    if not novo_nome or not novo_nome.strip():
+        raise ErroDeValidacao(mensagem="Tipo de coleta exige nome.", campo="nome")
+
+    if isinstance(forma_de_registro, _Manter):
+        nova_forma = tipo.forma_de_registro
+    else:
+        try:
+            nova_forma = FormaDeRegistro(forma_de_registro)
+        except (ValueError, TypeError) as exc:
+            raise ErroDeValidacao(
+                mensagem="Forma de registro fora dos valores previstos.",
+                campo="forma_de_registro",
+            ) from exc
+
+    nova_unidade = tipo.unidade if isinstance(unidade, _Manter) else unidade
+    nova_minima = tipo.faixa_minima if isinstance(faixa_minima, _Manter) else faixa_minima
+    nova_maxima = tipo.faixa_maxima if isinstance(faixa_maxima, _Manter) else faixa_maxima
+    _conferir_unidade_e_faixa(nova_forma, nova_unidade, nova_minima, nova_maxima)
+
+    tipo.nome = novo_nome
+    tipo.forma_de_registro = nova_forma
+    tipo.unidade = nova_unidade
+    tipo.faixa_minima = nova_minima
+    tipo.faixa_maxima = nova_maxima
     sessao.flush()
     return tipo
 
@@ -275,6 +315,26 @@ def desativar_tipo_de_coleta(
     tipo.ativo = False
     sessao.flush()
     return tipo
+
+
+def reativar_tipo_de_coleta(
+    sessao: Session, tipo: TipoDeColeta, *, operador: Persona
+) -> TipoDeColeta:
+    """O tipo volta a ser aceito em desafio novo (`RF-08-32`)."""
+    _exigir_admin(operador)
+    tipo.ativo = True
+    sessao.flush()
+    return tipo
+
+
+def excluir_tipo_de_coleta(sessao: Session, tipo: TipoDeColeta, *, operador: Persona) -> None:
+    """Só o tipo que nenhum desafio escolheu sai; o usado é recusado e o
+    caminho é desativá-lo (`RN-08-30`, design — decisão 4)."""
+    _exigir_admin(operador)
+    if esta_em_uso(sessao, tabela=TipoDeColeta.__table__, identificador=tipo.id):
+        raise TipoEmUso(campo="tipo_de_coleta_id")
+    sessao.delete(tipo)
+    sessao.flush()
 
 
 def criar_desafio_de_coleta(

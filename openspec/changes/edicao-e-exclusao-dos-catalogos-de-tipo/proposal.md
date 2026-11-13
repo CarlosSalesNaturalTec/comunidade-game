@@ -5,7 +5,7 @@
 coleta), donos das regras de núcleo dos dois catálogos.
 **Requisitos atendidos:** `RF-02-113`, `RF-02-114`, `RF-02-115`, `RF-07-51`, `RF-07-52`,
 `RN-07-40`, `RF-08-32`, `RN-08-30` — **novos**, a criar na revisão dos PRDs 02, 07 e 08 no mesmo
-PR; alteram `RF-02-107`, `RF-02-108`, `RF-07-01` e `RF-08-05`, e aplicam `RF-07-02` e `RF-07-43`.
+PR; alteram `RF-07-01` ("cadastra e mantém") e aplicam `RF-07-02` e `RF-07-43`.
 
 ## Why
 

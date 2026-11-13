@@ -16,6 +16,7 @@ from ..ponto_extra.regra import (
 )
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
+from ..recursos.regra import exigir_tipo_de_recurso_ativo
 from ..reservas.regra import liberar_reservas_da_aula, tentar_reservar_recursos
 from ..tempo import agora
 from .modelo import (
@@ -111,6 +112,7 @@ def agendar_aula(
                 mensagem="Recurso declarado exige um tipo de recurso existente.",
                 campo="recursos_declarados",
             )
+        exigir_tipo_de_recurso_ativo(entrada.tipo, campo="recursos_declarados")
         if entrada.tipo.natureza == NaturezaDoRecurso.duravel:
             raise ErroDeValidacao(
                 mensagem=(

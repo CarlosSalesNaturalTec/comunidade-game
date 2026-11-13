@@ -216,7 +216,9 @@ registrado não é cadastro. A solicitação é aprovada pelo **Mestre da trilha
 
 **Quem cadastra os tipos de coleta.** O catálogo do que se mede — a forma de registro, a
 unidade e a faixa esperada de cada tipo — é **cadastrado pelos Admins**, como os locais. O
-Mestre **escolhe** um tipo do catálogo ao criar o desafio; não cria tipo novo.
+Mestre **escolhe** um tipo do catálogo ao criar o desafio; não cria tipo novo. O Admin altera
+qualquer campo do tipo — o registro já gravado não muda —, exclui apenas o que nenhum desafio
+escolheu e **desativa** o usado.
 
 #### Registro temporal e pontuação enquanto a coleta durar
 

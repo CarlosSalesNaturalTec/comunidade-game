@@ -529,6 +529,7 @@ describe("extrato e ajuste do livro-razão (RF-02-40)", () => {
         natureza: "consumivel",
         unidade: "unidade",
         exige_comprovante: false,
+        ativo: true,
         valor_em_moedas: "1.00",
         vigencia_inicio: "2026-01-01",
       },

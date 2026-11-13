@@ -33,6 +33,8 @@ export interface TipoDeRecurso {
   natureza: string;
   unidade: string;
   exige_comprovante: boolean;
+  // Desativado não é oferecido em escolha nova (`RF-07-52`).
+  ativo: boolean;
   valor_em_moedas: string;
   vigencia_inicio: string;
 }

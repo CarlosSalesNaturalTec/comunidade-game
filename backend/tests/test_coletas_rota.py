@@ -746,3 +746,113 @@ def test_mestre_recebe_403_ao_consultar_desafios_disponiveis_pela_rota(
     )
 
     assert resposta.status_code == 403
+
+
+# --- Rotas de alteração, desativação, reativação e exclusão do tipo de coleta
+# (`RF-08-32`, `RN-08-30`) ---
+
+
+def _cabecalhos(criar_chave, criar_sessao_de_teste, persona):
+    chave, _ = criar_chave()
+    token, _ = criar_sessao_de_teste(persona)
+    return {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+
+def test_admin_troca_a_forma_pela_rota_retirando_unidade_e_faixa(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    cabecalhos = _cabecalhos(criar_chave, criar_sessao_de_teste, admin)
+    tipo = criar_tipo_de_coleta(admin)
+
+    resposta = cliente.patch(
+        f"/v1/tipos-de-coleta/{tipo.id}",
+        json={
+            "forma_de_registro": "foto",
+            "unidade": None,
+            "faixa_minima": None,
+            "faixa_maxima": None,
+        },
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 200
+    corpo = resposta.json()
+    assert corpo["forma_de_registro"] == "foto"
+    assert corpo["unidade"] is None and corpo["faixa_minima"] is None
+
+
+def test_campo_ausente_mantem_o_valor_atual(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    cabecalhos = _cabecalhos(criar_chave, criar_sessao_de_teste, admin)
+    tipo = criar_tipo_de_coleta(admin)
+
+    resposta = cliente.patch(
+        f"/v1/tipos-de-coleta/{tipo.id}", json={"nome": "Temperatura do ar"}, headers=cabecalhos
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.json()["unidade"] == "°C"
+    assert resposta.json()["faixa_maxima"] == 55.0
+
+
+def test_faixa_invertida_na_alteracao_e_recusada(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    cabecalhos = _cabecalhos(criar_chave, criar_sessao_de_teste, admin)
+    tipo = criar_tipo_de_coleta(admin)
+
+    resposta = cliente.patch(
+        f"/v1/tipos-de-coleta/{tipo.id}", json={"faixa_minima": 60}, headers=cabecalhos
+    )
+
+    assert resposta.status_code == 422
+
+
+def test_desativa_reativa_e_exclui_pela_rota(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_tipo_de_coleta,
+    criar_trilha,
+    criar_missao,
+    criar_desafio_de_coleta,
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    cabecalhos = _cabecalhos(criar_chave, criar_sessao_de_teste, admin)
+    livre = criar_tipo_de_coleta(admin)
+    usado = criar_tipo_de_coleta(admin, nome="Chuva")
+    trilha = criar_trilha(mestre)
+    criar_desafio_de_coleta(criar_missao(trilha, mestre), mestre, tipo=usado)
+
+    desativado = cliente.post(f"/v1/tipos-de-coleta/{usado.id}/desativacao", headers=cabecalhos)
+    assert desativado.status_code == 200 and desativado.json()["ativo"] is False
+    reativado = cliente.post(f"/v1/tipos-de-coleta/{usado.id}/reativacao", headers=cabecalhos)
+    assert reativado.json()["ativo"] is True
+
+    recusa = cliente.delete(f"/v1/tipos-de-coleta/{usado.id}", headers=cabecalhos)
+    assert recusa.status_code == 422 and recusa.json()["codigo"] == "tipo_em_uso"
+    assert cliente.delete(f"/v1/tipos-de-coleta/{livre.id}", headers=cabecalhos).status_code == 204
+    assert (
+        cliente.delete(f"/v1/tipos-de-coleta/{uuid.uuid4()}", headers=cabecalhos).status_code == 404
+    )
+
+
+def test_mestre_recebe_403_nas_escritas_do_tipo_de_coleta(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    cabecalhos = _cabecalhos(criar_chave, criar_sessao_de_teste, mestre)
+    tipo = criar_tipo_de_coleta(admin)
+    base = f"/v1/tipos-de-coleta/{tipo.id}"
+
+    assert cliente.patch(base, json={"nome": "X"}, headers=cabecalhos).status_code == 403
+    assert cliente.post(f"{base}/desativacao", headers=cabecalhos).status_code == 403
+    assert cliente.post(f"{base}/reativacao", headers=cabecalhos).status_code == 403
+    assert cliente.delete(base, headers=cabecalhos).status_code == 403

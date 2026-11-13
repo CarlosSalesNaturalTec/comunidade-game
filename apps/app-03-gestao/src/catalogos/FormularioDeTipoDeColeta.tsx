@@ -3,14 +3,23 @@ import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
 import {
+  alterarTipoDeColeta,
   cadastrarTipoDeColeta,
   type FormaDeRegistro,
   ROTULO_DA_FORMA_DE_REGISTRO,
+  type TipoDeColeta,
 } from "./api";
 
 interface Props {
   onSalvo: () => void;
   onCancelar: () => void;
+  // Presente, o formulário edita o tipo — todos os campos, inclusive a
+  // forma de registro (`RF-02-114`, `RF-08-32`, design — decisão 8).
+  tipoEmEdicao?: TipoDeColeta;
+}
+
+function textoDe(valor: number | string | null | undefined): string {
+  return valor === null || valor === undefined ? "" : String(valor);
 }
 
 interface ErroDeCampo {
@@ -24,19 +33,23 @@ const RECUSA_POR_PAPEL = "Só o Admin cadastra tipo de coleta do catálogo.";
 // `CheckConstraint` que o núcleo já impõe, trazido para antes do envio; a
 // recusa do núcleo segue sendo apresentada quando vier (`RF-02-108`,
 // `RF-08-12`, `RF-08-21`, design — decisão 5).
-export function FormularioDeTipoDeColeta({ onSalvo, onCancelar }: Props) {
+export function FormularioDeTipoDeColeta({ onSalvo, onCancelar, tipoEmEdicao }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDaForma = useId();
-  const [nome, definirNome] = useState("");
-  const [formaDeRegistro, definirFormaDeRegistro] = useState<FormaDeRegistro>("numero");
-  const [unidade, definirUnidade] = useState("");
-  const [faixaMinima, definirFaixaMinima] = useState("");
-  const [faixaMaxima, definirFaixaMaxima] = useState("");
+  const emEdicao = tipoEmEdicao !== undefined;
+  const [nome, definirNome] = useState(tipoEmEdicao?.nome ?? "");
+  const [formaDeRegistro, definirFormaDeRegistro] = useState<FormaDeRegistro>(
+    tipoEmEdicao?.forma_de_registro ?? "numero",
+  );
+  const [unidade, definirUnidade] = useState(textoDe(tipoEmEdicao?.unidade));
+  const [faixaMinima, definirFaixaMinima] = useState(textoDe(tipoEmEdicao?.faixa_minima));
+  const [faixaMaxima, definirFaixaMaxima] = useState(textoDe(tipoEmEdicao?.faixa_maxima));
   const [erroDeCampo, definirErroDeCampo] = useState<ErroDeCampo | null>(null);
   const [erroDeRecusa, definirErroDeRecusa] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
 
   const medePorNumero = formaDeRegistro === "numero";
+  const trocouAForma = emEdicao && formaDeRegistro !== tipoEmEdicao.forma_de_registro;
 
   async function aoSubmeter(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -69,18 +82,42 @@ export function FormularioDeTipoDeColeta({ onSalvo, onCancelar }: Props) {
 
     definirEnviando(true);
     try {
-      await cadastrarTipoDeColeta(
-        medePorNumero
-          ? {
-              nome,
-              forma_de_registro: formaDeRegistro,
-              unidade,
-              faixa_minima: Number(faixaMinima),
-              faixa_maxima: Number(faixaMaxima),
-            }
-          : { nome, forma_de_registro: formaDeRegistro },
-        sessao.token,
-      );
+      if (emEdicao) {
+        // Na troca para foto ou vídeo, unidade e faixa saem no mesmo ato:
+        // vão nulas, que é o que o núcleo lê como retirar.
+        await alterarTipoDeColeta(
+          tipoEmEdicao.id,
+          medePorNumero
+            ? {
+                nome,
+                forma_de_registro: formaDeRegistro,
+                unidade,
+                faixa_minima: Number(faixaMinima),
+                faixa_maxima: Number(faixaMaxima),
+              }
+            : {
+                nome,
+                forma_de_registro: formaDeRegistro,
+                unidade: null,
+                faixa_minima: null,
+                faixa_maxima: null,
+              },
+          sessao.token,
+        );
+      } else {
+        await cadastrarTipoDeColeta(
+          medePorNumero
+            ? {
+                nome,
+                forma_de_registro: formaDeRegistro,
+                unidade,
+                faixa_minima: Number(faixaMinima),
+                faixa_maxima: Number(faixaMaxima),
+              }
+            : { nome, forma_de_registro: formaDeRegistro },
+          sessao.token,
+        );
+      }
       onSalvo();
     } catch (erro) {
       if (ehRecusaDeSessao(erro)) {
@@ -102,7 +139,9 @@ export function FormularioDeTipoDeColeta({ onSalvo, onCancelar }: Props) {
         return;
       }
       definirErroDeRecusa(
-        "Não foi possível cadastrar o tipo de coleta. Tente novamente em instantes.",
+        emEdicao
+          ? "Não foi possível alterar o tipo de coleta. Tente novamente em instantes."
+          : "Não foi possível cadastrar o tipo de coleta. Tente novamente em instantes.",
       );
     } finally {
       definirEnviando(false);
@@ -110,7 +149,10 @@ export function FormularioDeTipoDeColeta({ onSalvo, onCancelar }: Props) {
   }
 
   return (
-    <form onSubmit={aoSubmeter} aria-label="Novo tipo de coleta">
+    <form
+      onSubmit={aoSubmeter}
+      aria-label={emEdicao ? "Editar tipo de coleta" : "Novo tipo de coleta"}
+    >
       <Campo
         rotulo="Nome"
         valor={nome}
@@ -170,10 +212,17 @@ export function FormularioDeTipoDeColeta({ onSalvo, onCancelar }: Props) {
         </Aviso>
       )}
 
+      {trocouAForma && (
+        <Aviso tipo="atencao">
+          Os registros já gravados com este tipo não mudam. Os registros novos dos desafios que
+          usam este tipo passam a seguir a forma de registro nova.
+        </Aviso>
+      )}
+
       {erroDeRecusa && <Aviso tipo="erro">{erroDeRecusa}</Aviso>}
 
       <Botao tipo="submit" desabilitado={enviando}>
-        Cadastrar
+        {emEdicao ? "Salvar alterações" : "Cadastrar"}
       </Botao>
       <Botao variante="secundaria" onClick={onCancelar}>
         Cancelar

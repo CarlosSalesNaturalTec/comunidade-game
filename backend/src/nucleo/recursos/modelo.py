@@ -51,6 +51,12 @@ class TipoDeRecurso(Base, ComAutoria):
     exige_comprovante: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default="false"
     )
+    # Desativado sai só da escolha nova; o que já existe com o tipo segue
+    # inalterado. Nasce verdadeira, e todo tipo anterior à marca fica ativo
+    # (`RF-07-52`, design — decisão 7).
+    ativo: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
 
 
 class ValorDeReferencia(Base, ComAutoria):

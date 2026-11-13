@@ -274,3 +274,157 @@ def test_papel_que_nao_escolhe_nem_cadastra_e_recusado(sessao, criar_persona, pa
 
     with pytest.raises(PermissaoNegada):
         consultar_tipos_de_coleta(sessao, operador=persona, cursor=None, tamanho=10)
+
+
+# --- Alteração de todos os campos, reativação e exclusão (`RF-08-32`, `RN-08-30`) ---
+
+from nucleo.coletas.regra import excluir_tipo_de_coleta, reativar_tipo_de_coleta  # noqa: E402
+from nucleo.erros import TipoEmUso  # noqa: E402
+
+
+def test_admin_altera_a_faixa_esperada(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(admin)
+
+    alterar_tipo_de_coleta(sessao, tipo, operador=admin, faixa_minima=-5.0, faixa_maxima=50.0)
+
+    assert (tipo.faixa_minima, tipo.faixa_maxima, tipo.unidade) == (-5.0, 50.0, "°C")
+
+
+def test_troca_de_numero_para_foto_retira_unidade_e_faixa(
+    sessao, criar_persona, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(admin)
+
+    alterar_tipo_de_coleta(
+        sessao,
+        tipo,
+        operador=admin,
+        forma_de_registro="foto",
+        unidade=None,
+        faixa_minima=None,
+        faixa_maxima=None,
+    )
+    sessao.commit()
+
+    assert tipo.forma_de_registro == FormaDeRegistro.foto
+    assert (tipo.unidade, tipo.faixa_minima, tipo.faixa_maxima) == (None, None, None)
+
+
+def test_troca_para_foto_mantendo_a_faixa_e_recusada(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(admin)
+
+    with pytest.raises(ErroDeValidacao):
+        alterar_tipo_de_coleta(sessao, tipo, operador=admin, forma_de_registro="foto")
+
+    assert tipo.forma_de_registro == FormaDeRegistro.numero
+
+
+def test_troca_de_foto_para_numero_sem_faixa_e_recusada(
+    sessao, criar_persona, criar_tipo_de_coleta
+):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(
+        admin,
+        forma_de_registro=FormaDeRegistro.foto,
+        unidade=None,
+        faixa_minima=None,
+        faixa_maxima=None,
+    )
+
+    with pytest.raises(ErroDeValidacao):
+        alterar_tipo_de_coleta(
+            sessao, tipo, operador=admin, forma_de_registro="numero", unidade="mm"
+        )
+
+    assert tipo.forma_de_registro == FormaDeRegistro.foto
+
+
+def test_registro_gravado_nao_muda_com_a_forma(
+    sessao,
+    criar_persona,
+    criar_comunidade,
+    criar_local,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+    criar_serie_de_coleta,
+    criar_registro_de_coleta,
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    tipo = criar_tipo_de_coleta(admin)
+    trilha = criar_trilha(mestre)
+    desafio = criar_desafio_de_coleta(criar_missao(trilha, mestre), mestre, tipo=tipo)
+    serie = criar_serie_de_coleta(guerreiro, desafio, criar_local(comunidade))
+    registro = criar_registro_de_coleta(serie, guerreiro, comunidade.id, valor=25.0)
+
+    alterar_tipo_de_coleta(
+        sessao,
+        tipo,
+        operador=admin,
+        forma_de_registro="foto",
+        unidade=None,
+        faixa_minima=None,
+        faixa_maxima=None,
+    )
+    sessao.commit()
+    sessao.refresh(registro)
+
+    assert (registro.valor, registro.unidade) == (25.0, "°C")
+    assert desafio.tipo_de_coleta_id == tipo.id
+
+
+def test_reativar_devolve_o_tipo_a_escolha(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(admin, ativo=False)
+
+    reativar_tipo_de_coleta(sessao, tipo, operador=admin)
+    reativar_tipo_de_coleta(sessao, tipo, operador=admin)
+
+    assert tipo.ativo is True
+
+
+def test_mestre_nao_reativa_nem_exclui(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    tipo = criar_tipo_de_coleta(admin, ativo=False)
+
+    with pytest.raises(PermissaoNegada):
+        reativar_tipo_de_coleta(sessao, tipo, operador=mestre)
+    with pytest.raises(PermissaoNegada):
+        excluir_tipo_de_coleta(sessao, tipo, operador=mestre)
+
+
+def test_tipo_nunca_usado_e_excluido(sessao, criar_persona, criar_tipo_de_coleta):
+    admin = criar_persona(Papel.admin)
+    tipo = criar_tipo_de_coleta(admin)
+    id_do_tipo = tipo.id
+
+    excluir_tipo_de_coleta(sessao, tipo, operador=admin)
+    sessao.commit()
+
+    assert sessao.get(TipoDeColeta, id_do_tipo) is None
+
+
+def test_tipo_escolhido_por_desafio_nao_e_excluido(
+    sessao,
+    criar_persona,
+    criar_trilha,
+    criar_missao,
+    criar_tipo_de_coleta,
+    criar_desafio_de_coleta,
+):
+    admin = criar_persona(Papel.admin)
+    mestre = criar_persona(Papel.mestre, criada_por=admin)
+    tipo = criar_tipo_de_coleta(admin)
+    trilha = criar_trilha(mestre)
+    criar_desafio_de_coleta(criar_missao(trilha, mestre), mestre, tipo=tipo)
+
+    with pytest.raises(TipoEmUso):
+        excluir_tipo_de_coleta(sessao, tipo, operador=admin)
