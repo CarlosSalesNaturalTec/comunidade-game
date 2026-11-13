@@ -243,22 +243,60 @@ describe("lista de necessidades", () => {
   };
 
   const identidade = (id: string) => id;
+  const semUnidade = () => undefined;
 
-  it("a necessidade aparece com o recurso, a falta, o valor, a comunidade e o horário", () => {
+  it("a necessidade aparece numa linha da tabela, cada campo na sua coluna", () => {
     render(
       <ListaDeNecessidades
         necessidades={[NECESSIDADE]}
         nomeDoTipoDeRecurso={() => TIPO_SEM_COMPROVANTE.nome}
+        unidadeDoTipoDeRecurso={() => TIPO_SEM_COMPROVANTE.unidade}
         nomeDaComunidade={() => COMUNIDADE.nome}
         nomeDoPontoDeApoio={() => PONTO_DE_APOIO.nome}
       />,
     );
 
-    expect(screen.getByText(TIPO_SEM_COMPROVANTE.nome)).toBeInTheDocument();
-    expect(screen.getByText(/falta: 5/i)).toBeInTheDocument();
-    expect(screen.getByText(/5 moedas/i)).toBeInTheDocument();
-    expect(screen.getByText(COMUNIDADE.nome)).toBeInTheDocument();
-    expect(screen.getByText(PONTO_DE_APOIO.nome)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Necessidades em aberto" }),
+    ).toBeInTheDocument();
+    for (const rotulo of [
+      "Aula",
+      "Comunidade",
+      "Ponto de apoio",
+      "Recurso",
+      "Falta",
+      "Valor",
+    ]) {
+      expect(screen.getByRole("columnheader", { name: rotulo })).toBeInTheDocument();
+    }
+    expect(
+      screen.getByRole("rowheader", { name: TIPO_SEM_COMPROVANTE.nome }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "5 unidade" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "5 moedas" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: COMUNIDADE.nome })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: PONTO_DE_APOIO.nome })).toBeInTheDocument();
+    expect(
+      screen.getByRole("cell", { name: /21\/08\/2026.*–.*21\/08\/2026/ }),
+    ).toBeInTheDocument();
+  });
+
+  it("falta e valor não se confundem: cada um formatado na sua célula", () => {
+    render(
+      <ListaDeNecessidades
+        necessidades={[
+          { ...NECESSIDADE, quantidade_faltante: "1.00", valor_em_moedas: "5.00" },
+        ]}
+        nomeDoTipoDeRecurso={identidade}
+        unidadeDoTipoDeRecurso={() => "un"}
+        nomeDaComunidade={identidade}
+        nomeDoPontoDeApoio={identidade}
+      />,
+    );
+
+    expect(screen.getByRole("cell", { name: "1 un" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "5 moedas" })).toBeInTheDocument();
+    expect(screen.queryByText(/1\.005\.00/)).not.toBeInTheDocument();
   });
 
   it("tipo sem vigência aparece sem valor em moedas", () => {
@@ -266,6 +304,7 @@ describe("lista de necessidades", () => {
       <ListaDeNecessidades
         necessidades={[{ ...NECESSIDADE, valor_em_moedas: null }]}
         nomeDoTipoDeRecurso={identidade}
+        unidadeDoTipoDeRecurso={semUnidade}
         nomeDaComunidade={identidade}
         nomeDoPontoDeApoio={identidade}
       />,
@@ -280,6 +319,7 @@ describe("lista de necessidades", () => {
       <ListaDeNecessidades
         necessidades={[]}
         nomeDoTipoDeRecurso={identidade}
+        unidadeDoTipoDeRecurso={semUnidade}
         nomeDaComunidade={identidade}
         nomeDoPontoDeApoio={identidade}
       />,
@@ -346,7 +386,7 @@ describe("área Recursos", () => {
     render(<TelaDeRecursos />);
     const usuario = userEvent.setup();
 
-    expect(await screen.findByText(/falta: 5/i)).toBeInTheDocument();
+    expect(await screen.findByRole("cell", { name: /^5( unidade)?$/ })).toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: /novo aporte/i }));
     await usuario.selectOptions(screen.getByLabelText(/provedor/i), APOIADOR.id);
@@ -411,7 +451,7 @@ describe("área Recursos", () => {
     render(<TelaDeRecursos />);
     const usuario = userEvent.setup();
 
-    expect(await screen.findByText(/falta: 5/i)).toBeInTheDocument();
+    expect(await screen.findByRole("cell", { name: /^5( unidade)?$/ })).toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: /novo aporte/i }));
     await usuario.selectOptions(screen.getByLabelText(/provedor/i), APOIADOR.id);
@@ -424,7 +464,7 @@ describe("área Recursos", () => {
     await usuario.type(screen.getByLabelText(/data do aporte/i), "2026-08-20");
     await usuario.click(screen.getByRole("button", { name: /registrar aporte/i }));
 
-    expect(await screen.findByText(/falta: 3/i)).toBeInTheDocument();
+    expect(await screen.findByRole("cell", { name: /^3( unidade)?$/ })).toBeInTheDocument();
   });
 
   it("os formulários de aporte e de missão abrem e fecham por toggle, um sem afetar o outro", async () => {
@@ -460,9 +500,11 @@ describe("lista de saldos disponíveis", () => {
     ativo: true,
   };
 
-  it("o saldo aparece agrupado por ponto de apoio, sem somar entre pontos", () => {
+  it("o saldo aparece numa tabela por ponto de apoio, sem somar entre pontos", () => {
     render(
       <ListaDeSaldosDisponiveis
+        nomeDaComunidade={() => COMUNIDADE.nome}
+        unidadeDoTipoDeRecurso={() => undefined}
         gruposDeSaldo={[
           {
             pontoDeApoio: PONTO_DE_APOIO,
@@ -480,16 +522,42 @@ describe("lista de saldos disponíveis", () => {
       />,
     );
 
-    expect(screen.getByText(PONTO_DE_APOIO.nome)).toBeInTheDocument();
-    expect(screen.getByText(PONTO_DOIS.nome)).toBeInTheDocument();
-    expect(screen.getByText(/lanche: 7/i)).toBeInTheDocument();
-    expect(screen.getByText(/lanche: 3/i)).toBeInTheDocument();
-    expect(screen.queryByText(/lanche: 10/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Saldo disponível" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: `${PONTO_DE_APOIO.nome} — ${COMUNIDADE.nome}` }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: `${PONTO_DOIS.nome} — ${COMUNIDADE.nome}` }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("table")).toHaveLength(2);
+    expect(screen.getByRole("cell", { name: "7" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "3" })).toBeInTheDocument();
+    expect(screen.queryByRole("cell", { name: "10" })).not.toBeInTheDocument();
+  });
+
+  it("o saldo aparece com a unidade e sem decimal cru", () => {
+    render(
+      <ListaDeSaldosDisponiveis
+        nomeDaComunidade={() => COMUNIDADE.nome}
+        unidadeDoTipoDeRecurso={() => "un"}
+        gruposDeSaldo={[
+          {
+            pontoDeApoio: PONTO_DE_APOIO,
+            saldos: [{ tipo_de_recurso_id: "tipo-1", nome: "Kit", saldo: "17.00" }],
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("rowheader", { name: "Kit" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "17 un" })).toBeInTheDocument();
   });
 
   it("sem saldo em nenhum ponto de apoio a lista diz isso", () => {
     render(
       <ListaDeSaldosDisponiveis
+        nomeDaComunidade={() => COMUNIDADE.nome}
+        unidadeDoTipoDeRecurso={() => undefined}
         gruposDeSaldo={[{ pontoDeApoio: PONTO_DE_APOIO, saldos: [] }]}
       />,
     );
