@@ -2,6 +2,8 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo, MarcaDeGravacao, MidiaDoNucleo } from "comum/react";
 import { useId, useState } from "react";
+import type { RecompensaDeMarco } from "../recompensas/api";
+import type { TipoDeRecurso } from "../recursos/api";
 import {
   abrirEnvioDaImagemDaPergunta,
   acrescentarPerguntaDoDesbloqueio,
@@ -26,6 +28,47 @@ import {
 interface Props {
   missao: MissaoDaTrilha;
   onAtualizada: (missao: MissaoDaTrilha) => void;
+  // As recompensas de marco da trilha são as opções do kit apresentado; os
+  // tipos de recurso e as missões dão nome a cada uma (`RF-09-141`).
+  missoes?: MissaoDaTrilha[];
+  tiposDeRecurso?: TipoDeRecurso[];
+  recompensasDeMarco?: RecompensaDeMarco[];
+}
+
+interface OpcaoDeKit {
+  id: string;
+  rotulo: string;
+}
+
+// Cada recompensa da trilha vira opção pelo tipo de recurso e pela missão do
+// marco. O kit já declarado que não está na lista — a leitura auxiliar das
+// recompensas falhou — entra pelo nome que a leitura da missão trouxe: sem
+// ele a escolha reabriria em "nenhum" e a próxima gravação apagaria o kit
+// (`RF-09-141`, design — decisão 3).
+function opcoesDeKit(
+  missao: MissaoDaTrilha,
+  missoes: MissaoDaTrilha[],
+  tiposDeRecurso: TipoDeRecurso[],
+  recompensas: RecompensaDeMarco[],
+): OpcaoDeKit[] {
+  const nomeDoTipo = new Map(tiposDeRecurso.map((tipo) => [tipo.id, tipo.nome]));
+  const tituloDaMissao = new Map(missoes.map((item) => [item.id, item.titulo]));
+  const opcoes = recompensas.map((recompensa) => {
+    const tipo = nomeDoTipo.get(recompensa.tipo_de_recurso_id) ?? "Recurso";
+    const marco = tituloDaMissao.get(recompensa.missao_id);
+    return {
+      id: recompensa.id,
+      rotulo: `${tipo} (${recompensa.quantidade})${marco ? ` — marco de ${marco}` : ""}`,
+    };
+  });
+  const declarado = missao.desafio_pratico_kit_apresentado;
+  if (declarado && !opcoes.some((opcao) => opcao.id === declarado.recompensa_de_marco_id)) {
+    opcoes.unshift({
+      id: declarado.recompensa_de_marco_id,
+      rotulo: declarado.tipo_de_recurso_nome,
+    });
+  }
+  return opcoes;
 }
 
 const TOTAL_DE_ALTERNATIVAS = 4;
@@ -96,7 +139,13 @@ function semAPosicao<T>(mapa: Record<number, T>, removida: number): Record<numbe
 // missão seguinte, e abre ao ser respondida — o corte de 60% não se aplica
 // (`RN-05-46`) e o resultado não define nível (`RN-09-30`). A sondagem é
 // sempre quiz, de modo que a escolha de tipo não aparece (`RF-09-81`).
-export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
+export function DesafioDeDesbloqueio({
+  missao,
+  onAtualizada,
+  missoes = [],
+  tiposDeRecurso = [],
+  recompensasDeMarco = [],
+}: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const ehSondagem = missao.e_sondagem;
   const [tipo, definirTipo] = useState<TipoDeDesafioDeDesbloqueio>(
@@ -117,7 +166,15 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
   const [tituloCurto, definirTituloCurto] = useState(
     missao.desafio_pratico_titulo_curto ?? "",
   );
+  // O kit reabre do que a missão trouxe e vai em **toda** declaração do
+  // prático: declarar de novo substitui o kit, e corrigir o critério nunca
+  // pode apagá-lo (`RF-09-141`, design — decisão 2).
+  const [kitApresentadoId, definirKitApresentadoId] = useState(
+    missao.desafio_pratico_kit_apresentado?.recompensa_de_marco_id ?? "",
+  );
   const idDaForma = useId();
+  const idDoKit = useId();
+  const kits = opcoesDeKit(missao, missoes, tiposDeRecurso, recompensasDeMarco);
   const [perguntas, definirPerguntas] = useState<PerguntaEmEdicao[]>(comoEdicao(missao));
   const [erro, definirErro] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
@@ -306,11 +363,16 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
           forma_de_comprovacao: tipo === "pratico" ? formaDeComprovacao : null,
           criterio_de_aceite: tipo === "pratico" ? criterioDeAceite : null,
           titulo_curto: tipo === "pratico" ? tituloCurto : null,
+          // O quiz nunca manda o kit: o núcleo o recusa no quiz (`RF-09-141`).
+          ...(tipo === "pratico" ? { kit_apresentado_id: kitApresentadoId || null } : {}),
         },
         sessao.token,
       );
       definirGravadoEm(new Date());
       definirPerguntas(comoEdicao(atualizada));
+      definirKitApresentadoId(
+        atualizada.desafio_pratico_kit_apresentado?.recompensa_de_marco_id ?? "",
+      );
       onAtualizada(atualizada);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
@@ -413,6 +475,29 @@ export function DesafioDeDesbloqueio({ missao, onAtualizada }: Props) {
           <p className="desafio-de-desbloqueio__ajuda">
             É esse título que a vitrine exibe ao lado do nick do Guerreiro(a). No máximo{" "}
             {TETO_DO_TITULO_CURTO} caracteres.
+          </p>
+          <div className="cg-campo">
+            <label htmlFor={idDoKit}>Kit apresentado (opcional)</label>
+            <select
+              id={idDoKit}
+              value={kitApresentadoId}
+              onChange={(evento) => definirKitApresentadoId(evento.target.value)}
+            >
+              <option value="">Nenhum kit</option>
+              {kits.map((opcao) => (
+                <option key={opcao.id} value={opcao.id}>
+                  {opcao.rotulo}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="desafio-de-desbloqueio__ajuda">
+            {kits.length === 0
+              ? "Esta trilha ainda não tem recompensa para escolher como kit. A recompensa " +
+                "se declara no bloco Recompensa pelo desbloqueio."
+              : "Escolha o kit recebido como recompensa que este prático apresenta. A " +
+                "comprovação aprovada vira o primeiro registro do kit e abre a " +
+                "customização dele. É você quem diz o que é kit: camisa e livro não são."}
           </p>
         </>
       )}

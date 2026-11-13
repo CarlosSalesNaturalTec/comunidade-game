@@ -7,6 +7,7 @@ import { TelaDeAutoria } from "../autoria/TelaDeAutoria";
 import * as perfilApi from "../perfil/api";
 import type { PoderDoCatalogo } from "../poderes/api";
 import * as poderesApi from "../poderes/api";
+import * as recompensasApi from "../recompensas/api";
 import * as recursosApi from "../recursos/api";
 import type { AulaDaTurma, MinhasTurmas } from "../turmas/api";
 import * as turmasApi from "../turmas/api";
@@ -4568,5 +4569,181 @@ describe("materiais da missão (RF-09-140, RN-09-61)", () => {
     expect(
       within(linhaDa("Primeira missão")).queryByText(/materiais para a aula/i),
     ).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// O kit que o prático apresenta (`RF-09-141`).
+// ---------------------------------------------------------------------------
+
+const KIT_DE_ROBOTICA: recursosApi.TipoDeRecurso = {
+  id: "tipo-kit",
+  nome: "Kit de robótica",
+  natureza: "bem",
+  unidade: "unidade",
+  exige_comprovante: false,
+  valor_em_moedas: "0",
+  vigencia_inicio: "2026-01-01T00:00:00-03:00",
+};
+
+const RECOMPENSA_DO_KIT: recompensasApi.RecompensaDeMarco = {
+  id: "recompensa-kit",
+  trilha_id: "trilha-1",
+  missao_id: "missao-1",
+  tipo_de_recurso_id: "tipo-kit",
+  quantidade: "1",
+  autor_id: "mestre-1",
+  registrado_em: "2026-11-01T10:00:00-03:00",
+};
+
+const KIT_DECLARADO = {
+  recompensa_de_marco_id: "recompensa-kit",
+  tipo_de_recurso_nome: "Kit de robótica",
+};
+
+async function abrirDesafioComKits(
+  missaoDaVez: MissaoDaTrilha,
+  recompensas: recompensasApi.RecompensaDeMarco[] = [RECOMPENSA_DO_KIT],
+) {
+  vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([KIT_DE_ROBOTICA]);
+  vi.spyOn(recompensasApi, "listarRecompensasDeMarco").mockResolvedValue(recompensas);
+  return abrirDesafio(missaoDaVez);
+}
+
+describe("kit apresentado no prático (RF-09-141)", () => {
+  it("oferece as recompensas da trilha pelo tipo e pelo marco, e grava o kit", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComPratico({ desafio_pratico_kit_apresentado: KIT_DECLARADO }));
+    const usuario = await abrirDesafioComKits(missaoComPratico());
+
+    const kit = await screen.findByLabelText(/kit apresentado/i);
+    await waitFor(() =>
+      expect(
+        Array.from(kit.querySelectorAll("option")).map((opcao) => opcao.textContent),
+      ).toEqual(["Nenhum kit", "Kit de robótica (1) — marco de Primeira missão"]),
+    );
+    expect(screen.getByText(/abre a customização dele/i)).toBeInTheDocument();
+
+    await usuario.selectOptions(kit, "recompensa-kit");
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado.mock.calls[0][1].kit_apresentado_id).toBe("recompensa-kit");
+  });
+
+  it("o kit é opcional: sem escolha, vai nulo", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComPratico());
+    const usuario = await abrirDesafioComKits(missaoComPratico());
+
+    await screen.findByLabelText(/kit apresentado/i);
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado.mock.calls[0][1].kit_apresentado_id).toBeNull();
+  });
+
+  it("trilha sem recompensa aponta o bloco da recompensa", async () => {
+    await abrirDesafioComKits(missaoComPratico(), []);
+
+    expect(await screen.findByText(/não tem recompensa para escolher/i)).toBeInTheDocument();
+    expect(screen.getByText(/bloco recompensa pelo desbloqueio/i)).toBeInTheDocument();
+  });
+
+  it("o quiz não mostra nem manda o kit", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missao({ tipo_do_desafio_de_desbloqueio: "quiz" }));
+    const usuario = await abrirDesafioComKits(
+      missaoComPratico({ desafio_pratico_kit_apresentado: KIT_DECLARADO }),
+    );
+
+    await screen.findByLabelText(/kit apresentado/i);
+    await usuario.click(screen.getByRole("radio", { name: /^quiz$/i }));
+    expect(screen.queryByLabelText(/kit apresentado/i)).not.toBeInTheDocument();
+
+    await usuario.type(screen.getByLabelText(/^enunciado da pergunta 1$/i), "1 + 1?");
+    for (const posicao of [1, 2, 3, 4]) {
+      await usuario.type(
+        screen.getByLabelText(new RegExp(`^alternativa ${posicao} da pergunta 1$`, "i")),
+        String(posicao),
+      );
+    }
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado.mock.calls[0][1]).not.toHaveProperty("kit_apresentado_id");
+  });
+
+  it("a sondagem não mostra a escolha do kit", async () => {
+    await abrirDesafioComKits(missao({ e_sondagem: true }));
+
+    await screen.findByText(/essa sondagem abre a trilha/i);
+    expect(screen.queryByLabelText(/kit apresentado/i)).not.toBeInTheDocument();
+  });
+
+  it("reabre o kit declarado e o reenvia ao corrigir o critério", async () => {
+    const declararEspiado = vi
+      .spyOn(trilhasApi, "declararDesafioDeDesbloqueio")
+      .mockResolvedValue(missaoComPratico({ desafio_pratico_kit_apresentado: KIT_DECLARADO }));
+    const usuario = await abrirDesafioComKits(
+      missaoComPratico({ desafio_pratico_kit_apresentado: KIT_DECLARADO }),
+    );
+
+    expect(await screen.findByLabelText(/kit apresentado/i)).toHaveValue("recompensa-kit");
+    await usuario.type(screen.getByLabelText(/critério de aceite/i), " Só o robô.");
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    await waitFor(() => expect(declararEspiado).toHaveBeenCalled());
+    expect(declararEspiado.mock.calls[0][1].kit_apresentado_id).toBe("recompensa-kit");
+  });
+
+  it("o kit declarado fora da lista segue escolhido, pelo nome da leitura", async () => {
+    await abrirDesafioComKits(
+      missaoComPratico({
+        desafio_pratico_kit_apresentado: {
+          recompensa_de_marco_id: "recompensa-fora",
+          tipo_de_recurso_nome: "Kit de costura",
+        },
+      }),
+      [],
+    );
+
+    const kit = await screen.findByLabelText(/kit apresentado/i);
+    expect(kit).toHaveValue("recompensa-fora");
+    expect(within(kit).getByRole("option", { name: "Kit de costura" })).toBeInTheDocument();
+  });
+
+  it("a recusa do kit chega com o motivo, sem limpar os outros campos", async () => {
+    vi.spyOn(trilhasApi, "declararDesafioDeDesbloqueio").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "O kit apresentado precisa ser uma recompensa de marco desta trilha.",
+        campo: "kit_apresentado_id",
+      }),
+    );
+    const usuario = await abrirDesafioComKits(missaoComPratico());
+
+    await usuario.selectOptions(
+      await screen.findByLabelText(/kit apresentado/i),
+      "recompensa-kit",
+    );
+    await usuario.click(screen.getByRole("button", { name: /declarar desafio/i }));
+
+    expect(
+      await screen.findByText(/precisa ser uma recompensa de marco desta trilha/i),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/critério de aceite/i)).toHaveValue(CRITERIO_DE_ACEITE);
+    expect(screen.getByLabelText(/título curto/i)).toHaveValue("Robô de sucata");
+  });
+
+  it("o resumo recolhido diz o kit declarado", async () => {
+    await abrirDesafioComKits(
+      missaoComPratico({ desafio_pratico_kit_apresentado: KIT_DECLARADO }),
+    );
+
+    expect(await screen.findByText(/apresentando o kit kit de robótica/i)).toBeInTheDocument();
   });
 });

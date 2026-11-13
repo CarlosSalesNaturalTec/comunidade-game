@@ -80,7 +80,10 @@ function resumoDoDesafioDeDesbloqueio(missao: MissaoDaTrilha): string {
       ? `Sondagem com ${total} pergunta(s).`
       : `Quiz com ${total} pergunta(s).`;
   }
-  return "Desafio prático declarado.";
+  const kit = missao.desafio_pratico_kit_apresentado;
+  return kit
+    ? `Desafio prático declarado, apresentando o kit ${kit.tipo_de_recurso_nome}.`
+    : "Desafio prático declarado.";
 }
 
 function resumoDosDesafiosDeColeta(missao: MissaoDaTrilha): string {
@@ -313,7 +316,13 @@ export function ListaDeMissoes({
             titulo={missao.e_sondagem ? "Sondagem" : "Desafio de desbloqueio"}
             resumo={resumoDoDesafioDeDesbloqueio(missao)}
           >
-            <DesafioDeDesbloqueio missao={missao} onAtualizada={onAtualizarMissao} />
+            <DesafioDeDesbloqueio
+              missao={missao}
+              onAtualizada={onAtualizarMissao}
+              missoes={missoes}
+              tiposDeRecurso={tiposDeRecurso}
+              recompensasDeMarco={recompensasDeMarco}
+            />
           </BlocoRecolhivel>
 
           <BlocoRecolhivel
