@@ -516,6 +516,11 @@ aparecem aqui apenas quando o ato é do Guerreiro(a).
 | POST   | `/v1/culminancias/{id}/criacoes`                              | Guerreiro(a)        | Entrega a criação original, individual ou de equipe                                      |
 | GET    | `/v1/eu/portfolio`                                            | Guerreiro(a)        | Criações validadas, com situação de exposição pública                                    |
 | GET    | `/v1/eu/recompensas`                                          | Guerreiro(a)        | Recompensas conquistadas em marcos e situação da entrega                                 |
+| GET    | `/v1/eu/customizacoes`                                        | Guerreiro(a)        | Kits com customização aberta e os próprios registros, com situação e motivo              |
+| POST   | `/v1/eu/customizacoes`                                        | Guerreiro(a)        | Registra a customização do kit, com a descrição; a mídia vem pela sessão de envio        |
+| POST   | `/v1/customizacoes/{id}/envios`                               | Guerreiro(a)        | Abre a sessão de envio da foto ou do vídeo do kit                                        |
+| POST   | `/v1/customizacoes/{id}/envios/confirmacao`                   | Guerreiro(a)        | Confirma o envio; só então o registro aguarda o Mestre da aula                           |
+| POST   | `/v1/customizacoes/{id}/cancelamento`                         | Guerreiro(a)        | Cancela o próprio registro pendente                                                      |
 | GET    | `/v1/eu/acervo`                                               | Guerreiro(a)        | Exemplar próprio e permanentes em uso, com a ficha de vida                               |
 | GET    | `/v1/eu/ranking`                                              | Guerreiro(a)        | Ranking da turma do vínculo vigente, por trilha ou poder, só com pontos regulares        |
 | POST   | `/v1/sugestoes`                                               | Guerreiro(a)        | Registra sugestão em texto ou áudio na fila única da gestão                              |
