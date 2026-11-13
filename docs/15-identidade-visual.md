@@ -201,6 +201,9 @@ conteúdo de todas.
 O controle de abrir e fechar é botão com rótulo textual e `aria-expanded`, nunca ícone sozinho
 (§5). Abrir e fechar muda estado, não anima altura — não há movimento decorativo aqui.
 
+Item que junta os seus próprios blocos — a missão, na página da etapa — também recolhe por
+inteiro quando a tela empilha mais de um, e nasce fechado; sozinho, fica aberto.
+
 Na Arena o bloco tem **outro uso**, e um só: tirar do fluxo de leitura o que é **secundário**
 — metadado e o que adianta o que vem pela frente —, sem apagá-lo da tela. Ali o resumo é
 **neutro** e não repete o conteúdo: quem quer sabe onde tocar, e quem veio ler a missão não
