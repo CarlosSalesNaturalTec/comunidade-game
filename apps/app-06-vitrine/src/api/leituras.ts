@@ -59,11 +59,16 @@ export interface AutorPublico {
   nick: string;
 }
 
-/** As **duas** fontes do acervo público (documento 99 §6, invariante 5): a
- * criação da culminância e a comprovação aprovada do desafio prático. */
-export type FonteDoAcervo = "criacao_original" | "comprovacao_do_pratico";
+/** As **três** fontes do acervo público (documento 99 §6, invariante 5): a
+ * criação da culminância, a comprovação aprovada do desafio prático e, desde
+ * 2026-11-12, o registro aprovado da customização do kit (`RF-03-88`). */
+export type FonteDoAcervo =
+  | "criacao_original"
+  | "comprovacao_do_pratico"
+  | "customizacao_do_kit";
 
-/** Os seis tipos de produção, iguais nas duas fontes. */
+/** Os seis tipos de produção, iguais nas três fontes; a customização só traz
+ * imagem ou vídeo. */
 export type TipoDeProducao =
   | "texto"
   | "imagem"
@@ -78,7 +83,8 @@ export type TipoDeProducao =
  *
  * O título é o curto que o Mestre declarou no desafio, na comprovação, e o
  * nome da trilha, na criação da culminância, que não tem campo de título
- * (`RN-03-43`). `trilha` vem nas duas, e é a linha que decide não repetir o
+ * (`RN-03-43`). Na customização do kit, o título é a descrição da criança
+ * (`RF-03-88`). `trilha` vem nas três, e é a linha que decide não repetir o
  * nome quando ele já é o título — o núcleo não esconde campo de terceiro
  * (design — decisão 4).
  *
@@ -174,7 +180,7 @@ export function obterGuerreiroPorNick(nick: string): Promise<GuerreiroPublico> {
 }
 
 /** O acervo, do item aprovado mais recentemente para o mais antigo, com as
- * duas fontes na mesma lista — a ordem é do núcleo (`RF-03-83`,
+ * três fontes na mesma lista — a ordem é do núcleo (`RF-03-83`,
  * `RF-03-84`). */
 export function listarCriacoes(cursor: string | null = null) {
   return lerDoNucleo<PaginaDoNucleo<CriacaoPublica>>(
@@ -182,12 +188,22 @@ export function listarCriacoes(cursor: string | null = null) {
   );
 }
 
+/** A rota de arquivo de cada fonte. `Record` e não ternário: a fonte nova que
+ * faltar aqui é erro de compilação, e não 404 silencioso na rota de outra
+ * fonte — foi assim que a customização ficou sem mídia (design — decisão 1). */
+const RECORTE_DO_ARQUIVO: Record<FonteDoAcervo, string> = {
+  criacao_original: "criacoes",
+  comprovacao_do_pratico: "comprovacoes",
+  customizacao_do_kit: "customizacoes",
+};
+
 /** Os bytes da produção de um item do acervo, pela rota de arquivo da fonte
  * dele. Vai por `lerArquivoDoNucleo` porque nenhuma rota sob `/v1` aceita
- * `<img src>` direto: a chave da aplicação exige cabeçalho (`RF-03-85`). */
+ * `<img src>` direto: a chave da aplicação exige cabeçalho (`RF-03-85`,
+ * `RF-03-88`). */
 export function lerArquivoDoAcervo(item: { id: string; fonte: FonteDoAcervo }): Promise<Blob> {
   configurarAcessoUmaVez();
-  const recorte = item.fonte === "criacao_original" ? "criacoes" : "comprovacoes";
+  const recorte = RECORTE_DO_ARQUIVO[item.fonte];
   return lerArquivoDoNucleo(`/v1/vitrine/${recorte}/${encodeURIComponent(item.id)}/arquivo`);
 }
 

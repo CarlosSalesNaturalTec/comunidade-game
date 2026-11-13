@@ -39,6 +39,21 @@ const COMPROVACAO: leituras.CriacaoPublica = {
   autores: [{ avatar: null, nick: "autor-antigo" }],
 };
 
+/** O registro aprovado da customização do kit: a **descrição** da criança é
+ * o título, e a trilha em que o kit foi recebido sai ao lado da data
+ * (`RF-03-88`). */
+const CUSTOMIZACAO: leituras.CriacaoPublica = {
+  id: "k-1",
+  fonte: "customizacao_do_kit",
+  titulo: "Pintei o robô de azul e pus antenas",
+  tipo: "video",
+  trilha_id: "t-3",
+  trilha: "Trilha dos Robôs",
+  validada_em: "2026-11-12T10:00:00Z",
+  producao: null,
+  autores: [{ avatar: null, nick: "quem-customizou" }],
+};
+
 function comConteudo(itens: leituras.CriacaoPublica[] = [CULMINANCIA, COMPROVACAO]) {
   // O núcleo devolve o acervo **do mais recente para o mais antigo**
   // (`RF-03-83`): a tela apresenta essa ordem, não a refaz.
@@ -191,6 +206,55 @@ describe("portfólio e ranking", () => {
     ]);
   });
 
+  it("a customização aprovada traz a descrição e a trilha do kit (RF-03-88)", async () => {
+    comConteudo([CUSTOMIZACAO, CULMINANCIA, COMPROVACAO]);
+    render(<App />);
+
+    const portfolio = secaoDe("Portfólio de criações originais");
+    const titulo = await portfolio.findByText("Pintei o robô de azul e pus antenas");
+    const linha = titulo.closest("li") as HTMLElement;
+    expect(linha.textContent).toMatch(/12\/11\/2026/);
+    expect(linha.textContent).toMatch(/Trilha dos Robôs/);
+    expect(linha.textContent).toMatch(/quem-customizou/);
+  });
+
+  it("as três fontes saem na mesma lista, pela ordem do núcleo (RF-03-84, RF-03-88)", async () => {
+    comConteudo([CUSTOMIZACAO, CULMINANCIA, COMPROVACAO]);
+    render(<App />);
+
+    const portfolio = secaoDe("Portfólio de criações originais");
+    await portfolio.findByText("Trilha da Água");
+    const titulos = portfolio
+      .getAllByRole("listitem")
+      .map(
+        (linha) => linha.querySelector(".cg-lista-de-registros__identificacao")?.textContent,
+      );
+    expect(titulos).toEqual([
+      "Pintei o robô de azul e pus antenas",
+      "Trilha da Água",
+      "Horta na laje",
+    ]);
+  });
+
+  it("a customização abre a mídia do kit pela fonte dela (RF-03-88, RF-03-85)", async () => {
+    comUrlDeObjeto();
+    const buscar = vi
+      .spyOn(leituras, "lerArquivoDoAcervo")
+      .mockResolvedValue(new Blob([new Uint8Array([1])], { type: "video/mp4" }));
+    comConteudo([CUSTOMIZACAO]);
+    render(<App />);
+    const testeDeUsuario = userEvent.setup();
+
+    const portfolio = secaoDe("Portfólio de criações originais");
+    await portfolio.findByText("Pintei o robô de azul e pus antenas");
+    await testeDeUsuario.click(portfolio.getByRole("button", { name: "Ver o vídeo" }));
+
+    await vi.waitFor(() =>
+      expect(portfolio.getByRole("listitem").querySelector("video")).not.toBeNull(),
+    );
+    expect(buscar).toHaveBeenCalledWith({ id: "k-1", fonte: "customizacao_do_kit" });
+  });
+
   it("o texto abre na própria linha, e o fechar recolhe (RF-03-85)", async () => {
     render(<App />);
     const testeDeUsuario = userEvent.setup();
@@ -340,5 +404,27 @@ describe("portfólio e ranking", () => {
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
     expect(document.cookie).toBe("");
+  });
+});
+
+describe("a rota de bytes de cada fonte do acervo", () => {
+  // Fatia 14 do PRD-03 (`RF-03-88`): cada fonte pede os bytes à rota dela. A
+  // customização caía na rota da comprovação e voltava 404.
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it.each([
+    ["criacao_original", "/v1/vitrine/criacoes/x-1/arquivo"],
+    ["comprovacao_do_pratico", "/v1/vitrine/comprovacoes/x-1/arquivo"],
+    ["customizacao_do_kit", "/v1/vitrine/customizacoes/x-1/arquivo"],
+  ] as const)("a fonte %s vai a %s", async (fonte, rota) => {
+    const pedir = vi.fn(async () => ({ ok: true, blob: async () => new Blob([]) }));
+    vi.stubGlobal("fetch", pedir);
+
+    await leituras.lerArquivoDoAcervo({ id: "x-1", fonte });
+
+    const [endereco] = pedir.mock.calls[0] as unknown as [string];
+    expect(endereco.endsWith(rota)).toBe(true);
   });
 });

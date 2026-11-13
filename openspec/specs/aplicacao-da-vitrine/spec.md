@@ -775,9 +775,12 @@ creditado, com o **avatar** de cada um. A linha SHALL trazer também a **trilha*
 o título já é o nome dela — a criação da culminância —, caso em que NEVER SHALL repeti-lo
 (decisão do fundador, 2026-11-04). Cada **nick creditado** SHALL abrir a página individual
 daquele Guerreiro(a). NEVER SHALL exibir item cujo creditado não tenha autorização vigente, nem
-item sem aprovação do Mestre. A seção SHALL sair em ordem **decrescente** por data de aprovação
-e SHALL manter o nome "Portfólio de criações originais". (`RF-03-08`, `RF-03-83`, `RF-03-84`,
-`RN-03-02`, `RN-03-41`, `RN-03-43`)
+item sem aprovação do Mestre. O acervo tem **três** fontes — a comprovação aprovada do prático,
+a criação da culminância e o registro aprovado da customização do kit —, e a do registro de
+customização SHALL sair com a **descrição** do Guerreiro(a) como título e a **trilha** em que o
+kit foi recebido. A seção SHALL sair em ordem **decrescente** por data de aprovação e SHALL
+manter o nome "Portfólio de criações originais". (`RF-03-08`, `RF-03-83`, `RF-03-84`,
+`RF-03-88`, `RN-03-02`, `RN-03-41`, `RN-03-43`)
 
 Isto **substitui** a saída **sem título**, decidida em 2026-09-28, quando título nenhum
 existia.
@@ -795,6 +798,13 @@ existia.
 - **THEN** a linha traz o título curto declarado pelo Mestre e, ao lado da data, a trilha da
   missão
 
+#### Scenario: A customização aprovada traz a descrição e a trilha do kit
+
+- **WHEN** o visitante abre o portfólio e vê a linha de um registro de customização do kit
+  aprovado
+- **THEN** a linha traz a descrição do Guerreiro(a) como título e, ao lado da data, a trilha em
+  que o kit foi recebido
+
 #### Scenario: A criação da culminância não repete a trilha
 
 - **WHEN** o visitante abre o portfólio e vê a linha de uma criação da culminância, cujo título
@@ -810,7 +820,7 @@ existia.
 
 - **WHEN** o visitante abre o portfólio
 - **THEN** a primeira linha é o item aprovado mais recentemente, de qualquer uma das
-  duas fontes
+  três fontes
 
 #### Scenario: O nick creditado abre a página do autor
 
@@ -1615,8 +1625,9 @@ fundador de 2026-10-11 e 2026-11-10)
 A App 06 SHALL permitir que o visitante **abra a produção** de um item do acervo **na própria
 linha**, sem sair da seção e sem endereço novo: a criação não tem página individual. Ao abrir,
 SHALL exibir a **imagem**, o **áudio**, o **vídeo** ou o **texto**; o **link externo** SHALL
-sair como link de saída e o **arquivo**, como transferência. Fechar SHALL devolver a linha ao
-estado recolhido. (`RF-03-85`, `RF-03-03`)
+sair como link de saída e o **arquivo**, como transferência. Os bytes SHALL ser pedidos à rota
+pública **da fonte do item** — criação original, comprovação do prático ou customização do kit.
+Fechar SHALL devolver a linha ao estado recolhido. (`RF-03-85`, `RF-03-88`, `RF-03-03`)
 
 #### Scenario: A imagem abre na linha
 
@@ -1627,6 +1638,13 @@ estado recolhido. (`RF-03-85`, `RF-03-03`)
 
 - **WHEN** o visitante abre a produção de um item do tipo áudio ou vídeo
 - **THEN** ela aparece na linha com controles de reproduzir e pausar, e nada toca sozinho
+
+#### Scenario: A customização abre a mídia do kit
+
+- **WHEN** o visitante abre a produção de um registro de customização do kit aprovado, do tipo
+  imagem ou vídeo
+- **THEN** a mídia vem da rota pública da customização e aparece na própria linha, e não pela
+  rota de outra fonte
 
 #### Scenario: O texto abre na linha
 
@@ -1669,10 +1687,12 @@ publicável. (`RF-03-85`, `RN-03-02`)
 ### Requirement: A coluna de criações originais da carta lista o acervo com título e data
 
 Na carta do Guerreiro(a), a coluna "Criações originais" SHALL listar o **acervo público** dele —
-a criação da culminância e as comprovações aprovadas do prático —, um item por linha, com o
-**título** e a **data** de aprovação, do mais recente ao mais antigo. O título SHALL seguir o
-`RN-03-43`. A coluna NEVER SHALL abrir a produção: é o resumo, e a produção abre no portfólio
-abaixo da carta. (`RF-03-05`, `RF-03-86`, `RN-03-43`, decisão do fundador, 2026-11-07)
+a criação da culminância, as comprovações aprovadas do prático e os registros aprovados da
+customização do kit —, um item por linha, com o **título** e a **data** de aprovação, do mais
+recente ao mais antigo. O título SHALL seguir o `RN-03-43` e, na customização, SHALL ser a
+descrição do Guerreiro(a). A coluna NEVER SHALL abrir a produção: é o resumo, e a produção abre
+no portfólio abaixo da carta. (`RF-03-05`, `RF-03-86`, `RF-03-88`, `RN-03-43`, decisão do
+fundador, 2026-11-07)
 
 #### Scenario: A comprovação aprovada aparece na carta
 
@@ -1680,6 +1700,12 @@ abaixo da carta. (`RF-03-05`, `RF-03-86`, `RN-03-43`, decisão do fundador, 2026
   prático
 - **THEN** a coluna "Criações originais" lista cada uma pelo título curto do desafio e pela data,
   e não diz que não há criação validada
+
+#### Scenario: A customização aprovada aparece na carta
+
+- **WHEN** o visitante abre a página de um Guerreiro(a) que tem registro de customização do kit
+  aprovado
+- **THEN** a coluna "Criações originais" o lista pela descrição e pela data de aprovação
 
 #### Scenario: A criação da culminância aparece pelo nome da trilha
 
@@ -1701,14 +1727,21 @@ abaixo da carta. (`RF-03-05`, `RF-03-86`, `RN-03-43`, decisão do fundador, 2026
 A página do Guerreiro(a) SHALL manter o **portfólio** abaixo da carta, com os mesmos itens da
 coluna, na mesma ordem, e cada item na **linha do portfólio da vitrine**: título, data, trilha
 fora da criação da culminância e autoria por nick. A linha SHALL **abrir a produção** como a
-linha do portfólio da vitrine. (`RF-03-87`, `RF-03-85`, `RN-03-43`, decisão do fundador,
-2026-11-07)
+linha do portfólio da vitrine, também na customização do kit. (`RF-03-87`, `RF-03-85`,
+`RF-03-88`, `RN-03-43`, decisão do fundador, 2026-11-07)
 
 #### Scenario: O portfólio da página traz as duas fontes
 
 - **WHEN** o visitante abre a página de um Guerreiro(a) com uma criação da culminância e uma
   comprovação aprovada
 - **THEN** o portfólio abaixo da carta traz as duas, a mais recente primeiro
+
+#### Scenario: O portfólio da página traz a customização aprovada
+
+- **WHEN** o visitante abre a página de um Guerreiro(a) com um registro de customização do kit
+  aprovado
+- **THEN** o portfólio abaixo da carta o traz pela descrição, com a trilha do kit e a data, e a
+  mídia abre na própria linha
 
 #### Scenario: A linha da página abre a produção
 

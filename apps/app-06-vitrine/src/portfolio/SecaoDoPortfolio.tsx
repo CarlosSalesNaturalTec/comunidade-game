@@ -7,8 +7,9 @@ import { idDoAcervo, linhaDoAcervo } from "./linhaDoAcervo";
 // portfólio da página do Guerreiro(a). A seção **mantém o nome** "Portfólio
 // de criações originais" (decisão do fundador, 2026-11-04).
 //
-// As **duas fontes** chegam na mesma lista, já ordenadas pelo núcleo: a
-// comprovação aprovada do desafio prático e a criação da culminância. Só
+// As **três fontes** chegam na mesma lista, já ordenadas pelo núcleo: a
+// comprovação aprovada do desafio prático, a criação da culminância e o
+// registro aprovado da customização do kit (`RF-03-88`). Só
 // aparece item com **aprovação do Mestre** e autorização vigente, portão que
 // o núcleo aplica (`RN-03-41`, `RN-03-02`).
 //

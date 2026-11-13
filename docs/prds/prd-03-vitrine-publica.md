@@ -442,27 +442,28 @@ Derivações e imutabilidade:
 A aplicação segue as convenções do PRD-01 — prefixo `/v1`, erro em corpo único — e consome
 **apenas rotas públicas, sem token**. As rotas de avaliação e entrega são da App 03 (PRD-02).
 
-| Método | Rota                                    | Autenticação | Descrição                                                                             |
-| ------ | --------------------------------------- | ------------ | ------------------------------------------------------------------------------------- |
-| GET    | `/v1/vitrine/guerreiros`                | pública      | Cartas dos Guerreiros e Guerreiras com divulgação autorizada; a vitrine não a consome |
-| GET    | `/v1/vitrine/guerreiros/{nick}`         | pública      | Página pública por nick exato                                                         |
-| GET    | `/v1/vitrine/mestres`                   | pública      | Lista e páginas de Mestres, com os comprobatórios                                     |
-| GET    | `/v1/vitrine/apoiadores`                | pública      | Lista e páginas de Apoiadores, com aportes em moedas                                  |
-| GET    | `/v1/vitrine/poderes`                   | pública      | Poderes, trilhas e Mestres de cada um                                                 |
-| GET    | `/v1/vitrine/batalhas`                  | pública      | Batalhas, resultados e estatísticas de partida                                        |
-| GET    | `/v1/vitrine/criacoes`                  | pública      | Acervo público: criações da culminância e comprovações aprovadas                      |
-| GET    | `/v1/vitrine/criacoes/{id}/arquivo`     | pública      | Bytes da produção de uma criação da culminância                                       |
-| GET    | `/v1/vitrine/comprovacoes/{id}/arquivo` | pública      | Bytes da comprovação aprovada de um desafio prático                                   |
-| GET    | `/v1/vitrine/rankings`                  | pública      | Rankings por pontos regulares, só de quem autorizou                                   |
-| GET    | `/v1/vitrine/conteudo-institucional`    | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA                             |
-| GET    | `/v1/comunidades`                       | pública      | Comunidades com indicadores agregados (PRD-08)                                        |
-| GET    | `/v1/comunidades/{id}/series`           | pública      | Séries históricas agregadas até o bairro, com metodologia                             |
-| GET    | `/v1/vitrine/ods/cobertura`             | pública      | Cobertura agregada de todas as comunidades do ciclo                                   |
-| GET    | `/v1/vitrine/necessidades`              | pública      | Necessidades de recurso em aberto (PRD-07)                                            |
-| POST   | `/v1/solicitacoes-de-participacao`      | pública      | Registra pedido de inclusão como Mestre ou Apoiador                                   |
-| POST   | `/v1/solicitacoes-de-dados`             | pública      | Registra pedido do conjunto de dados                                                  |
-| POST   | `/v1/solicitacoes-de-chave`             | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor                            |
-| POST   | `/v1/chaves/{id}/url`                   | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias                             |
+| Método | Rota                                     | Autenticação | Descrição                                                                             |
+| ------ | ---------------------------------------- | ------------ | ------------------------------------------------------------------------------------- |
+| GET    | `/v1/vitrine/guerreiros`                 | pública      | Cartas dos Guerreiros e Guerreiras com divulgação autorizada; a vitrine não a consome |
+| GET    | `/v1/vitrine/guerreiros/{nick}`          | pública      | Página pública por nick exato                                                         |
+| GET    | `/v1/vitrine/mestres`                    | pública      | Lista e páginas de Mestres, com os comprobatórios                                     |
+| GET    | `/v1/vitrine/apoiadores`                 | pública      | Lista e páginas de Apoiadores, com aportes em moedas                                  |
+| GET    | `/v1/vitrine/poderes`                    | pública      | Poderes, trilhas e Mestres de cada um                                                 |
+| GET    | `/v1/vitrine/batalhas`                   | pública      | Batalhas, resultados e estatísticas de partida                                        |
+| GET    | `/v1/vitrine/criacoes`                   | pública      | Acervo público: criações da culminância, comprovações e customizações aprovadas       |
+| GET    | `/v1/vitrine/criacoes/{id}/arquivo`      | pública      | Bytes da produção de uma criação da culminância                                       |
+| GET    | `/v1/vitrine/comprovacoes/{id}/arquivo`  | pública      | Bytes da comprovação aprovada de um desafio prático                                   |
+| GET    | `/v1/vitrine/customizacoes/{id}/arquivo` | pública      | Bytes do registro aprovado da customização do kit recebido                            |
+| GET    | `/v1/vitrine/rankings`                   | pública      | Rankings por pontos regulares, só de quem autorizou                                   |
+| GET    | `/v1/vitrine/conteudo-institucional`     | pública      | "Quem somos", "Contatos", "Como apoiar" e a nota sobre IA                             |
+| GET    | `/v1/comunidades`                        | pública      | Comunidades com indicadores agregados (PRD-08)                                        |
+| GET    | `/v1/comunidades/{id}/series`            | pública      | Séries históricas agregadas até o bairro, com metodologia                             |
+| GET    | `/v1/vitrine/ods/cobertura`              | pública      | Cobertura agregada de todas as comunidades do ciclo                                   |
+| GET    | `/v1/vitrine/necessidades`               | pública      | Necessidades de recurso em aberto (PRD-07)                                            |
+| POST   | `/v1/solicitacoes-de-participacao`       | pública      | Registra pedido de inclusão como Mestre ou Apoiador                                   |
+| POST   | `/v1/solicitacoes-de-dados`              | pública      | Registra pedido do conjunto de dados                                                  |
+| POST   | `/v1/solicitacoes-de-chave`              | pública      | Registra pedido de chave da Área do Apoiador Desenvolvedor                            |
+| POST   | `/v1/chaves/{id}/url`                    | pública      | Apresenta a URL do que foi construído, dentro dos 30 dias                             |
 
 Nenhuma rota desta aplicação aceita ou devolve preferência de visitante: não há parâmetro de
 favorito, de perfil ou de sessão anônima.
