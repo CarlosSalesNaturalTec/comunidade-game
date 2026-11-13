@@ -234,6 +234,7 @@ describe("cadastro do Guerreiro(a)", () => {
         guerreiros={[GUERREIRO]}
         comunidades={[COMUNIDADE]}
         onEditar={vi.fn()}
+        onAbrirFicha={vi.fn()}
       />,
     );
 
@@ -249,6 +250,7 @@ describe("o vínculo de comunidade na lista de Guerreiros e Guerreiras", () => {
         guerreiros={[GUERREIRO]}
         comunidades={[COMUNIDADE]}
         onEditar={vi.fn()}
+        onAbrirFicha={vi.fn()}
       />,
     );
 
@@ -262,6 +264,7 @@ describe("o vínculo de comunidade na lista de Guerreiros e Guerreiras", () => {
         guerreiros={[GUERREIRO_SEM_VINCULO]}
         comunidades={[COMUNIDADE]}
         onEditar={vi.fn()}
+        onAbrirFicha={vi.fn()}
       />,
     );
 

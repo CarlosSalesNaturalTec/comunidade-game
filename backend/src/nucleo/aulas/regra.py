@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from ..comunidades.modelo import ComunidadeVirtual, VinculoJogador
 from ..comunidades.regra import abrir_vinculo_do_mestre, comunidades_do_mestre
 from ..erros import ErroDeValidacao, PermissaoNegada, PresencaJaAnulada
+from ..historico_de_pontuacao.modelo import OrigemDoLancamento
 from ..personas.modelo import Papel, Persona
 from ..ponto_extra.regra import (
     PONTOS_EXTRAS_DA_PRESENCA,
@@ -306,7 +307,13 @@ def registrar_presenca(
     sessao.flush()
     # A presença nova rende 5 extras na mesma transação; o reenvio, que
     # devolve a existente acima, não credita de novo (`RF-01-82`).
-    creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=PONTOS_EXTRAS_DA_PRESENCA)
+    creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=PONTOS_EXTRAS_DA_PRESENCA,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=presenca.id,
+    )
     return presenca
 
 
@@ -337,6 +344,9 @@ def anular_presenca(
     # a anterior à regra creditou zero e não toca o ponto extra (`RF-01-83`,
     # `RN-01-64`, `RN-01-65`).
     estornar_ponto_extra_da_presenca(
-        sessao, guerreiro_id=presenca.guerreiro_id, valor=presenca.pontos_extras_creditados
+        sessao,
+        guerreiro_id=presenca.guerreiro_id,
+        valor=presenca.pontos_extras_creditados,
+        referencia_id=presenca.id,
     )
     return presenca

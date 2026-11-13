@@ -238,3 +238,76 @@ def test_a_subida_do_piso_eleva_so_o_preco_vigente_abaixo_de_25(banco_vazio, mon
     finally:
         motor.dispose()
         obter_configuracao.cache_clear()
+
+
+def test_historico_de_pontuacao_abre_cada_conta_com_o_saldo_anterior(banco_vazio, monkeypatch):
+    """`RF-01-90`: a migração dá a cada conta já existente — regular e
+    extra, zerada inclusive — a linha de saldo anterior com o total daquela
+    data, sem reconstruir o passado."""
+    from nucleo.poderes.modelo import NaturezaDoPoder, VigenciaDoPoder
+
+    configuracao = _configuracao_do_alembic(banco_vazio, monkeypatch)
+    command.upgrade(configuracao, "12b4e8984d37")
+
+    motor = sa.create_engine(banco_vazio)
+    guerreiro, zerado, admin, poder = (uuid.uuid4() for _ in range(4))
+    try:
+        with motor.begin() as conexao:
+            for persona, papel in (
+                (admin, "admin"),
+                (guerreiro, "guerreiro"),
+                (zerado, "guerreiro"),
+            ):
+                conexao.execute(
+                    sa.text("INSERT INTO persona (id, papel) VALUES (:id, :papel)"),
+                    {"id": persona, "papel": papel},
+                )
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO poder (id, nome, descricao, natureza, vigencia, ativo, tecnico,"
+                    " autor_id, papel_do_autor) VALUES (:id, 'Poder', 'Descrição', :natureza,"
+                    " :vigencia, true, false, :autor, 'admin')"
+                ),
+                {
+                    "id": poder,
+                    "natureza": list(NaturezaDoPoder)[0].name,
+                    "vigencia": list(VigenciaDoPoder)[0].name,
+                    "autor": admin,
+                },
+            )
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO ponto_regular (id, guerreiro_id, poder_id, total)"
+                    " VALUES (gen_random_uuid(), :guerreiro, :poder, 40)"
+                ),
+                {"guerreiro": guerreiro, "poder": poder},
+            )
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO ponto_extra (id, guerreiro_id, acumulado, saldo_disponivel)"
+                    " VALUES (gen_random_uuid(), :guerreiro, 12, 7),"
+                    " (gen_random_uuid(), :zerado, 0, 0)"
+                ),
+                {"guerreiro": guerreiro, "zerado": zerado},
+            )
+
+        command.upgrade(configuracao, "head")
+
+        with motor.connect() as conexao:
+            linhas = conexao.execute(
+                sa.text(
+                    "SELECT guerreiro_id, conta, poder_id, origem, valor, valor_no_acumulado"
+                    " FROM lancamento_de_pontuacao ORDER BY conta, valor"
+                )
+            ).all()
+        assert sorted((tuple(linha) for linha in linhas), key=str) == sorted(
+            [
+                (zerado, "extra", None, "saldo_anterior", 0, 0),
+                (guerreiro, "extra", None, "saldo_anterior", 7, 12),
+                (guerreiro, "regular", poder, "saldo_anterior", 40, None),
+            ],
+            key=str,
+        )
+    finally:
+        motor.dispose()
+        obter_configuracao.cache_clear()

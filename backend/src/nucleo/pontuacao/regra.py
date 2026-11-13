@@ -11,6 +11,8 @@ from ..consentimentos.regra import condicao_de_autorizacao_vigente
 from ..criacoes_originais.modelo import CriacaoOriginal
 from ..equipes.modelo import IntegranteDaEquipe
 from ..erros import ErroDeValidacao, PoderDoTerritorioNaoDeclarado
+from ..historico_de_pontuacao.lancamento import lancar_movimento_regular
+from ..historico_de_pontuacao.modelo import OrigemDoLancamento
 from ..ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
 from ..personas.modelo import Nick, Papel, Persona
 from ..poderes.regra import buscar_poder_do_territorio
@@ -87,6 +89,9 @@ def creditar_ponto_regular(
     valor: int,
     trilha_id: uuid.UUID | None = None,
     poder_id: uuid.UUID | None = None,
+    origem: OrigemDoLancamento,
+    referencia_id: uuid.UUID | None,
+    detalhe: str | None = None,
 ) -> PontoRegular:
     """Credita — nunca debita: débito é `debitar_ponto_regular`, restrito ao
     estorno por fato desfeito (`RF-01-57`, `RN-01-38`). Exige exatamente uma
@@ -103,12 +108,23 @@ def creditar_ponto_regular(
 
     filtro = {"guerreiro_id": guerreiro_id, "trilha_id": trilha_id, "poder_id": poder_id}
     conta = sessao.query(PontoRegular).filter_by(**filtro).first()
+    anterior = 0 if conta is None else conta.total
     if conta is None:
         conta = PontoRegular(**filtro, total=valor)
         sessao.add(conta)
     else:
         conta.total += valor
     sessao.flush()
+    lancar_movimento_regular(
+        sessao,
+        guerreiro_id=guerreiro_id,
+        trilha_id=trilha_id,
+        poder_id=poder_id,
+        valor=conta.total - anterior,
+        origem=origem,
+        referencia_id=referencia_id,
+        detalhe=detalhe,
+    )
     return conta
 
 
@@ -119,6 +135,9 @@ def debitar_ponto_regular(
     valor: int,
     trilha_id: uuid.UUID | None = None,
     poder_id: uuid.UUID | None = None,
+    origem: OrigemDoLancamento,
+    referencia_id: uuid.UUID | None,
+    detalhe: str | None = None,
 ) -> PontoRegular:
     """Debita por **fato desfeito** — o estorno de registro de coleta
     invalidado e a ocorrência de conduta lançada (`RF-01-57`, `RF-01-69`,
@@ -137,12 +156,23 @@ def debitar_ponto_regular(
 
     filtro = {"guerreiro_id": guerreiro_id, "trilha_id": trilha_id, "poder_id": poder_id}
     conta = sessao.query(PontoRegular).filter_by(**filtro).first()
+    anterior = 0 if conta is None else conta.total
     if conta is None:
         conta = PontoRegular(**filtro, total=0)
         sessao.add(conta)
     else:
         conta.total = max(0, conta.total - valor)
     sessao.flush()
+    lancar_movimento_regular(
+        sessao,
+        guerreiro_id=guerreiro_id,
+        trilha_id=trilha_id,
+        poder_id=poder_id,
+        valor=conta.total - anterior,
+        origem=origem,
+        referencia_id=referencia_id,
+        detalhe=detalhe,
+    )
     return conta
 
 
@@ -311,12 +341,24 @@ def creditar_pontuacao_do_resultado(
     valor = _valor_regular(atividade, resultado.desfecho)
     if trilha is None:
         creditar_ponto_regular(
-            sessao, guerreiro_id=resultado.guerreiro_id, poder_id=atividade.poder_id, valor=valor
+            sessao,
+            guerreiro_id=resultado.guerreiro_id,
+            poder_id=atividade.poder_id,
+            valor=valor,
+            origem=OrigemDoLancamento.resultado,
+            referencia_id=resultado.id,
+            detalhe=atividade.titulo,
         )
         return
 
     creditar_ponto_regular(
-        sessao, guerreiro_id=resultado.guerreiro_id, trilha_id=trilha.id, valor=valor
+        sessao,
+        guerreiro_id=resultado.guerreiro_id,
+        trilha_id=trilha.id,
+        valor=valor,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=resultado.id,
+        detalhe=atividade.titulo,
     )
     avaliar_niveis(sessao, guerreiro_id=resultado.guerreiro_id, trilha_id=trilha.id)
     if atividade.natureza == NATUREZA_DE_VALORES_E_CAUSAS:
@@ -379,6 +421,8 @@ def creditar_pontuacao_da_coleta(
         guerreiro_id=serie.coletor_id,
         poder_id=poder_do_territorio.id,
         valor=VALOR_DO_REGISTRO_DE_COLETA,
+        origem=OrigemDoLancamento.registro_de_coleta,
+        referencia_id=registro.id,
     )
     return VALOR_DO_REGISTRO_DE_COLETA
 
@@ -406,6 +450,8 @@ def estornar_pontuacao_da_coleta(
         guerreiro_id=serie.coletor_id,
         poder_id=poder_do_territorio.id,
         valor=registro.pontos_creditados,
+        origem=OrigemDoLancamento.estorno_de_coleta,
+        referencia_id=registro.id,
     )
 
 
@@ -504,13 +550,21 @@ def creditar_pontuacao_da_partida_de_quiz(
     acerto não entra: crédito de valor não positivo é recusado por
     `creditar_ponto_regular`, e nada é debitado.
     """
+    atividade = sessao.get(Atividade, partida.atividade_id)
+    detalhe = atividade.titulo if atividade is not None else None
     for equipe_id, valor in apurar_partida_de_quiz(sessao, partida=partida).items():
         if valor <= 0:
             continue
         integrantes = sessao.query(IntegranteDaEquipe).filter_by(equipe_id=equipe_id).all()
         for integrante in integrantes:
             creditar_ponto_regular(
-                sessao, guerreiro_id=integrante.persona_id, trilha_id=trilha.id, valor=valor
+                sessao,
+                guerreiro_id=integrante.persona_id,
+                trilha_id=trilha.id,
+                valor=valor,
+                origem=OrigemDoLancamento.partida_de_quiz,
+                referencia_id=partida.id,
+                detalhe=detalhe,
             )
 
 
@@ -602,14 +656,24 @@ def creditar_pontuacao_da_criacao_original(
 
     for guerreiro_id in guerreiro_ids:
         creditar_ponto_regular(
-            sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id, valor=VALOR_DA_CRIACAO_ORIGINAL
+            sessao,
+            guerreiro_id=guerreiro_id,
+            trilha_id=trilha.id,
+            valor=VALOR_DA_CRIACAO_ORIGINAL,
+            origem=OrigemDoLancamento.criacao_original,
+            referencia_id=criacao_original.id,
         )
         certificar_nivel_5(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id)
         conceder_badge_de_autoria(sessao, guerreiro_id=guerreiro_id, trilha_id=trilha.id)
 
 
 def creditar_pontuacao_do_desbloqueio_pratico(
-    sessao: Session, *, guerreiro_id: uuid.UUID, trilha_id: uuid.UUID
+    sessao: Session,
+    *,
+    guerreiro_id: uuid.UUID,
+    trilha_id: uuid.UUID,
+    referencia_id: uuid.UUID | None,
+    detalhe: str | None = None,
 ) -> None:
     """Ponto de entrada único, chamado por
     `trilhas.regra.julgar_desafio_pratico`: credita os 5 pontos regulares do
@@ -632,4 +696,7 @@ def creditar_pontuacao_do_desbloqueio_pratico(
         guerreiro_id=guerreiro_id,
         trilha_id=trilha_id,
         valor=VALOR_DO_DESBLOQUEIO_PRATICO,
+        origem=OrigemDoLancamento.desafio_pratico,
+        referencia_id=referencia_id,
+        detalhe=detalhe,
     )

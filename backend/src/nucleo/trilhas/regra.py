@@ -2192,7 +2192,11 @@ def julgar_desafio_pratico(
 
     if cumpriu:
         creditar_pontuacao_do_desbloqueio_pratico(
-            sessao, guerreiro_id=desbloqueio.guerreiro_id, trilha_id=trilha.id
+            sessao,
+            guerreiro_id=desbloqueio.guerreiro_id,
+            trilha_id=trilha.id,
+            referencia_id=desbloqueio.id,
+            detalhe=missao.titulo,
         )
     return desbloqueio
 

@@ -318,6 +318,7 @@ def app(sessao, configuracao):
     from nucleo.evolucao.rotas import roteador as roteador_de_evolucao
     from nucleo.favoritos.rotas import roteador as roteador_de_favoritos
     from nucleo.fila.rotas import roteador as roteador_de_fila
+    from nucleo.historico_de_pontuacao.rotas import roteador as roteador_de_historico
     from nucleo.jogos.rotas import roteador as roteador_de_jogos
     from nucleo.livro_razao.rotas import roteador as roteador_de_livro_razao
     from nucleo.locais.rotas import roteador as roteador_de_locais
@@ -399,6 +400,7 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_equipes)
     incluir_roteador_de_dados(aplicacao, roteador_de_consentimentos)
     incluir_roteador_de_dados(aplicacao, roteador_de_ponto_extra)
+    incluir_roteador_de_dados(aplicacao, roteador_de_historico)
     incluir_roteador_de_dados(aplicacao, roteador_de_conteudos)
     incluir_roteador_de_dados(aplicacao, roteador_de_bibliografias)
     incluir_roteador_de_dados(aplicacao, roteador_de_armazenamento)

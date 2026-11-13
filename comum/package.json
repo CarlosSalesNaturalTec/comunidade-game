@@ -24,6 +24,7 @@
     "./narracao": "./narracao/indice.ts",
     "./trilha": "./trilha/indice.ts",
     "./trilha/api": "./trilha/api.ts",
+    "./pontuacao": "./pontuacao/indice.ts",
     "./testes/polyfill-do-dialogo": "./testes/polyfillDoDialogo.ts"
   },
   "files": [
@@ -40,7 +41,8 @@
     "biometria",
     "fala",
     "narracao",
-    "trilha"
+    "trilha",
+    "pontuacao"
   ],
   "scripts": {
     "test": "vitest run",

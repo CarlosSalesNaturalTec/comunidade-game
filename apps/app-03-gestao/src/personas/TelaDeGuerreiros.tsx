@@ -4,6 +4,7 @@ import { Aviso, Botao } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { type GuerreiroDaLista, listarGuerreiros } from "./api";
+import { FichaDoGuerreiro } from "./FichaDoGuerreiro";
 import { FormularioDeGuerreiro } from "./FormularioDeGuerreiro";
 import { ListaDeGuerreiros } from "./ListaDeGuerreiros";
 
@@ -15,6 +16,8 @@ export function TelaDeGuerreiros() {
   const [formulario, definirFormulario] = useState<"nenhum" | "novo" | GuerreiroDaLista>(
     "nenhum",
   );
+
+  const [ficha, definirFicha] = useState<GuerreiroDaLista | null>(null);
 
   const podeCadastrar = sessao?.papel === "admin";
 
@@ -49,6 +52,10 @@ export function TelaDeGuerreiros() {
     await carregar();
   }, [carregar]);
 
+  if (ficha) {
+    return <FichaDoGuerreiro guerreiro={ficha} onVoltar={() => definirFicha(null)} />;
+  }
+
   return (
     <div>
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
@@ -78,6 +85,7 @@ export function TelaDeGuerreiros() {
         guerreiros={guerreiros}
         comunidades={comunidades}
         onEditar={(g) => definirFormulario(g)}
+        onAbrirFicha={definirFicha}
       />
     </div>
   );

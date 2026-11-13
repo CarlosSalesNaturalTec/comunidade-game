@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
 from ..erros import ErroDeValidacao
+from ..historico_de_pontuacao.modelo import OrigemDoLancamento
 from ..personas.modelo import Persona
 from ..pontuacao.modelo import PontoRegular
 from ..pontuacao.regra import debitar_ponto_regular
@@ -113,6 +114,9 @@ def lancar_ocorrencia_de_conduta(
         guerreiro_id=guerreiro_id,
         valor=VALOR_DA_OCORRENCIA_DE_CONDUTA,
         trilha_id=trilha.id,
+        origem=OrigemDoLancamento.ocorrencia_de_conduta,
+        referencia_id=ocorrencia.id,
+        detalhe=atividade.titulo,
     )
 
     return ocorrencia

@@ -5,6 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 
 from nucleo.erros import DebitoDePontoExtraRecusado, ErroDeValidacao
+from nucleo.historico_de_pontuacao.modelo import OrigemDoLancamento
 from nucleo.personas.modelo import Papel
 from nucleo.ponto_extra.modelo import PontoExtra
 from nucleo.ponto_extra.regra import creditar_ponto_extra, estornar_ponto_extra_da_presenca
@@ -47,13 +48,25 @@ def _lancar(sessao, *, mestre, guerreiro, missao, desfecho):
 def test_credito_aumenta_o_acumulado_e_o_saldo_disponivel_juntos(sessao, criar_persona):
     guerreiro = criar_persona(Papel.guerreiro)
 
-    conta = creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
+    conta = creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=10,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     sessao.commit()
 
     assert conta.acumulado == 10
     assert conta.saldo_disponivel == 10
 
-    conta = creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=5)
+    conta = creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=5,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     sessao.commit()
 
     assert conta.acumulado == 15
@@ -64,14 +77,26 @@ def test_credito_com_valor_nao_positivo_e_recusado(sessao, criar_persona):
     guerreiro = criar_persona(Papel.guerreiro)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
-        creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=0)
+        creditar_ponto_extra(
+            sessao,
+            guerreiro_id=guerreiro.id,
+            valor=0,
+            origem=OrigemDoLancamento.presenca,
+            referencia_id=None,
+        )
     assert excinfo.value.campo == "valor"
     assert sessao.query(PontoExtra).count() == 0
 
 
 def test_acumulado_nunca_decresce_pelo_orm(sessao, criar_persona):
     guerreiro = criar_persona(Papel.guerreiro)
-    conta = creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
+    conta = creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=10,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     sessao.commit()
 
     conta.acumulado = 5
@@ -102,7 +127,13 @@ def test_ponto_extra_recusa_debito_e_remocao_direto_no_banco(conexao, sessao, cr
     """Fora do ORM — direto no banco — o gatilho da migração recusa também
     (`RN-01-39`, mesmo padrão de `RN-01-12`)."""
     guerreiro = criar_persona(Papel.guerreiro)
-    conta = creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
+    conta = creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=10,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     sessao.commit()
 
     with pytest.raises(DBAPIError), conexao.begin_nested():
@@ -182,12 +213,18 @@ def test_resultado_realizada_sem_merito_nao_credita_ponto_extra(
 def test_estorno_da_presenca_tira_das_duas_contas(sessao, criar_persona):
     """`RF-01-83`, `RN-01-64`: cenário "Anulação estorna das duas contas"."""
     guerreiro = criar_persona(Papel.guerreiro)
-    creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=30)
+    creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=30,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro.id).one()
     conta.saldo_disponivel = 12
     sessao.commit()
 
-    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5)
+    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5, referencia_id=None)
     sessao.commit()
 
     conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro.id).one()
@@ -198,12 +235,18 @@ def test_estorno_da_presenca_tira_das_duas_contas(sessao, criar_persona):
 def test_estorno_com_saldo_ja_trocado_para_em_zero(sessao, criar_persona):
     """`RN-01-64`: cenário "Estorno com o saldo já trocado para em zero"."""
     guerreiro = criar_persona(Papel.guerreiro)
-    creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
+    creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=10,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro.id).one()
     conta.saldo_disponivel = 2
     sessao.commit()
 
-    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5)
+    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5, referencia_id=None)
     sessao.commit()
 
     conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro.id).one()
@@ -215,9 +258,15 @@ def test_a_porta_do_estorno_nao_fica_aberta_no_orm(sessao, criar_persona):
     """`RN-01-39`: depois do estorno, o ORM volta a recusar a redução do
     acumulado — o marcador não sobra na conexão (design — decisão 4)."""
     guerreiro = criar_persona(Papel.guerreiro)
-    conta = creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=20)
+    conta = creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=20,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     sessao.commit()
-    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5)
+    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5, referencia_id=None)
     sessao.commit()
 
     conta.acumulado = 1
@@ -232,9 +281,15 @@ def test_a_porta_do_estorno_nao_fica_aberta_no_banco(conexao, sessao, criar_pers
     """`RN-01-39`: depois do estorno, o gatilho volta a recusar a redução do
     acumulado por SQL direto, na mesma transação (design — decisão 4)."""
     guerreiro = criar_persona(Papel.guerreiro)
-    conta = creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=20)
+    conta = creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=20,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     sessao.commit()
-    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5)
+    estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=5, referencia_id=None)
     sessao.commit()
 
     with pytest.raises(DBAPIError), conexao.begin_nested():
@@ -247,10 +302,21 @@ def test_a_porta_do_estorno_nao_fica_aberta_no_banco(conexao, sessao, criar_pers
 def test_estorno_de_valor_zero_nao_toca_a_conta(sessao, criar_persona):
     """`RN-01-65`: a presença anterior à regra creditou zero."""
     guerreiro = criar_persona(Papel.guerreiro)
-    creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
+    creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=10,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     sessao.commit()
 
-    assert estornar_ponto_extra_da_presenca(sessao, guerreiro_id=guerreiro.id, valor=0) is None
+    assert (
+        estornar_ponto_extra_da_presenca(
+            sessao, guerreiro_id=guerreiro.id, valor=0, referencia_id=None
+        )
+        is None
+    )
     conta = sessao.query(PontoExtra).filter_by(guerreiro_id=guerreiro.id).one()
     assert (conta.acumulado, conta.saldo_disponivel) == (10, 10)
 

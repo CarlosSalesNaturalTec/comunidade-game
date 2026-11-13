@@ -4,6 +4,8 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from ..erros import ErroDeValidacao
+from ..historico_de_pontuacao.lancamento import lancar_movimento_extra
+from ..historico_de_pontuacao.modelo import OrigemDoLancamento
 from ..resultados.modelo import DesfechoDoResultado, Resultado
 from .modelo import MARCADOR_DO_ESTORNO_DA_PRESENCA, PontoExtra
 
@@ -15,7 +17,15 @@ ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO = 10
 PONTOS_EXTRAS_DA_PRESENCA = 5
 
 
-def creditar_ponto_extra(sessao: Session, *, guerreiro_id: uuid.UUID, valor: int) -> PontoExtra:
+def creditar_ponto_extra(
+    sessao: Session,
+    *,
+    guerreiro_id: uuid.UUID,
+    valor: int,
+    origem: OrigemDoLancamento,
+    referencia_id: uuid.UUID | None,
+    detalhe: str | None = None,
+) -> PontoExtra:
     """Credita `valor` no acumulado e no saldo disponível na mesma operação
     — as duas contas só recebem crédito nesta fatia (`RF-01-56`,
     `RN-01-39`, `RN-01-40`)."""
@@ -32,10 +42,27 @@ def creditar_ponto_extra(sessao: Session, *, guerreiro_id: uuid.UUID, valor: int
         conta.acumulado += valor
         conta.saldo_disponivel += valor
     sessao.flush()
+    lancar_movimento_extra(
+        sessao,
+        guerreiro_id=guerreiro_id,
+        valor=valor,
+        valor_no_acumulado=valor,
+        origem=origem,
+        referencia_id=referencia_id,
+        detalhe=detalhe,
+    )
     return conta
 
 
-def debitar_ponto_extra(sessao: Session, *, guerreiro_id: uuid.UUID, valor: int) -> PontoExtra:
+def debitar_ponto_extra(
+    sessao: Session,
+    *,
+    guerreiro_id: uuid.UUID,
+    valor: int,
+    origem: OrigemDoLancamento,
+    referencia_id: uuid.UUID | None,
+    detalhe: str | None = None,
+) -> PontoExtra:
     """Debita `valor` do saldo disponível, sem tocar o acumulado — o único
     débito previsto no Ciclo 01, pela troca por recompensa avulsa
     (`RF-01-56`, `RN-01-39`, `RN-01-40`). Recusado, com o motivo nomeado,
@@ -52,11 +79,25 @@ def debitar_ponto_extra(sessao: Session, *, guerreiro_id: uuid.UUID, valor: int)
 
     conta.saldo_disponivel -= valor
     sessao.flush()
+    lancar_movimento_extra(
+        sessao,
+        guerreiro_id=guerreiro_id,
+        valor=-valor,
+        valor_no_acumulado=0,
+        origem=origem,
+        referencia_id=referencia_id,
+        detalhe=detalhe,
+    )
     return conta
 
 
 def estornar_ponto_extra_da_presenca(
-    sessao: Session, *, guerreiro_id: uuid.UUID, valor: int
+    sessao: Session,
+    *,
+    guerreiro_id: uuid.UUID,
+    valor: int,
+    referencia_id: uuid.UUID | None,
+    detalhe: str | None = None,
 ) -> PontoExtra | None:
     """Estorna o que a presença anulada creditou: tira `valor` do acumulado
     e até `valor` do saldo disponível, que para em zero quando já foi
@@ -71,6 +112,7 @@ def estornar_ponto_extra_da_presenca(
     if conta is None:
         return None
 
+    acumulado_anterior, saldo_anterior = conta.acumulado, conta.saldo_disponivel
     conta.acumulado = max(conta.acumulado - valor, 0)
     conta.saldo_disponivel = max(conta.saldo_disponivel - valor, 0)
 
@@ -82,18 +124,35 @@ def estornar_ponto_extra_da_presenca(
     finally:
         conexao.info.pop(MARCADOR_DO_ESTORNO_DA_PRESENCA, None)
         conexao.execute(text(f"SET LOCAL {MARCADOR_DO_ESTORNO_DA_PRESENCA} = 'off'"))
+    lancar_movimento_extra(
+        sessao,
+        guerreiro_id=guerreiro_id,
+        valor=conta.saldo_disponivel - saldo_anterior,
+        valor_no_acumulado=conta.acumulado - acumulado_anterior,
+        origem=OrigemDoLancamento.estorno_de_presenca,
+        referencia_id=referencia_id,
+        detalhe=detalhe,
+    )
     return conta
 
 
-def creditar_ponto_extra_do_resultado(sessao: Session, *, resultado: Resultado) -> None:
+def creditar_ponto_extra_do_resultado(
+    sessao: Session, *, resultado: Resultado, detalhe: str | None = None
+) -> None:
     """Fonte dupla do documento 11 §5: só `realizada_com_merito` e
     `merito_extra_por_auxilio` creditam ponto extra, junto do regular
     (`RF-01-56`)."""
     if resultado.desfecho == DesfechoDoResultado.realizada_com_merito:
-        creditar_ponto_extra(sessao, guerreiro_id=resultado.guerreiro_id, valor=ADICIONAL_DE_MERITO)
+        valor = ADICIONAL_DE_MERITO
     elif resultado.desfecho == DesfechoDoResultado.merito_extra_por_auxilio:
-        creditar_ponto_extra(
-            sessao,
-            guerreiro_id=resultado.guerreiro_id,
-            valor=ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO,
-        )
+        valor = ADICIONAL_DE_MERITO_EXTRA_POR_AUXILIO
+    else:
+        return
+    creditar_ponto_extra(
+        sessao,
+        guerreiro_id=resultado.guerreiro_id,
+        valor=valor,
+        origem=OrigemDoLancamento.merito_do_resultado,
+        referencia_id=resultado.id,
+        detalhe=detalhe,
+    )

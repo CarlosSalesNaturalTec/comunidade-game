@@ -8,6 +8,7 @@ from ..catalogo_avulso.regra import falta_de_lastro
 from ..comunidades.modelo import VinculoJogador
 from ..comunidades.regra import comunidades_do_mestre
 from ..erros import ErroDeValidacao, PermissaoNegada
+from ..historico_de_pontuacao.modelo import OrigemDoLancamento
 from ..livro_razao.regra import lancar_debito
 from ..personas.modelo import Papel, Persona
 from ..ponto_extra.modelo import PontoExtra
@@ -122,8 +123,16 @@ def registrar_troca(
         papel_do_autor=operador.papel.value,
     )
     sessao.add(troca)
+    sessao.flush()
 
-    debitar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=preco)
+    debitar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=preco,
+        origem=OrigemDoLancamento.troca,
+        referencia_id=troca.id,
+        detalhe=item.nome,
+    )
 
     item.estoque -= 1
 

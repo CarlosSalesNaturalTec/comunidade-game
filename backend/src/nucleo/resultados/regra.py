@@ -88,7 +88,7 @@ def registrar_resultado(
     sessao.flush()
 
     creditar_pontuacao_do_resultado(sessao, resultado=resultado, atividade=atividade, trilha=trilha)
-    creditar_ponto_extra_do_resultado(sessao, resultado=resultado)
+    creditar_ponto_extra_do_resultado(sessao, resultado=resultado, detalhe=atividade.titulo)
 
     return resultado
 

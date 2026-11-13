@@ -17,6 +17,7 @@ from ..aulas.modelo import Aula, Presenca
 from ..aulas.regra import presenca_vigente
 from ..comunidades.regra import comunidades_do_mestre, filtrar_personas_por_comunidades
 from ..erros import ArquivoAcimaDoTeto, ErroDeValidacao, NaoEncontrado, PermissaoNegada
+from ..historico_de_pontuacao.modelo import OrigemDoLancamento
 from ..personas.modelo import Papel, Persona
 from ..ponto_extra.regra import creditar_ponto_extra
 from ..recompensas_de_marco.modelo import EntregaDeRecompensa, RecompensaDeMarco
@@ -465,7 +466,16 @@ def _pontuar_bem(
             mensagem="Este bem já pontuou neste encontro.", campo="entrega_de_recompensa_id"
         ) from exc
     creditar_ponto_extra(
-        sessao, guerreiro_id=entrega.guerreiro_id, valor=PONTOS_EXTRAS_DO_CUIDADO_DO_BEM
+        sessao,
+        guerreiro_id=entrega.guerreiro_id,
+        valor=PONTOS_EXTRAS_DO_CUIDADO_DO_BEM,
+        origem=OrigemDoLancamento.cuidado_do_bem,
+        referencia_id=pontuacao.id,
+        detalhe=(
+            "Customização do kit recebido"
+            if pontuacao.registro_de_customizacao_id is not None
+            else "Conservação do bem recebido"
+        ),
     )
     return pontuacao
 

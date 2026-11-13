@@ -1,4 +1,5 @@
 import { useSessao } from "comum/autenticacao";
+import { HistoricoDePontuacao, lerMeuHistoricoDePontuacao } from "comum/pontuacao";
 import {
   Aviso,
   Botao,
@@ -6,7 +7,7 @@ import {
   FundoDeComunidade,
   PalcoDoPersonagem,
 } from "comum/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { listarMeusPontosExtras, type PontosExtras } from "../api/carteira";
 import { AlterarMeuAvatar } from "./AlterarMeuAvatar";
 import { MinhaCarta } from "./MinhaCarta";
@@ -34,6 +35,14 @@ export function MinhaCarteira() {
   // `RF-05-50`, design — decisão 4).
   const [alterandoAvatar, definirAlterandoAvatar] = useState(false);
   const [versaoDaCarta, definirVersaoDaCarta] = useState(0);
+  // O próprio histórico de pontuação, pela rota sem identificador de persona
+  // (`RF-05-104`, `RN-01-68`).
+  const [vendoHistorico, definirVendoHistorico] = useState(false);
+  const token = sessao?.token ?? "";
+  const lerHistorico = useCallback(
+    (cursor: string | null) => lerMeuHistoricoDePontuacao(token, cursor),
+    [token],
+  );
 
   useEffect(() => {
     if (!sessao) return;
@@ -91,6 +100,12 @@ export function MinhaCarteira() {
         </div>
       )}
 
+      <div className="cg-carteira__historico">
+        <Botao variante="secundaria" onClick={() => definirVendoHistorico(true)}>
+          Como cheguei aqui
+        </Botao>
+      </div>
+
       <div className="cg-carteira__avatar">
         <Botao variante="secundaria" onClick={() => definirAlterandoAvatar(true)}>
           Mudar o meu avatar
@@ -112,6 +127,18 @@ export function MinhaCarteira() {
       </div>
     </>
   );
+
+  if (vendoHistorico) {
+    return (
+      <section className="cg-carteira-secao" aria-label="Como cheguei aqui">
+        <Botao variante="secundaria" onClick={() => definirVendoHistorico(false)}>
+          Voltar à carteira
+        </Botao>
+        <h1>Como cheguei aqui</h1>
+        <HistoricoDePontuacao ler={lerHistorico} aoRecusarSessao={tratarRecusaDeSessao} />
+      </section>
+    );
+  }
 
   if (alterandoAvatar) {
     return (

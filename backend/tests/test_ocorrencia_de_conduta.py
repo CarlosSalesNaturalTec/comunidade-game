@@ -5,6 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError
 
 from nucleo.erros import ErroDeValidacao, OcorrenciaDeCondutaImutavel, PermissaoNegada
+from nucleo.historico_de_pontuacao.modelo import OrigemDoLancamento
 from nucleo.ocorrencias_de_conduta.modelo import OcorrenciaDeConduta
 from nucleo.ocorrencias_de_conduta.regra import (
     TETO_POR_GUERREIRO_E_AULA,
@@ -117,7 +118,14 @@ def test_debito_vai_a_trilha_da_atividade_e_nenhuma_outra(
     # Crédito inicial na trilha 1, para o débito ter o que consumir.
     from nucleo.pontuacao.regra import creditar_ponto_regular
 
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha_um.id, valor=20)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha_um.id,
+        valor=20,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     _lancar(sessao, operador=mestre, aula=aula, atividade=atividade_um, guerreiro=guerreiro)
@@ -223,7 +231,14 @@ def test_debito_maior_que_o_saldo_para_em_zero(
     atividade = criar_atividade(missao, mestre)
     aula = criar_aula(mestre, comunidade)
 
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=3)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=3,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     _lancar(sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro)
@@ -456,7 +471,14 @@ def test_valor_debitado_e_menor_que_o_nominal_quando_o_saldo_e_pequeno(
     atividade = criar_atividade(missao, mestre)
     aula = criar_aula(mestre, comunidade)
 
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=3)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=3,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     ocorrencia = _lancar(
@@ -481,7 +503,14 @@ def test_valor_debitado_igual_ao_nominal_quando_ha_saldo_suficiente(
     atividade = criar_atividade(missao, mestre)
     aula = criar_aula(mestre, comunidade)
 
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=20)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=20,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
 
     ocorrencia = _lancar(
@@ -516,7 +545,14 @@ def test_expurgo_do_fim_de_ciclo_e_a_unica_alteracao_admitida_pelo_gatilho(
     atividade = criar_atividade(missao, mestre)
     aula = criar_aula(mestre, comunidade)
 
-    creditar_ponto_regular(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha.id, valor=20)
+    creditar_ponto_regular(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        trilha_id=trilha.id,
+        valor=20,
+        origem=OrigemDoLancamento.resultado,
+        referencia_id=None,
+    )
     sessao.commit()
     ocorrencia = _lancar(
         sessao, operador=mestre, aula=aula, atividade=atividade, guerreiro=guerreiro

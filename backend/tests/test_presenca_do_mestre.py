@@ -2,6 +2,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 
 from nucleo.aulas.modelo import ModoDeComprovacao, Presenca
+from nucleo.historico_de_pontuacao.modelo import OrigemDoLancamento
 from nucleo.personas.modelo import Papel
 from nucleo.ponto_extra.modelo import PontoExtra
 from nucleo.ponto_extra.regra import creditar_ponto_extra, debitar_ponto_extra
@@ -802,7 +803,13 @@ def test_anulacao_com_saldo_ja_trocado_e_gravada_e_para_em_zero(
     headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
 
     id_da_presenca = _registrar(cliente, aula, guerreiro, headers).json()["id"]
-    debitar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=3)
+    debitar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=3,
+        origem=OrigemDoLancamento.troca,
+        referencia_id=None,
+    )
     sessao.commit()
 
     assert _anular(cliente, aula, id_da_presenca, headers).status_code == 201
@@ -820,7 +827,13 @@ def test_presenca_anterior_a_regra_nao_estorna(
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     aula = criar_aula(admin, comunidade)
     headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
-    creditar_ponto_extra(sessao, guerreiro_id=guerreiro.id, valor=10)
+    creditar_ponto_extra(
+        sessao,
+        guerreiro_id=guerreiro.id,
+        valor=10,
+        origem=OrigemDoLancamento.presenca,
+        referencia_id=None,
+    )
     antiga = Presenca(
         aula_id=aula.id,
         guerreiro_id=guerreiro.id,
