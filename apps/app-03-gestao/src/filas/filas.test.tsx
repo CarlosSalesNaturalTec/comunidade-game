@@ -58,6 +58,7 @@ const TIPO_DE_RECURSO = {
   natureza: "consumivel",
   unidade: "unidade",
   exige_comprovante: false,
+  ativo: true,
   valor_em_moedas: "1.50",
   vigencia_inicio: "2026-01-01",
 };

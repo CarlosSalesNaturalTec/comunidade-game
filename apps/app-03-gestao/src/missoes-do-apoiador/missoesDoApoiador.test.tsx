@@ -29,6 +29,7 @@ const TIPO = {
   natureza: "material",
   unidade: "unidade",
   exige_comprovante: false,
+  ativo: true,
   valor_em_moedas: "1",
   vigencia_inicio: "2026-01-01",
 };

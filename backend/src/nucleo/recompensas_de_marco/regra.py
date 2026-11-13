@@ -13,7 +13,7 @@ from ..livro_razao.regra import lancar_debito, saldo_de
 from ..personas.modelo import Nick, Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
-from ..recursos.regra import consultar_valor_de_referencia
+from ..recursos.regra import consultar_valor_de_referencia, exigir_tipo_de_recurso_ativo
 from ..tempo import agora
 from ..trilhas.modelo import Missao, Trilha
 from ..trilhas.regra import conferir_posse_da_trilha, missoes_desbloqueadas_pelo_guerreiro
@@ -50,6 +50,7 @@ def declarar_recompensa_de_marco(
             mensagem="Recompensa de marco exige um tipo de recurso existente.",
             campo="tipo_de_recurso_id",
         )
+    exigir_tipo_de_recurso_ativo(tipo)
     if quantidade is None or quantidade <= 0:
         raise ErroDeValidacao(
             mensagem="Recompensa de marco exige quantidade positiva.", campo="quantidade"

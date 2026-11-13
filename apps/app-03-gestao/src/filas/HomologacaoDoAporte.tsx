@@ -5,7 +5,7 @@ import { type FormEvent, useEffect, useId, useState } from "react";
 import { type AporteHomologado, homologarAporte } from "../aportes/api";
 import { type ComunidadeDaLista, listarComunidades } from "../comunidades/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
-import { listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";
+import { apenasAtivos, listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";
 
 interface Props {
   provedorId: string;
@@ -61,7 +61,8 @@ export function HomologacaoDoAporte({
       definirComunidades(pagina.itens);
       definirComunidadeId((atual) => atual || (pagina.itens[0]?.id ?? ""));
     });
-    listarTiposDeRecurso(sessao.token).then(definirTipos);
+    // Escolha nova: o tipo desativado não é oferecido (`RF-07-52`).
+    listarTiposDeRecurso(sessao.token).then((lista) => definirTipos(apenasAtivos(lista)));
   }, [sessao]);
 
   useEffect(() => {

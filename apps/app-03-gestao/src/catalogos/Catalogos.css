@@ -40,3 +40,9 @@
   border-radius: var(--raio-campo);
   padding: 0 var(--espaco-8);
 }
+
+.catalogo__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-8);
+}

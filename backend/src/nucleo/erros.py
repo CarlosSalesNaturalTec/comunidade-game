@@ -455,3 +455,12 @@ class PinNaoCadastrado(ErroDeAplicacao):
     mensagem = (
         "Sem PIN de confirmação cadastrado. O Mestre cadastra na App 09, e o Admin, na App 03."
     )
+
+
+class TipoEmUso(ErroDeValidacao):
+    """Recusa da exclusão de tipo de catálogo que algum registro já usa: o
+    caminho é desativá-lo (`RN-07-40`, `RN-08-30`). Código próprio para a
+    aplicação apontar a desativação sem ler a mensagem."""
+
+    codigo = "tipo_em_uso"
+    mensagem = "O tipo está em uso e não pode ser excluído; desative-o no lugar."

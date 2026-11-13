@@ -157,7 +157,7 @@ atividades previstas.
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | `RF-07-47` | Admin cadastra, desativa e reativa ponto de apoio, sempre com motivo; a desativação é bloqueada por aula futura ou saldo remanescente                                                                                                                                                                | essencial  |
 | `RF-07-49` | Admin designa ou troca o responsável pelo acervo do ponto de apoio, entre os adultos cadastrados                                                                                                                                                                                                     | essencial  |
-| `RF-07-01` | Admin cadastra tipo de recurso com unidade e valor de referência em moedas                                                                                                                                                                                                                           | essencial  |
+| `RF-07-01` | Admin cadastra e mantém tipo de recurso com unidade e valor de referência em moedas                                                                                                                                                                                                                  | essencial  |
 | `RF-07-02` | Sistema versiona o valor de referência por data de vigência                                                                                                                                                                                                                                          | essencial  |
 | `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                                                                                                                                                                                                                    | essencial  |
 | `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, ponto de apoio, comprovante e data                                                                                                                                                                                                             | essencial  |
@@ -200,6 +200,8 @@ atividades previstas.
 | `RF-07-45` | Item do catálogo herda o preço da tabela vigente; o cadastro do item não aceita preço próprio                                                                                                                                                                                                        | essencial  |
 | `RF-07-46` | Troca cobra o preço vigente na data da troca e o registra no histórico                                                                                                                                                                                                                               | essencial  |
 | `RF-07-50` | Sistema eleva a 25, na entrega do piso de 25, todo preço de referência vigente abaixo dele, com vigência nova e o histórico preservado                                                                                                                                                               | essencial  |
+| `RF-07-51` | Admin altera nome, unidade e exige comprovante do tipo de recurso, sem mudar a natureza, e abre vigência nova do valor em moedas                                                                                                                                                                     | essencial  |
+| `RF-07-52` | Tipo de recurso tem marca de ativo; o desativado é recusado só em escolha nova, e o que já existe com ele segue inalterado                                                                                                                                                                           | essencial  |
 | `RF-07-39` | Publicação de desafio extra reserva a recompensa; sem saldo, a publicação é recusada                                                                                                                                                                                                                 | essencial  |
 | `RF-07-40` | Desafio extra encerrado sem conclusão libera a reserva, devolvendo o saldo                                                                                                                                                                                                                           | essencial  |
 | `RF-07-41` | Sistema aceita custeio do desafio extra por absorção do proponente ou por saldo de recurso existente                                                                                                                                                                                                 | essencial  |
@@ -234,6 +236,7 @@ atividades previstas.
 | `RN-07-38` | A receita destinada a ressarcir credita o Poder Sustentador do doador e não entra no saldo de recurso algum                          | 9          | 04 §1        |
 | `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem                                              | —          | 04 §1        |
 | `RN-07-39` | A absorção declara o valor em reais quando houve desembolso; a absorção de serviço não declara valor em reais e não é ressarcível    | —          | 04 §1        |
+| `RN-07-40` | Só se exclui tipo de recurso nunca usado; o usado é recusado e se desativa                                                           | —          | 04 §1        |
 | `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                                                                  | 16         | 11 §8.2      |
 | `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante                                                | —          | 04 §1        |
 | `RN-07-21` | Aporte declarado no pré-cadastro não credita moeda alguma antes da homologação de Admin                                              | 16         | 04 §2        |
@@ -337,35 +340,39 @@ próprio (PRD-09).
 
 ## 9. Contratos de API
 
-| Método | Rota                                     | Autenticação    | Descrição                                                              |
-| ------ | ---------------------------------------- | --------------- | ---------------------------------------------------------------------- |
-| GET    | `/prestacao-de-contas`                   | pública         | Movimentado total e por provedor, em moedas                            |
-| GET    | `/prestacao-de-contas/aulas`             | pública         | Consumo por aula e por comunidade, em moedas                           |
-| GET    | `/provedores/{id}/poder-sustentador`     | pública         | Poder Sustentador do provedor, em moedas                               |
-| GET    | `/vitrine/necessidades`                  | pública         | O que falta de recurso para as aulas já agendadas                      |
-| GET    | `/necessidades/minhas`                   | Mestre          | Necessidades das aulas das comunidades a que o Mestre está vinculado   |
-| POST   | `/pontos-de-apoio`                       | Admin           | Cadastra ponto de apoio, com nome e comunidade                         |
-| PUT    | `/pontos-de-apoio/{id}/responsavel`      | Admin           | Designa ou troca o responsável pelo acervo                             |
-| POST   | `/pontos-de-apoio/{id}/desativacao`      | Admin           | Desativa o ponto de apoio, com motivo                                  |
-| POST   | `/pontos-de-apoio/{id}/reativacao`       | Admin           | Reativa o ponto de apoio, com motivo                                   |
-| GET    | `/pontos-de-apoio/{id}/saldos`           | Admin           | Saldo por tipo de recurso guardado no ponto de apoio                   |
-| POST   | `/lancamentos/transferencia`             | Admin           | Transfere saldo de um tipo de recurso entre dois pontos de apoio       |
-| POST   | `/itens-patrimoniais`                    | Admin           | Tomba o exemplar permanente, com aporte de origem opcional             |
-| GET    | `/itens-patrimoniais`                    | gestão          | Lê o acervo patrimonial, filtrado por comunidade                       |
-| POST   | `/itens-patrimoniais/{id}/ficha-de-vida` | Mestre ou Admin | Anota a ficha de vida do exemplar                                      |
-| POST   | `/tipos-de-recurso`                      | Admin           | Cadastra tipo e valor de referência                                    |
-| POST   | `/aportes`                               | Admin           | Registra e homologa aporte, com comprovante                            |
-| POST   | `/aportes/absorcao`                      | Mestre ou Admin | Registra aporte por absorção de quem proveu o recurso                  |
-| GET    | `/aportes/ressarciveis`                  | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo              |
-| POST   | `/aportes/{id}/ressarcimento`            | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas   |
-| POST   | `/aulas/{id}/reservas`                   | gestão          | Reserva os recursos no agendamento da aula                             |
-| POST   | `/aulas/{id}/trocas`                     | Mestre          | Registra a troca de item por pontos extras, na entrega                 |
-| GET    | `/trocas`                                | gestão          | Histórico de trocas, filtrado por persona                              |
-| GET    | `/eu/pontos-extras`                      | Guerreiro(a)    | Acumulado e saldo disponível de pontos extras do próprio               |
-| POST   | `/lancamentos/{id}/ajuste`               | Admin           | Lança ajuste referenciando o lançamento original                       |
-| GET    | `/lancamentos`                           | Admin           | Lançamentos de um ponto de apoio, filtro obrigatório de ponto de apoio |
-| GET    | `/meus-aportes`                          | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                        |
-| GET    | `/meus-aportes/ressarciveis`             | Mestre ou Admin | Situação dos aportes que absorveu                                      |
+| Método | Rota                                           | Autenticação    | Descrição                                                              |
+| ------ | ---------------------------------------------- | --------------- | ---------------------------------------------------------------------- |
+| GET    | `/prestacao-de-contas`                         | pública         | Movimentado total e por provedor, em moedas                            |
+| GET    | `/prestacao-de-contas/aulas`                   | pública         | Consumo por aula e por comunidade, em moedas                           |
+| GET    | `/provedores/{id}/poder-sustentador`           | pública         | Poder Sustentador do provedor, em moedas                               |
+| GET    | `/vitrine/necessidades`                        | pública         | O que falta de recurso para as aulas já agendadas                      |
+| GET    | `/necessidades/minhas`                         | Mestre          | Necessidades das aulas das comunidades a que o Mestre está vinculado   |
+| POST   | `/pontos-de-apoio`                             | Admin           | Cadastra ponto de apoio, com nome e comunidade                         |
+| PUT    | `/pontos-de-apoio/{id}/responsavel`            | Admin           | Designa ou troca o responsável pelo acervo                             |
+| POST   | `/pontos-de-apoio/{id}/desativacao`            | Admin           | Desativa o ponto de apoio, com motivo                                  |
+| POST   | `/pontos-de-apoio/{id}/reativacao`             | Admin           | Reativa o ponto de apoio, com motivo                                   |
+| GET    | `/pontos-de-apoio/{id}/saldos`                 | Admin           | Saldo por tipo de recurso guardado no ponto de apoio                   |
+| POST   | `/lancamentos/transferencia`                   | Admin           | Transfere saldo de um tipo de recurso entre dois pontos de apoio       |
+| POST   | `/itens-patrimoniais`                          | Admin           | Tomba o exemplar permanente, com aporte de origem opcional             |
+| GET    | `/itens-patrimoniais`                          | gestão          | Lê o acervo patrimonial, filtrado por comunidade                       |
+| POST   | `/itens-patrimoniais/{id}/ficha-de-vida`       | Mestre ou Admin | Anota a ficha de vida do exemplar                                      |
+| POST   | `/tipos-de-recurso`                            | Admin           | Cadastra tipo e valor de referência                                    |
+| PATCH  | `/tipos-de-recurso/{id}`                       | Admin           | Altera nome, unidade e exige comprovante                               |
+| POST   | `/tipos-de-recurso/{id}/valores-de-referencia` | Admin           | Abre vigência nova do valor em moedas                                  |
+| POST   | `/tipos-de-recurso/{id}/desativacao`           | Admin           | Desativa o tipo; `…/reativacao` reativa                                |
+| DELETE | `/tipos-de-recurso/{id}`                       | Admin           | Exclui o tipo nunca usado                                              |
+| POST   | `/aportes`                                     | Admin           | Registra e homologa aporte, com comprovante                            |
+| POST   | `/aportes/absorcao`                            | Mestre ou Admin | Registra aporte por absorção de quem proveu o recurso                  |
+| GET    | `/aportes/ressarciveis`                        | Admin           | Aportes absorvidos em aberto, do mais antigo ao mais novo              |
+| POST   | `/aportes/{id}/ressarcimento`                  | Admin           | Registra o ressarcimento com comprovante anexado e reverte as moedas   |
+| POST   | `/aulas/{id}/reservas`                         | gestão          | Reserva os recursos no agendamento da aula                             |
+| POST   | `/aulas/{id}/trocas`                           | Mestre          | Registra a troca de item por pontos extras, na entrega                 |
+| GET    | `/trocas`                                      | gestão          | Histórico de trocas, filtrado por persona                              |
+| GET    | `/eu/pontos-extras`                            | Guerreiro(a)    | Acumulado e saldo disponível de pontos extras do próprio               |
+| POST   | `/lancamentos/{id}/ajuste`                     | Admin           | Lança ajuste referenciando o lançamento original                       |
+| GET    | `/lancamentos`                                 | Admin           | Lançamentos de um ponto de apoio, filtro obrigatório de ponto de apoio |
+| GET    | `/meus-aportes`                                | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                        |
+| GET    | `/meus-aportes/ressarciveis`                   | Mestre ou Admin | Situação dos aportes que absorveu                                      |
 
 Erros previstos: agendamento sem saldo (422, com a lista do que falta); homologação pelo
 próprio provedor (403); aporte de tipo inexistente (422, com a rota de cadastro do tipo);
@@ -509,33 +516,34 @@ qualquer número de pontos de apoio.
 
 ## 15. Rastreabilidade
 
-| Requisito               | Origem                                           |
-| ----------------------- | ------------------------------------------------ |
-| `RF-07-47`              | 05 §2 (pontos de apoio) e 04 §1 (saldo)          |
-| `RF-07-49`              | 05 §3 (responsável designado pelo acervo)        |
-| `RF-07-01` a `RF-07-05` | 04 §1 (moeda e tabela de referência)             |
-| `RF-07-06`              | 04 §1 (aporte por absorção)                      |
-| `RF-07-07` a `RF-07-09` | 04 §1 (regra de lastro, com a aula reservando)   |
-| `RF-07-10`              | 04 §1 (Poder Sustentador)                        |
-| `RF-07-11` e `RF-07-13` | 05 §3 (tombamento e baixa definitiva)            |
-| `RF-07-48`              | 05 §3 (perda anotada na ficha de vida)           |
-| `RF-07-15`              | 04 §3 (desafios extras)                          |
-| `RF-07-16` a `RF-07-18` | 04 §1 (transparência) e 10 §3 (hipótese H3)      |
-| `RF-07-19`              | 04 §1 (livro-razão auditável)                    |
-| `RF-07-20`              | 05 §3 (conferência de inventário)                |
-| `RF-07-21` a `RF-07-25` | 04 §§1–2 (absorção, ressarcimento e comprovante) |
-| `RF-07-26`              | 11 §8.2 (cards e páginas individuais)            |
-| `RF-07-33` a `RF-07-38` | 02 §8.2 (catálogo avulso, lastro e entrega)      |
-| `RF-07-42` a `RF-07-46` | 02 §8.2 (tabela de referência e piso de 25)      |
-| `RF-07-50`              | 02 §8.2 e 09 §1 (subida do piso para 25)         |
-| `RF-07-39` a `RF-07-41` | 04 §3 (custeio e reserva do desafio extra)       |
-| `RF-07-27` e `RF-07-28` | 04 §1 (necessidade publicada e absorção)         |
-| `RF-07-32`              | 04 §1 (custos anteriores ao livro-razão)         |
-| `RF-07-29` e `RF-07-30` | 04 §2 (pré-cadastro, comprovante e homologação)  |
-| `RF-07-31`              | 04 §1 (cobertura parcial da necessidade)         |
-| `RN-07-20`              | 04 §1 (sem armazenamento de dado bancário)       |
-| `RN-07-33`              | 05 §2 (estrutura física — pontos de apoio)       |
-| `RN-07-35` e `RN-07-36` | 04 §1 (onde o aporte entra e como se homologa)   |
-| `RN-07-37`              | 04 §1 (confirmação da aula pendente de lastro)   |
-| `RN-07-31` e `RN-07-32` | 04 §1 (painel vivo e horas declaradas)           |
-| `RN-07-38` e `RN-07-39` | 04 §1 (receita destinada e valor da absorção)    |
+| Requisito                          | Origem                                           |
+| ---------------------------------- | ------------------------------------------------ |
+| `RF-07-47`                         | 05 §2 (pontos de apoio) e 04 §1 (saldo)          |
+| `RF-07-49`                         | 05 §3 (responsável designado pelo acervo)        |
+| `RF-07-01` a `RF-07-05`            | 04 §1 (moeda e tabela de referência)             |
+| `RF-07-06`                         | 04 §1 (aporte por absorção)                      |
+| `RF-07-07` a `RF-07-09`            | 04 §1 (regra de lastro, com a aula reservando)   |
+| `RF-07-10`                         | 04 §1 (Poder Sustentador)                        |
+| `RF-07-11` e `RF-07-13`            | 05 §3 (tombamento e baixa definitiva)            |
+| `RF-07-48`                         | 05 §3 (perda anotada na ficha de vida)           |
+| `RF-07-15`                         | 04 §3 (desafios extras)                          |
+| `RF-07-16` a `RF-07-18`            | 04 §1 (transparência) e 10 §3 (hipótese H3)      |
+| `RF-07-19`                         | 04 §1 (livro-razão auditável)                    |
+| `RF-07-20`                         | 05 §3 (conferência de inventário)                |
+| `RF-07-21` a `RF-07-25`            | 04 §§1–2 (absorção, ressarcimento e comprovante) |
+| `RF-07-26`                         | 11 §8.2 (cards e páginas individuais)            |
+| `RF-07-33` a `RF-07-38`            | 02 §8.2 (catálogo avulso, lastro e entrega)      |
+| `RF-07-42` a `RF-07-46`            | 02 §8.2 (tabela de referência e piso de 25)      |
+| `RF-07-50`                         | 02 §8.2 e 09 §1 (subida do piso para 25)         |
+| `RF-07-51`, `RF-07-52`, `RN-07-40` | 04 §1 e 09 §1 (edição e exclusão do catálogo)    |
+| `RF-07-39` a `RF-07-41`            | 04 §3 (custeio e reserva do desafio extra)       |
+| `RF-07-27` e `RF-07-28`            | 04 §1 (necessidade publicada e absorção)         |
+| `RF-07-32`                         | 04 §1 (custos anteriores ao livro-razão)         |
+| `RF-07-29` e `RF-07-30`            | 04 §2 (pré-cadastro, comprovante e homologação)  |
+| `RF-07-31`                         | 04 §1 (cobertura parcial da necessidade)         |
+| `RN-07-20`                         | 04 §1 (sem armazenamento de dado bancário)       |
+| `RN-07-33`                         | 05 §2 (estrutura física — pontos de apoio)       |
+| `RN-07-35` e `RN-07-36`            | 04 §1 (onde o aporte entra e como se homologa)   |
+| `RN-07-37`                         | 04 §1 (confirmação da aula pendente de lastro)   |
+| `RN-07-31` e `RN-07-32`            | 04 §1 (painel vivo e horas declaradas)           |
+| `RN-07-38` e `RN-07-39`            | 04 §1 (receita destinada e valor da absorção)    |

@@ -16,6 +16,7 @@ from ..livro_razao.regra import saldo_de
 from ..personas.modelo import Nick, Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
+from ..recursos.regra import exigir_tipo_de_recurso_ativo
 from ..reservas.regra import liberar_reservas_do_desafio, reservar_recompensa_do_desafio
 from ..tempo import agora
 from ..trilhas.modelo import Missao, SituacaoDaTrilha, Trilha
@@ -110,6 +111,7 @@ def propor_desafio_extra(
             mensagem="Desafio extra exige o tipo de recurso da recompensa.",
             campo="tipo_de_recurso_id",
         )
+    exigir_tipo_de_recurso_ativo(tipo_de_recurso)
     if ponto_de_apoio is None:
         raise ErroDeValidacao(
             mensagem="Desafio extra exige o ponto de apoio da recompensa.",

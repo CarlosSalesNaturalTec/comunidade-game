@@ -69,6 +69,7 @@ const TIPO_SEM_COMPROVANTE = {
   natureza: "material",
   unidade: "unidade",
   exige_comprovante: false,
+  ativo: true,
   valor_em_moedas: "1",
   vigencia_inicio: "2026-01-01",
 };
@@ -79,6 +80,7 @@ const TIPO_COM_COMPROVANTE = {
   natureza: "material",
   unidade: "passagem",
   exige_comprovante: true,
+  ativo: true,
   valor_em_moedas: "2",
   vigencia_inicio: "2026-01-01",
 };

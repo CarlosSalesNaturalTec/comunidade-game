@@ -6,8 +6,17 @@ export interface TipoDeRecurso {
   natureza: string;
   unidade: string;
   exige_comprovante: boolean;
+  // Desativado sai só da escolha nova; a leitura por nome segue com todos
+  // (`RF-07-52`, `RF-02-115`).
+  ativo: boolean;
   valor_em_moedas: string;
   vigencia_inicio: string;
+}
+
+// Filtro dos seletores de **escolha nova**: o tipo desativado não é
+// oferecido, e o núcleo o recusaria (`RF-07-52`, design — decisão 8).
+export function apenasAtivos(tipos: TipoDeRecurso[]): TipoDeRecurso[] {
+  return tipos.filter((tipo) => tipo.ativo !== false);
 }
 
 // Rota fora do previsto na proposal desta change (design — decisão 6):
@@ -47,6 +56,91 @@ export function cadastrarTipoDeRecurso(
     corpo: entrada,
     token,
   });
+}
+
+export interface AlterarTipoDeRecursoEntrada {
+  nome?: string;
+  unidade?: string;
+  exige_comprovante?: boolean;
+}
+
+// Nome, unidade e exige comprovante; a natureza não se altera
+// (`RF-02-113`, `RF-07-51`).
+export function alterarTipoDeRecurso(
+  id: string,
+  entrada: AlterarTipoDeRecursoEntrada,
+  token: string,
+): Promise<TipoDeRecurso> {
+  return chamarNucleo<TipoDeRecurso>(`/v1/tipos-de-recurso/${id}`, {
+    metodo: "PATCH",
+    corpo: entrada,
+    token,
+  });
+}
+
+// Vigência nova do valor em moedas: encerra a vigente no dia de início da
+// nova, sem reescrevê-la (`RF-07-51`, `RF-07-02`).
+export function registrarValorDeReferencia(
+  id: string,
+  entrada: { valor_em_moedas: string; vigencia_inicio: string },
+  token: string,
+): Promise<unknown> {
+  return chamarNucleo(`/v1/tipos-de-recurso/${id}/valores-de-referencia`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
+export interface PrecoDeReferencia {
+  id: string;
+  tipo_de_recurso_id: string;
+  preco_em_pontos_extras: number;
+  vigencia_inicio: string;
+  vigencia_fim: string | null;
+}
+
+// Histórico do preço em pontos extras, da vigência mais recente para a mais
+// antiga (`RF-07-43`).
+export function listarPrecosDeReferencia(
+  id: string,
+  token: string,
+): Promise<PrecoDeReferencia[]> {
+  return chamarNucleo<PrecoDeReferencia[]>(`/v1/tipos-de-recurso/${id}/precos-de-referencia`, {
+    token,
+  });
+}
+
+export function registrarPrecoDeReferencia(
+  id: string,
+  entrada: { preco_em_pontos_extras: number; vigencia_inicio: string },
+  token: string,
+): Promise<PrecoDeReferencia> {
+  return chamarNucleo<PrecoDeReferencia>(`/v1/tipos-de-recurso/${id}/precos-de-referencia`, {
+    metodo: "POST",
+    corpo: entrada,
+    token,
+  });
+}
+
+export function desativarTipoDeRecurso(id: string, token: string): Promise<TipoDeRecurso> {
+  return chamarNucleo<TipoDeRecurso>(`/v1/tipos-de-recurso/${id}/desativacao`, {
+    metodo: "POST",
+    token,
+  });
+}
+
+export function reativarTipoDeRecurso(id: string, token: string): Promise<TipoDeRecurso> {
+  return chamarNucleo<TipoDeRecurso>(`/v1/tipos-de-recurso/${id}/reativacao`, {
+    metodo: "POST",
+    token,
+  });
+}
+
+// Só o tipo nunca usado sai; o usado volta com o código `tipo_em_uso`
+// (`RN-07-40`).
+export function excluirTipoDeRecurso(id: string, token: string): Promise<void> {
+  return chamarNucleo<void>(`/v1/tipos-de-recurso/${id}`, { metodo: "DELETE", token });
 }
 
 export interface NecessidadeDeRecurso {

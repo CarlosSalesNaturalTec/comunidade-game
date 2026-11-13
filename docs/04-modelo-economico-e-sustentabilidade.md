@@ -113,7 +113,9 @@ Aportes em material, serviço e conteúdo são convertidos em moedas por uma **t
 referência** mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche,
 insumo — tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável
 o Poder Sustentador entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o
-seu valor de referência, para que nenhum aporte fique represado.
+seu valor de referência, para que nenhum aporte fique represado. O Admin corrige nome, unidade
+e exigência de comprovante — nunca a natureza —, muda o valor só por **vigência nova**, exclui
+apenas o tipo **nunca usado** e **desativa** o usado, que sai só da escolha nova.
 
 **[Proposta] Apoio em código como aporte.** Melhoria da plataforma, aplicação sobre a API e
 jogo sobre a API entram no livro-razão como aporte do Apoiador que os fez, valorados em

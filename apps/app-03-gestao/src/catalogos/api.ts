@@ -62,3 +62,44 @@ export function cadastrarTipoDeColeta(
     token,
   });
 }
+
+// Campo ausente mantém; `null` retira — é assim que a troca para foto ou
+// vídeo leva a unidade e a faixa embora (`RF-02-114`, `RF-08-32`).
+export interface AlterarTipoDeColetaEntrada {
+  nome?: string;
+  forma_de_registro?: FormaDeRegistro;
+  unidade?: string | null;
+  faixa_minima?: number | null;
+  faixa_maxima?: number | null;
+}
+
+export function alterarTipoDeColeta(
+  id: string,
+  entrada: AlterarTipoDeColetaEntrada,
+  token: string,
+): Promise<TipoDeColeta> {
+  return chamarNucleo<TipoDeColeta>(`/v1/tipos-de-coleta/${id}`, {
+    metodo: "PATCH",
+    corpo: entrada,
+    token,
+  });
+}
+
+export function desativarTipoDeColeta(id: string, token: string): Promise<TipoDeColeta> {
+  return chamarNucleo<TipoDeColeta>(`/v1/tipos-de-coleta/${id}/desativacao`, {
+    metodo: "POST",
+    token,
+  });
+}
+
+export function reativarTipoDeColeta(id: string, token: string): Promise<TipoDeColeta> {
+  return chamarNucleo<TipoDeColeta>(`/v1/tipos-de-coleta/${id}/reativacao`, {
+    metodo: "POST",
+    token,
+  });
+}
+
+// Só o tipo que nenhum desafio escolheu sai (`RN-08-30`).
+export function excluirTipoDeColeta(id: string, token: string): Promise<void> {
+  return chamarNucleo<void>(`/v1/tipos-de-coleta/${id}`, { metodo: "DELETE", token });
+}

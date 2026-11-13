@@ -77,6 +77,7 @@ const TIPO_ALPHA = {
   natureza: "duravel",
   unidade: "unidade",
   exige_comprovante: false,
+  ativo: true,
   valor_em_moedas: "0.00",
   vigencia_inicio: "2026-01-01",
 };
@@ -87,6 +88,7 @@ const TIPO_CAMISA = {
   natureza: "duravel",
   unidade: "unidade",
   exige_comprovante: false,
+  ativo: true,
   valor_em_moedas: "0.00",
   vigencia_inicio: "2026-01-01",
 };

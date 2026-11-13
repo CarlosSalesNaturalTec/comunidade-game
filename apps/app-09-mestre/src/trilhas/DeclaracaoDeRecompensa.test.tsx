@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -68,6 +68,7 @@ function tipoDeRecurso(): TipoDeRecurso {
     natureza: "duravel",
     unidade: "unidade",
     exige_comprovante: false,
+    ativo: true,
     valor_em_moedas: "10.00",
     vigencia_inicio: "2026-01-01",
   };
@@ -174,5 +175,51 @@ describe("Declaração da recompensa de marco", () => {
     );
 
     expect(screen.getByText(/30 camisa/i)).toBeInTheDocument();
+  });
+});
+
+describe("A declaração de recompensa não oferece tipo de recurso desativado", () => {
+  const desativado: TipoDeRecurso = {
+    ...tipoDeRecurso(),
+    id: "tipo-2",
+    nome: "Boné",
+    ativo: false,
+  };
+
+  it("o seletor não oferece o tipo desativado", async () => {
+    configurarSessao();
+
+    render(
+      <DeclaracaoDeRecompensa
+        idDaTrilha="trilha-1"
+        missao={missao()}
+        tiposDeRecurso={[tipoDeRecurso(), desativado]}
+        recompensas={[]}
+        onDeclarada={vi.fn()}
+      />,
+    );
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: /^declarar recompensa$/i }));
+
+    const seletor = screen.getByLabelText(/tipo de recurso/i);
+    expect(within(seletor).getByRole("option", { name: "Camisa" })).toBeInTheDocument();
+    expect(within(seletor).queryByRole("option", { name: "Boné" })).not.toBeInTheDocument();
+  });
+
+  it("a recompensa já declarada segue com o nome do tipo desativado", () => {
+    configurarSessao();
+
+    render(
+      <DeclaracaoDeRecompensa
+        idDaTrilha="trilha-1"
+        missao={missao()}
+        tiposDeRecurso={[desativado]}
+        recompensas={[recompensa({ tipo_de_recurso_id: "tipo-2" })]}
+        onDeclarada={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/Boné/)).toBeInTheDocument();
   });
 });
