@@ -1,4 +1,5 @@
-import { chamarNucleo, enviarParteComProgresso, lerArquivoDoNucleo } from "comum/api";
+import { chamarNucleo, lerArquivoDoNucleo } from "comum/api";
+import { enviarMidiaDaCustomizacao as enviarMidiaDoComum } from "comum/customizacao";
 
 // O cuidado com o bem recebido, no encontro: a fila de quem chegou, o
 // julgamento da customização, a captura na hora e a conservação. Tudo vai sob
@@ -89,42 +90,17 @@ export function capturarCustomizacao(
   });
 }
 
-const TAMANHO_DA_PARTE = 5 * 1024 * 1024;
-
-/** Abre a sessão, manda o arquivo em partes e confirma — o mesmo trajeto da
- * comprovação do prático. Só com a confirmação o registro passa a julgar. */
+/** Abre a sessão, manda o arquivo em partes e confirma. O trajeto mora em
+ * `comum/customizacao`, que a App 05 usa no registro em casa; a função local
+ * fica para a tela e os testes desta aplicação (design — decisão 1 da change
+ * `2026-11-13-registro-da-customizacao-do-kit-em-casa`). */
 export async function enviarMidiaDaCustomizacao(
   registroId: string,
   arquivo: File,
   token: string,
   aoProgredir: (enviados: number, total: number) => void,
 ): Promise<RegistroDeCustomizacao> {
-  const { endereco_da_sessao } = await chamarNucleo<{ endereco_da_sessao: string }>(
-    `/v1/customizacoes/${registroId}/envios`,
-    {
-      metodo: "POST",
-      corpo: { tipo_mime: arquivo.type, tamanho_declarado: arquivo.size },
-      token,
-    },
-  );
-  let posicao = 0;
-  const total = arquivo.size;
-  while (posicao < total) {
-    const fim = Math.min(posicao + TAMANHO_DA_PARTE, total);
-    const inicio = posicao;
-    const resultado = await enviarParteComProgresso(
-      endereco_da_sessao,
-      arquivo.slice(inicio, fim),
-      `bytes ${inicio}-${fim - 1}/${total}`,
-      (bytesDaParte) => aoProgredir(inicio + bytesDaParte, total),
-    );
-    posicao = resultado.concluido ? fim : resultado.bytesRecebidos;
-    aoProgredir(posicao, total);
-  }
-  return chamarNucleo<RegistroDeCustomizacao>(
-    `/v1/customizacoes/${registroId}/envios/confirmacao`,
-    { metodo: "POST", token },
-  );
+  return enviarMidiaDoComum(registroId, arquivo, token, aoProgredir);
 }
 
 /** O "agora": a mídia do registro pendente. */

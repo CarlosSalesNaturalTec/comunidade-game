@@ -1,0 +1,23 @@
+.cg-customizacao {
+  display: grid;
+  gap: var(--espaco-8);
+}
+
+.cg-customizacao__aviso {
+  color: var(--cor-texto-secundario);
+  font-size: 0.875rem;
+}
+
+.cg-customizacao__aviso-botao {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.cg-customizacao__aviso-detalhe {
+  margin-block-start: var(--espaco-8);
+}
