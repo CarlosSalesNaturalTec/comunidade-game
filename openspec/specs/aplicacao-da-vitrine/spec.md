@@ -1629,10 +1629,34 @@ sair como link de saída e o **arquivo**, como transferência. Os bytes SHALL se
 pública **da fonte do item** — criação original, comprovação do prático ou customização do kit.
 Fechar SHALL devolver a linha ao estado recolhido. (`RF-03-85`, `RF-03-88`, `RF-03-03`)
 
+A **imagem** aberta na linha SHALL ser um controle que, acionado por toque, clique ou teclado,
+a abre **inteira, sem corte, no maior tamanho que a tela comporta**, sobre a página; fecha pelo
+botão **"Fechar"**, pela tecla `Esc` e pelo toque fora dela, devolvendo o foco à imagem.
+Ampliar NEVER SHALL buscar os bytes de novo, recolher a linha nem gravar coisa alguma no
+aparelho, e o **vídeo** NEVER SHALL ganhar a ampliação. (`RF-03-85`, `RN-03-22`, decisão do
+fundador de 2026-11-14)
+
 #### Scenario: A imagem abre na linha
 
 - **WHEN** o visitante abre a produção de um item do tipo imagem
 - **THEN** a imagem aparece na própria linha, com texto alternativo, e a lista continua visível
+
+#### Scenario: Tocar na imagem a abre em tela cheia
+
+- **WHEN** o visitante toca ou clica na imagem aberta na linha de um item do acervo, de
+  qualquer das três fontes
+- **THEN** a imagem abre inteira, sem corte, no maior tamanho que a tela comporta, sem nova
+  busca ao núcleo
+
+#### Scenario: A imagem ampliada fecha e devolve o foco
+
+- **WHEN** a imagem está ampliada e o visitante aciona "Fechar", tecla `Esc` ou toca fora dela
+- **THEN** a imagem ampliada fecha, o foco volta à imagem na linha e a produção segue aberta
+
+#### Scenario: O vídeo não amplia
+
+- **WHEN** o visitante abre a produção de um item do tipo vídeo
+- **THEN** o vídeo fica na moldura com os controles nativos, sem controle de ampliar
 
 #### Scenario: O áudio e o vídeo abrem com controles
 
