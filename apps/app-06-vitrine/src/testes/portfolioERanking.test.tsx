@@ -289,6 +289,95 @@ describe("portfólio e ranking", () => {
     expect(buscar).toHaveBeenCalledWith({ id: "d-1", fonte: "comprovacao_do_pratico" });
   });
 
+  describe("a imagem aberta amplia em tela cheia (RF-03-85, decisão de 2026-11-14)", () => {
+    async function abrirImagem(item: leituras.CriacaoPublica = COMPROVACAO) {
+      comUrlDeObjeto();
+      comConteudo([item]);
+      const buscar = vi
+        .spyOn(leituras, "lerArquivoDoAcervo")
+        .mockResolvedValue(new Blob([new Uint8Array([1])], { type: "image/png" }));
+      render(<App />);
+      const testeDeUsuario = userEvent.setup();
+      const portfolio = secaoDe("Portfólio de criações originais");
+      await portfolio.findByText(item.titulo);
+      await testeDeUsuario.click(portfolio.getByRole("button", { name: "Ver a imagem" }));
+      const controle = await portfolio.findByRole("button", {
+        name: `Ampliar imagem: Produção de ${item.titulo}`,
+      });
+      return { buscar, controle, portfolio, testeDeUsuario };
+    }
+
+    it("tocar na imagem a abre inteira, sem nova busca ao núcleo", async () => {
+      const { buscar, controle, testeDeUsuario } = await abrirImagem();
+
+      await testeDeUsuario.click(controle);
+
+      const dialogo = screen.getByRole("dialog", { name: "Produção de Horta na laje" });
+      expect(dialogo).toHaveClass("cg-dialogo--tela-cheia");
+      expect(within(dialogo).getByRole("img")).toHaveAttribute(
+        "src",
+        "blob:producao-do-acervo",
+      );
+      expect(buscar).toHaveBeenCalledTimes(1);
+    });
+
+    it("Fechar e Esc fecham, devolvem o foco e a produção segue aberta (RN-03-22)", async () => {
+      const { controle, portfolio, testeDeUsuario } = await abrirImagem();
+
+      await testeDeUsuario.click(controle);
+      await testeDeUsuario.click(screen.getByRole("button", { name: "Fechar" }));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(controle).toHaveFocus();
+
+      await testeDeUsuario.keyboard("{Enter}");
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      await testeDeUsuario.keyboard("{Escape}");
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(controle).toHaveFocus();
+
+      expect(portfolio.getByRole("button", { name: "Fechar a produção" })).toBeVisible();
+      expect(window.localStorage.length).toBe(0);
+      expect(window.sessionStorage.length).toBe(0);
+    });
+
+    it("tocar fora da imagem ampliada a fecha", async () => {
+      const { controle, testeDeUsuario } = await abrirImagem();
+
+      await testeDeUsuario.click(controle);
+      await testeDeUsuario.click(screen.getByRole("dialog"));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("a imagem da customização do kit também amplia (RF-03-88)", async () => {
+      const { buscar, controle, testeDeUsuario } = await abrirImagem({
+        ...CUSTOMIZACAO,
+        tipo: "imagem",
+      });
+
+      await testeDeUsuario.click(controle);
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(buscar).toHaveBeenCalledWith({ id: "k-1", fonte: "customizacao_do_kit" });
+    });
+
+    it("o vídeo não ganha controle de ampliar", async () => {
+      comUrlDeObjeto();
+      comConteudo([CUSTOMIZACAO]);
+      vi.spyOn(leituras, "lerArquivoDoAcervo").mockResolvedValue(
+        new Blob([new Uint8Array([1])]),
+      );
+      render(<App />);
+      const testeDeUsuario = userEvent.setup();
+      const portfolio = secaoDe("Portfólio de criações originais");
+      await portfolio.findByText(CUSTOMIZACAO.titulo);
+      await testeDeUsuario.click(portfolio.getByRole("button", { name: "Ver o vídeo" }));
+
+      await vi.waitFor(() =>
+        expect(portfolio.getByRole("listitem").querySelector("video")).not.toBeNull(),
+      );
+      expect(portfolio.queryByRole("button", { name: /Ampliar imagem/ })).toBeNull();
+    });
+  });
+
   it("o áudio e o vídeo abrem com controles, sem tocar sozinhos (RF-03-85)", async () => {
     comUrlDeObjeto();
     vi.spyOn(leituras, "lerArquivoDoAcervo").mockResolvedValue(

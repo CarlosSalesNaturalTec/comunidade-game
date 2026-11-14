@@ -28,8 +28,8 @@ interface Props {
   semSessao?: boolean;
   /** A **imagem** vira controle que a abre em tela cheia, inteira e sem
    * corte, reaproveitando os bytes já buscados. Só vale para imagem: vídeo e
-   * áudio têm os controles nativos. Desligada por padrão — a vitrine não a
-   * pede (decisão do fundador de 2026-11-11). */
+   * áudio têm os controles nativos. Desligada por padrão: cada aplicação a
+   * pede onde a exibe (decisões do fundador de 2026-11-11 e 2026-11-14). */
   ampliavel?: boolean;
 }
 

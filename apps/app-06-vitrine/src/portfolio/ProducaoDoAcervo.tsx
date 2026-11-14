@@ -14,9 +14,10 @@ const INDISPONIVEL = "A produção não está disponível agora.";
 /**
  * A produção de um item do acervo, aberta **na própria linha** (`RF-03-85`).
  *
- * Sem endereço novo e sem camada sobreposta: a criação não tem página
- * individual (decisão do fundador de 2026-10-11), e são os **nicks** que
- * abrem página (`RF-03-03`). O aberto/fechado é estado **deste** componente,
+ * Sem endereço novo: a criação não tem página individual (decisão do
+ * fundador de 2026-10-11), e são os **nicks** que abrem página (`RF-03-03`).
+ * A **imagem** aberta na linha amplia em tela cheia ao toque, e fechar a
+ * ampliação não recolhe a linha (decisão do fundador de 2026-11-14). O aberto/fechado é estado **deste** componente,
  * nunca da `ListaDeRegistros`, que outras três seções usam — e por isso morre
  * ao recarregar e ao trocar de página, que é o que o `RN-03-22` exige: nada
  * da navegação do visitante é gravado no aparelho (design — decisão 6).
@@ -78,6 +79,7 @@ export function ProducaoDoAcervo({ item }: { item: CriacaoPublica }) {
           id={item.id}
           textoDeErro={INDISPONIVEL}
           semSessao
+          ampliavel
           tipo={item.tipo}
           token={null}
         />
