@@ -62,7 +62,9 @@ export function TelaDeMinhasTurmas() {
     if (!sessao) return;
     try {
       const turmas = await listarMinhasTurmas(sessao.token);
-      definirAulas(turmas.itens);
+      // Aula cancelada não tem encontro, presença nem ocorrência a lançar:
+      // não entra na lista (`RF-09-42`, decisão do fundador, 2026-11-16).
+      definirAulas(turmas.itens.filter((aula) => aula.situacao !== "cancelada"));
       definirAtividadesPresenciais(turmas.atividades_presenciais);
       definirAtividadesOnLine(turmas.atividades_on_line);
     } catch (erroCapturado) {

@@ -112,6 +112,24 @@ describe("lista das turmas do Mestre (RF-09-42, RF-09-73)", () => {
     expect(screen.getByText("Fórum")).toBeInTheDocument();
   });
 
+  it("aula cancelada não aparece na lista; a confirmada sim", async () => {
+    configurarSessao();
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      turmas({
+        itens: [
+          aula({ id: "aula-confirmada", situacao: "confirmada" }),
+          aula({ id: "aula-cancelada", situacao: "cancelada" }),
+        ],
+      }),
+    );
+
+    render(<TelaDeMinhasTurmas />);
+
+    expect(await screen.findByText("Confirmada")).toBeInTheDocument();
+    expect(screen.queryByText("Cancelada")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /presença e ocorrência/i })).toHaveLength(1);
+  });
+
   it("turma sem aula nem atividade mostra o estado vazio", async () => {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
@@ -189,7 +207,7 @@ describe("caminho para o painel do dia (RF-09-50)", () => {
     expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
   });
 
-  it("aula cancelada dentro da janela não oferece o caminho", async () => {
+  it("aula cancelada dentro da janela não aparece nem oferece o caminho", async () => {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
       turmas({ itens: [aula({ ...janelaEmAndamento(), situacao: "cancelada" })] }),
@@ -197,7 +215,9 @@ describe("caminho para o painel do dia (RF-09-50)", () => {
 
     render(<TelaDeMinhasTurmas />);
 
-    await screen.findByRole("button", { name: /presença e ocorrência/i });
+    expect(
+      await screen.findByText(/nenhuma aula agendada nas suas comunidades/i),
+    ).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
   });
 });

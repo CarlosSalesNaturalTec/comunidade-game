@@ -1,5 +1,6 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
+import { Avatar } from "comum/avatar";
 import { Aviso, Botao, EstadoDaLista } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import type { PontoDeApoioDaLista, TipoDeRecurso } from "../recursos/api";
@@ -106,8 +107,9 @@ export function FilaDeEntregasPendentes() {
             return (
               <li key={chave} className="fila-de-entregas-pendentes__item">
                 <p>
-                  <strong>{pendencia.guerreiro_nick}</strong> ({pendencia.guerreiro_avatar}) —{" "}
-                  {pendencia.trilha_nome} — {pendencia.missao_titulo}
+                  <Avatar avatar={pendencia.guerreiro_avatar} tamanho={32} />{" "}
+                  <strong>{pendencia.guerreiro_nick}</strong> — {pendencia.trilha_nome} —{" "}
+                  {pendencia.missao_titulo}
                 </p>
                 <p>
                   {pendencia.quantidade}{" "}

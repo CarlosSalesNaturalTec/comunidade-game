@@ -284,7 +284,9 @@ Confirmada a entrega, a pendência SHALL **sair** da fila. A fila diz o que o Gu
 conquistou e NEVER SHALL marcar a pendência como esgotada pelas entregas a outros Guerreiros e
 Guerreiras: a quantidade é o que cada um recebe, e a recusa por lastro segue acontecendo no ato
 (decisão do fundador de 2026-11-09). A saída NEVER SHALL trazer valor em moedas nem
-em reais, nem imagem real de Guerreiro(a). (`RF-09-75`, `RF-09-76`, `RN-09-26`, invariantes 12 e
+em reais, nem imagem real de Guerreiro(a). A App 09 SHALL **desenhar** o avatar ao lado do nick
+e NEVER SHALL exibir o conteúdo do campo do avatar como texto (decisão do fundador de
+2026-11-16). (`RF-09-75`, `RF-09-76`, `RN-09-26`, invariantes 12 e
 16, PRD-09 §12)
 
 #### Scenario: Marco desbloqueado aparece como pendência do Mestre
@@ -338,6 +340,12 @@ em reais, nem imagem real de Guerreiro(a). (`RF-09-75`, `RF-09-76`, `RN-09-26`, 
 - **WHEN** o Mestre consulta a fila de entregas pendentes
 - **THEN** nenhum campo traz valor em moedas ou em reais, e o Guerreiro(a) aparece por nick e
   avatar
+
+#### Scenario: A App 09 desenha o avatar, não o texto do campo
+
+- **WHEN** o Mestre abre Entregas pendentes em Minhas turmas
+- **THEN** cada pendência mostra o desenho do avatar ao lado do nick, e nenhum trecho do objeto
+  do avatar aparece como texto na tela
 
 ### Requirement: A ciência da recompensa conquistada é fato do Guerreiro(a)
 

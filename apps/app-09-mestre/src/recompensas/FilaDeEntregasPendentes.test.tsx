@@ -98,6 +98,25 @@ describe("Fila de entregas pendentes", () => {
     expect(screen.queryByText(/real/i)).not.toBeInTheDocument();
   });
 
+  it("desenha o avatar ao lado do nick, sem o texto do campo (RF-09-75, RN-09-18)", async () => {
+    configurarSessao();
+    const avatarEmTexto = JSON.stringify({
+      formaDeTratamento: "guerreira",
+      avatar: { v: 1, fundo: "acao-100", tom: "t5", cabelo: "black-power" },
+    });
+    vi.spyOn(recompensasApi, "listarEntregasPendentes").mockResolvedValue([
+      pendencia({ guerreiro_avatar: avatarEmTexto }),
+    ]);
+    vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([tipoDeRecurso()]);
+    vi.spyOn(recursosApi, "listarMeusPontosDeApoio").mockResolvedValue([pontoDeApoio()]);
+
+    const { container } = render(<FilaDeEntregasPendentes />);
+
+    expect(await screen.findByText("Guerreira10")).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/formaDeTratamento|black-power/);
+    expect(container.querySelector("svg")).not.toBeNull();
+  });
+
   it("a entrega confirmada sai da fila", async () => {
     configurarSessao();
     vi.spyOn(recompensasApi, "listarEntregasPendentes").mockResolvedValue([pendencia()]);
