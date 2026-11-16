@@ -1,4 +1,5 @@
 import { ErroDaApi } from "comum/api";
+import { Avatar } from "comum/avatar";
 import { Aviso, Botao, Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -97,8 +98,9 @@ export function TelaDeEntregasDoEncontro({ tokenDeTrabalho, aulaId, aoVoltar }: 
             return (
               <li key={chave} className="cg-entrega-do-encontro">
                 <p>
-                  <strong>{pendencia.guerreiro_nick}</strong> ({pendencia.guerreiro_avatar}) —{" "}
-                  {pendencia.trilha_nome} — {pendencia.missao_titulo}
+                  <Avatar avatar={pendencia.guerreiro_avatar} tamanho={32} />{" "}
+                  <strong>{pendencia.guerreiro_nick}</strong> — {pendencia.trilha_nome} —{" "}
+                  {pendencia.missao_titulo}
                 </p>
                 <p>
                   {pendencia.quantidade} {pendencia.tipo_de_recurso_unidade} de{" "}

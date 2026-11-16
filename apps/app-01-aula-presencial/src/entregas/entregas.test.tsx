@@ -122,11 +122,27 @@ describe("a fila do encontro na App 01 (RF-09-75, RF-09-76)", () => {
 
     const item = await screen.findByText(/zeferina/i);
     const linha = item.closest("li") as HTMLElement;
-    expect(linha.textContent).toContain("onca");
+    expect(linha.querySelector("svg")).not.toBeNull();
     expect(linha.textContent).toContain("Território Vivo");
     expect(linha.textContent).toContain("Mapear a praça");
     expect(linha.textContent).toContain("Kit de robótica");
     expect(linha.textContent).toContain("1.00");
+  });
+
+  it("o avatar é desenhado, e o objeto dele não aparece como texto", async () => {
+    const avatarEmTexto = JSON.stringify({
+      formaDeTratamento: "guerreira",
+      avatar: { v: 1, fundo: "acao-100", tom: "t5", cabelo: "black-power" },
+    });
+    vi.spyOn(entregasApi, "listarEntregasPendentesDoEncontro").mockResolvedValue([
+      { ...PENDENCIA, guerreiro_avatar: avatarEmTexto },
+    ]);
+    renderizarTela();
+
+    const item = await screen.findByText(/zeferina/i);
+    const linha = item.closest("li") as HTMLElement;
+    expect(linha.querySelector("svg")).not.toBeNull();
+    expect(document.body.textContent).not.toMatch(/formaDeTratamento|black-power/);
   });
 
   it("não apresenta valor em moedas nem em reais", async () => {
