@@ -129,9 +129,9 @@ motor:
 - **Uma etiqueta por trilha basta.** Etiquetar missão a missão continua possível e é
   **opcional em qualquer ciclo** — só vale a pena quando a missão toca objetivo diferente do
   da trilha. Sem etiqueta própria, a missão responde pela da trilha.
-- **Opcional no Ciclo 01, obrigatória a partir do Ciclo 02.** No primeiro ciclo o template
-  sugere e a trilha publica sem ela; do Ciclo 02 em diante, **trilha sem etiqueta não
-  publica** — cobertura pela metade não sustenta número diante de edital.
+- **Opcional no Ciclo 01, obrigatória a partir do Ciclo 02.** No primeiro ciclo a trilha
+  publica sem ela; do Ciclo 02 em diante, **trilha sem etiqueta não publica** — cobertura pela
+  metade não sustenta número diante de edital.
 - **Sobe por agregação** — trilha, poder, comunidade e ciclo —, sem lançamento manual. É assim
   que a cobertura cresce sozinha à medida que novos Mestres e poderes entram.
 - O **desafio de coleta** herda a etiqueta da missão que o criou ou, na falta dela, a da
@@ -169,8 +169,8 @@ Seis regras fecham o modelo:
   mais recente.
 - **Repetir para fixar.** A retomada traz de volta o que já foi cumprido, na cadência que o
   Mestre declara — o mesmo vocabulário do desafio de coleta. Ela pontua **uma vez por
-  agendamento**; refazer por conta própria não rende ponto novo. O _template_ de missão sugere
-  como padrão **três retomadas, em 2, 7 e 21 dias** contados do desbloqueio: intervalos
+  agendamento**; refazer por conta própria não rende ponto novo. O campo da cadência abre com
+  o padrão de **três retomadas, em 2, 7 e 21 dias** contados do desbloqueio: intervalos
   crescentes, com a primeira ainda perto da aprendizagem. É sugestão — o Mestre declara a sua.
 - **A análise da produção é hipótese, não resultado.** A plataforma lê o que o Guerreiro(a)
   escreveu ou falou e devolve retorno **sempre construtivo**, apontando o caminho em vez do

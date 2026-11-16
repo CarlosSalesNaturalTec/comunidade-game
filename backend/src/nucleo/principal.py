@@ -68,7 +68,6 @@ from .resultados.rotas import roteador as roteador_de_resultados
 from .selos_do_apoiador.rotas import roteador as roteador_de_selos_do_apoiador
 from .sessoes.rotas import roteador as roteador_de_sessoes
 from .solicitacoes_do_responsavel.rotas import roteador as roteador_de_solicitacoes_do_responsavel
-from .template_de_missao.rotas import roteador as roteador_de_template_de_missao
 from .termos.rotas import roteador as roteador_de_termos
 from .transparencia.rotas import roteador as roteador_de_transparencia
 from .trilhas.rotas import roteador as roteador_de_trilhas
@@ -248,7 +247,6 @@ incluir_roteador_de_dados(app, roteador_de_pontuacao)
 incluir_roteador_de_dados(app, roteador_de_solicitacoes_do_responsavel)
 incluir_roteador_de_dados(app, roteador_de_desafios_extras)
 incluir_roteador_de_dados(app, roteador_de_efetividade_do_apoio)
-incluir_roteador_de_dados(app, roteador_de_template_de_missao)
 incluir_roteador_de_dados(app, roteador_de_producoes)
 incluir_roteador_de_dados(app, roteador_de_assistente)
 incluir_roteador_de_dados(app, roteador_de_vinculo_do_guerreiro)

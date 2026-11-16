@@ -31,7 +31,6 @@ class PoderSaida(BaseModel):
     vigencia: VigenciaDoPoder
     papel: PapelDoPoder | None
     ativo: bool
-    tecnico: bool
 
 
 def _saida(poder: Poder) -> PoderSaida:
@@ -43,7 +42,6 @@ def _saida(poder: Poder) -> PoderSaida:
         vigencia=poder.vigencia,
         papel=poder.papel,
         ativo=poder.ativo,
-        tecnico=poder.tecnico,
     )
 
 
@@ -55,7 +53,6 @@ class CadastrarPoderEntrada(BaseModel):
     natureza: NaturezaDoPoder
     vigencia: VigenciaDoPoder = VigenciaDoPoder.vigente
     papel: PapelDoPoder | None = None
-    tecnico: bool = False
 
 
 @roteador.post("/poderes", status_code=201)
@@ -75,7 +72,6 @@ def cadastrar_poder_rota(
         natureza=entrada.natureza,
         vigencia=entrada.vigencia,
         papel=entrada.papel,
-        tecnico=entrada.tecnico,
     )
     sessao_bd.commit()
     return _saida(poder)
@@ -122,7 +118,6 @@ class AlterarPoderEntrada(BaseModel):
     nome: str | None = None
     descricao: str | None = None
     vigencia: VigenciaDoPoder | None = None
-    tecnico: bool | None = None
 
 
 @roteador.put("/poderes/{id_do_poder}")
@@ -144,7 +139,6 @@ def alterar_poder_rota(
         nome=entrada.nome,
         descricao=entrada.descricao,
         vigencia=entrada.vigencia,
-        tecnico=entrada.tecnico,
     )
     sessao_bd.commit()
     return _saida(poder)

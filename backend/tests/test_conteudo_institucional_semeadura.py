@@ -44,7 +44,7 @@ def test_a_nota_declara_construcao_atendimento_e_ausencia_de_perfilamento(sessao
     nota = ler_conteudo_institucional(sessao)[0].texto.split("## Licenças")[0]
 
     assert "Claude" in nota
-    assert "Gemini" in nota and "DeepSeek" in nota
+    assert "Gemini" in nota and "DeepSeek" not in nota
     assert "não faz perfil da criança" in nota
     assert "bloco Licenças" in nota
 

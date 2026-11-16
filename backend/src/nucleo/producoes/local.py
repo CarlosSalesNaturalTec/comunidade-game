@@ -9,7 +9,7 @@ _DEVOLUTIVA_FIXA = (
 class ProducaoDaMissaoLocal(PortaDaProducaoDaMissao):
     """Adaptador padrão fora de produção (design — Migration Plan): devolve
     o eco do texto e uma devolutiva fixa, sem chamar rede nem exigir
-    credencial — o mesmo precedente de `template_de_missao.local`."""
+    credencial."""
 
     def ler(
         self, *, forma: str, texto: str | None, arquivo: bytes | None, producao_esperada: str

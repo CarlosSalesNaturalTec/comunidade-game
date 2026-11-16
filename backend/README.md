@@ -50,14 +50,11 @@ Com valor padrão, ajustados em produção:
   segredo. Em produção **não há queda para disco** — o disco do Cloud Run é efêmero e perderia
   o envio no deploy seguinte —, então sem ela o serviço **não fica pronto**, e o Cloud Run
   mantém a revisão anterior servindo.
-O modelo é escolhido **por funcionalidade**, não por provedor único (documento 03 §1.12):
-o que é só texto vai para o DeepSeek, o que lê imagem segue no Gemini. Cada provedor tem sua
-dupla, e em ambas a **chave vem do Secret Manager** e o **modelo vem do deploy** — nome de
-modelo não é segredo, e guardá-lo no Secret Manager faria uma troca custar edição de segredo
-em vez de uma linha de diff.
+O modelo é escolhido **por funcionalidade** (documento 03 §1.12), e no Ciclo 01 as duas
+portas de IA usam o Gemini. A **chave vem do Secret Manager** e o **modelo vem do deploy** —
+nome de modelo não é segredo, e guardá-lo no Secret Manager faria uma troca custar edição de
+segredo em vez de uma linha de diff.
 
-- `CG_DEEPSEEK_CHAVE_DE_API` e `CG_DEEPSEEK_MODELO` — o **template da missão** (App 09), que
-  manda só texto. Padrão do modelo: `deepseek-v4-flash`.
 - `CG_GEMINI_CHAVE_DE_API` e `CG_GEMINI_MODELO` — a **leitura da produção** (Apps 01 e 05) e o
   **assistente de trilhas** (App 01), que leem imagem e áudio. Padrão: `gemini-2.5-flash`.
 
@@ -126,8 +123,7 @@ Pré-requisito: projeto do Google Cloud com faturamento — `comunidade-game-506
    precisam estar na lista, como no `VITE_URL_DO_NUCLEO` dos workflows de frontend.
 
 3. **Secret Manager** — um segredo por variável sem valor padrão, mais
-   `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO`, `CG_GEMINI_CHAVE_DE_API` e
-   `CG_DEEPSEEK_CHAVE_DE_API` (segredo `cg-deepseek-api-key`). Um segredo
+   `CG_BIOMETRIA_CHAVE_DE_CIFRAGEM`, `CG_DSN_BANCO` e `CG_GEMINI_CHAVE_DE_API`. Um segredo
    por variável, nomeado com o nome dela em minúsculas e hifens: `CG_DSN_BANCO` →
    `cg-dsn-banco`.
 
@@ -322,7 +318,6 @@ credencial nunca aparece — vai no cabeçalho, nunca na URL.
 | ------------------------------------------ | ------------------------------------------------------------------------ |
 | nenhuma linha, com a tela acionada         | o serviço não chegou ao adaptador de nuvem — confira `CG_AMBIENTE=producao` |
 | `Chave de API do Gemini ausente`           | `CG_GEMINI_CHAVE_DE_API` não chegou ao contêiner — confira o mapeamento em `GCP_SECRETOS_CG` |
-| `Chave de API do DeepSeek ausente`         | idem para `CG_DEEPSEEK_CHAVE_DE_API` |
 | `HTTP 400` ou `404` no log                 | o modelo declarado não existe, ou não está disponível para esta conta   |
 | `HTTP 403`                                 | chave restrita a outra API, ou API desabilitada no projeto               |
 | `HTTP 429`                                 | limite de taxa **ou** crédito esgotado — o corpo no log separa os dois   |

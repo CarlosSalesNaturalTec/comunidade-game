@@ -80,10 +80,9 @@
     a anterior segue no ar por **180 dias** contados da abertura da seguinte — parâmetro
     declarado na implantação, como o prazo de apresentação da URL da chave (§8).
 12. **Modelos de IA do Ciclo 01: escolhidos por funcionalidade.** Não há provedor único —
-    cada funcionalidade usa o modelo que dá conta do que ela pede, pelo menor custo. O que é
-    **só texto** vai para o **DeepSeek**; o que exige **leitura de imagem** segue no **Google
-    Gemini** (documento 09). O custo de todos entra no livro-razão como recurso de _cloud_. O
-    consumo é por **endpoint global**, em qualquer provedor: no Ciclo 01 a região de
+    cada funcionalidade usa o modelo que dá conta do que ela pede, pelo menor custo. Hoje todas
+    usam o **Google Gemini** (documento 09). O custo entra no livro-razão como recurso de
+    _cloud_. O consumo é por **endpoint global**, em qualquer provedor: no Ciclo 01 a região de
     processamento não é escolhida, e a revisão fica para o Ciclo 02 (documento 09). A
     **biometria facial do App 01 não usa modelo de linguagem** e é resolvida no próprio
     aparelho (§3.3). A **transcrição da fala** segue o mesmo caminho: acontece no **navegador**,
@@ -680,8 +679,8 @@ despublicar com motivo, exatamente como faz com as trilhas.
 **Cota e custo no Ciclo 01.** Não há teto de uso: a demanda e o custo são observados ao longo
 do ciclo para dimensionar o ciclo seguinte. O consumo entra no livro-razão como recurso de
 _cloud_, **aportado por absorção pelo Admin e Mestre fundador**, em _pay-as-you-go_ nos
-provedores usados: o _free tier_ do Gemini deixou de existir para conta nova, e é o que levou
-o texto para o DeepSeek (§1.12, documento 09).
+provedores usados: o _free tier_ do Gemini deixou de existir para conta nova (§1.12,
+documento 09).
 
 ### 7.1 Personalização por IA
 
@@ -822,7 +821,7 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   dados, ao recibo de doação (documento 04), ao assunto institucional e à conduta, e **nunca
   alcança um Guerreiro(a)**. O endereço sai como texto, sem link. A **nota de transparência
   sobre IA** vive **dentro de "Quem somos"**, e não em seção própria: declara que a plataforma
-  é construída com Claude e atende as pessoas com Gemini e DeepSeek (documento 01), que a IA
+  é construída com Claude e atende as pessoas com Gemini (documento 01), que a IA
   **reescreve conteúdo do corpus do Mestre para crianças e não as perfila**, e remete ao bloco
   "Licenças", que fecha "Quem somos", quanto ao que é gerado com auxílio de IA. É para ela que
   aponta a etiqueta do texto reescrito nas Apps 01 e 05 (§7.1).
@@ -963,7 +962,6 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
 | Função                    | O que o Mestre faz                                                                                                                       |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | **Autoria de trilhas**    | Cria trilhas, missões, conteúdos, bibliografia de apoio, **atividades da missão**, quizzes e desafios — inclusive o de coleta            |
-| **Template de missão**    | Cadastra o tópico que quer ensinar e recebe a **estrutura da missão** e o que ainda falta nela, conforme o modelo do documento 11        |
 | **Prova de habilidade**   | Publica os artefatos que comprovam sua habilidade, além de currículo, portfólio e redes sociais                                          |
 | **Minhas atividades**     | Acompanha as suas turmas e lança resultados, presenças e méritos das atividades que propôs                                               |
 | **Validação pedagógica**  | Valida os desafios extras que os Apoiadores propõem para as suas trilhas, antes da aprovação do Admin                                    |
@@ -985,10 +983,6 @@ ensina: o que o Mestre cria e o que ele conduz nas suas atividades.
   Guerreiro(a) —, aprovações privativas de Admin e painéis gerais continuam na App 03.
 - **Nenhum modelo ou fluxo pressupõe habilidade técnica de TI**: o Mestre pode ser de humanas,
   artes, esportes ou cultura.
-- **A IA da autoria monta estrutura, não escreve conteúdo.** A partir do tópico cadastrado ela
-  propõe o esqueleto da missão e o checklist do que falta — que tipo de exercício cabe ali, se
-  há produção do Guerreiro(a), se a retomada está declarada. **O conteúdo é escrito pelo
-  Mestre**, que segue sendo o autor creditado na licença CC BY-SA.
 - **A trilha publicada vai ao ar sem aprovação prévia.** A curadoria é posterior: o Admin
   audita por amostragem e pode despublicar, do mesmo modo como audita a coleta.
 - **A ferramenta recusa publicar trilha sem missão de sondagem, sem desafio de coleta e sem

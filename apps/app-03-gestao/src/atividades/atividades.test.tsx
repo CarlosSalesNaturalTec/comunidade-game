@@ -60,7 +60,6 @@ const PODER = {
   natureza: "de_guerreiro" as const,
   vigencia: "vigente" as const,
   papel: null,
-  tecnico: false,
   ativo: true,
 };
 

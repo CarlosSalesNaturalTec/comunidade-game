@@ -785,7 +785,48 @@ describe("aula do encontro na atividade (RF-09-69, RF-09-73)", () => {
   });
 });
 
-describe("cadência de retomada da missão (RF-09-83, RF-09-101)", () => {
+describe("cadência de retomada da missão (RF-09-83, RF-09-101, RF-09-116)", () => {
+  it("a missão sem cadência abre o campo com 2, 7 e 21 dias, sem gravar nada", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao({ cadencia_de_retomada: null })] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+    const declarar = vi.spyOn(trilhasApi, "declararCadenciaDeRetomada");
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Cadência de retomada"));
+
+    expect(screen.getByLabelText(/cadência de retomada/i)).toHaveValue("2, 7, 21");
+    expect(screen.getByText(/sem retomada declarada/i)).toBeInTheDocument();
+    expect(declarar).not.toHaveBeenCalled();
+  });
+
+  it("a cadência gravada prevalece sobre a sugestão", async () => {
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+      trilha({ missoes: [missao({ cadencia_de_retomada: [3, 10] })] }),
+    ]);
+    vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({
+      itens: [],
+      proximo_cursor: null,
+    });
+
+    render(<TelaDeAutoria />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByText("Robô Educa"));
+    await usuario.click(screen.getByRole("button", { name: /abrir/i }));
+    await usuario.click(await screen.findByText("Cadência de retomada"));
+
+    expect(screen.getByLabelText(/cadência de retomada/i)).toHaveValue("3, 10");
+  });
+
   it("Mestre declara a cadência e a tela a apresenta junto da missão", async () => {
     configurarSessao();
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
@@ -805,6 +846,7 @@ describe("cadência de retomada da missão (RF-09-83, RF-09-101)", () => {
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
     await usuario.click(await screen.findByText("Cadência de retomada"));
 
+    await usuario.clear(screen.getByLabelText(/cadência de retomada/i));
     await usuario.type(screen.getByLabelText(/cadência de retomada/i), "2, 7, 21");
     await usuario.click(screen.getByRole("button", { name: /declarar cadência/i }));
 
@@ -830,6 +872,7 @@ describe("cadência de retomada da missão (RF-09-83, RF-09-101)", () => {
     await usuario.click(screen.getByRole("button", { name: /abrir/i }));
     await usuario.click(await screen.findByText("Cadência de retomada"));
 
+    await usuario.clear(screen.getByLabelText(/cadência de retomada/i));
     await usuario.type(screen.getByLabelText(/cadência de retomada/i), "2, 7, 21");
     await usuario.click(screen.getByRole("button", { name: /declarar cadência/i }));
 
@@ -2945,7 +2988,7 @@ describe("pré-visualização da missão (RF-09-25)", () => {
 });
 
 describe("ordem dos blocos da missão (RF-09-25)", () => {
-  it("os blocos seguem template, conteúdo, bibliografia, cadência, atividades, desbloqueio, recompensa, coleta e ODS, com a pré-visualização por último", async () => {
+  it("os blocos seguem conteúdo, bibliografia, cadência, atividades, desbloqueio, recompensa, coleta e ODS, com a pré-visualização por último", async () => {
     configurarSessao();
     vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
       trilha({ missoes: [missao()] }),
@@ -2959,7 +3002,6 @@ describe("ordem dos blocos da missão (RF-09-25)", () => {
     await abrirMissao();
 
     const ORDEM_ESPERADA = [
-      "Template da missão",
       "Conteúdo",
       "Bibliografia",
       "Cadência de retomada",

@@ -426,7 +426,7 @@ Não é experimento controlado — é observação declarada, e o PRD não prome
 | A personalização vira invariante da documentação                               | 99 §6, item 22 | —                                           |
 | A chave do responsável não alcança a tela coletiva do App 01                   | 03 §7.1        | Personalização por IA no aparelho da equipe |
 | Etiqueta visível no início do bloco reescrito, com link para a nota da vitrine | 03 §§7.1, 8    | Nota de transparência sobre IA na vitrine   |
-| Padrão de retomada sugerido pelo _template_: 2, 7 e 21 dias                    | 11 §2.2        | Cadência padrão da revisão espaçada         |
+| Padrão de retomada sugerido no campo da cadência: 2, 7 e 21 dias               | 11 §2.2        | Cadência padrão da revisão espaçada         |
 
 A decisão de não perfilar tem uma consequência que este PRD assume por inteiro: **não existe
 histórico de recomendações**. A App 07 mostra a recomendação vigente, recalculada na leitura.

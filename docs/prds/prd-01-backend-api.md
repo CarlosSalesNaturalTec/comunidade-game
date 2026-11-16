@@ -309,7 +309,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RN-01-44` | A equipe da trilha é uma por trilha percorrida e, homologada pelo Mestre, não recebe nem perde integrante                                                                                                       | 15         | 02 §5       |
 | `RN-01-52` | O motivo da ocorrência de conduta é apagado ao fim do ciclo em que ocorreu; o lançamento negativo permanece, com valor, data e autor                                                                            | —          | 03 §12.2    |
 | `RN-01-53` | A credencial de dispositivo é o próprio registro do aparelho, e entre as ativas há uma por par de identificador e série                                                                                         | —          | 03 §1.1     |
-| `RN-01-54` | O papel do poder, e também a marca de técnico, são declarados no catálogo, nunca deduzidos do nome; a coleta credita o poder marcado como do Território                                                         | —          | 02 §2       |
+| `RN-01-54` | O papel do poder é declarado no catálogo, nunca deduzido do nome; a coleta credita o poder marcado como do Território                                                                                           | —          | 02 §2       |
 | `RN-01-60` | A mídia da criação original só é servida ao creditado, ao Mestre autor da trilha e ao Admin; criação sem mídia responde 404                                                                                     | —          | 02 §4       |
 | `RN-01-61` | A transcrição da fala continua gravada, e é sobre ela que a devolutiva se faz; o áudio guardado nunca a substitui                                                                                               | —          | 03 §1.12    |
 | `RN-01-62` | A mídia da produção da missão nunca tem rota pública: a produção não é item de acervo, porque não passa por aprovação                                                                                           | —          | 02 §4       |
@@ -339,7 +339,6 @@ Sessao              Conteudo
                     BibliografiaDaMissao
                     Culminancia
                     RecompensaDeMarco
-                    SugestaoDeEstrutura
                     ProducaoDaMissao
                     EtiquetaODS
                     InscricaoNaTrilha
@@ -381,7 +380,7 @@ Sessao              Conteudo
 | `SolicitacaoDeParticipacao` | nome ou razão social, e-mail, WhatsApp, pretensão, apresentação, instituição e links opcionais, nick pretendido (só na pretensão de Apoiador, reservado por 7 dias), perfil declarado — pessoa física ou jurídica, só na pretensão de Apoiador —, aporte declarado (necessidade, valor sugerido ou livre), comprovante anexado, situação, prazo, quem avaliou, parecer, data |
 | `SugestaoOuProposta`        | autor e persona, alvo (atividade, trilha ou plataforma), texto — a transcrição, quando o registro veio em áudio —, situação (recebida, em avaliação, adotada, não adotada), prazo, quem avaliou, motivo do retorno em linguagem simples e data do desfecho                                                                                                                   |
 | `Apoiador`                  | identidade, avatar (próprio a partir de 10 moedas acumuladas; padrão do projeto abaixo do piso), nick opcional — do pré-cadastro, quando há um —, único em toda a plataforma, artefatos comprobatórios, Poder Sustentador derivado dos aportes homologados                                                                                                                   |
-| `Poder`                     | nome, descrição, natureza (de Guerreiro(a) ou derivado do aporte), vigência, papel opcional e a marca de técnico — as duas últimas declaradas por Admin, nunca deduzidas do nome (`RF-01-62`, `RN-01-54`, documento 02 §2)                                                                                                                                                   |
+| `Poder`                     | nome, descrição, natureza (de Guerreiro(a) ou derivado do aporte), vigência e papel opcional — este declarado por Admin, nunca deduzido do nome (`RF-01-62`, `RN-01-54`, documento 02 §2)                                                                                                                                                                                    |
 | `Auditoria`                 | autor, papel, ação, entidade afetada, data e hora, origem                                                                                                                                                                                                                                                                                                                    |
 
 A `Aula/Agenda` carrega **comunidade, ponto de apoio, data, horário inicial e final**, os
@@ -405,7 +404,7 @@ sustento dirigido ao adulto, esta é a unidade de progressão da trilha do Guerr
 convivem no domínio e nunca se substituem. O **nível de sustento é derivado** das missões
 concluídas, como o Poder Sustentador é derivado dos aportes; nenhum dos dois é armazenado.
 
-`Conteudo`, `BibliografiaDaMissao`, `Culminancia`, `RecompensaDeMarco` e `SugestaoDeEstrutura`
+`Conteudo`, `BibliografiaDaMissao`, `Culminancia` e `RecompensaDeMarco`
 entram pela autoria de trilha e têm os
 atributos definidos no PRD-09. A `Culminancia` é o que torna verificável a regra de que toda
 trilha termina em criação original: sem ela, a trilha não é publicável.

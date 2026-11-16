@@ -225,30 +225,6 @@ em qualquer situação da trilha. (`RF-09-69`, `RF-09-70`, `RF-09-127`, `RF-09-1
 - **THEN** a linha a apresenta como "Em equipe com familiar" e "On-line assíncrona", e não como
   `em_equipe_com_familiar / on_line_assincrona`
 
-### Requirement: O Mestre declara a cadência de retomada da missão
-
-A App 09 SHALL permitir ao Mestre autor declarar a **cadência de retomada** de uma missão e
-SHALL permitir deixá-la **sem retomada**. A cadência declarada é sempre a do Mestre: a de 2, 7 e
-21 dias que o _template_ de missão propõe é **sugestão**, apresentada já preenchida no campo e
-alterável à vontade, e NEVER SHALL ser gravada sem ele confirmar. (`RF-09-83`, `RF-09-116`,
-`RF-09-101`)
-
-#### Scenario: Mestre declara a cadência
-
-- **WHEN** o Mestre autor declara a cadência de retomada de uma missão dele
-- **THEN** a aplicação a grava na missão e a apresenta junto dela
-
-#### Scenario: Missão sem retomada é aceita
-
-- **WHEN** o Mestre autor deixa a missão sem cadência de retomada
-- **THEN** a aplicação a aceita, e a missão fica sem retomada declarada
-
-#### Scenario: A sugestão do template vem preenchida e alterável
-
-- **WHEN** o Mestre autor recebe a estrutura sugerida de uma missão
-- **THEN** a cadência de 2, 7 e 21 dias aparece preenchida como proposta, e ele a altera ou a
-  descarta antes de qualquer gravação
-
 ### Requirement: A autoria não exige do Mestre conhecimento técnico
 
 A App 09 NEVER SHALL exigir do Mestre escrever código, HTML ou configuração técnica em campo
@@ -1916,81 +1892,6 @@ exclusão ou exportação de dado. (`RF-09-68`, `RN-09-18`, `RN-09-19`, PRD-09 �
 - **THEN** não lhe é oferecida escrita, exclusão nem exportação de dado, e o pedido de direitos
   é declarado como caminho da App 07
 
-### Requirement: O Mestre cadastra o tópico e recebe a estrutura sugerida da missão
-
-A App 09 SHALL oferecer, na missão de que o Mestre é autor, um campo de **texto corrente** para
-ele cadastrar o **tópico que quer ensinar**, e SHALL apresentar a **estrutura sugerida** que o
-núcleo devolve: as atividades propostas, com modalidade e formato, a produção que cada uma pede,
-o desafio de desbloqueio, a retomada sugerida e a etiqueta ODS proposta.
-
-O campo NEVER SHALL pedir formato, marcação, palavra-chave nem qualquer instrução técnica: o
-Mestre escreve como falaria. Não vindo a sugestão do núcleo, a aplicação SHALL dizer em
-linguagem simples que ela não veio e SHALL manter aberto todo o caminho de escrever a missão à
-mão. (`RF-09-85`, `RF-09-91`, `RF-09-95`, `RF-09-116`, `RN-09-16`, PRD-09 §10)
-
-#### Scenario: O Mestre escreve o tópico como falaria
-
-- **WHEN** o Mestre autor abre o template de uma missão dele
-- **THEN** encontra um campo de texto corrente para o tópico, sem pedido de formato, marcação ou
-  palavra-chave
-
-#### Scenario: A estrutura sugerida é apresentada
-
-- **WHEN** o Mestre autor envia o tópico
-- **THEN** a aplicação apresenta as atividades propostas, a retomada sugerida e a etiqueta ODS
-  proposta
-
-#### Scenario: Sugestão que não veio não trava a autoria
-
-- **WHEN** o núcleo não consegue devolver a sugestão
-- **THEN** a aplicação diz em linguagem simples que ela não veio, sem código de erro, e o Mestre
-  segue escrevendo a missão à mão
-
-### Requirement: A App 09 mostra as lacunas e não grava nada sem o Mestre confirmar
-
-A App 09 SHALL apresentar as **lacunas** da missão em linguagem simples — sem atividade,
-atividade sem produção do Guerreiro(a), retomada não declarada e, em trilha de poder técnico,
-missão sem atividade desplugada — e SHALL permitir ao Mestre **aceitar, recusar ou alterar** cada
-sugestão, uma a uma.
-
-Nenhuma sugestão SHALL ser gravada na trilha sem o Mestre confirmar, e a aplicação NEVER SHALL
-apresentar como já gravado o que ainda é proposta. O que ele aceita ou altera SHALL ser gravado
-pelas mesmas telas e rotas de autoria que já existem, com as mesmas recusas. A App 09 NEVER
-SHALL escrever o **conteúdo** da missão a partir da sugestão: o conteúdo é escrito pelo Mestre,
-autor creditado. (`RF-09-86`, `RF-09-87`, `RF-09-89`, `RN-09-33`, PRD-09 §12)
-
-#### Scenario: As lacunas aparecem em linguagem simples
-
-- **WHEN** a missão está sem atividade e sem retomada declarada
-- **THEN** a aplicação diz que falta ao menos uma atividade e que a retomada não foi declarada,
-  sem jargão e sem código de erro
-
-#### Scenario: A sugestão fica distinta do que já está gravado
-
-- **WHEN** a aplicação apresenta a estrutura sugerida
-- **THEN** cada item vem marcado como proposta, distinto do que já está gravado na missão
-
-#### Scenario: O Mestre aceita uma sugestão por vez
-
-- **WHEN** o Mestre autor aceita uma das atividades sugeridas
-- **THEN** só ela é gravada, pelo mesmo caminho de criação de atividade, e as demais seguem como
-  proposta
-
-#### Scenario: O Mestre altera antes de gravar
-
-- **WHEN** o Mestre autor altera o texto de uma sugestão e a aceita
-- **THEN** o que a aplicação grava é o texto dele
-
-#### Scenario: A recusa não muda a missão
-
-- **WHEN** o Mestre autor recusa a estrutura sugerida
-- **THEN** nada é gravado e a missão permanece exatamente como estava
-
-#### Scenario: O template não escreve o conteúdo
-
-- **WHEN** o Mestre autor aceita tudo o que foi sugerido
-- **THEN** o conteúdo da missão continua vazio até que ele o escreva
-
 ### Requirement: O Mestre declara a recompensa que o desbloqueio da missão libera
 
 A App 09 SHALL permitir ao **Mestre autor** declarar, junto da missão, que o **desbloqueio** dela
@@ -2093,34 +1994,6 @@ trilha de origem NEVER SHALL ser apresentada como alterada pela duplicação. (`
 
 - **WHEN** a duplicação termina
 - **THEN** a trilha de origem continua na lista com a mesma situação e o mesmo autor
-
-### Requirement: Os blocos da missão seguem a ordem em que o Mestre a escreve
-
-A App 09 SHALL apresentar os blocos de declaração de cada missão nesta ordem: **template da
-missão**, **conteúdo**, **bibliografia**, **cadência de retomada**, **atividades**, **desafio
-de desbloqueio**, **recompensa pelo desbloqueio**, **desafios de coleta** e **ODS da missão**.
-A **pré-visualização** da missão SHALL fechar o conjunto, depois de todos eles.
-
-A ordem não cria, remove nem altera nenhuma declaração: ela arranja os blocos que
-`RF-09-85`, `RF-09-14`, `RF-09-21`, `RF-09-83`, `RF-09-69`, `RF-09-26`, `RF-09-84`, `RF-09-27`
-e `RF-09-98` já exigem, com a pré-visualização de `RF-09-25` fechando. A sequência é decisão do
-fundador de 2026-09-09, registrada no recorte da fatia 17 do `openspec/cronograma-de-fatias.md`.
-
-#### Scenario: A missão abre pelo template e fecha pela pré-visualização
-
-- **WHEN** o Mestre autor abre uma missão da sua trilha
-- **THEN** o primeiro bloco é o template da missão, o último é o ODS da missão, e a
-  pré-visualização vem depois de todos
-
-#### Scenario: A condição vem antes do que ela paga
-
-- **WHEN** o Mestre autor percorre os blocos da missão
-- **THEN** o desafio de desbloqueio aparece antes da recompensa pelo desbloqueio
-
-#### Scenario: Conteúdo e bibliografia ficam juntos
-
-- **WHEN** o Mestre autor percorre os blocos da missão
-- **THEN** a bibliografia vem imediatamente depois do conteúdo
 
 ### Requirement: O Mestre cadastra e troca o próprio PIN de confirmação na App 09
 
@@ -2777,3 +2650,55 @@ paginação do núcleo. (`RF-09-144`, documento 15 §9, invariante 24)
 
 - **WHEN** o núcleo responde 403 à leitura do histórico
 - **THEN** a App 09 mostra a causa que o núcleo declarou, sem disfarçá-la de lista vazia
+
+### Requirement: O Mestre declara a cadência de retomada, com 2, 7 e 21 dias sugeridos
+
+A App 09 SHALL permitir ao Mestre autor declarar a **cadência de retomada** de uma missão ou
+deixá-la **sem retomada**. Na missão sem cadência gravada, o campo SHALL abrir **preenchido com
+2, 7 e 21 dias** como **sugestão**, alterável à vontade e NEVER gravada sem ele confirmar; a
+missão com cadência gravada SHALL abrir com a dela. (`RF-09-83`, `RF-09-116`, `RF-09-101`)
+
+#### Scenario: Mestre declara a cadência
+
+- **WHEN** o Mestre autor declara a cadência de retomada de uma missão dele
+- **THEN** a aplicação a grava na missão e a apresenta junto dela
+
+#### Scenario: Missão sem retomada é aceita
+
+- **WHEN** o Mestre autor deixa a missão sem cadência de retomada
+- **THEN** a aplicação a aceita, e a missão fica sem retomada declarada
+
+#### Scenario: A sugestão vem preenchida e alterável
+
+- **WHEN** o Mestre autor abre o bloco de cadência de uma missão sem cadência gravada
+- **THEN** o campo aparece preenchido com 2, 7 e 21 dias, a missão continua sem retomada
+  declarada, e ele altera, apaga ou confirma o valor antes de qualquer gravação
+
+#### Scenario: A cadência gravada prevalece sobre a sugestão
+
+- **WHEN** o Mestre autor abre o bloco de cadência de uma missão que já tem cadência gravada
+- **THEN** o campo traz a cadência gravada, e não a de 2, 7 e 21 dias
+
+### Requirement: Os blocos da missão começam pelo conteúdo e fecham pela pré-visualização
+
+A App 09 SHALL apresentar os blocos de cada missão nesta ordem: **conteúdo**, **bibliografia**,
+**cadência de retomada**, **atividades**, **desafio de desbloqueio**, **recompensa pelo
+desbloqueio**, **desafios de coleta** e **ODS da missão**, com a **pré-visualização** depois de
+todos — a ordem da fatia 17, sem o template. (`RF-09-14`, `RF-09-21`, `RF-09-83`,
+`RF-09-69`, `RF-09-26`, `RF-09-84`, `RF-09-27`, `RF-09-98`, `RF-09-25`)
+
+#### Scenario: A missão abre pelo conteúdo e fecha pela pré-visualização
+
+- **WHEN** o Mestre autor abre uma missão da sua trilha
+- **THEN** o primeiro bloco é o conteúdo, o último é o ODS da missão, a pré-visualização vem
+  depois de todos, e não há bloco de template da missão
+
+#### Scenario: A condição vem antes do que ela paga
+
+- **WHEN** o Mestre autor percorre os blocos da missão
+- **THEN** o desafio de desbloqueio aparece antes da recompensa pelo desbloqueio
+
+#### Scenario: Conteúdo e bibliografia ficam juntos
+
+- **WHEN** o Mestre autor percorre os blocos da missão
+- **THEN** a bibliografia vem imediatamente depois do conteúdo
