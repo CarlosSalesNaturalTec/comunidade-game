@@ -149,7 +149,7 @@ NOTA_SOBRE_IA = (
     "Para construir a plataforma — o código e os documentos —, usamos os modelos Claude 5 e "
     "Sonnet 5, da Anthropic.\n\n"
     "Para atender as pessoas na tela — Guerreiros, Guerreiras, Mestres e Apoiadores —, usamos "
-    "modelos de terceiros: hoje o Gemini, do Google, e o DeepSeek. Quem constrói não é quem "
+    "modelos de terceiros: hoje o Gemini, do Google. Quem constrói não é quem "
     "responde a uma criança.\n\n"
     "A IA reescreve o conteúdo que o Mestre cadastrou, para a criança entender melhor, dentro "
     "da conversa do momento. Ela não faz perfil da criança: nada é adivinhado nem guardado "

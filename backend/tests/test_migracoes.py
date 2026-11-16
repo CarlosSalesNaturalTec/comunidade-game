@@ -311,3 +311,19 @@ def test_historico_de_pontuacao_abre_cada_conta_com_o_saldo_anterior(banco_vazio
     finally:
         motor.dispose()
         obter_configuracao.cache_clear()
+
+
+def test_a_remocao_do_template_apaga_a_tabela_e_a_marca_de_tecnico(banco_vazio, monkeypatch):
+    """Decisão do fundador de 2026-11-16: o template da missão sai, e com ele a
+    tabela das sugestões e a coluna `poder.tecnico` (`RF-01-62`, `RN-01-54`)."""
+    configuracao = _configuracao_do_alembic(banco_vazio, monkeypatch)
+    command.upgrade(configuracao, "head")
+
+    motor = sa.create_engine(banco_vazio)
+    try:
+        inspetor = sa.inspect(motor)
+        assert "sugestao_de_estrutura" not in inspetor.get_table_names()
+        assert "tecnico" not in {coluna["name"] for coluna in inspetor.get_columns("poder")}
+    finally:
+        motor.dispose()
+        obter_configuracao.cache_clear()

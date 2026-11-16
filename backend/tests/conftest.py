@@ -348,7 +348,6 @@ def app(sessao, configuracao):
     from nucleo.solicitacoes_do_responsavel.rotas import (
         roteador as roteador_de_solicitacoes_do_responsavel,
     )
-    from nucleo.template_de_missao.rotas import roteador as roteador_de_template_de_missao
     from nucleo.termos.rotas import roteador as roteador_de_termos
     from nucleo.transparencia.rotas import roteador as roteador_de_transparencia
     from nucleo.trilhas.rotas import roteador as roteador_de_trilhas
@@ -411,7 +410,6 @@ def app(sessao, configuracao):
     incluir_roteador_de_dados(aplicacao, roteador_de_solicitacoes_do_responsavel)
     incluir_roteador_de_dados(aplicacao, roteador_de_desafios_extras)
     incluir_roteador_de_dados(aplicacao, roteador_de_efetividade_do_apoio)
-    incluir_roteador_de_dados(aplicacao, roteador_de_template_de_missao)
     incluir_roteador_de_dados(aplicacao, roteador_de_producoes)
     incluir_roteador_de_dados(aplicacao, roteador_de_assistente)
     incluir_roteador_de_dados(aplicacao, roteador_de_vinculo_do_guerreiro)
@@ -818,7 +816,6 @@ def criar_poder(sessao):
         vigencia: VigenciaDoPoder = VigenciaDoPoder.vigente,
         ativo: bool = True,
         papel: PapelDoPoder | None = None,
-        tecnico: bool = False,
     ) -> Poder:
         poder = Poder(
             nome=nome,
@@ -827,7 +824,6 @@ def criar_poder(sessao):
             vigencia=vigencia,
             papel=papel,
             ativo=ativo,
-            tecnico=tecnico,
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )

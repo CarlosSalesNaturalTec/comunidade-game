@@ -231,7 +231,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10, 03                 |
 | Chave de aplicação e Área do Desenvolvedor  | 03 §§1, 8 + 14 §3         | PRD-03, 01, 02, 12                 |
 | Distribuição da trilha no ciclo             | 11 §2.4 + 10 §5           | PRD-09, 02                         |
-| Modelo de missão e template de autoria      | 11 §2.2 + 03 §11          | PRD-09, 05, 04, 01                 |
+| Modelo de missão                            | 11 §2.2 + 03 §11          | PRD-09, 05, 04, 01                 |
 | Produção do Guerreiro(a) e devolutiva       | 11 §2.2 + 03 §§4, 7       | PRD-05, 04, 09, 01                 |
 | Sugestões e propostas de evolução           | 03 §§7, 9, 10, 11 + 13 §5 | PRD-01, 02, 05, 09, 13, 14         |
 | Apoio às atividades escolares               | 03 §7                     | PRD-05, 09, 01                     |
@@ -427,8 +427,8 @@ comparação que a lê são do PRD-01 (`RF-01-73`, `RN-01-56`); quem mede e grav
 Pontos de Apoio. É dependência de entidade, no mesmo desenho acima: as duas telas entram depois
 de o núcleo gravar a medição.
 
-O PRD-09 passou a aplicar também o documento 04: o custo de _cloud_ do upload e do _template_
-entra por fatura, e não por medição no ato. O ato de **encerrar o ciclo** é do PRD-02, não do
+O PRD-09 passou a aplicar também o documento 04: o custo de _cloud_ do upload entra
+por fatura, e não por medição no ato. O ato de **encerrar o ciclo** é do PRD-02, não do
 PRD-09 — quem encerra é Admin, na gestão —, embora as duas consequências dele alcancem a
 ocorrência de conduta lançada pelo Mestre.
 

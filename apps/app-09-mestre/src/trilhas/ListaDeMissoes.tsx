@@ -25,7 +25,6 @@ import { EtiquetasOds } from "./EtiquetasOds";
 import { FormularioDeDesafioDeColeta, ROTULO_DO_NIVEL } from "./FormularioDeDesafioDeColeta";
 import { FormularioDeMissao } from "./FormularioDeMissao";
 import { PreVisualizacaoDaMissao } from "./PreVisualizacaoDaMissao";
-import { TemplateDaMissao } from "./TemplateDaMissao";
 
 interface Props {
   idDaTrilha: string;
@@ -295,13 +294,6 @@ export function ListaDeMissoes({
           />
         )}
         <MarcaDeGravacao instante={gravadoEm[`${missao.id}:missao`] ?? null} />
-
-        <BlocoRecolhivel
-          titulo="Template da missão"
-          resumo="Sugestão de estrutura por IA para esta missão."
-        >
-          <TemplateDaMissao missao={missao} onAtualizada={onAtualizarMissao} />
-        </BlocoRecolhivel>
 
         <BlocoRecolhivel titulo="Conteúdo" resumo={resumoDosConteudos(missao)}>
           <BlocoDeConteudo missao={missao} onAtualizada={onAtualizarMissao} />

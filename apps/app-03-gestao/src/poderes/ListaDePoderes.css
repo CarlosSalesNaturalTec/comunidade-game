@@ -35,8 +35,7 @@
 
 .lista-de-poderes__natureza,
 .lista-de-poderes__vigencia,
-.lista-de-poderes__papel,
-.lista-de-poderes__tecnico {
+.lista-de-poderes__papel {
   color: var(--cor-texto-secundario);
 }
 

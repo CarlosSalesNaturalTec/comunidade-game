@@ -27,12 +27,14 @@ def test_admin_cadastra_poder_pela_rota(cliente, criar_chave, criar_persona, cri
     assert corpo["vigencia"] == VigenciaDoPoder.vigente.value
     assert corpo["papel"] == PapelDoPoder.territorio.value
     assert corpo["ativo"] is True
-    assert corpo["tecnico"] is False
+    assert "tecnico" not in corpo
 
 
-def test_admin_cadastra_e_altera_a_marca_de_tecnico_pela_rota(
-    cliente, criar_chave, criar_persona, criar_sessao_de_teste
+def test_a_marca_de_tecnico_nao_e_mais_aceita(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_poder
 ):
+    # Decisão do fundador de 2026-11-16: a marca saiu com o template da missão
+    # (`RF-01-62`, `RN-01-54`). O campo vira desconhecido e cai no 422.
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
     token, _ = criar_sessao_de_teste(admin)
@@ -48,15 +50,13 @@ def test_admin_cadastra_e_altera_a_marca_de_tecnico_pela_rota(
         },
         headers=headers,
     )
-    assert resposta_de_cadastro.status_code == 201
-    assert resposta_de_cadastro.json()["tecnico"] is True
-    id_do_poder = resposta_de_cadastro.json()["id"]
+    assert resposta_de_cadastro.status_code == 422
 
+    poder = criar_poder(admin)
     resposta_de_alteracao = cliente.put(
-        f"/v1/poderes/{id_do_poder}", json={"tecnico": False}, headers=headers
+        f"/v1/poderes/{poder.id}", json={"tecnico": False}, headers=headers
     )
-    assert resposta_de_alteracao.status_code == 200
-    assert resposta_de_alteracao.json()["tecnico"] is False
+    assert resposta_de_alteracao.status_code == 422
 
 
 def test_mestre_recebe_403_ao_cadastrar_alterar_e_desativar_poder(
@@ -159,7 +159,6 @@ def test_listagem_da_gestao_traz_natureza_vigencia_papel_e_ativo(
         nome="Poder do Território",
         papel=PapelDoPoder.territorio,
         vigencia=VigenciaDoPoder.ciclo_futuro,
-        tecnico=True,
     )
     token, _ = criar_sessao_de_teste(admin)
 
@@ -174,7 +173,7 @@ def test_listagem_da_gestao_traz_natureza_vigencia_papel_e_ativo(
     assert item["vigencia"] == VigenciaDoPoder.ciclo_futuro.value
     assert item["papel"] == PapelDoPoder.territorio.value
     assert item["ativo"] is True
-    assert item["tecnico"] is True
+    assert "tecnico" not in item
 
 
 def test_poder_desativado_aparece_na_gestao_e_some_da_vitrine(

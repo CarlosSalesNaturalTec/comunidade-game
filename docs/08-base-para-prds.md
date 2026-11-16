@@ -621,11 +621,8 @@ atividades de cada missão**, com modalidade (individual ou equipe) e formato
 opcional**; **etiqueta ODS da trilha**, com a meta quando o Mestre a souber, sem efeito em
 pontuação — opcional no Ciclo 01 e trava de publicação a partir do Ciclo 02, com a etiqueta
 por missão sempre opcional; **missão de sondagem** abrindo a trilha, como terceira
-trava de publicação;
-**template de missão** que devolve estrutura e checklist de lacunas a partir do tópico
-cadastrado — sem escrever o conteúdo, que é do Mestre; **retomada por revisão espaçada** na
-cadência que o Mestre declarar; **a recompensa de cada marco**, com
-lastro exigido antes da publicação; conteúdo
+trava de publicação; **retomada por revisão espaçada** na cadência que o Mestre declarar;
+**a recompensa de cada marco**, com lastro exigido antes da publicação; conteúdo
 próprio e de terceiros; quiz ou desafio para desbloqueio; **publicação dos artefatos que
 comprovam a habilidade do Mestre**; catálogo inicial de poderes: **IA/Robótica e Poder do
 Território** nesta etapa — Redes, Soft Skills, PNED/BNCC, Rima e Capoeira ficam para ciclo

@@ -55,7 +55,6 @@ export function ListaDePoderes({ poderes, podeGerenciar, aoEditar, aoDesativar }
             {poder.papel && (
               <span className="lista-de-poderes__papel">Papel do Território</span>
             )}
-            {poder.tecnico && <span className="lista-de-poderes__tecnico">Técnico</span>}
           </div>
           <p className="lista-de-poderes__descricao">{poder.descricao}</p>
 

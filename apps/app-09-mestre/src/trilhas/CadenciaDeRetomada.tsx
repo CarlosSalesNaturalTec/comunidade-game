@@ -16,11 +16,17 @@ function analisarDias(texto: string): number[] {
     .filter((numero) => Number.isInteger(numero) && numero > 0);
 }
 
-// A cadência é sempre a que o Mestre declara — a sugestão de 2, 7 e 21 dias
-// é do _template_ de missão, que não é desta fatia (`RF-09-83`, `RF-09-101`).
+// Sugestão aberta no campo da missão sem cadência gravada: três retomadas,
+// em 2, 7 e 21 dias do desbloqueio (documento 11 §2.2, `RF-09-116`).
+export const CADENCIA_SUGERIDA = [2, 7, 21];
+
+// A cadência é sempre a que o Mestre declara: a sugestão só preenche o campo
+// e nada é gravado até ele confirmar (`RF-09-83`, `RF-09-101`, `RF-09-116`).
 export function CadenciaDeRetomada({ missao, onAtualizada }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
-  const [dias, definirDias] = useState(missao.cadencia_de_retomada?.join(", ") ?? "");
+  const [dias, definirDias] = useState(
+    (missao.cadencia_de_retomada ?? CADENCIA_SUGERIDA).join(", "),
+  );
   const [erro, definirErro] = useState<string | null>(null);
   const [enviando, definirEnviando] = useState(false);
   const [gravadoEm, definirGravadoEm] = useState<Date | null>(null);
