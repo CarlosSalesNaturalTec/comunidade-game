@@ -237,6 +237,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RF-02-16`  | Admin cadastra locais do território na hierarquia da comunidade                                                              | essencial  |
 | `RF-02-17`  | Admin consulta os desafios de coleta de trilha publicada, com cadência, vigência e séries ativas                             | desejável  |
 | `RF-02-116` | Admin abre, da lista de Guerreiros e Guerreiras, a ficha de cada um com o histórico de pontuação e os saldos regular e extra | essencial  |
+| `RF-02-117` | Admin vê na ficha do adulto o Poder Sustentador, os aportes homologados e as declarações pendentes                           | essencial  |
 
 ### 6.2 Filas de avaliação
 
@@ -357,6 +358,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RN-02-31` | A missão do Apoiador é publicada por Admin, sempre a partir de uma necessidade de recurso publicada                                                            | 21         | 14 §§5, 11 |
 | `RN-02-32` | No lançamento por equipe, desfecho e produção são da equipe e valem igualmente a cada Guerreiro(a) integrante presente; quem não tem presença na aula é pulado | —          | 11 §4      |
 | `RN-02-33` | É recusado o lançamento de modalidade incoerente com a forma, o de equipe sem nenhum presente e o segundo resultado do mesmo Guerreiro(a) na mesma atividade   | —          | 11 §4      |
+| `RN-02-34` | Na ficha do adulto, o valor de origem em reais sai só ao Admin e sempre ao lado das moedas                                                                     | 16         | 04 §1      |
 | `RN-02-04` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                                                     | 4          | 02 §1      |
 | `RN-02-05` | Sem aula agendada para a data e o horário, o App 01 não opera                                                                                                  | 4          | 02 §1      |
 | `RN-02-06` | O Guerreiro(a) não muda de comunidade no Ciclo 01; a transferência existe no modelo, com data                                                                  | 4          | 02 §1      |
@@ -437,6 +439,7 @@ do que espera, sem rota própria para a fila (`RF-02-101`).
 | GET    | `/v1/responsaveis`                                     | Admin ou Mestre | Lista os responsáveis cadastrados, com os vinculados de cada um                   |
 | GET    | `/v1/aulas/{id}/equipes`                               | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                                  |
 | GET    | `/v1/guerreiros/{id}/historico-de-pontuacao`           | Admin ou Mestre | Histórico de pontuação e saldos do Guerreiro(a) (PRD-01 §9)                       |
+| GET    | `/v1/provedores/{id}/aportes`                          | Admin           | Aportes, Poder Sustentador e declarações pendentes do provedor                    |
 | POST   | `/v1/poderes`                                          | Admin           | Mantém o catálogo de poderes                                                      |
 | GET    | `/v1/aulas/vigentes`                                   | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade             |
 | GET    | `/v1/solicitacoes-de-participacao`                     | Admin           | Fila das solicitações, com aporte declarado e comprovante                         |
@@ -626,6 +629,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | O comprobatório pendente chega à gestão pela listagem de Apoiadores, que leva o `id` e o `publicado`                             | PRD-02 §9          | A fila do comprobatório deriva da listagem de Apoiadores       |
 | Catálogos de tipo editáveis; exclusão só do nunca usado, o usado se desativa (`RF-02-113` a `RF-02-115`)                         | 02 §1, 04 §1       | Os catálogos de tipo não têm edição nem desativação            |
 | Ficha do Guerreiro(a) com histórico de pontuação e saldos (`RF-02-116`)                                                          | 11 §5              | Histórico de pontuação do Guerreiro(a)                         |
+| Aportes na ficha do adulto, com reais só ao Admin (`RF-02-117`, `RN-02-34`)                                                      | 04 §1              | Aportes na ficha do adulto                                     |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.
@@ -697,3 +701,4 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-101`               | 02 §1 (anexação do comprobatório declarado pelo Apoiador)             |
 | `RF-02-102` a `RF-02-105` | 14 §§5, 11 (publicação da missão do Apoiador pela gestão)             |
 | `RF-02-116`               | 11 §5 (histórico de pontuação do Guerreiro(a))                        |
+| `RF-02-117`, `RN-02-34`   | 04 §1 (aportes na ficha do adulto)                                    |

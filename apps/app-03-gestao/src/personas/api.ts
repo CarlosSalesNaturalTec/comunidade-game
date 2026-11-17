@@ -312,3 +312,40 @@ interface ListaDeResponsaveis {
 export function listarResponsaveis(token: string): Promise<ListaDeResponsaveis> {
   return chamarNucleo<ListaDeResponsaveis>("/v1/responsaveis", { token });
 }
+
+// A seção Aportes da ficha do adulto: só o Admin lê, e só aqui o valor de
+// origem em reais sai, sempre ao lado das moedas (`RF-02-117`, `RN-02-34`).
+export interface AporteDoProvedor {
+  id: string;
+  data_do_aporte: string;
+  tipo_de_recurso_nome: string;
+  tipo_de_recurso_unidade: string;
+  quantidade: string;
+  valor_em_moedas: string;
+  valor_de_origem: string | null;
+  ponto_de_apoio_nome: string;
+  forma: string;
+  destinacao: string;
+  tem_comprovante: boolean;
+}
+
+export interface DeclaracaoPendente {
+  id: string;
+  registrado_em: string;
+  valor_declarado: string;
+  origem_da_escolha: string;
+}
+
+export interface AportesDoProvedor {
+  provedor_id: string;
+  poder_sustentador_em_moedas: string;
+  aportes: AporteDoProvedor[];
+  declaracoes_pendentes: DeclaracaoPendente[];
+}
+
+export function lerAportesDoProvedor(
+  provedorId: string,
+  token: string,
+): Promise<AportesDoProvedor> {
+  return chamarNucleo<AportesDoProvedor>(`/v1/provedores/${provedorId}/aportes`, { token });
+}

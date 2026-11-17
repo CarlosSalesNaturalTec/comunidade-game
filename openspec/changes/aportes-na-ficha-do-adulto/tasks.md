@@ -2,7 +2,7 @@
 
 ## 1. Leitura no núcleo
 
-- [ ] 1.1 Em `backend/src/nucleo/poder_sustentador/rotas.py`, criar
+- [x] 1.1 Em `backend/src/nucleo/poder_sustentador/rotas.py`, criar
       `GET /provedores/{provedor_id}/aportes` restrita ao Admin (403 antes de consultar; 404
       indistinto para inexistente, Guerreiro(a) e responsável). A resposta traz os aportes
       homologados, do mais recente ao mais antigo, com nome e unidade do tipo, ponto de
@@ -11,7 +11,7 @@
       declarado e origem da escolha. Nada de comprovante, referência nem dado bancário
       (`RF-02-117`, `RN-02-34`, `RN-07-06`, `RN-07-22`, `RN-14-07`). Verificar: os testes de
       1.2.
-- [ ] 1.2 Criar `backend/tests/test_aportes_do_provedor_rota.py` com os cenários da spec
+- [x] 1.2 Criar `backend/tests/test_aportes_do_provedor_rota.py` com os cenários da spec
       `poder-sustentador`:
       - Admin lê dois aportes em ordem;
       - reais ao Admin;
@@ -27,12 +27,12 @@
 
 ## 2. Ficha do adulto na App 03
 
-- [ ] 2.1 Em `apps/app-03-gestao/src/personas/api.ts`, criar `lerAportesDoProvedor(id, token)`
+- [x] 2.1 Em `apps/app-03-gestao/src/personas/api.ts`, criar `lerAportesDoProvedor(id, token)`
       e os tipos da resposta (`RF-02-117`). Verificar: o tipo compila.
-- [ ] 2.2 Mover `formatarMoedas` e `formatarQuantidade` de `recursos/formatacao.ts` para um
+- [x] 2.2 Mover `formatarMoedas` e `formatarQuantidade` de `recursos/formatacao.ts` para um
       lugar comum dentro da App 03, ou importá-los de lá, sem duplicar (`RF-02-117`).
       Verificar: os testes de Recursos seguem verdes.
-- [ ] 2.3 Em `apps/app-03-gestao/src/personas/FichaDoAdulto.tsx`, criar a seção **Aportes**,
+- [x] 2.3 Em `apps/app-03-gestao/src/personas/FichaDoAdulto.tsx`, criar a seção **Aportes**,
       que busca ao abrir:
       - o Poder Sustentador;
       - a tabela dos homologados em pt-BR, com os reais em BRL ao lado das moedas quando
@@ -43,7 +43,7 @@
 
       Nenhuma ação de baixar, editar, estornar, homologar ou recusar (`RF-02-117`,
       `RN-02-34`, `RN-02-01`). Verificar: os testes de 2.4.
-- [ ] 2.4 Em `apps/app-03-gestao/src/personas/personas.test.tsx`, cobrir os cenários da spec
+- [x] 2.4 Em `apps/app-03-gestao/src/personas/personas.test.tsx`, cobrir os cenários da spec
       `aplicacao-de-gestao`:
       - aporte com moedas e comprovante;
       - reais ao lado das moedas;
@@ -56,13 +56,13 @@
 
 ## 3. Documentação
 
-- [ ] 3.1 Documento 04 §1, "Reais aparecem só onde se paga": acrescentar em uma frase a
+- [x] 3.1 Documento 04 §1, "Reais aparecem só onde se paga": acrescentar em uma frase a
       exceção da ficha do adulto na gestão, só do Admin e sempre ao lado das moedas. No
       documento 99 §6, ajustar o invariante 16 na mesma medida. No documento 09 §1, "Já
       decididos", acrescentar a linha "Aportes na ficha do adulto", com a decisão de
       2026-11-17 (`RN-02-34`). Verificar: o invariante 16 e o documento 04 dizem a mesma
       coisa.
-- [ ] 3.2 Revisar o PRD-02:
+- [x] 3.2 Revisar o PRD-02:
       - `RF-02-117` na §6.1;
       - `RN-02-34` na §7;
       - a rota na tabela da §9;

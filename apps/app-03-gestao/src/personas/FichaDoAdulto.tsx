@@ -1,5 +1,6 @@
 import { Botao, EstadoDaLista } from "comum/react";
 import { useState } from "react";
+import { AportesDoAdulto } from "./AportesDoAdulto";
 import type { AdultoDaLista } from "./api";
 import { FormularioDeNick } from "./FormularioDeNick";
 
@@ -87,6 +88,12 @@ export function FichaDoAdulto({ adulto, onNickGravado }: Props) {
               ))}
             </ul>
           )}
+        </dd>
+      </div>
+      <div>
+        <dt>Aportes</dt>
+        <dd>
+          <AportesDoAdulto provedorId={adulto.id} />
         </dd>
       </div>
     </dl>

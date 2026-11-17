@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Annotated
 
@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from ..aportes.modelo import Aporte
+from ..aportes.modelo import Aporte, AporteDeclarado, SituacaoDaDeclaracao
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..erros import NaoEncontrado, PermissaoNegada
@@ -120,4 +120,112 @@ def meus_aportes(
             sessao_bd, provedor_id=contexto.persona_id
         ),
         aportes=saida,
+    )
+
+
+class AporteDoProvedorSaida(BaseModel):
+    id: uuid.UUID
+    data_do_aporte: date
+    tipo_de_recurso_nome: str
+    tipo_de_recurso_unidade: str
+    quantidade: Decimal
+    valor_em_moedas: Decimal
+    valor_de_origem: Decimal | None
+    ponto_de_apoio_nome: str
+    forma: str
+    destinacao: str
+    tem_comprovante: bool
+
+
+class DeclaracaoPendenteSaida(BaseModel):
+    id: uuid.UUID
+    registrado_em: datetime
+    valor_declarado: Decimal
+    origem_da_escolha: str
+
+
+class AportesDoProvedorSaida(BaseModel):
+    provedor_id: uuid.UUID
+    poder_sustentador_em_moedas: Decimal
+    aportes: list[AporteDoProvedorSaida]
+    declaracoes_pendentes: list[DeclaracaoPendenteSaida]
+
+
+@roteador.get("/provedores/{provedor_id}/aportes")
+def aportes_do_provedor(
+    provedor_id: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> AportesDoProvedorSaida:
+    """Restrita ao Admin: a seção Aportes da ficha do adulto na gestão
+    (`RF-02-117`). O papel é conferido antes da existência, para a recusa
+    não revelar ninguém (design — Decisions 2). O valor de origem em reais
+    sai só aqui, ao Admin (`RN-02-34`, PRD-07 §11); o comprovante sai como
+    marca, nunca a referência (`RN-07-22`). A declaração pendente vem à
+    parte e não soma no Poder Sustentador (`RN-14-07`)."""
+    if contexto.papel != Papel.admin:
+        raise PermissaoNegada(mensagem="Só o Admin lê os aportes de um provedor.")
+
+    provedor = sessao_bd.get(Persona, provedor_id)
+    if provedor is None or provedor.papel in _PAPEIS_QUE_NAO_SAO_PROVEDOR:
+        raise NaoEncontrado(mensagem="Provedor não encontrado.")
+
+    aportes = (
+        sessao_bd.query(Aporte)
+        .filter(Aporte.provedor_id == provedor.id)
+        .order_by(Aporte.data_do_aporte.desc(), Aporte.registrado_em.desc())
+        .all()
+    )
+    tipos: dict[uuid.UUID, TipoDeRecurso] = {}
+    pontos_de_apoio: dict[uuid.UUID, PontoDeApoio] = {}
+    saida: list[AporteDoProvedorSaida] = []
+    for aporte in aportes:
+        if aporte.tipo_de_recurso_id not in tipos:
+            tipos[aporte.tipo_de_recurso_id] = sessao_bd.get(
+                TipoDeRecurso, aporte.tipo_de_recurso_id
+            )
+        if aporte.ponto_de_apoio_id not in pontos_de_apoio:
+            pontos_de_apoio[aporte.ponto_de_apoio_id] = sessao_bd.get(
+                PontoDeApoio, aporte.ponto_de_apoio_id
+            )
+        tipo = tipos[aporte.tipo_de_recurso_id]
+        saida.append(
+            AporteDoProvedorSaida(
+                id=aporte.id,
+                data_do_aporte=aporte.data_do_aporte,
+                tipo_de_recurso_nome=tipo.nome,
+                tipo_de_recurso_unidade=tipo.unidade,
+                quantidade=aporte.quantidade,
+                valor_em_moedas=aporte.valor_em_moedas,
+                valor_de_origem=aporte.valor_de_origem,
+                ponto_de_apoio_nome=pontos_de_apoio[aporte.ponto_de_apoio_id].nome,
+                forma=aporte.forma.value,
+                destinacao=aporte.destinacao.value,
+                tem_comprovante=aporte.comprovante_referencia is not None,
+            )
+        )
+
+    pendentes = (
+        sessao_bd.query(AporteDeclarado)
+        .filter(
+            AporteDeclarado.provedor_id == provedor.id,
+            AporteDeclarado.situacao == SituacaoDaDeclaracao.pendente,
+        )
+        .order_by(AporteDeclarado.registrado_em.desc())
+        .all()
+    )
+
+    return AportesDoProvedorSaida(
+        provedor_id=provedor.id,
+        poder_sustentador_em_moedas=poder_sustentador_de(sessao_bd, provedor_id=provedor.id),
+        aportes=saida,
+        declaracoes_pendentes=[
+            DeclaracaoPendenteSaida(
+                id=declaracao.id,
+                registrado_em=declaracao.registrado_em,
+                valor_declarado=declaracao.valor_declarado,
+                origem_da_escolha=declaracao.origem_da_escolha.value,
+            )
+            for declaracao in pendentes
+        ],
     )
