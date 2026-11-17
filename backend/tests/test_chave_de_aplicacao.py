@@ -225,3 +225,42 @@ def test_chave_de_um_ambiente_nao_abre_o_outro(sessao):
     )
     assert vigentes_dev == len(APLICACOES_DO_PROJETO)
     assert vigentes_producao == len(APLICACOES_DO_PROJETO)
+
+
+def test_semear_homologacao_converge_oito_chaves_sem_duplicar(sessao):
+    """`RF-01-54`: o terceiro ambiente recebe a sua chave por aplicação, e a
+    segunda semeadura não reemite (change `ambiente-de-homologacao`)."""
+    primeira = semear_ambiente(sessao, "homologacao")
+    assert set(primeira.keys()) == set(APLICACOES_DO_PROJETO)
+    assert all(chave.startswith("cg_homologacao_") for chave in primeira.values())
+
+    assert semear_ambiente(sessao, "homologacao") == {}
+    vigentes = (
+        sessao.query(ChaveDeAplicacao)
+        .filter_by(ambiente="homologacao", situacao=SituacaoDaChave.vigente)
+        .count()
+    )
+    assert vigentes == len(APLICACOES_DO_PROJETO)
+
+
+def test_chave_de_homologacao_nao_abre_producao(cliente, criar_chave, sobrescrever_configuracao):
+    sobrescrever_configuracao(ambiente="producao")
+    chave_de_homologacao, _ = criar_chave(ambiente="homologacao")
+
+    resposta = cliente.get("/v1/publica", headers={"X-Chave-Aplicacao": chave_de_homologacao})
+
+    assert resposta.status_code == 401
+    assert resposta.json()["codigo"] == "chave_invalida"
+
+
+def test_chave_de_producao_nao_abre_homologacao(cliente, criar_chave, sobrescrever_configuracao):
+    sobrescrever_configuracao(ambiente="homologacao")
+    chave_de_producao, _ = criar_chave(ambiente="producao")
+    chave_de_homologacao, _ = criar_chave(ambiente="homologacao", aplicacao="app-03-gestao")
+
+    recusada = cliente.get("/v1/publica", headers={"X-Chave-Aplicacao": chave_de_producao})
+    aceita = cliente.get("/v1/publica", headers={"X-Chave-Aplicacao": chave_de_homologacao})
+
+    assert recusada.status_code == 401
+    assert recusada.json()["codigo"] == "chave_invalida"
+    assert aceita.status_code == 200

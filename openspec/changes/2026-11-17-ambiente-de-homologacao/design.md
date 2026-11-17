@@ -63,11 +63,11 @@ com as origens `cg-hml-*` acrescentadas.
 
 ### 4. Esteiras: _environments_ do GitHub e um workflow de promoção
 
-Os _environments_ `homologacao` e `producao` guardam **os mesmos nomes** de segredo e de
-variável com valores diferentes: os `APPNN_CHAVE_DE_APLICACAO`, `GCP_SECRETOS_CG`, e as
-variáveis `CG_AMBIENTE`, `SERVICO`, `JOB_MIGRACAO`, `CONTA_DE_EXECUCAO`, `BUCKET`,
-`SUFIXO_DO_ALVO`, `URL_DO_NUCLEO` e as `URL_DA_APP_NN` da vitrine. Assim cada workflow tem um
-job só, parametrizado pelo _environment_:
+Os _environments_ `homologacao` e `producao` guardam **os mesmos nomes** de segredo com
+valores diferentes: os `APPNN_CHAVE_DE_APLICACAO` e o `GCP_SECRETOS_CG`. Os nomes de serviço,
+Job, bucket, conta de execução, alvo do Hosting e as URLs `*.web.app` **derivam do ambiente**
+num passo do próprio workflow — sufixo `-homologacao` e prefixo `cg-hml` —, sem variável a
+cadastrar e esquecer. Assim cada workflow tem um job só:
 
 - **Gatilhos de cada `*-deploy.yml`:** `push` em `main` nos caminhos de hoje → homologação;
   `workflow_dispatch` → homologação, para republicar; `workflow_call` com as entradas

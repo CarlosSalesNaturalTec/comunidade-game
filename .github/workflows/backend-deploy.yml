@@ -1,60 +1,90 @@
 name: Backend Deploy
 
+# Três caminhos (change `ambiente-de-homologacao`, design — decisão 4):
+# `push` em `main` e `workflow_dispatch` publicam na **homologação**, com
+# build da imagem; `workflow_call` com `ambiente: producao` é o que o
+# `producao-deploy.yml` usa, e ali **não há build** — produção recebe a
+# imagem que a homologação já publicou.
 on:
   push:
     branches: [main]
-    # Markdown de fora: editar um README não pode redeployar produção. O
+    # Markdown de fora: editar um README não pode redeployar o núcleo. O
     # próprio workflow entra: editá-lo muda como o núcleo é publicado, e sem
     # ele a correção de uma esteira não se prova no merge que a traz. O
-    # `firebase.json` fica fora, ao contrário das esteiras das Apps: dez alvos
-    # compartilham o arquivo, e ali uma mudança em alvo alheio dispararia
-    # build de imagem, migração e deploy do núcleo.
+    # `firebase.json` fica fora, ao contrário das esteiras das Apps: vários
+    # alvos compartilham o arquivo, e ali uma mudança em alvo alheio
+    # dispararia build de imagem, migração e deploy do núcleo.
     paths:
       - "backend/**"
       - "!backend/**.md"
       - ".github/workflows/backend-deploy.yml"
   workflow_dispatch:
-
-concurrency:
-  group: backend-deploy-${{ github.ref }}
-  cancel-in-progress: false
+  workflow_call:
+    inputs:
+      ambiente:
+        type: string
+        required: true
+      versao:
+        type: string
+        required: true
 
 permissions:
   contents: read
   id-token: write
 
 env:
-  # Declarado aqui, e não no Secret Manager: `CG_AMBIENTE` não é segredo, e o
-  # padrão do código é `desenvolvimento`. Sem declarar, o serviço conferia as
-  # chaves contra o ambiente errado e recusava toda chamada com
-  # `chave_invalida` — a chave semeada é de produção (`RN-01-34`).
-  CG_AMBIENTE: producao
+  AMBIENTE: ${{ inputs.ambiente || 'homologacao' }}
+  VERSAO: ${{ inputs.versao || github.sha }}
   # Também aqui, e não no Secret Manager: nome de modelo não é segredo, e
   # guardá-lo lá faria uma troca de modelo custar edição de segredo em vez de
   # uma linha de diff revisável. A chave, essa sim, vem por `--set-secrets`.
   CG_GEMINI_MODELO: gemini-2.5-flash
-  # Nome de bucket não é segredo — está em toda URL de objeto assinado.
-  # Declarado aqui, trocar de bucket é uma linha de diff revisável.
-  CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE: comunidade-game-armazenamento
   REGIAO: southamerica-east1
   PROJETO_GCP: ${{ secrets.GCP_PROJECT_ID }}
-  SERVICO: nucleo-comunidade-game
   REPOSITORIO_IMAGENS: comunidade-game
-  JOB_MIGRACAO: nucleo-migracao
-  # Conta de execução dedicada: é ela quem lê os segredos e alcança o Cloud
-  # SQL enquanto o contêiner roda. Sem declarar, o Cloud Run usaria a conta de
-  # computação padrão, que tem `roles/editor` no projeto inteiro — permissão
-  # demais para o núcleo que guarda dado biométrico de criança.
-  CONTA_DE_EXECUCAO: nucleo-runtime@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
 jobs:
   deploy:
     name: Build, migração e deploy no Cloud Run
     runs-on: ubuntu-latest
-    environment: producao
+    # Os segredos de mesmo nome (`GCP_SECRETOS_CG`) têm valor próprio em cada
+    # _environment_ do GitHub.
+    environment: ${{ inputs.ambiente || 'homologacao' }}
+    concurrency:
+      group: backend-deploy-${{ inputs.ambiente || 'homologacao' }}
+      cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSAO }}
+          # Histórico inteiro: em produção é ele que diz qual imagem a
+          # homologação publicou para esta versão.
+          fetch-depth: 0
+
+      # Os nomes dos recursos derivam do ambiente, com sufixo na homologação
+      # (design — decisão 2). `CG_AMBIENTE` não é segredo, e sem declará-lo o
+      # serviço conferia as chaves contra o ambiente errado e recusava toda
+      # chamada com `chave_invalida` (`RN-01-34`).
+      - name: Nomes dos recursos do ambiente
+        run: |
+          case "$AMBIENTE" in
+            homologacao) SUFIXO="-homologacao" ;;
+            producao) SUFIXO="" ;;
+            *) echo "::error::Ambiente desconhecido: $AMBIENTE"; exit 1 ;;
+          esac
+          {
+            echo "CG_AMBIENTE=$AMBIENTE"
+            echo "SERVICO=nucleo-comunidade-game$SUFIXO"
+            echo "JOB_MIGRACAO=nucleo-migracao$SUFIXO"
+            echo "ALVO_API=api$SUFIXO"
+            # Nome de bucket não é segredo — está em toda URL de objeto assinado.
+            echo "CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE=comunidade-game-armazenamento$SUFIXO"
+            # Conta de execução dedicada por ambiente: é ela quem lê os
+            # segredos e alcança o Cloud SQL. A de homologação não lê nada de
+            # produção, que guarda dado biométrico de criança.
+            echo "CONTA_DE_EXECUCAO=nucleo-runtime$SUFIXO@$PROJETO_GCP.iam.gserviceaccount.com"
+          } >> "$GITHUB_ENV"
 
       - name: Autenticar no Google Cloud (Workload Identity Federation)
         uses: google-github-actions/auth@v2
@@ -68,12 +98,29 @@ jobs:
         run: gcloud auth configure-docker "${{ env.REGIAO }}-docker.pkg.dev" --quiet
 
       - name: Build e push da imagem
+        if: env.AMBIENTE == 'homologacao'
         working-directory: backend
         run: |
-          IMAGEM="${{ env.REGIAO }}-docker.pkg.dev/${{ env.PROJETO_GCP }}/${{ env.REPOSITORIO_IMAGENS }}/nucleo:${{ github.sha }}"
+          IMAGEM="${{ env.REGIAO }}-docker.pkg.dev/${{ env.PROJETO_GCP }}/${{ env.REPOSITORIO_IMAGENS }}/nucleo:${{ env.VERSAO }}"
           docker build -t "$IMAGEM" .
           docker push "$IMAGEM"
           echo "IMAGEM=$IMAGEM" >> "$GITHUB_ENV"
+
+      # Produção não reconstrói: usa a imagem que a homologação publicou no
+      # último merge em `main` que mudou o núcleo até a versão pedida — a
+      # mesma regra de caminho do gatilho `push`. Sem ela, a promoção falha.
+      - name: Localizar a imagem validada na homologação
+        if: env.AMBIENTE == 'producao'
+        run: |
+          ORIGEM=$(git log -1 --first-parent --format=%H "$VERSAO" -- \
+            backend ':(exclude)backend/**.md' .github/workflows/backend-deploy.yml)
+          IMAGEM="${{ env.REGIAO }}-docker.pkg.dev/${{ env.PROJETO_GCP }}/${{ env.REPOSITORIO_IMAGENS }}/nucleo:$ORIGEM"
+          if ! gcloud artifacts docker images describe "$IMAGEM" --quiet >/dev/null 2>&1; then
+            echo "::error::Imagem $IMAGEM não existe. Publique $ORIGEM na homologação antes de promover."
+            exit 1
+          fi
+          echo "IMAGEM=$IMAGEM" >> "$GITHUB_ENV"
+          echo "Núcleo promovido: imagem \`nucleo:$ORIGEM\` (versão pedida \`$VERSAO\`)." >> "$GITHUB_STEP_SUMMARY"
 
       # Migração roda como Job próprio, nunca no entrypoint do serviço: com
       # min-instances=0 o contêiner arranca a cada partida a fria, e migração
@@ -117,8 +164,8 @@ jobs:
             --set-secrets "${{ secrets.GCP_SECRETOS_CG }}" \
             --quiet
 
-      # Quem serve `api.comunidadegame.org` é o alvo `api` do Firebase
-      # Hosting, com `rewrite` para o serviço (design — Decisions, plano B).
+      # Quem serve o núcleo é o alvo `api` do Firebase Hosting — `api-homologacao`
+      # na homologação —, com `rewrite` para o serviço do ambiente.
       # Republicar aqui mantém o _rewrite_ em dia com o serviço.
       - uses: actions/setup-node@v4
         with:
@@ -138,6 +185,6 @@ jobs:
       - name: Publicar o alvo `api` no Firebase Hosting
         run: |
           npx --yes firebase-tools@15.28.1 deploy \
-            --only hosting:api \
+            --only "hosting:${{ env.ALVO_API }}" \
             --project "${{ env.PROJETO_GCP }}" \
             --non-interactive
