@@ -40,9 +40,11 @@ qualquer fato produzido pelo adulto.
    volta. Alternativa descartada: só revogar credencial — a vitrine não teria por onde filtrar.
 7. **Vitrine** filtra `desativada_em IS NULL` na paginação de adultos públicos e na leitura por
    identificador, que responde 404 como a inexistente.
-8. **App 03.** `FichaDoAdulto` ganha modo de edição dos três campos e reaproveita
-   `FormularioDeArtefatos` para incluir, corrigir e remover; as três ações ficam no rodapé da
-   ficha, com confirmação no padrão de `catalogos/AcoesDoTipo.tsx`. `ListaDeAdultos` marca a
+8. **App 03.** `FichaDoAdulto` ganha `EdicaoDoAdulto` (os três campos) e `ArtefatosDoAdulto`
+   (incluir, corrigir e remover, um ato por chamada — `FormularioDeArtefatos` monta a lista
+   inteira do cadastro e não serve a atos avulsos); as três ações ficam em `AcoesDoAdulto`, no
+   rodapé da ficha, com confirmação no padrão de `catalogos/AcoesDoTipo.tsx`. Recusa por uso
+   tem código próprio, `adulto_em_uso`, como `tipo_em_uso`. `ListaDeAdultos` marca a
    linha pelo `ativo` da saída.
 
 ## Risks / Trade-offs

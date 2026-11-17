@@ -31,9 +31,13 @@ export function ListaDeAdultos({ adultos, onAbrirFicha }: Props) {
       rotulo: "Nome",
       cabecalhoDeLinha: true,
       renderizar: (adulto) => (
-        <Botao variante="secundaria" onClick={() => onAbrirFicha(adulto)}>
-          {adulto.nome}
-        </Botao>
+        <>
+          <Botao variante="secundaria" onClick={() => onAbrirFicha(adulto)}>
+            {adulto.nome}
+          </Botao>
+          {/* O desativado segue na lista, marcado (`RF-02-119`). */}
+          {!adulto.ativo && <EstadoDaLista>Desativado</EstadoDaLista>}
+        </>
       ),
     },
     {

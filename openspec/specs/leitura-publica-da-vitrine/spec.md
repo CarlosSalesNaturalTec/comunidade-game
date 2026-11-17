@@ -5,9 +5,7 @@ visitante vê o que a plataforma produz sem se identificar, e nunca se identific
 capacidade cobre as seis rotas de consulta da vitrine, o portão do consentimento de
 divulgação que decide quem aparece nelas e a projeção que garante que nada de pessoal
 atravesse a fronteira do público.
-
 ## Requirements
-
 ### Requirement: A rota de vitrine dispensa credencial de persona, nunca a chave
 
 O núcleo SHALL responder a toda rota sob `/v1/vitrine` **sem token de sessão**, e SHALL exigir
@@ -773,3 +771,21 @@ autorização de divulgação vigente. Registro que não o satisfaça SHALL resp
 
 - **WHEN** um visitante pede a mídia de um registro de customização ainda pendente
 - **THEN** o núcleo responde 404, e nada é servido
+
+### Requirement: Adulto desativado não aparece na vitrine
+
+As leituras públicas de Mestres e de Apoiadores — listagem e leitura por identificador — SHALL
+omitir o adulto **desativado** pela gestão; a leitura por identificador SHALL responder
+como a de identificador inexistente. Reativado, ele volta pelas mesmas regras de antes.
+(`RF-02-119`, `RN-02-35`)
+
+#### Scenario: Desativado some da listagem
+
+- **WHEN** a vitrine lista os Apoiadores e um deles está desativado
+- **THEN** ele não aparece na página, e a paginação não o conta
+
+#### Scenario: Página individual do desativado
+
+- **WHEN** alguém abre a página de um Mestre desativado
+- **THEN** o núcleo responde como a um identificador inexistente
+

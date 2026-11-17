@@ -112,6 +112,7 @@ const MESTRE_COM_ARTEFATO: AdultoDaLista = {
   email: "mestre@example.org",
   whatsapp: "11999990000",
   nick: "MestreDeTal",
+  ativo: true,
   artefatos: [
     {
       id: "artefato-do-cadastro",
@@ -128,6 +129,7 @@ const ADULTO_SEM_NICK: AdultoDaLista = {
   email: "a@example.org",
   whatsapp: null,
   nick: null,
+  ativo: true,
   artefatos: [],
 };
 
@@ -436,9 +438,39 @@ describe("a tabela de Mestres e de Apoiadores", () => {
   });
 });
 
+function renderizarFicha(
+  adulto: AdultoDaLista,
+  opcoes: { podeManter?: boolean; onAlterado?: () => void; onExcluido?: () => void } = {},
+) {
+  return render(
+    <FichaDoAdulto
+      papel="mestre"
+      adulto={adulto}
+      podeManter={opcoes.podeManter ?? false}
+      onNickGravado={vi.fn()}
+      onAlterado={opcoes.onAlterado ?? vi.fn()}
+      onExcluido={opcoes.onExcluido ?? vi.fn()}
+    />,
+  );
+}
+
+const ARTEFATO_EDITADO_PELO_MESTRE: AdultoDaLista = {
+  ...MESTRE_COM_ARTEFATO,
+  artefatos: [
+    {
+      id: "artefato-do-cadastro",
+      rotulo: "Certificado atualizado",
+      endereco: "https://exemplo.org/certificado-novo",
+      publicado: true,
+      rotulo_original: "Certificado de curso",
+      endereco_original: "https://exemplo.org/certificado",
+    },
+  ],
+};
+
 describe("a ficha do adulto", () => {
   it("mostra os artefatos comprobatórios com rótulo e endereço alcançável", () => {
-    render(<FichaDoAdulto adulto={MESTRE_COM_ARTEFATO} onNickGravado={vi.fn()} />);
+    renderizarFicha(MESTRE_COM_ARTEFATO);
 
     const [artefato] = MESTRE_COM_ARTEFATO.artefatos;
     expect(screen.getByText(new RegExp(artefato.rotulo))).toBeInTheDocument();
@@ -449,39 +481,23 @@ describe("a ficha do adulto", () => {
   });
 
   it("adulto sem artefato nenhum mostra a ficha sem lista, e não uma ficha quebrada", () => {
-    render(
-      <FichaDoAdulto
-        adulto={{ ...MESTRE_COM_ARTEFATO, artefatos: [] }}
-        onNickGravado={vi.fn()}
-      />,
-    );
+    renderizarFicha({ ...MESTRE_COM_ARTEFATO, artefatos: [] });
 
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
     expect(screen.getByText(/nenhum artefato registrado/i)).toBeInTheDocument();
   });
 
-  it("não oferece campo algum para alterar nome, e-mail, WhatsApp ou artefato", () => {
-    render(<FichaDoAdulto adulto={MESTRE_COM_ARTEFATO} onNickGravado={vi.fn()} />);
+  it("quem não é Admin vê a ficha de leitura, sem campo nem ação de manutenção", () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    renderizarFicha(MESTRE_COM_ARTEFATO, { podeManter: false });
 
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /editar dados|excluir/i })).toBeNull();
   });
 
   it("marca o artefato de cadastro editado e mostra o original ao lado do vigente", () => {
-    const mestreComArtefatoEditado: AdultoDaLista = {
-      ...MESTRE_COM_ARTEFATO,
-      artefatos: [
-        {
-          id: "artefato-do-cadastro",
-          rotulo: "Certificado atualizado",
-          endereco: "https://exemplo.org/certificado-novo",
-          publicado: true,
-          rotulo_original: "Certificado de curso",
-          endereco_original: "https://exemplo.org/certificado",
-        },
-      ],
-    };
-
-    render(<FichaDoAdulto adulto={mestreComArtefatoEditado} onNickGravado={vi.fn()} />);
+    configurarSessao(SESSAO_DE_ADMIN);
+    renderizarFicha(ARTEFATO_EDITADO_PELO_MESTRE, { podeManter: true });
 
     expect(screen.getByText(/certificado atualizado/i)).toBeInTheDocument();
     expect(screen.getByText(/editado pelo próprio adulto/i)).toBeInTheDocument();
@@ -492,34 +508,129 @@ describe("a ficha do adulto", () => {
   });
 
   it("artefato intocado aparece sem marca e sem valor original", () => {
-    render(<FichaDoAdulto adulto={MESTRE_COM_ARTEFATO} onNickGravado={vi.fn()} />);
+    configurarSessao(SESSAO_DE_ADMIN);
+    renderizarFicha(MESTRE_COM_ARTEFATO, { podeManter: true });
 
     expect(screen.queryByText(/editado pelo próprio adulto/i)).not.toBeInTheDocument();
   });
 
-  it("não oferece editar, restaurar ou remover o artefato editado", () => {
-    const mestreComArtefatoEditado: AdultoDaLista = {
-      ...MESTRE_COM_ARTEFATO,
-      artefatos: [
-        {
-          id: "artefato-do-cadastro",
-          rotulo: "Certificado atualizado",
-          endereco: "https://exemplo.org/certificado-novo",
-          publicado: true,
-          rotulo_original: "Certificado de curso",
-          endereco_original: "https://exemplo.org/certificado",
-        },
-      ],
-    };
+  it("o Admin corrige o WhatsApp e a ficha recebe o valor novo (RF-02-117)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const salvo = { ...MESTRE_COM_ARTEFATO, whatsapp: "71988887777" };
+    const alterar = vi.spyOn(personasApi, "alterarAdulto").mockResolvedValue(salvo);
+    const onAlterado = vi.fn();
+    renderizarFicha(MESTRE_COM_ARTEFATO, { podeManter: true, onAlterado });
+    const usuario = userEvent.setup();
 
-    render(<FichaDoAdulto adulto={mestreComArtefatoEditado} onNickGravado={vi.fn()} />);
+    await usuario.click(screen.getByRole("button", { name: /editar dados/i }));
+    const campo = screen.getByLabelText(/whatsapp/i);
+    await usuario.clear(campo);
+    await usuario.type(campo, "71988887777");
+    await usuario.click(screen.getByRole("button", { name: /^salvar$/i }));
 
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(alterar).toHaveBeenCalledWith(
+      "mestre",
+      MESTRE_COM_ARTEFATO.id,
+      expect.objectContaining({ whatsapp: "71988887777" }),
+      expect.any(String),
+    );
+    await waitFor(() => expect(onAlterado).toHaveBeenCalledWith(salvo));
+  });
+
+  it("a edição não oferece campo de nick, de papel nem de termos", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    renderizarFicha(MESTRE_COM_ARTEFATO, { podeManter: true });
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /editar dados/i }));
+
+    expect(screen.queryByLabelText(/nick/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/papel/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/termo/i)).not.toBeInTheDocument();
+  });
+
+  it("a recusa do último artefato aparece na ficha e o artefato segue listado", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "removerArtefatoDoAdulto").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "O cadastro precisa manter ao menos um artefato comprobatório.",
+        campo: "artefato_id",
+      }),
+    );
+    renderizarFicha(MESTRE_COM_ARTEFATO, { podeManter: true });
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /^remover$/i }));
+
+    expect(await screen.findByText(/ao menos um artefato/i)).toBeInTheDocument();
+    const [artefato] = MESTRE_COM_ARTEFATO.artefatos;
+    expect(screen.getByRole("link", { name: artefato.endereco })).toBeInTheDocument();
+  });
+
+  it("exclusão recusada por uso aponta a desativação (RN-02-34)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "excluirAdulto").mockRejectedValue(
+      new ErroDaApi(422, { codigo: "adulto_em_uso", mensagem: "Em uso.", campo: "id" }),
+    );
+    const onExcluido = vi.fn();
+    renderizarFicha(MESTRE_COM_ARTEFATO, { podeManter: true, onExcluido });
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /^excluir$/i }));
+    await usuario.click(screen.getByRole("button", { name: /confirmar exclusão/i }));
+
+    expect(await screen.findByText(/pode desativá-lo/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^desativar$/i })).toBeInTheDocument();
+    expect(onExcluido).not.toHaveBeenCalled();
+  });
+
+  it("exclusão confirmada fecha a ficha (RF-02-118)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "excluirAdulto").mockResolvedValue(undefined);
+    const onExcluido = vi.fn();
+    renderizarFicha(MESTRE_COM_ARTEFATO, { podeManter: true, onExcluido });
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /^excluir$/i }));
+    await usuario.click(screen.getByRole("button", { name: /confirmar exclusão/i }));
+
+    await waitFor(() => expect(onExcluido).toHaveBeenCalled());
+  });
+
+  it("desativa com confirmação e, desativado, oferece reativar (RF-02-119)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const desativado = { ...MESTRE_COM_ARTEFATO, ativo: false };
+    vi.spyOn(personasApi, "desativarAdulto").mockResolvedValue(desativado);
+    const onAlterado = vi.fn();
+    const { rerender } = renderizarFicha(MESTRE_COM_ARTEFATO, {
+      podeManter: true,
+      onAlterado,
+    });
+    const usuario = userEvent.setup();
+
+    await usuario.click(screen.getByRole("button", { name: /^desativar$/i }));
+    await usuario.click(screen.getByRole("button", { name: /confirmar desativação/i }));
+    await waitFor(() => expect(onAlterado).toHaveBeenCalledWith(desativado));
+
+    rerender(
+      <FichaDoAdulto
+        papel="mestre"
+        adulto={desativado}
+        podeManter
+        onNickGravado={vi.fn()}
+        onAlterado={onAlterado}
+        onExcluido={vi.fn()}
+      />,
+    );
+    expect(screen.getByText(/cadastro desativado/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^reativar$/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^desativar$/i })).not.toBeInTheDocument();
   });
 
   it("oferece gravar o nick que falta, sem sugerir nenhum", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
-    render(<FichaDoAdulto adulto={ADULTO_SEM_NICK} onNickGravado={vi.fn()} />);
+    renderizarFicha(ADULTO_SEM_NICK);
     const usuario = userEvent.setup();
 
     expect(screen.getByText(/sem nick/i)).toBeInTheDocument();
@@ -527,6 +638,19 @@ describe("a ficha do adulto", () => {
 
     expect(screen.getByLabelText(/nick recebido por fora/i)).toHaveValue("");
     expect(screen.queryByText(/sugest/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("a tabela marca o adulto desativado", () => {
+  it("a linha do desativado declara a desativação (RF-02-119)", () => {
+    render(
+      <ListaDeAdultos
+        adultos={[{ ...MESTRE_COM_ARTEFATO, ativo: false }]}
+        onAbrirFicha={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/desativado/i)).toBeInTheDocument();
   });
 });
 

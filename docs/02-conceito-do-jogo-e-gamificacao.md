@@ -49,6 +49,9 @@ conhecimento** — tecnologia, educação, artes, esportes, cultura, ciências h
 o motor do jogo é agnóstico de área. Regras de admissão:
 
 - **Todo Mestre é cadastrado exclusivamente pelos Admins.** Não há autocadastro.
+- **O Admin mantém o cadastro**: altera nome, e-mail, WhatsApp e artefatos, nunca o nick nem o
+  papel. **Exclui só o cadastro nunca usado**; o usado se **desativa** — perde o acesso e sai da
+  vitrine, e o que produziu continua — e pode ser **reativado**.
 - Todo Mestre **tem que ter pelo menos uma habilidade declarada**, e a habilidade é um
   **poder do catálogo** (§2) — não há lista de habilidades à parte.
 - A habilidade precisa estar **comprovada por materiais ou artefatos disponibilizados na
@@ -71,7 +74,8 @@ Pessoas e instituições que financiam ou divulgam o projeto.
 - **Cadastrados exclusivamente pelos Admins**, com o mesmo critério dos Mestres: o apoio
   precisa estar **comprovado por materiais ou artefatos registrados na plataforma** —
   incluindo currículo, portfólio, redes sociais e documentos externos da pessoa ou
-  instituição.
+  instituição. A manutenção, a exclusão e a desativação seguem as dos Mestres; os termos de
+  doação não se editam.
 - **Pré-cadastro na Área do Apoiador**, aberto a quem chega pela vitrine: a pessoa se
   identifica, declara o aporte e anexa o comprovante. Continua sendo **solicitação, não
   cadastro** — quem avalia e cadastra é um Admin.
