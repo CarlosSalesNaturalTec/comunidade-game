@@ -75,9 +75,10 @@ cadastrar e esquecer. Assim cada workflow tem um job só:
 - **`producao-deploy.yml` (novo):** `workflow_dispatch` com a entrada obrigatória `versao`
   (o `sha` validado). Chama o núcleo primeiro e, depois dele, as sete Apps, todas com
   `ambiente: producao` e checkout daquele `sha`.
-- **Núcleo em produção não reconstrói imagem:** usa `nucleo:<versao>` do Artifact Registry e
-  falha se ela não existir — só existe imagem que passou pela homologação. É o que garante a
-  **mesma imagem**.
+- **Núcleo em produção não reconstrói imagem:** usa a imagem do último merge em `main` (por
+  `--first-parent`) que mudou o núcleo até a versão pedida — a mesma regra de caminho do
+  gatilho `push`, porque merge que não toca o núcleo não gera imagem — e falha se ela não
+  existir. Só existe imagem que passou pela homologação: é o que garante a **mesma imagem**.
 - **Apps em produção reconstroem do mesmo `sha`:** a chave e as URLs entram no build pelo
   Vite, então o artefato estático é por ambiente; o código é o mesmo.
 - `concurrency` passa a incluir o ambiente, e o `CG_AMBIENTE` sai do bloco `env` fixo.

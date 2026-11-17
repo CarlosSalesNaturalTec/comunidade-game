@@ -107,10 +107,11 @@ persona. (`RN-01-33`, `RN-01-34`)
 
 O núcleo SHALL emitir, na implantação, uma chave para cada aplicação do próprio projeto **em
 cada ambiente**, marcada com natureza "do projeto" e **sem prazo de apresentação de URL**. São
-oito aplicações e dois ambientes — desenvolvimento e produção —, logo dezesseis chaves. A
-unicidade de uma chave vigente por aplicação e ambiente SHALL valer **apenas para as chaves de
-natureza do projeto**: ela existe para garantir estas dezesseis, e a chave de terceiro se
-identifica pela solicitação que a originou. (`RF-01-54`, `RN-01-51`, documento 03 §§1, 1.13)
+oito aplicações e três ambientes — desenvolvimento, homologação e produção —, logo vinte e
+quatro chaves. A unicidade de uma chave vigente por aplicação e ambiente SHALL valer **apenas
+para as chaves de natureza do projeto**: ela existe para garantir estas vinte e quatro, e a
+chave de terceiro se identifica pela solicitação que a originou. (`RF-01-54`, `RN-01-51`,
+documento 03 §§1, 1.13)
 
 #### Scenario: Cada aplicação do projeto recebe a sua chave no ambiente
 
@@ -128,6 +129,12 @@ identifica pela solicitação que a originou. (`RF-01-54`, `RN-01-51`, documento
 
 - **WHEN** uma chave semeada no ambiente de desenvolvimento é apresentada ao núcleo de produção
 - **THEN** o núcleo de produção responde 401, como faria com uma chave desconhecida
+
+#### Scenario: Chave de homologação não abre produção, nem a de produção abre homologação
+
+- **WHEN** uma chave semeada no ambiente de homologação é apresentada ao núcleo de produção, ou
+  uma de produção ao núcleo de homologação
+- **THEN** o núcleo que a recebe responde 401, como faria com uma chave desconhecida
 
 #### Scenario: Semear duas vezes não duplica a chave
 

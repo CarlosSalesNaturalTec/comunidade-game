@@ -23,7 +23,7 @@
 
 - [x] 3.1 `.github/workflows/backend-deploy.yml`: job único parametrizado pelo _environment_;
       `push`/`workflow_dispatch` publicam na homologação com build da imagem; `workflow_call`
-      com `ambiente` e `versao`, e em produção usa `nucleo:<versao>` sem reconstruir,
+      com `ambiente` e `versao`, e em produção usa a imagem do último merge que mudou o núcleo até `versao`, sem reconstruir,
       falhando se a imagem não existir; publica o alvo `api` com o sufixo do ambiente
       (design — decisão 4).
 - [x] 3.2 Os sete `app-NN-deploy.yml`: mesmos gatilhos da 3.1, checkout de `versao` quando
