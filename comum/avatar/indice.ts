@@ -9,5 +9,6 @@ export {
   lerAvatar,
   regravarAvatar,
   resolverAvatar,
+  sortearAvatar,
   VERSAO_DO_AVATAR,
 } from "./objeto";

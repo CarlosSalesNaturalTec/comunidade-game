@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { configurarAcessoAoNucleo, ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
+import { CAMADAS_DO_AVATAR, tracoDoCatalogo } from "comum/avatar";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
 import type {
@@ -139,7 +140,6 @@ describe("cadastro do Guerreiro(a)", () => {
     await usuario.type(screen.getByLabelText(/^nome$/i), "Zeferina");
     await usuario.type(screen.getByLabelText(/data de nascimento/i), "2015-03-20");
     await usuario.type(screen.getByLabelText(/^nick$/i), "ZeferinaGuerreira");
-    await usuario.type(screen.getByLabelText(/^avatar$/i), "avatar-opaco");
     await usuario.selectOptions(screen.getByLabelText(/^comunidade$/i), COMUNIDADE.id);
     await usuario.selectOptions(
       await screen.findByLabelText(/aula em que se cadastra/i),
@@ -147,7 +147,7 @@ describe("cadastro do Guerreiro(a)", () => {
     );
   }
 
-  it("Admin cadastra o Guerreiro(a) informando os quatro campos", async () => {
+  it("Admin cadastra o Guerreiro(a) sem escolher avatar, e o avatar sai do catálogo", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
     vi.spyOn(personasApi, "cadastrarGuerreiro").mockResolvedValue(GUERREIRO);
     vi.spyOn(agendaApi, "listarAgenda").mockResolvedValue({
@@ -168,6 +168,79 @@ describe("cadastro do Guerreiro(a)", () => {
     await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
 
     await waitFor(() => expect(personasApi.cadastrarGuerreiro).toHaveBeenCalled());
+    const [dados] = vi.mocked(personasApi.cadastrarGuerreiro).mock.calls[0];
+    const enviado = JSON.parse(dados.avatar) as Record<string, string>;
+    for (const camada of CAMADAS_DO_AVATAR) {
+      expect(tracoDoCatalogo(camada.nome, enviado[camada.nome])).not.toBeNull();
+    }
+  });
+
+  it("o formulário não tem campo de avatar, no cadastro nem na edição", () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(agendaApi, "listarAgenda").mockResolvedValue({ itens: [], proximo_cursor: null });
+
+    const { unmount } = render(
+      <FormularioDeGuerreiro
+        comunidades={[COMUNIDADE]}
+        onSalvo={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    expect(screen.queryByLabelText(/avatar/i)).not.toBeInTheDocument();
+    unmount();
+
+    render(
+      <FormularioDeGuerreiro
+        comunidades={[COMUNIDADE]}
+        guerreiroExistente={GUERREIRO}
+        onSalvo={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    expect(screen.queryByLabelText(/avatar/i)).not.toBeInTheDocument();
+  });
+
+  it("a edição reenvia o avatar gravado, sem sortear outro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "editarGuerreiro").mockResolvedValue(GUERREIRO);
+
+    render(
+      <FormularioDeGuerreiro
+        comunidades={[COMUNIDADE]}
+        guerreiroExistente={GUERREIRO}
+        onSalvo={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    const usuario = userEvent.setup();
+    await usuario.clear(screen.getByLabelText(/^nome$/i));
+    await usuario.type(screen.getByLabelText(/^nome$/i), "Zeferina Nova");
+    await usuario.click(screen.getByRole("button", { name: /^salvar$/i }));
+
+    await waitFor(() => expect(personasApi.editarGuerreiro).toHaveBeenCalled());
+    const [, dados] = vi.mocked(personasApi.editarGuerreiro).mock.calls[0];
+    expect(dados.avatar).toBe(GUERREIRO.avatar);
+    expect(dados.nome).toBe("Zeferina Nova");
+  });
+
+  it("Guerreiro(a) sem avatar gravado recebe um sorteado na edição", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "editarGuerreiro").mockResolvedValue(GUERREIRO);
+
+    render(
+      <FormularioDeGuerreiro
+        comunidades={[COMUNIDADE]}
+        guerreiroExistente={{ ...GUERREIRO, avatar: "" }}
+        onSalvo={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    await userEvent.setup().click(screen.getByRole("button", { name: /^salvar$/i }));
+
+    await waitFor(() => expect(personasApi.editarGuerreiro).toHaveBeenCalled());
+    const [, dados] = vi.mocked(personasApi.editarGuerreiro).mock.calls[0];
+    expect(dados.avatar).not.toBe("");
+    expect(JSON.parse(dados.avatar).v).toBe(1);
   });
 
   it("mostra o aviso de coleta do dado do Guerreiro(a), sem bloquear o envio", async () => {
@@ -187,7 +260,7 @@ describe("cadastro do Guerreiro(a)", () => {
     );
 
     expect(
-      screen.getByText(/nome, a data de nascimento, o nick e o avatar do guerreiro/i),
+      screen.getByText(/o nome, a data de nascimento e o nick do guerreiro/i),
     ).toHaveAttribute("role", "status");
 
     const usuario = userEvent.setup();

@@ -16,6 +16,8 @@ import {
   escreverAvatar,
   lerAvatar,
   regravarAvatar,
+  sortearAvatar,
+  VERSAO_DO_AVATAR,
 } from "./objeto";
 
 // As nove camadas do documento 15 §7.1, na ordem de composição.
@@ -347,6 +349,41 @@ describe("a escrita monta o objeto versionado (documento 15 §7.2)", () => {
     expect(escreverAvatar({ cabelo: "inventado" }).cabelo).toBe(
       AVATAR_PADRAO_DO_PROJETO.cabelo,
     );
+  });
+});
+
+describe("o sorteio fica dentro do catálogo fechado (`RF-02-01`, documento 15 §7)", () => {
+  it("o avatar sorteado só tem traços do catálogo, na versão vigente", () => {
+    for (let vez = 0; vez < 50; vez++) {
+      const avatar = sortearAvatar();
+      expect(avatar.v).toBe(VERSAO_DO_AVATAR);
+      for (const camada of CAMADAS_NA_ORDEM) {
+        expect(tracoDoCatalogo(camada, avatar[camada])).not.toBeNull();
+      }
+    }
+  });
+
+  it("todo traço de cada camada pode sair, e não só o padrão", () => {
+    for (const camada of CAMADAS_DO_AVATAR) {
+      const total = camada.tracos.length;
+      const sorteados = new Set(
+        camada.tracos.map((_, indice) => sortearAvatar(() => indice / total)[camada.nome]),
+      );
+      expect(sorteados).toEqual(new Set(camada.tracos.map((traco) => traco.id)));
+    }
+  });
+
+  it("o acaso no limite superior não sai do catálogo", () => {
+    const avatar = sortearAvatar(() => 0.9999999);
+    for (const camada of CAMADAS_DO_AVATAR) {
+      expect(avatar[camada.nome]).toBe(camada.tracos[camada.tracos.length - 1].id);
+    }
+  });
+
+  it("o avatar sorteado volta da gravação como foi sorteado", () => {
+    const avatar = sortearAvatar(() => 0.5);
+    expect(avatar).not.toEqual(AVATAR_PADRAO_DO_PROJETO);
+    expect(lerAvatar(JSON.stringify(avatar))).toEqual(avatar);
   });
 });
 

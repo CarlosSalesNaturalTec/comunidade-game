@@ -225,7 +225,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Produção executiva como aporte por absorção | 04 §1                     | PRD-07, 02                         |
 | Representação visual da comunidade          | 11 §8.3                   | PRD-08, 03                         |
 | Identidade visual das aplicações            | 15                        | PRD-02, 03, 04, 05, 09, 12, 13, 14 |
-| Sistema de avatar do Guerreiro(a)           | 15 §7                     | PRD-04, 05, 03, 12                 |
+| Sistema de avatar do Guerreiro(a)           | 15 §7                     | PRD-02, 04, 05, 03, 12             |
 | Acessibilidade digital (WCAG 2.2 AA)        | 15 §5                     | todos os PRDs de aplicação         |
 | Narração por síntese de fala                | 15 §5.1 + 03 §1.12        | todos os PRDs de aplicação         |
 | Contrato dos jogos                          | 11 §8.4                   | PRD-12, 01, 10, 03                 |

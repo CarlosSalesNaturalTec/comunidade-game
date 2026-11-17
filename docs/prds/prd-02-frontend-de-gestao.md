@@ -210,7 +210,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 
 | ID          | Requisito                                                                                                                    | Prioridade |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-02-01`  | Admin cadastra e edita Guerreiros e Guerreiras, com nome, nascimento, nick e avatar                                          | essencial  |
+| `RF-02-01`  | Admin cadastra e edita Guerreiros e Guerreiras com nome, nascimento e nick; o avatar do cadastro é sorteado                  | essencial  |
 | `RF-02-02`  | Admin cadastra Mestre declarando os links de currículo, portfólio, redes e documentos externos                               | essencial  |
 | `RF-02-03`  | Admin cadastra Apoiador declarando os mesmos links e os termos de doação                                                     | essencial  |
 | `RF-02-04`  | Aplicação recusa o cadastro de Mestre ou Apoiador sem ao menos um artefato comprobatório                                     | essencial  |

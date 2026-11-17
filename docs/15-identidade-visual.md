@@ -283,6 +283,9 @@ características ditas em voz alta por uma criança de 6 anos. Daí as quatro ex
 4. **Sem marca de gênero no traço**: a forma de tratamento é campo próprio, e todo item do
    catálogo é livre para qualquer pessoa.
 
+No **cadastro direto pela gestão** ninguém monta o avatar: ele nasce **sorteado**, um traço do
+catálogo por camada, e o Guerreiro(a) o troca quando quiser (decisão do fundador, 2026-11-17).
+
 ### 7.1 Camadas, na ordem de composição
 
 | #   | Camada        | O que varia                                                                                |
