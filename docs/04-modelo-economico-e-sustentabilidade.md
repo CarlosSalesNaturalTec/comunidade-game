@@ -97,7 +97,9 @@ R$ 10,00**.
   Mudança de escala é decisão declarada, com reconversão, nunca ajuste silencioso.
 - **Reais aparecem só onde se paga.** A tela de aporte mostra o valor em reais, porque é o que
   se transfere, sempre **ao lado do equivalente em moedas**. Em toda exibição de aporte
-  **de alguém** — card, página, ranking — o que sai é a quantidade de moedas.
+  **de alguém** — card, página, ranking — o que sai é a quantidade de moedas. A exceção é a
+  **ficha do adulto na gestão**, só do Admin: ali o valor de origem em reais do aporte sai ao
+  lado das moedas, nunca sozinho.
 
 Por que assim: a plataforma é educativa e seu público inclui crianças e terceiros sem
 familiaridade com custos de operação, custeio e despesas. A moeda dá a **noção visual do

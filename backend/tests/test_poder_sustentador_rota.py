@@ -221,7 +221,15 @@ def test_meus_aportes_traz_o_nome_do_tipo_e_o_destino(
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
     tipo = criar_tipo_de_recurso(admin, nome="Lanche")
     credito = criar_lancamento(admin, tipo, ponto_de_apoio, natureza=NaturezaDoLancamento.credito)
-    criar_aporte(admin, apoiador, tipo, ponto_de_apoio, credito, forma=FormaDeAporte.financeira)
+    criar_aporte(
+        admin,
+        apoiador,
+        tipo,
+        ponto_de_apoio,
+        credito,
+        forma=FormaDeAporte.financeira,
+        valor_de_origem=Decimal("50.00"),
+    )
 
     resposta = cliente.get(
         "/v1/meus-aportes", headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
@@ -231,6 +239,8 @@ def test_meus_aportes_traz_o_nome_do_tipo_e_o_destino(
     aporte_na_saida = resposta.json()["aportes"][0]
     assert aporte_na_saida["tipo_de_recurso_nome"] == "Lanche"
     assert aporte_na_saida["ponto_de_apoio_nome"] == ponto_de_apoio.nome
+    # Os reais seguem só na ficha da gestão (`RN-02-36`, `RN-07-05`).
+    assert "valor_de_origem" not in resposta.text
 
 
 def test_sem_sessao_a_rota_de_meus_aportes_nao_responde(cliente, criar_chave):

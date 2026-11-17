@@ -3,10 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { configurarAcessoAoNucleo, ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { CAMADAS_DO_AVATAR, tracoDoCatalogo } from "comum/avatar";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as agendaApi from "../agenda/api";
 import type {
   AdultoDaLista,
+  AportesDoProvedor,
   GuerreiroDaLista,
   ResponsavelDaLista,
   VinculoCriado,
@@ -438,6 +439,13 @@ describe("a tabela de Mestres e de Apoiadores", () => {
   });
 });
 
+const SEM_APORTES: AportesDoProvedor = {
+  provedor_id: "mestre-1",
+  poder_sustentador_em_moedas: "0.00",
+  aportes: [],
+  declaracoes_pendentes: [],
+};
+
 function renderizarFicha(
   adulto: AdultoDaLista,
   opcoes: { podeManter?: boolean; onAlterado?: () => void; onExcluido?: () => void } = {},
@@ -469,6 +477,11 @@ const ARTEFATO_EDITADO_PELO_MESTRE: AdultoDaLista = {
 };
 
 describe("a ficha do adulto", () => {
+  beforeEach(() => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "lerAportesDoProvedor").mockResolvedValue(SEM_APORTES);
+  });
+
   it("mostra os artefatos comprobatórios com rótulo e endereço alcançável", () => {
     renderizarFicha(MESTRE_COM_ARTEFATO);
 
@@ -1032,5 +1045,117 @@ describe("o quarto responsável é barrado", () => {
     await usuario.click(screen.getByRole("button", { name: /^vincular$/i }));
 
     expect(await screen.findByText(/três responsáveis/i)).toBeInTheDocument();
+  });
+});
+
+describe("os aportes na ficha do adulto", () => {
+  const APORTES: AportesDoProvedor = {
+    provedor_id: "apoiador-1",
+    poder_sustentador_em_moedas: "20.00",
+    aportes: [
+      {
+        id: "aporte-1",
+        data_do_aporte: "2026-11-10",
+        tipo_de_recurso_nome: "Doação em dinheiro",
+        tipo_de_recurso_unidade: "R$",
+        quantidade: "150.00",
+        valor_em_moedas: "15.00",
+        valor_de_origem: "150.00",
+        ponto_de_apoio_nome: "Quilombo",
+        forma: "financeira",
+        destinacao: "lastro",
+        tem_comprovante: true,
+      },
+      {
+        id: "aporte-2",
+        data_do_aporte: "2026-03-01",
+        tipo_de_recurso_nome: "Lanche",
+        tipo_de_recurso_unidade: "unidade",
+        quantidade: "10.00",
+        valor_em_moedas: "5.00",
+        valor_de_origem: null,
+        ponto_de_apoio_nome: "Quilombo",
+        forma: "material",
+        destinacao: "lastro",
+        tem_comprovante: false,
+      },
+    ],
+    declaracoes_pendentes: [
+      {
+        id: "declaracao-1",
+        registrado_em: "2026-11-15T09:00:00-03:00",
+        valor_declarado: "30.00",
+        origem_da_escolha: "valor_livre",
+      },
+    ],
+  };
+
+  beforeEach(() => {
+    configurarSessao(SESSAO_DE_ADMIN);
+  });
+
+  it("mostra o Poder Sustentador e o aporte com moedas e comprovante", async () => {
+    const leitura = vi.spyOn(personasApi, "lerAportesDoProvedor").mockResolvedValue(APORTES);
+    renderizarFicha(MESTRE_COM_ARTEFATO);
+
+    const tabela = await screen.findByRole("table", { name: /aportes homologados/i });
+    expect(leitura).toHaveBeenCalledWith(MESTRE_COM_ARTEFATO.id, SESSAO_DE_ADMIN.token);
+    expect(screen.getByText("20 moedas")).toBeInTheDocument();
+    const linhas = within(tabela).getAllByRole("row");
+    expect(within(linhas[1]).getByText("10/11/2026")).toBeInTheDocument();
+    expect(within(linhas[1]).getByText("150 R$")).toBeInTheDocument();
+    expect(within(linhas[1]).getByText("Com comprovante")).toBeInTheDocument();
+    expect(within(linhas[2]).getByText("Sem comprovante")).toBeInTheDocument();
+  });
+
+  it("mostra os reais sempre ao lado das moedas, e só quando houver", async () => {
+    vi.spyOn(personasApi, "lerAportesDoProvedor").mockResolvedValue(APORTES);
+    renderizarFicha(MESTRE_COM_ARTEFATO);
+
+    const tabela = await screen.findByRole("table", { name: /aportes homologados/i });
+    const [, comReais, semReais] = within(tabela).getAllByRole("row");
+    expect(within(comReais).getByText(/^15 moedas \(R\$\s150,00\)$/)).toBeInTheDocument();
+    expect(within(semReais).getByText("5 moedas")).toBeInTheDocument();
+  });
+
+  it("mostra a declaração pendente à parte, sem ação de homologar ou recusar", async () => {
+    vi.spyOn(personasApi, "lerAportesDoProvedor").mockResolvedValue(APORTES);
+    renderizarFicha(MESTRE_COM_ARTEFATO);
+
+    const lista = await screen.findByRole("list", { name: /declarações pendentes/i });
+    expect(within(lista).getByText(/R\$\s30,00 declarados/)).toBeInTheDocument();
+    expect(within(lista).getByText(/valor livre/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /homolog|recus/i })).not.toBeInTheDocument();
+  });
+
+  it("ficha sem aporte mostra o Poder Sustentador em zero e o aviso", async () => {
+    vi.spyOn(personasApi, "lerAportesDoProvedor").mockResolvedValue(SEM_APORTES);
+    renderizarFicha(MESTRE_COM_ARTEFATO);
+
+    expect(await screen.findByText(/ainda não há aporte/i)).toBeInTheDocument();
+    expect(screen.getByText("0 moedas")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("list", { name: /declarações pendentes/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("a seção não oferece baixar, editar, estornar, homologar nem recusar", async () => {
+    vi.spyOn(personasApi, "lerAportesDoProvedor").mockResolvedValue(APORTES);
+    renderizarFicha({ ...MESTRE_COM_ARTEFATO, nick: "Mestre" });
+
+    const secao = await screen.findByRole("region", { name: "Aportes" });
+    await within(secao).findByRole("table");
+    expect(within(secao).queryByRole("button")).not.toBeInTheDocument();
+    expect(within(secao).queryByRole("link")).not.toBeInTheDocument();
+    expect(within(secao).queryByRole("textbox")).not.toBeInTheDocument();
+  });
+
+  it("avisa quando a leitura falha", async () => {
+    vi.spyOn(personasApi, "lerAportesDoProvedor").mockRejectedValue(new Error("rede"));
+    renderizarFicha(MESTRE_COM_ARTEFATO);
+
+    expect(
+      await screen.findByText(/não foi possível carregar os aportes/i),
+    ).toBeInTheDocument();
   });
 });

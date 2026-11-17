@@ -240,6 +240,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RF-02-117` | Admin altera nome, e-mail, WhatsApp e artefatos de Mestre e Apoiador; nick, papel e termos não                               | essencial  |
 | `RF-02-118` | Admin exclui Mestre ou Apoiador nunca usado; o usado é recusado e aponta a desativação                                       | essencial  |
 | `RF-02-119` | Admin desativa e reativa Mestre ou Apoiador; o desativado não entra e some da vitrine                                        | essencial  |
+| `RF-02-120` | Admin vê na ficha do adulto o Poder Sustentador, os aportes homologados e as declarações pendentes                           | essencial  |
 
 ### 6.2 Filas de avaliação
 
@@ -362,6 +363,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RN-02-33` | É recusado o lançamento de modalidade incoerente com a forma, o de equipe sem nenhum presente e o segundo resultado do mesmo Guerreiro(a) na mesma atividade   | —          | 11 §4      |
 | `RN-02-34` | Só se exclui o adulto que nada referencia além do próprio cadastro: nick, credencial, sessão e artefatos                                                       | —          | 02 §1      |
 | `RN-02-35` | A desativação tira acesso e presença pública e não altera nada do que o adulto produziu                                                                        | —          | 02 §1      |
+| `RN-02-36` | Na ficha do adulto, o valor de origem em reais sai só ao Admin e sempre ao lado das moedas                                                                     | 16         | 04 §1      |
 | `RN-02-04` | Comunidade Virtual é criada apenas por Admin e nasce vazia                                                                                                     | 4          | 02 §1      |
 | `RN-02-05` | Sem aula agendada para a data e o horário, o App 01 não opera                                                                                                  | 4          | 02 §1      |
 | `RN-02-06` | O Guerreiro(a) não muda de comunidade no Ciclo 01; a transferência existe no modelo, com data                                                                  | 4          | 02 §1      |
@@ -446,6 +448,7 @@ do que espera, sem rota própria para a fila (`RF-02-101`).
 | GET    | `/v1/responsaveis`                                     | Admin ou Mestre | Lista os responsáveis cadastrados, com os vinculados de cada um                   |
 | GET    | `/v1/aulas/{id}/equipes`                               | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                                  |
 | GET    | `/v1/guerreiros/{id}/historico-de-pontuacao`           | Admin ou Mestre | Histórico de pontuação e saldos do Guerreiro(a) (PRD-01 §9)                       |
+| GET    | `/v1/provedores/{id}/aportes`                          | Admin           | Aportes, Poder Sustentador e declarações pendentes do provedor                    |
 | POST   | `/v1/poderes`                                          | Admin           | Mantém o catálogo de poderes                                                      |
 | GET    | `/v1/aulas/vigentes`                                   | pública         | Aulas em curso na data e hora, para o App 01 identificar a comunidade             |
 | GET    | `/v1/solicitacoes-de-participacao`                     | Admin           | Fila das solicitações, com aporte declarado e comprovante                         |
@@ -636,6 +639,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Catálogos de tipo editáveis; exclusão só do nunca usado, o usado se desativa (`RF-02-113` a `RF-02-115`)                         | 02 §1, 04 §1       | Os catálogos de tipo não têm edição nem desativação            |
 | Ficha do Guerreiro(a) com histórico de pontuação e saldos (`RF-02-116`)                                                          | 11 §5              | Histórico de pontuação do Guerreiro(a)                         |
 | Mestre e Apoiador editáveis; exclusão só do nunca usado, o usado se desativa (`RF-02-117` a `RF-02-119`)                         | 02 §1              | Edição e exclusão de Mestre e Apoiador                         |
+| Aportes na ficha do adulto, com reais só ao Admin (`RF-02-120`, `RN-02-36`)                                                      | 04 §1              | Aportes na ficha do adulto                                     |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.
@@ -708,3 +712,4 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-101`               | 02 §1 (anexação do comprobatório declarado pelo Apoiador)             |
 | `RF-02-102` a `RF-02-105` | 14 §§5, 11 (publicação da missão do Apoiador pela gestão)             |
 | `RF-02-116`               | 11 §5 (histórico de pontuação do Guerreiro(a))                        |
+| `RF-02-120`, `RN-02-36`   | 04 §1 (aportes na ficha do adulto)                                    |

@@ -1,6 +1,7 @@
 import { Aviso, Botao, EstadoDaLista } from "comum/react";
 import { useState } from "react";
 import { AcoesDoAdulto } from "./AcoesDoAdulto";
+import { AportesDoAdulto } from "./AportesDoAdulto";
 import { ArtefatosDoAdulto } from "./ArtefatosDoAdulto";
 import type { AdultoDaLista, PapelDoAdulto } from "./api";
 import { EdicaoDoAdulto } from "./EdicaoDoAdulto";
@@ -108,6 +109,9 @@ export function FichaDoAdulto({
           ))}
         </ul>
       )}
+
+      <h4>Aportes</h4>
+      <AportesDoAdulto provedorId={adulto.id} />
 
       {podeManter && (
         <AcoesDoAdulto

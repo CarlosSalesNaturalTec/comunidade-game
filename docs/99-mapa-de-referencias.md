@@ -310,7 +310,8 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
     o seu papel na formação da equipe**, e ele vale para o encontro. A gestão não forma nem
     edita composição: o Mestre apenas **homologa a equipe da trilha, na App 01**.
 16. **Aporte aparece publicamente em moedas da plataforma, nunca em reais.** Reais só aparecem
-    na tela onde se paga, sempre ao lado do equivalente em moedas.
+    na tela onde se paga e na ficha do adulto na gestão, só do Admin — sempre ao lado do
+    equivalente em moedas.
 17. **Os dados produzidos pela plataforma são gratuitos.** A vitrine mostra a visão macro e
     agregada, que **para no bairro**; o conjunto na íntegra, sempre anonimizado e podendo
     descer a rua, condomínio, bloco e quadra, vai a pesquisadores e gestores públicos
