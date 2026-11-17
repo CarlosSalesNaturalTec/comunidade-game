@@ -103,14 +103,17 @@
     e roda em **Cloud Run**; o banco é **Cloud SQL para PostgreSQL com PostGIS**, onde ficam
     também as **séries temporais do território**, particionadas por tempo; os arquivos de
     missão vão para o **Cloud Storage**. Tudo na região **`southamerica-east1`** (São Paulo).
-    São **dois ambientes**: **desenvolvimento**, em contêiner local com banco próprio, e
-    **produção**, no Cloud Run. Contêiner e banco são portáteis — outra comunidade replica a
-    plataforma fora do Google Cloud. O custo entra no livro-razão como recurso de _cloud_,
-    **aportado por absorção pelo Admin e Mestre fundador** neste ciclo. Em produção o Cloud Run
-    roda **sem escala horizontal** no Ciclo 01 — no máximo um contêiner de cada vez —, porque o
-    freio das rotas públicas conta em memória (§8) e cada contêiner a mais multiplicaria o
-    limite. Não confundir com o princípio 10: lá "instância única" é uma base para todas as
-    comunidades; aqui é quantos contêineres atendem ao mesmo tempo.
+    São **três ambientes**: **desenvolvimento**, em contêiner local com banco próprio;
+    **homologação**, no Cloud Run, onde todo teste acontece — nunca em produção —, com **base
+    própria na mesma instância do Cloud SQL**, bucket e chaves próprios, **só dados
+    sintéticos** e nenhuma notificação a pessoa real; e **produção**, no Cloud Run, que recebe
+    a **mesma imagem** validada em homologação. Contêiner e banco são portáteis — outra
+    comunidade replica a plataforma fora do Google Cloud. O custo entra no livro-razão como
+    recurso de _cloud_, **aportado por absorção pelo Admin e Mestre fundador** neste ciclo.
+    Em produção o Cloud Run roda **sem escala horizontal** no Ciclo 01 — no máximo um contêiner
+    de cada vez —, porque o freio das rotas públicas conta em memória (§8) e cada contêiner a
+    mais multiplicaria o limite. Não confundir com o princípio 10: lá "instância única" é uma
+    base para todas as comunidades; aqui é quantos contêineres atendem ao mesmo tempo.
 
     Os **sete frontends** são **React com TypeScript sobre Vite**, exceto a **vitrine
     (App 06)**, escrita em **Astro** por ser a única indexável por buscadores — as outras seis
