@@ -443,6 +443,7 @@ describe("área Filas", () => {
       email: "fulano@example.org",
       whatsapp: "11999990000",
       nick: "apoiador-pretendido",
+      ativo: true,
       artefatos: [
         {
           id: "artefato-1",
@@ -512,6 +513,7 @@ describe("área Filas", () => {
       email: "fulano@example.org",
       whatsapp: "11999990000",
       nick: "apoiador-pretendido",
+      ativo: true,
       artefatos: [
         {
           id: "artefato-1",

@@ -49,6 +49,7 @@ const MESTRE = {
   email: "m@x.com",
   whatsapp: null,
   nick: null,
+  ativo: true,
   artefatos: [],
 };
 
@@ -58,6 +59,7 @@ const APOIADOR = {
   email: "a@x.com",
   whatsapp: null,
   nick: null,
+  ativo: true,
   artefatos: [],
 };
 

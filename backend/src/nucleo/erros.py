@@ -470,3 +470,15 @@ class TipoEmUso(ErroDeValidacao):
 
     codigo = "tipo_em_uso"
     mensagem = "O tipo está em uso e não pode ser excluído; desative-o no lugar."
+
+
+class AdultoEmUso(ErroDeValidacao):
+    """Recusa da exclusão de Mestre ou Apoiador já usado: o caminho é
+    desativá-lo (`RN-02-34`). Código próprio para a App 03 apontar a
+    desativação sem ler a mensagem."""
+
+    codigo = "adulto_em_uso"
+    mensagem = (
+        "Este cadastro já foi usado e não pode ser excluído; desative-o para tirar o acesso "
+        "e a presença pública."
+    )

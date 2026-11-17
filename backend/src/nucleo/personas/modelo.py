@@ -63,6 +63,10 @@ class Persona(Base):
     criada_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    # Mestre ou Apoiador já usado não se exclui, se desativa: sem acesso e
+    # fora da vitrine, com tudo o que produziu intacto. Nulo = ativo
+    # (`RF-02-119`, `RN-02-35`).
+    desativada_em: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class Nick(Base):

@@ -1018,7 +1018,7 @@ def _paginar_adultos_publicos(
     consulta = (
         sessao.query(Persona, IDENTIFICACAO_ORDENAVEL)
         .outerjoin(Nick, Nick.persona_id == Persona.id)
-        .filter(Persona.papel == papel)
+        .filter(Persona.papel == papel, Persona.desativada_em.is_(None))
     )
     if apenas_com_aporte:
         consulta = consulta.filter(
@@ -1076,7 +1076,12 @@ def buscar_adulto_publico(
     persona de outro papel e Apoiador sem aporte — os três recebem o mesmo
     404 (`RF-03-57`, `RN-03-01`, o mesmo desenho de
     `buscar_persona_guerreiro_publica_por_nick`)."""
-    consulta = sessao.query(Persona).filter(Persona.id == persona_id, Persona.papel == papel)
+    consulta = sessao.query(Persona).filter(
+        Persona.id == persona_id,
+        Persona.papel == papel,
+        # O desativado responde como o inexistente (`RF-02-119`, `RN-02-35`).
+        Persona.desativada_em.is_(None),
+    )
     if apenas_com_aporte:
         consulta = consulta.filter(
             sessao.query(Aporte.id).filter(Aporte.provedor_id == Persona.id).exists()

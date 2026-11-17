@@ -55,6 +55,21 @@ export function TelaDeAdultos({ papel }: Props) {
     await carregar();
   }, [carregar]);
 
+  // A ficha segue aberta com o adulto atualizado, e a tabela recarrega por
+  // trás (`RF-02-117`, `RF-02-119`).
+  const aoAlterarNaFicha = useCallback(
+    async (atualizado: AdultoDaLista) => {
+      definirAdultoNaFicha(atualizado);
+      await carregar();
+    },
+    [carregar],
+  );
+
+  const aoExcluir = useCallback(async () => {
+    definirAdultoNaFicha(null);
+    await carregar();
+  }, [carregar]);
+
   return (
     <div>
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
@@ -81,7 +96,14 @@ export function TelaDeAdultos({ papel }: Props) {
         aoFechar={() => definirAdultoNaFicha(null)}
       >
         {adultoNaFicha && (
-          <FichaDoAdulto adulto={adultoNaFicha} onNickGravado={aoGravarNick} />
+          <FichaDoAdulto
+            papel={papel}
+            adulto={adultoNaFicha}
+            podeManter={podeCadastrar}
+            onNickGravado={aoGravarNick}
+            onAlterado={aoAlterarNaFicha}
+            onExcluido={aoExcluir}
+          />
         )}
       </Dialogo>
     </div>
