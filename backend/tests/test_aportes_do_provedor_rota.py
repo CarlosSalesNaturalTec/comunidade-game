@@ -1,5 +1,5 @@
 """`GET /provedores/{id}/aportes` — a seção Aportes da ficha do adulto na
-gestão (`RF-02-117`, `RN-02-34`, `RN-07-06`, `RN-07-22`, `RN-14-07`)."""
+gestão (`RF-02-120`, `RN-02-36`, `RN-07-06`, `RN-07-22`, `RN-14-07`)."""
 
 import uuid
 from datetime import date

@@ -95,6 +95,10 @@ def login_social(
         raise LoginSemCadastro()
 
     persona = sessao_bd.get(Persona, credencial.persona_id)
+    # Desativado pela gestão responde como login sem cadastro — a revogação
+    # das credenciais já o barra; esta é a segunda trava (`RN-02-35`).
+    if persona.desativada_em is not None:
+        raise LoginSemCadastro()
     return _abrir_sessao(
         sessao_bd,
         persona_id=persona.id,
@@ -128,6 +132,10 @@ def login_por_credencial(
         raise CredencialInvalida()
 
     persona = sessao_bd.get(Persona, credencial.persona_id)
+    # Desativado pela gestão responde como login sem cadastro — a revogação
+    # das credenciais já o barra; esta é a segunda trava (`RN-02-35`).
+    if persona.desativada_em is not None:
+        raise LoginSemCadastro()
     return _abrir_sessao(
         sessao_bd,
         persona_id=persona.id,

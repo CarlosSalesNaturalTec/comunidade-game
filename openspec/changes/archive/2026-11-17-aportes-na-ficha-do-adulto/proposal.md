@@ -17,9 +17,9 @@ change). Decisões do fundador de 2026-11-17, em `/opsx:propose`:
 Identificadores **novos** (nascem na revisão do PRD-02, no mesmo PR, pelo precedente da fatia
 25):
 
-- `RF-02-117`: o Admin vê na ficha do adulto os aportes homologados, o Poder Sustentador e as
+- `RF-02-120`: o Admin vê na ficha do adulto os aportes homologados, o Poder Sustentador e as
   declarações pendentes.
-- `RN-02-34`: na ficha da gestão, o valor de origem em reais sai sempre ao lado das moedas, e
+- `RN-02-36`: na ficha da gestão, o valor de origem em reais sai sempre ao lado das moedas, e
   só ali.
 
 Aplicados sem mudança: `RF-02-02`, `RF-02-03`, `RN-02-01` (a ficha segue de leitura),
@@ -52,7 +52,7 @@ Apoiador enxerga isso, na App 08.
   - documento 99 §6, invariante 16;
   - documento 09 §1, "Já decididos";
   - PRD-02: §6.1, §7, §9, §13 e §15;
-  - a linha da fatia 29 do cronograma.
+  - a linha da fatia 30 do cronograma.
 
 ## Capabilities
 

@@ -16,7 +16,7 @@ A resposta NEVER SHALL trazer o comprovante, o endereço dele no armazenamento n
 bancário. A declaração homologada ou recusada NÃO SHALL aparecer entre as pendentes, e a
 pendente NÃO SHALL somar no Poder Sustentador. A rota SHALL responder **404** para persona de
 Guerreiro(a) ou de responsável e para identificador inexistente, com a mesma recusa nos dois
-casos. A rota é só de leitura. (`RF-02-117`, `RN-02-34`, `RF-07-17`, `RN-07-06`, `RN-07-22`,
+casos. A rota é só de leitura. (`RF-02-120`, `RN-02-36`, `RF-07-17`, `RN-07-06`, `RN-07-22`,
 `RN-14-07`, PRD-07 §11)
 
 #### Scenario: O Admin lê os aportes de um Apoiador

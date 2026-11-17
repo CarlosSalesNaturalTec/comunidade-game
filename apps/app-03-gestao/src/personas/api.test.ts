@@ -9,8 +9,13 @@ import { chamarNucleo } from "comum/api";
 import {
   type AdultoDaLista,
   type ArtefatoComprobatorio,
+  alterarAdulto,
   anexarComprobatorio,
+  desativarAdulto,
+  excluirAdulto,
   listarComprobatoriosPendentes,
+  reativarAdulto,
+  removerArtefatoDoAdulto,
 } from "./api";
 
 // A fila do comprobatório não tem rota própria no núcleo: é derivada da
@@ -37,6 +42,7 @@ function apoiador(sobrescreve: Partial<AdultoDaLista> = {}): AdultoDaLista {
     whatsapp: null,
     nick: null,
     artefatos: [artefato()],
+    ativo: true,
     ...sobrescreve,
   };
 }
@@ -126,5 +132,29 @@ describe("anexarComprobatorio", () => {
       "/v1/apoiadores/apoiador-1/artefatos/artefato-1/anexacao",
       { metodo: "POST", token: "token-do-admin" },
     );
+  });
+});
+
+// Manutenção do adulto pela gestão: cada papel na própria rota (`RF-02-117`
+// a `RF-02-119`, design — decisão 1).
+describe("manutenção de Mestre e Apoiador", () => {
+  afterEach(() => dublada.mockReset());
+
+  it("cada ato vai à rota do papel, com o método certo", async () => {
+    dublada.mockResolvedValue(undefined);
+
+    await alterarAdulto("apoiador", "a1", { whatsapp: null }, "t");
+    await excluirAdulto("mestre", "m1", "t");
+    await desativarAdulto("apoiador", "a1", "t");
+    await reativarAdulto("mestre", "m1", "t");
+    await removerArtefatoDoAdulto("mestre", "m1", "x1", "t");
+
+    expect(dublada.mock.calls.map(([caminho, opcoes]) => [caminho, opcoes?.metodo])).toEqual([
+      ["/v1/apoiadores/a1", "PATCH"],
+      ["/v1/mestres/m1", "DELETE"],
+      ["/v1/apoiadores/a1/desativacao", "POST"],
+      ["/v1/mestres/m1/reativacao", "POST"],
+      ["/v1/mestres/m1/artefatos-da-gestao/x1", "DELETE"],
+    ]);
   });
 });

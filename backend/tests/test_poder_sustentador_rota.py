@@ -239,7 +239,7 @@ def test_meus_aportes_traz_o_nome_do_tipo_e_o_destino(
     aporte_na_saida = resposta.json()["aportes"][0]
     assert aporte_na_saida["tipo_de_recurso_nome"] == "Lanche"
     assert aporte_na_saida["ponto_de_apoio_nome"] == ponto_de_apoio.nome
-    # Os reais seguem só na ficha da gestão (`RN-02-34`, `RN-07-05`).
+    # Os reais seguem só na ficha da gestão (`RN-02-36`, `RN-07-05`).
     assert "valor_de_origem" not in resposta.text
 
 

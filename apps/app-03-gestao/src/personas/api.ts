@@ -87,6 +87,8 @@ export interface AdultoDaLista {
   whatsapp: string | null;
   nick: string | null;
   artefatos: ArtefatoComprobatorio[];
+  // Falso quando a gestão desativou o adulto (`RF-02-119`, `RN-02-35`).
+  ativo: boolean;
 }
 
 interface ListaDeAdultos {
@@ -314,7 +316,7 @@ export function listarResponsaveis(token: string): Promise<ListaDeResponsaveis> 
 }
 
 // A seção Aportes da ficha do adulto: só o Admin lê, e só aqui o valor de
-// origem em reais sai, sempre ao lado das moedas (`RF-02-117`, `RN-02-34`).
+// origem em reais sai, sempre ao lado das moedas (`RF-02-120`, `RN-02-36`).
 export interface AporteDoProvedor {
   id: string;
   data_do_aporte: string;
@@ -348,4 +350,98 @@ export function lerAportesDoProvedor(
   token: string,
 ): Promise<AportesDoProvedor> {
   return chamarNucleo<AportesDoProvedor>(`/v1/provedores/${provedorId}/aportes`, { token });
+}
+
+// --- Manutenção de Mestre e Apoiador pela gestão ------------------------------
+// `RF-02-117` a `RF-02-119`, `RN-02-34`, `RN-02-35`. Só nome, e-mail e
+// WhatsApp se alteram — nick, papel e termos de doação não.
+
+export type PapelDoAdulto = "mestre" | "apoiador";
+
+const CAMINHO_DO_PAPEL: Record<PapelDoAdulto, string> = {
+  mestre: "/v1/mestres",
+  apoiador: "/v1/apoiadores",
+};
+
+export interface AlterarAdultoEntrada {
+  nome?: string;
+  email?: string;
+  whatsapp?: string | null;
+}
+
+export function alterarAdulto(
+  papel: PapelDoAdulto,
+  id: string,
+  entrada: AlterarAdultoEntrada,
+  token: string,
+): Promise<AdultoDaLista> {
+  return chamarNucleo<AdultoDaLista>(`${CAMINHO_DO_PAPEL[papel]}/${id}`, {
+    metodo: "PATCH",
+    corpo: entrada,
+    token,
+  });
+}
+
+export function excluirAdulto(papel: PapelDoAdulto, id: string, token: string): Promise<void> {
+  return chamarNucleo<void>(`${CAMINHO_DO_PAPEL[papel]}/${id}`, { metodo: "DELETE", token });
+}
+
+export function desativarAdulto(
+  papel: PapelDoAdulto,
+  id: string,
+  token: string,
+): Promise<AdultoDaLista> {
+  return chamarNucleo<AdultoDaLista>(`${CAMINHO_DO_PAPEL[papel]}/${id}/desativacao`, {
+    metodo: "POST",
+    token,
+  });
+}
+
+export function reativarAdulto(
+  papel: PapelDoAdulto,
+  id: string,
+  token: string,
+): Promise<AdultoDaLista> {
+  return chamarNucleo<AdultoDaLista>(`${CAMINHO_DO_PAPEL[papel]}/${id}/reativacao`, {
+    metodo: "POST",
+    token,
+  });
+}
+
+export function incluirArtefatoDoAdulto(
+  papel: PapelDoAdulto,
+  id: string,
+  artefato: ArtefatoDeclarado,
+  token: string,
+): Promise<AdultoDaLista> {
+  return chamarNucleo<AdultoDaLista>(`${CAMINHO_DO_PAPEL[papel]}/${id}/artefatos-da-gestao`, {
+    metodo: "POST",
+    corpo: artefato,
+    token,
+  });
+}
+
+export function corrigirArtefatoDoAdulto(
+  papel: PapelDoAdulto,
+  id: string,
+  artefatoId: string,
+  artefato: ArtefatoDeclarado,
+  token: string,
+): Promise<AdultoDaLista> {
+  return chamarNucleo<AdultoDaLista>(
+    `${CAMINHO_DO_PAPEL[papel]}/${id}/artefatos-da-gestao/${artefatoId}`,
+    { metodo: "PATCH", corpo: artefato, token },
+  );
+}
+
+export function removerArtefatoDoAdulto(
+  papel: PapelDoAdulto,
+  id: string,
+  artefatoId: string,
+  token: string,
+): Promise<AdultoDaLista> {
+  return chamarNucleo<AdultoDaLista>(
+    `${CAMINHO_DO_PAPEL[papel]}/${id}/artefatos-da-gestao/${artefatoId}`,
+    { metodo: "DELETE", token },
+  );
 }

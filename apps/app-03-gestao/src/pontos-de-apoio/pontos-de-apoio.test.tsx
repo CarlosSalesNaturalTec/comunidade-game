@@ -669,6 +669,7 @@ describe("designação do responsável pelo acervo (RF-07-49)", () => {
     email: "m@x.com",
     whatsapp: null,
     nick: null,
+    ativo: true,
     artefatos: [],
   };
   const OUTRO_MESTRE = {
@@ -677,6 +678,7 @@ describe("designação do responsável pelo acervo (RF-07-49)", () => {
     email: "m2@x.com",
     whatsapp: null,
     nick: null,
+    ativo: true,
     artefatos: [],
   };
 

@@ -158,9 +158,9 @@ def aportes_do_provedor(
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> AportesDoProvedorSaida:
     """Restrita ao Admin: a seção Aportes da ficha do adulto na gestão
-    (`RF-02-117`). O papel é conferido antes da existência, para a recusa
+    (`RF-02-120`). O papel é conferido antes da existência, para a recusa
     não revelar ninguém (design — Decisions 2). O valor de origem em reais
-    sai só aqui, ao Admin (`RN-02-34`, PRD-07 §11); o comprovante sai como
+    sai só aqui, ao Admin (`RN-02-36`, PRD-07 §11); o comprovante sai como
     marca, nunca a referência (`RN-07-22`). A declaração pendente vem à
     parte e não soma no Poder Sustentador (`RN-14-07`)."""
     if contexto.papel != Papel.admin:

@@ -36,7 +36,7 @@ function formatarData(valor: string): string {
 }
 
 // Os reais nunca saem sozinhos: sempre ao lado do equivalente em moedas,
-// e só nesta ficha do Admin (`RN-02-34`, documento 04 §1).
+// e só nesta ficha do Admin (`RN-02-36`, documento 04 §1).
 function formatarValor(aporte: AporteDoProvedor): string {
   const moedas = formatarMoedas(aporte.valor_em_moedas);
   if (aporte.valor_de_origem === null) return moedas;
@@ -88,7 +88,7 @@ const COLUNAS: ColunaDaTabela<AporteDoProvedor>[] = [
 ];
 
 // Seção de leitura: NEVER oferece baixar o comprovante, nem editar,
-// estornar, homologar ou recusar aporte ou declaração (`RF-02-117`,
+// estornar, homologar ou recusar aporte ou declaração (`RF-02-120`,
 // `RN-02-01`). A declaração pendente não tem moedas ainda — a valoração só
 // nasce na homologação, pela vigência da data do aporte (`RF-07-05`).
 export function AportesDoAdulto({ provedorId }: Props) {

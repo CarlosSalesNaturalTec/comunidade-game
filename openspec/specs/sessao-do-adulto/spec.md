@@ -4,9 +4,7 @@ O adulto — Mestre, Apoiador, responsável ou Admin — entra por login social,
 senha quando não tem conta social. Esta capacidade cobre como essa sessão abre, o que acontece
 com quem não tem cadastro, a trava que a senha provisória impõe até ser trocada, e como a
 sessão termina.
-
 ## Requirements
-
 ### Requirement: Adulto abre sessão por login social vinculado a cadastro existente
 
 O núcleo SHALL abrir sessão para o adulto que autentica por login social **associado a uma
@@ -113,3 +111,16 @@ ser parâmetro de configuração do ambiente, não valor fixado em código. (PRD
 
 - **WHEN** duas personas têm sessões abertas ao mesmo tempo e uma delas expira
 - **THEN** a outra segue válida, e nenhum dado de uma sessão aparece na outra
+
+### Requirement: Adulto desativado não abre sessão
+
+O núcleo SHALL recusar a abertura de sessão de Mestre ou Apoiador **desativado** pela gestão,
+por login social ou por usuário e senha, com a mesma resposta dada a login sem cadastro
+correspondente, e NEVER SHALL criar persona nem reativar a existente por causa da tentativa.
+(`RF-02-119`, `RN-02-35`, invariante 3 do documento 99 §6)
+
+#### Scenario: Login do desativado é recusado
+
+- **WHEN** um Apoiador desativado tenta entrar pelo login social
+- **THEN** o núcleo recusa a sessão e a persona segue desativada
+

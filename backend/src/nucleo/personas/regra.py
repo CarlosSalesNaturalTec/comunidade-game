@@ -7,7 +7,13 @@ from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
 from ..comunidades.regra import abrir_vinculo
-from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada, PisoDeMoedasNaoAlcancado
+from ..erros import (
+    AdultoEmUso,
+    ErroDeValidacao,
+    NaoEncontrado,
+    PermissaoNegada,
+    PisoDeMoedasNaoAlcancado,
+)
 from ..fila.modelo import SolicitacaoDeParticipacao
 from ..poder_sustentador.regra import moedas_acumuladas_de
 from ..responsaveis.modelo import VinculoResponsavel
@@ -630,5 +636,259 @@ def incluir_admin(
         sessao, papel=Papel.admin, criada_por=operador, nome=nome, email=email, whatsapp=whatsapp
     )
     _gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
+    sessao.flush()
+    return persona
+
+
+# --- Edição, exclusão e desativação de Mestre e Apoiador pela gestão ---------
+# `RF-02-117` a `RF-02-119`, `RN-02-34`, `RN-02-35`, decisão do fundador de
+# 2026-11-17 (change `edicao-e-exclusao-de-mestre-e-apoiador`).
+
+PAPEIS_MANTIDOS_PELA_GESTAO = frozenset({Papel.mestre, Papel.apoiador})
+
+# O cadastro do próprio adulto, que sai junto com ele na exclusão e por isso
+# não conta como uso (design — decisão 5).
+_TABELAS_DO_CADASTRO_DO_ADULTO = frozenset(
+    {"nick", "credencial", "sessao", "artefato_comprobatorio"}
+)
+
+MOTIVO_DA_DESATIVACAO = "Desativação pela gestão."
+
+
+def buscar_adulto_da_gestao(sessao: Session, *, persona_id: uuid.UUID, papel: Papel) -> Persona:
+    """O adulto do papel da rota — identificador de outro papel é 404, como
+    o inexistente (design — decisão 1)."""
+    persona = sessao.get(Persona, persona_id)
+    if persona is None or persona.papel != papel or papel not in PAPEIS_MANTIDOS_PELA_GESTAO:
+        raise NaoEncontrado(mensagem=f"{papel.value.capitalize()} não encontrado.", campo="id")
+    return persona
+
+
+def _credencial_social_ativa(sessao: Session, persona: Persona) -> Credencial | None:
+    return (
+        sessao.query(Credencial)
+        .filter_by(persona_id=persona.id, tipo=TipoDeCredencial.login_social, ativa=True)
+        .first()
+    )
+
+
+def _email_em_uso_por_outra(sessao: Session, *, email: str, persona: Persona) -> bool:
+    return (
+        sessao.query(Credencial.id)
+        .filter(
+            Credencial.tipo == TipoDeCredencial.login_social,
+            Credencial.identificador == email,
+            Credencial.ativa.is_(True),
+            Credencial.persona_id != persona.id,
+        )
+        .first()
+        is not None
+    )
+
+
+def alterar_adulto(
+    sessao: Session,
+    persona: Persona,
+    *,
+    campos: dict[str, str | None],
+) -> Persona:
+    """Nome, e-mail e WhatsApp, sob as validações do cadastro. Campo ausente
+    mantém; `whatsapp` nulo retira. Trocar o e-mail troca o identificador do
+    login social na mesma transação (`RF-02-117`, design — decisões 2 e 3)."""
+    if "nome" in campos:
+        nome = campos["nome"]
+        if not nome or not nome.strip():
+            raise ErroDeValidacao(
+                mensagem=f"{persona.papel.value.capitalize()} precisa de nome.", campo="nome"
+            )
+        persona.nome = nome
+    if "email" in campos:
+        email = campos["email"]
+        if not email or not email.strip():
+            raise ErroDeValidacao(
+                mensagem=f"{persona.papel.value.capitalize()} precisa de e-mail.", campo="email"
+            )
+        if email != persona.email:
+            if _email_em_uso_por_outra(sessao, email=email, persona=persona):
+                raise ErroDeValidacao(
+                    mensagem="Este e-mail já é usado por outro cadastro.", campo="email"
+                )
+            credencial = _credencial_social_ativa(sessao, persona)
+            if credencial is not None:
+                credencial.identificador = email
+            persona.email = email
+    if "whatsapp" in campos:
+        persona.whatsapp = campos["whatsapp"] or None
+    sessao.flush()
+    return persona
+
+
+def _validar_artefato(endereco: str | None, rotulo: str | None) -> None:
+    if not endereco or not endereco.strip():
+        raise ErroDeValidacao(mensagem="Artefato exige o endereço.", campo="endereco")
+    if not rotulo or not rotulo.strip():
+        raise ErroDeValidacao(mensagem="Artefato exige o rótulo.", campo="rotulo")
+
+
+def incluir_artefato_pela_gestao(
+    sessao: Session, persona: Persona, *, operador: Persona, endereco: str, rotulo: str
+) -> ArtefatoComprobatorio:
+    """Link declarado pelo Admin, como no cadastro (`RF-02-117`, `RN-02-01`)."""
+    _validar_artefato(endereco, rotulo)
+    artefato = ArtefatoComprobatorio(
+        persona_id=persona.id, endereco=endereco, rotulo=rotulo, declarado_por_id=operador.id
+    )
+    sessao.add(artefato)
+    sessao.flush()
+    return artefato
+
+
+def _artefato_do_adulto(
+    sessao: Session, persona: Persona, artefato_id: uuid.UUID
+) -> ArtefatoComprobatorio:
+    artefato = sessao.get(ArtefatoComprobatorio, artefato_id)
+    if artefato is None or artefato.persona_id != persona.id:
+        raise NaoEncontrado(mensagem="Artefato não encontrado.", campo="artefato_id")
+    return artefato
+
+
+def corrigir_artefato_pela_gestao(
+    sessao: Session, persona: Persona, *, artefato_id: uuid.UUID, endereco: str, rotulo: str
+) -> ArtefatoComprobatorio:
+    """Altera o vigente e não toca o original, que registra a edição do
+    próprio adulto (`RF-02-117`, `RN-09-14`, design — decisão 4)."""
+    artefato = _artefato_do_adulto(sessao, persona, artefato_id)
+    _validar_artefato(endereco, rotulo)
+    artefato.endereco = endereco
+    artefato.rotulo = rotulo
+    sessao.flush()
+    return artefato
+
+
+def remover_artefato_pela_gestao(
+    sessao: Session, persona: Persona, *, artefato_id: uuid.UUID
+) -> None:
+    """Nunca o último: o adulto segue com ao menos um (`RF-02-04`,
+    `RN-02-01`)."""
+    artefato = _artefato_do_adulto(sessao, persona, artefato_id)
+    total = sessao.query(ArtefatoComprobatorio).filter_by(persona_id=persona.id).count()
+    if total <= 1:
+        raise ErroDeValidacao(
+            mensagem="O cadastro precisa manter ao menos um artefato comprobatório.",
+            campo="artefato_id",
+        )
+    sessao.delete(artefato)
+    sessao.flush()
+
+
+def adulto_esta_em_uso(sessao: Session, persona: Persona) -> bool:
+    """Uso é qualquer linha fora do cadastro do próprio adulto que aponte
+    para ele — e a sessão que ele confirmou para outra persona, que mora numa
+    tabela do cadastro mas é ato dele (`RN-02-34`, design — decisão 5)."""
+    from ..referencias import esta_em_uso
+    from ..sessoes.modelo import Sessao
+
+    if (
+        sessao.query(Sessao.id)
+        .filter(Sessao.quem_confirmou == persona.id, Sessao.persona_id != persona.id)
+        .first()
+        is not None
+    ):
+        return True
+    if (
+        sessao.query(Persona.id).filter(Persona.criada_por == persona.id).first() is not None
+        or sessao.query(Credencial.id)
+        .filter(Credencial.criada_por == persona.id, Credencial.persona_id != persona.id)
+        .first()
+        is not None
+        or sessao.query(ArtefatoComprobatorio.id)
+        .filter(
+            ArtefatoComprobatorio.persona_id != persona.id,
+            (ArtefatoComprobatorio.declarado_por_id == persona.id)
+            | (ArtefatoComprobatorio.anexado_por_id == persona.id),
+        )
+        .first()
+        is not None
+    ):
+        return True
+    return esta_em_uso(
+        sessao,
+        tabela=Persona.__table__,
+        identificador=persona.id,
+        tabelas_ignoradas=_TABELAS_DO_CADASTRO_DO_ADULTO | {"persona"},
+    )
+
+
+def excluir_adulto(sessao: Session, persona: Persona) -> None:
+    """Só o nunca usado sai, com nick, credencial, sessão e artefatos; o
+    usado é recusado e o caminho dele é a desativação (`RF-02-118`,
+    `RN-02-34`). A corrida entre a conferência e o `DELETE` vira o mesmo
+    422."""
+    from sqlalchemy.exc import IntegrityError
+
+    from ..sessoes.modelo import Sessao
+
+    if adulto_esta_em_uso(sessao, persona):
+        raise AdultoEmUso(campo="id")
+    try:
+        with sessao.begin_nested():
+            for modelo in (Nick, Credencial, Sessao, ArtefatoComprobatorio):
+                sessao.query(modelo).filter(modelo.persona_id == persona.id).delete(
+                    synchronize_session=False
+                )
+            sessao.delete(persona)
+            sessao.flush()
+    except IntegrityError as exc:
+        raise AdultoEmUso(campo="id") from exc
+
+
+def desativar_adulto(sessao: Session, persona: Persona, *, operador: Persona) -> Persona:
+    """Revoga as credenciais ativas, encerra as sessões abertas e grava a
+    marca; nada do que o adulto produziu muda (`RF-02-119`, `RN-02-35`)."""
+    from ..sessoes.modelo import Sessao
+
+    if persona.desativada_em is not None:
+        return persona
+    momento = agora()
+    for credencial in sessao.query(Credencial).filter_by(persona_id=persona.id, ativa=True):
+        credencial.ativa = False
+        credencial.revogada_por = str(operador.id)
+        credencial.motivo_da_revogacao = MOTIVO_DA_DESATIVACAO
+        credencial.revogada_em = momento
+    for aberta in sessao.query(Sessao).filter(
+        Sessao.persona_id == persona.id, Sessao.encerrada_em.is_(None)
+    ):
+        aberta.encerrada_em = momento
+    persona.desativada_em = momento
+    sessao.flush()
+    return persona
+
+
+def reativar_adulto(sessao: Session, persona: Persona) -> Persona:
+    """Limpa a marca e devolve só o login social que a desativação revogou;
+    senha provisória não volta (`RF-02-119`, design — decisão 6)."""
+    if persona.desativada_em is None:
+        return persona
+    credencial = (
+        sessao.query(Credencial)
+        .filter_by(
+            persona_id=persona.id,
+            tipo=TipoDeCredencial.login_social,
+            ativa=False,
+            motivo_da_revogacao=MOTIVO_DA_DESATIVACAO,
+        )
+        .order_by(Credencial.revogada_em.desc())
+        .first()
+    )
+    if credencial is not None and credencial.identificador == persona.email:
+        if _email_em_uso_por_outra(sessao, email=credencial.identificador, persona=persona):
+            raise ErroDeValidacao(
+                mensagem="O e-mail deste cadastro passou a ser usado por outro.", campo="email"
+            )
+        credencial.ativa = True
+        credencial.revogada_por = None
+        credencial.motivo_da_revogacao = None
+        credencial.revogada_em = None
+    persona.desativada_em = None
     sessao.flush()
     return persona

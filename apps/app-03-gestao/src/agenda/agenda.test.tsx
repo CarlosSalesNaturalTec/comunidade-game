@@ -50,6 +50,7 @@ const MESTRE_UM = {
   email: "zefa@exemplo.org",
   whatsapp: null,
   nick: null,
+  ativo: true,
   artefatos: [],
 };
 
@@ -59,6 +60,7 @@ const MESTRE_DOIS = {
   email: "antonio@exemplo.org",
   whatsapp: null,
   nick: null,
+  ativo: true,
   artefatos: [],
 };
 

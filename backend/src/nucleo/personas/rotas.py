@@ -30,20 +30,28 @@ from .modelo import ArtefatoComprobatorio, Credencial, Nick, Papel, Persona, Tip
 from .regra import (
     MENSAGEM_NICK_EM_USO,
     PISO_DE_MOEDAS_DO_AVATAR_PROPRIO,
+    alterar_adulto,
     anexar_documento_do_apoiador,
     artefato_esta_publicado,
+    buscar_adulto_da_gestao,
     cadastrar_adulto_com_artefatos,
     cadastrar_guerreiro_no_encontro,
     cadastrar_guerreiro_pela_gestao,
     conferir_disponibilidade_de_nick,
+    corrigir_artefato_pela_gestao,
     declarar_documento_do_apoiador,
     definir_avatar_do_apoiador,
     definir_avatar_do_guerreiro,
     definir_avatar_do_mestre,
     definir_ou_trocar_nick,
+    desativar_adulto,
     editar_artefato_do_mestre,
     editar_guerreiro,
+    excluir_adulto,
     incluir_admin,
+    incluir_artefato_pela_gestao,
+    reativar_adulto,
+    remover_artefato_pela_gestao,
     sugerir_variacoes_de_nick,
     sugerir_variacoes_de_nick_com_alcance_total,
 )
@@ -286,6 +294,8 @@ class AdultoSaida(BaseModel):
     whatsapp: str | None
     nick: str | None
     artefatos: list[ArtefatoSaida]
+    # Falso quando a gestão desativou o adulto (`RF-02-119`, `RN-02-35`).
+    ativo: bool
 
 
 def _saida_do_adulto(persona: Persona, sessao_bd: Session) -> AdultoSaida:
@@ -297,6 +307,7 @@ def _saida_do_adulto(persona: Persona, sessao_bd: Session) -> AdultoSaida:
         email=persona.email or "",
         whatsapp=persona.whatsapp,
         nick=nick.valor if nick is not None else None,
+        ativo=persona.desativada_em is None,
         artefatos=[
             ArtefatoSaida(
                 id=a.id,
@@ -399,6 +410,134 @@ def listar_apoiadores_rota(
         itens=[_saida_do_adulto(persona, sessao_bd) for persona in personas],
         proximo_cursor=proximo_cursor,
     )
+
+
+class AlterarAdultoEntrada(BaseModel):
+    """Só os três campos da decisão de 2026-11-17 — nick, papel e termos
+    chegam e são 422 (`RF-02-117`, design — decisão 2)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str | None = None
+    email: str | None = None
+    whatsapp: str | None = None
+
+
+_PAPEL_DO_CAMINHO = {"mestres": Papel.mestre, "apoiadores": Papel.apoiador}
+
+
+def _registrar_manutencao_do_adulto(caminho: str) -> None:
+    """As rotas de manutenção do adulto pela gestão, iguais para Mestre e
+    Apoiador, restritas a Admin (`RF-02-117` a `RF-02-119`, `RN-02-34`,
+    `RN-02-35`)."""
+    papel = _PAPEL_DO_CAMINHO[caminho]
+    so_admin = exigir_permissao(Operacao.tudo, "escreve")
+
+    @roteador.patch(f"/{caminho}/{{id}}", name=f"alterar_{papel.value}")
+    def alterar(
+        id: uuid.UUID,
+        entrada: AlterarAdultoEntrada,
+        contexto: Annotated[ContextoDaSessao, Depends(so_admin)],
+        sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    ) -> AdultoSaida:
+        persona = buscar_adulto_da_gestao(sessao_bd, persona_id=id, papel=papel)
+        campos = {campo: getattr(entrada, campo) for campo in entrada.model_fields_set}
+        alterar_adulto(sessao_bd, persona, campos=campos)
+        sessao_bd.commit()
+        return _saida_do_adulto(persona, sessao_bd)
+
+    @roteador.delete(f"/{caminho}/{{id}}", status_code=204, name=f"excluir_{papel.value}")
+    def excluir(
+        id: uuid.UUID,
+        contexto: Annotated[ContextoDaSessao, Depends(so_admin)],
+        sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    ) -> None:
+        persona = buscar_adulto_da_gestao(sessao_bd, persona_id=id, papel=papel)
+        excluir_adulto(sessao_bd, persona)
+        sessao_bd.commit()
+
+    @roteador.post(f"/{caminho}/{{id}}/desativacao", name=f"desativar_{papel.value}")
+    def desativar(
+        id: uuid.UUID,
+        contexto: Annotated[ContextoDaSessao, Depends(so_admin)],
+        sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    ) -> AdultoSaida:
+        persona = buscar_adulto_da_gestao(sessao_bd, persona_id=id, papel=papel)
+        operador = sessao_bd.get(Persona, contexto.persona_id)
+        desativar_adulto(sessao_bd, persona, operador=operador)
+        sessao_bd.commit()
+        return _saida_do_adulto(persona, sessao_bd)
+
+    @roteador.post(f"/{caminho}/{{id}}/reativacao", name=f"reativar_{papel.value}")
+    def reativar(
+        id: uuid.UUID,
+        contexto: Annotated[ContextoDaSessao, Depends(so_admin)],
+        sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    ) -> AdultoSaida:
+        persona = buscar_adulto_da_gestao(sessao_bd, persona_id=id, papel=papel)
+        reativar_adulto(sessao_bd, persona)
+        sessao_bd.commit()
+        return _saida_do_adulto(persona, sessao_bd)
+
+    @roteador.post(
+        f"/{caminho}/{{id}}/artefatos-da-gestao",
+        status_code=201,
+        name=f"incluir_artefato_de_{papel.value}",
+    )
+    def incluir_artefato(
+        id: uuid.UUID,
+        entrada: ArtefatoEntrada,
+        contexto: Annotated[ContextoDaSessao, Depends(so_admin)],
+        sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    ) -> AdultoSaida:
+        persona = buscar_adulto_da_gestao(sessao_bd, persona_id=id, papel=papel)
+        operador = sessao_bd.get(Persona, contexto.persona_id)
+        incluir_artefato_pela_gestao(
+            sessao_bd, persona, operador=operador, endereco=entrada.endereco, rotulo=entrada.rotulo
+        )
+        sessao_bd.commit()
+        return _saida_do_adulto(persona, sessao_bd)
+
+    @roteador.patch(
+        f"/{caminho}/{{id}}/artefatos-da-gestao/{{artefato_id}}",
+        name=f"corrigir_artefato_de_{papel.value}",
+    )
+    def corrigir_artefato(
+        id: uuid.UUID,
+        artefato_id: uuid.UUID,
+        entrada: ArtefatoEntrada,
+        contexto: Annotated[ContextoDaSessao, Depends(so_admin)],
+        sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    ) -> AdultoSaida:
+        persona = buscar_adulto_da_gestao(sessao_bd, persona_id=id, papel=papel)
+        corrigir_artefato_pela_gestao(
+            sessao_bd,
+            persona,
+            artefato_id=artefato_id,
+            endereco=entrada.endereco,
+            rotulo=entrada.rotulo,
+        )
+        sessao_bd.commit()
+        return _saida_do_adulto(persona, sessao_bd)
+
+    @roteador.delete(
+        f"/{caminho}/{{id}}/artefatos-da-gestao/{{artefato_id}}",
+        name=f"remover_artefato_de_{papel.value}",
+    )
+    def remover_artefato(
+        id: uuid.UUID,
+        artefato_id: uuid.UUID,
+        contexto: Annotated[ContextoDaSessao, Depends(so_admin)],
+        sessao_bd: Annotated[Session, Depends(obter_sessao)],
+    ) -> AdultoSaida:
+        persona = buscar_adulto_da_gestao(sessao_bd, persona_id=id, papel=papel)
+        remover_artefato_pela_gestao(sessao_bd, persona, artefato_id=artefato_id)
+        sessao_bd.commit()
+        return _saida_do_adulto(persona, sessao_bd)
+
+
+_registrar_manutencao_do_adulto("mestres")
+_registrar_manutencao_do_adulto("apoiadores")
 
 
 class IncluirAdminEntrada(BaseModel):

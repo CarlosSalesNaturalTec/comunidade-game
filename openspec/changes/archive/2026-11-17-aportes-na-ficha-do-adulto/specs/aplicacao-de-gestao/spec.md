@@ -2,7 +2,7 @@
 
 ### Requirement: A ficha do adulto mostra os aportes de que ele é provedor
 
-A ficha de leitura de um Mestre ou de um Apoiador na App 03 SHALL apresentar a seção
+A ficha de um Mestre ou de um Apoiador na App 03 SHALL apresentar a seção
 **Aportes** com:
 
 - o **Poder Sustentador** em moedas;
@@ -15,7 +15,7 @@ A ficha de leitura de um Mestre ou de um Apoiador na App 03 SHALL apresentar a s
 
 Os números SHALL sair no formato pt-BR. A seção NEVER SHALL oferecer baixar o comprovante, nem
 editar, estornar, homologar ou recusar aporte ou declaração. O valor em reais NEVER SHALL
-aparecer em outra tela da App 03. (`RF-02-117`, `RN-02-34`, `RF-02-02`, `RF-02-03`, `RN-02-01`,
+aparecer em outra tela da App 03. (`RF-02-120`, `RN-02-36`, `RF-02-02`, `RF-02-03`, `RN-02-01`,
 documento 04 §1)
 
 #### Scenario: A ficha mostra o aporte registrado
