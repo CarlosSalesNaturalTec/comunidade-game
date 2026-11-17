@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-Ambiente = Literal["desenvolvimento", "producao"]
+Ambiente = Literal["desenvolvimento", "homologacao", "producao"]
 
 
 class Configuracao(BaseSettings):
@@ -131,7 +131,9 @@ def conferir_configuracao_de_producao(configuracao: Configuracao) -> None:
     sobrevive ao deploy seguinte. As portas de IA ficam de fora de propósito,
     porque ali a indisponibilidade é comportamento previsto e a tela avisa em
     linguagem simples (`RF-09-91`, `RN-04-21`, `RN-05-35`)."""
-    if configuracao.ambiente != "producao":
+    # Vale também na homologação: o disco do Cloud Run é efêmero lá como em
+    # produção (change `ambiente-de-homologacao`, design — decisão 1).
+    if configuracao.ambiente == "desenvolvimento":
         return
     if not configuracao.armazenamento_bucket_cloud_storage:
         raise ConfiguracaoDeProducaoIncompleta(

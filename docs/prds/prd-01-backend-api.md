@@ -624,7 +624,7 @@ e o dos desafios de desbloqueio de cada trilha.
 | Duração da sessão do Guerreiro(a) é parâmetro declarado na implantação                               | 03 §3.2           | Parâmetros da entrada do Guerreiro(a)                       |
 | Limiar da biometria é dado medido de cada ponto de apoio, não parâmetro de implantação               | 03 §3.3           | Parâmetros da entrada do Guerreiro(a)                       |
 | API documentada em OpenAPI desde o primeiro _endpoint_, com schema aberto fora de `/v1`              | 03 §§1, 1.1       | Documentação da API em OpenAPI                              |
-| Chave por aplicação e por ambiente; dois ambientes no Ciclo 01, e 16 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01                     |
+| Chave por aplicação e por ambiente; três ambientes no Ciclo 01, e 24 chaves na implantação           | 03 §§1, 1.13      | Escopo da chave e ambientes do Ciclo 01                     |
 | Chave de terceiro sempre de produção, identificada pela solicitação aprovada e não pelo nome         | 03 §8             | Escopo da chave e ambientes do Ciclo 01                     |
 | Emissão entrega identificador e segredo; o identificador é o que apresenta a URL                     | 03 §8             | Escopo da chave e ambientes do Ciclo 01                     |
 | Prazo de apresentação é parâmetro declarado na implantação, com 30 dias como valor inicial           | 03 §8             | Escopo da chave e ambientes do Ciclo 01                     |

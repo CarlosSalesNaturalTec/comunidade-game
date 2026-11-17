@@ -10,10 +10,16 @@ on:
       - ".firebaserc"
       - ".github/workflows/app-06-deploy.yml"
   workflow_dispatch:
-
-concurrency:
-  group: app-06-deploy-${{ github.ref }}
-  cancel-in-progress: false
+  # Chamado pelo `producao-deploy.yml`; `push` e `workflow_dispatch` publicam
+  # na homologação (change `ambiente-de-homologacao`, design — decisão 4).
+  workflow_call:
+    inputs:
+      ambiente:
+        type: string
+        required: true
+      versao:
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -23,10 +29,33 @@ jobs:
   deploy:
     name: Build e publicação no Firebase Hosting
     runs-on: ubuntu-latest
-    environment: producao
+    # Os segredos de mesmo nome (`APPNN_CHAVE_DE_APLICACAO`) têm valor
+    # próprio em cada _environment_ do GitHub.
+    environment: ${{ inputs.ambiente || 'homologacao' }}
+    concurrency:
+      group: app-06-deploy-${{ inputs.ambiente || 'homologacao' }}
+      cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.versao || github.sha }}
+
+      # Sites e alvos derivam do ambiente: `cg-hml-*` e sufixo `-homologacao`
+      # na homologação (design — decisão 3).
+      - name: Endereços do ambiente
+        env:
+          AMBIENTE: ${{ inputs.ambiente || 'homologacao' }}
+        run: |
+          case "$AMBIENTE" in
+            homologacao) PREFIXO="cg-hml"; SUFIXO="-homologacao" ;;
+            producao) PREFIXO="comunidade-game"; SUFIXO="" ;;
+            *) echo "::error::Ambiente desconhecido: $AMBIENTE"; exit 1 ;;
+          esac
+          {
+            echo "PREFIXO_DO_SITE=$PREFIXO"
+            echo "SUFIXO_DO_ALVO=$SUFIXO"
+          } >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v4
         with:
@@ -43,7 +72,7 @@ jobs:
 
       # Sem `VITE_GOOGLE_CLIENT_ID`: a vitrine encaminha, nunca autentica
       # (`RN-03-27`).
-      - name: Build de produção
+      - name: Build
         working-directory: apps/app-06-vitrine
         env:
           VITE_CHAVE_DE_APLICACAO: ${{ secrets.APP06_CHAVE_DE_APLICACAO }}
@@ -52,19 +81,19 @@ jobs:
           # app-01-deploy.yml e das demais esteiras: o FortiGate da rede
           # corporativa bloqueia `*.comunidadegame.org` por ser domínio
           # recém-registrado, e `.web.app` já é categorizado e passa no filtro.
-          VITE_URL_DO_NUCLEO: https://comunidade-game-api.web.app
+          VITE_URL_DO_NUCLEO: https://${{ env.PREFIXO_DO_SITE }}-api.web.app
           # Sem `URL_DA_VITRINE`: canônica, `sitemap.xml` e `robots.txt` saem
           # do padrão do `astro.config.mjs` — `comunidadegame.org`, a raiz do
           # documento 03 §1, princípio 3 —, ligado ao alvo `vitrine` com o
           # `www` redirecionando. O FortiGate não pesa aqui: quem está atrás
           # dele segue entrando pelo `.web.app`; a canônica só orienta buscador.
           # Os seis destinos do "Entrar" (`RF-03-59`, design — decisão 4).
-          VITE_URL_DA_APP_01_AULA: https://comunidade-game-aula.web.app
-          VITE_URL_DA_APP_03_GESTAO: https://comunidade-game-app-03.web.app
-          VITE_URL_DA_APP_05_GUERREIRO: https://comunidade-game-minhaarea.web.app
-          VITE_URL_DA_APP_07_RESPONSAVEL: https://comunidade-game-responsavel.web.app
-          VITE_URL_DA_APP_08_APOIADOR: https://comunidade-game-apoiador.web.app
-          VITE_URL_DA_APP_09_MESTRE: https://comunidade-game-mestre.web.app
+          VITE_URL_DA_APP_01_AULA: https://${{ env.PREFIXO_DO_SITE }}-aula.web.app
+          VITE_URL_DA_APP_03_GESTAO: https://${{ env.PREFIXO_DO_SITE }}-app-03.web.app
+          VITE_URL_DA_APP_05_GUERREIRO: https://${{ env.PREFIXO_DO_SITE }}-minhaarea.web.app
+          VITE_URL_DA_APP_07_RESPONSAVEL: https://${{ env.PREFIXO_DO_SITE }}-responsavel.web.app
+          VITE_URL_DA_APP_08_APOIADOR: https://${{ env.PREFIXO_DO_SITE }}-apoiador.web.app
+          VITE_URL_DA_APP_09_MESTRE: https://${{ env.PREFIXO_DO_SITE }}-mestre.web.app
         run: npm run build
 
       - name: Autenticar no Google Cloud (Workload Identity Federation)
@@ -86,6 +115,6 @@ jobs:
       - name: Publicar no Firebase Hosting
         run: |
           npx --yes firebase-tools@15.28.1 deploy \
-            --only hosting:vitrine \
+            --only "hosting:vitrine${{ env.SUFIXO_DO_ALVO }}" \
             --project "${{ secrets.GCP_PROJECT_ID }}" \
             --non-interactive

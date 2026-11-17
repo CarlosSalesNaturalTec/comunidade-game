@@ -52,8 +52,11 @@ context: |
     chave. A exigência de chave alcança as rotas de dados sob `/v1`, inclusive as públicas.
   - Toda aplicação consumidora se identifica por chave, inclusive as do projeto; sem chave
     válida a API não responde. Escrita e gestão exigem também a credencial da persona. A
-    chave é por aplicação E por ambiente — dois ambientes no Ciclo 01 (desenvolvimento em
-    contêiner local e produção no Cloud Run), o que dá 16 chaves semeadas na implantação.
+    chave é por aplicação E por ambiente — três ambientes no Ciclo 01 (desenvolvimento em
+    contêiner local, homologação e produção no Cloud Run), o que dá 24 chaves semeadas na
+    implantação. Todo teste vai para a homologação, só com dado sintético; o merge em `main`
+    publica nela, e produção só recebe versão por disparo manual. Notificação a pessoa real
+    NEVER sai da homologação: a change que criar a primeira a suprime ali.
   - Frontends independentes, em endereços próprios; a vitrine ocupa a raiz de
     `comunidadegame.org`.
   - Autenticação por persona: Guerreiro(a) por nick e imagem; Mestre, Apoiador e Admin por

@@ -210,3 +210,18 @@ def test_o_disco_ignora_a_origem_e_segue_devolvendo_endereco_relativo(tmp_path):
     )
 
     assert endereco.startswith("/v1/armazenamento/sessoes/")
+
+
+def test_o_arranque_recusa_homologacao_sem_bucket():
+    """A homologação roda no Cloud Run como produção, com disco efêmero
+    (change `ambiente-de-homologacao`, design — decisão 1)."""
+    with pytest.raises(ConfiguracaoDeProducaoIncompleta) as excinfo:
+        conferir_configuracao_de_producao(_configuracao(ambiente="homologacao"))
+
+    assert "CG_ARMAZENAMENTO_BUCKET_CLOUD_STORAGE" in str(excinfo.value)
+
+
+def test_o_arranque_passa_em_homologacao_com_bucket_declarado():
+    conferir_configuracao_de_producao(
+        _configuracao(ambiente="homologacao", armazenamento_bucket_cloud_storage="um-bucket")
+    )

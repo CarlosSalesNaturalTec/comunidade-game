@@ -12,7 +12,15 @@
         "minhaarea": ["comunidade-game-minhaarea"],
         "responsavel": ["comunidade-game-responsavel"],
         "apoiador": ["comunidade-game-apoiador"],
-        "vitrine": ["comunidade-game-vitrine"]
+        "vitrine": ["comunidade-game-vitrine"],
+        "api-homologacao": ["cg-hml-api"],
+        "app-03-homologacao": ["cg-hml-app-03"],
+        "mestre-homologacao": ["cg-hml-mestre"],
+        "aula-homologacao": ["cg-hml-aula"],
+        "minhaarea-homologacao": ["cg-hml-minhaarea"],
+        "responsavel-homologacao": ["cg-hml-responsavel"],
+        "apoiador-homologacao": ["cg-hml-apoiador"],
+        "vitrine-homologacao": ["cg-hml-vitrine"]
       }
     }
   }

@@ -1,0 +1,111 @@
+name: Produção Deploy
+
+# Único caminho para produção: disparo manual com a versão validada na
+# homologação (documento 03 §1, princípio 13; change
+# `ambiente-de-homologacao`, design — decisão 4). O merge em `main` publica
+# só na homologação.
+on:
+  workflow_dispatch:
+    inputs:
+      versao:
+        description: "SHA do commit em main já validado na homologação"
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: producao-deploy
+  cancel-in-progress: false
+
+jobs:
+  versao:
+    name: Conferir a versão
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.conferir.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Só sobe a produção o que já está em `main` — e, portanto, já passou
+      # pela homologação. O SHA curto é expandido para o completo, que é a
+      # etiqueta da imagem do núcleo.
+      - name: Conferir que a versão está em main
+        id: conferir
+        env:
+          VERSAO: ${{ inputs.versao }}
+        run: |
+          SHA=$(git rev-parse --verify --quiet "$VERSAO^{commit}") || {
+            echo "::error::Versão $VERSAO não existe no repositório."; exit 1; }
+          git merge-base --is-ancestor "$SHA" origin/main || {
+            echo "::error::Versão $SHA não está em main."; exit 1; }
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Versão promovida a produção: \`$SHA\`." >> "$GITHUB_STEP_SUMMARY"
+
+  nucleo:
+    needs: versao
+    uses: ./.github/workflows/backend-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
+
+  app-01:
+    needs: [versao, nucleo]
+    uses: ./.github/workflows/app-01-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
+
+  app-03:
+    needs: [versao, nucleo]
+    uses: ./.github/workflows/app-03-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
+
+  app-05:
+    needs: [versao, nucleo]
+    uses: ./.github/workflows/app-05-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
+
+  app-06:
+    needs: [versao, nucleo]
+    uses: ./.github/workflows/app-06-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
+
+  app-07:
+    needs: [versao, nucleo]
+    uses: ./.github/workflows/app-07-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
+
+  app-08:
+    needs: [versao, nucleo]
+    uses: ./.github/workflows/app-08-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
+
+  app-09:
+    needs: [versao, nucleo]
+    uses: ./.github/workflows/app-09-deploy.yml
+    with:
+      ambiente: producao
+      versao: ${{ needs.versao.outputs.sha }}
+    secrets: inherit
