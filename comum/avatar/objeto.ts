@@ -80,6 +80,22 @@ export function escreverAvatar(escolhas: Partial<EscolhasDoAvatar>): AvatarDoGue
   return resolverAvatar({ v: VERSAO_DO_AVATAR, ...escolhas });
 }
 
+/** Sorteia um avatar completo: um traço do catálogo fechado por camada, entre
+ * todos os da camada (`RF-02-01`, documento 15 §7). É o avatar de quem é
+ * cadastrado sem montá-lo — o cadastro direto pela gestão. `aleatorio` devolve
+ * um número em [0, 1), como `Math.random`, e é injetável para o teste fixar o
+ * resultado; não é sorteio criptográfico, porque não protege segredo algum. */
+export function sortearAvatar(aleatorio: () => number = Math.random): AvatarDoGuerreiro {
+  const escolhas = CAMADAS_DO_AVATAR.map((camada) => {
+    const indice = Math.min(
+      Math.floor(aleatorio() * camada.tracos.length),
+      camada.tracos.length - 1,
+    );
+    return [camada.nome, camada.tracos[indice].id];
+  });
+  return escreverAvatar(Object.fromEntries(escolhas) as EscolhasDoAvatar);
+}
+
 /** Monta o texto a gravar quando o avatar é **alterado**, a partir do texto
  * vigente. Se o vigente é o envelope da App 01 — o objeto do §7.2 em `avatar`,
  * ao lado da forma de tratamento —, troca só o objeto e preserva as demais

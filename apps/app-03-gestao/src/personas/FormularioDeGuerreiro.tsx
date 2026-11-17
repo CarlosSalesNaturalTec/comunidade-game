@@ -1,5 +1,6 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
+import { sortearAvatar } from "comum/avatar";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
 import { type AulaDaAgenda, listarAgenda } from "../agenda/api";
@@ -22,8 +23,18 @@ interface ErroDeCampo {
 const RECUSA_POR_PAPEL = "Só o Admin cadastra ou edita Guerreiro(a).";
 
 // Nenhuma imagem real do Guerreiro(a) circula por esta tela: só o avatar e o
-// nick, como qualquer superfície da gestão (`RN-02-22`, PRD-02 §11).
-const DADO_COLETADO = "o nome, a data de nascimento, o nick e o avatar do Guerreiro(a)";
+// nick, como qualquer superfície da gestão (`RN-02-22`, PRD-02 §11). O avatar
+// não é pedido a quem cadastra — é sorteado do catálogo —, então o aviso de
+// coleta não o cita (`RF-02-01`, `RN-02-23`).
+const DADO_COLETADO = "o nome, a data de nascimento e o nick do Guerreiro(a)";
+
+// O avatar não é campo do formulário (`RF-02-01`, design — decisão 3): o
+// cadastro grava um sorteado do catálogo fechado, e a edição reenvia o gravado,
+// sorteando só quando não há nenhum — o núcleo recusa avatar vazio. Quem troca
+// o avatar é o próprio Guerreiro(a), na App 05.
+function avatarParaEnviar(avatarGravado: string | undefined): string {
+  return avatarGravado?.trim() ? avatarGravado : JSON.stringify(sortearAvatar());
+}
 
 export function FormularioDeGuerreiro({
   comunidades,
@@ -39,7 +50,6 @@ export function FormularioDeGuerreiro({
   const [nome, definirNome] = useState(guerreiroExistente?.nome ?? "");
   const [nascimento, definirNascimento] = useState(guerreiroExistente?.nascimento ?? "");
   const [nick, definirNick] = useState(guerreiroExistente?.nick ?? "");
-  const [avatar, definirAvatar] = useState(guerreiroExistente?.avatar ?? "");
   const [comunidadeId, definirComunidadeId] = useState(comunidades[0]?.id ?? "");
   const [aulas, definirAulas] = useState<AulaDaAgenda[]>([]);
   const [aulaId, definirAulaId] = useState("");
@@ -90,10 +100,6 @@ export function FormularioDeGuerreiro({
       definirErroDeCampo({ campo: "nick", mensagem: "Informe o nick." });
       return;
     }
-    if (!avatar.trim()) {
-      definirErroDeCampo({ campo: "avatar", mensagem: "Escolha o avatar." });
-      return;
-    }
     if (!emEdicao && !aulaId) {
       definirErroDeCampo({
         campo: "aula_id",
@@ -105,6 +111,7 @@ export function FormularioDeGuerreiro({
     if (!sessao) return;
 
     definirEnviando(true);
+    const avatar = avatarParaEnviar(guerreiroExistente?.avatar);
     try {
       if (emEdicao) {
         await editarGuerreiro(
@@ -177,12 +184,6 @@ export function FormularioDeGuerreiro({
         valor={nick}
         aoAlterar={definirNick}
         erro={erroDeCampo?.campo === "nick" ? erroDeCampo.mensagem : null}
-      />
-      <Campo
-        rotulo="Avatar"
-        valor={avatar}
-        aoAlterar={definirAvatar}
-        erro={erroDeCampo?.campo === "avatar" ? erroDeCampo.mensagem : null}
       />
 
       {!emEdicao && (
