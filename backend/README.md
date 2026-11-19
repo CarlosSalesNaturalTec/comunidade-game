@@ -270,9 +270,9 @@ chamada, com `chave_invalida`, sem dizer por quê: quem chama recebe sempre a me
 `semear_ambiente` não os recupera depois. Rodar de novo é seguro: ambiente já semeado não emite
 chave nova. Chave emitida sem o segredo anotado só se resolve **revogando e reemitindo**.
 
-> **Atenção:** rodar a semeadura como Cloud Run Job grava os segredos no Cloud Logging, em
-> claro. Apague o log depois de guardá-los. A decisão sobre esse caminho está aberta (tarefa
-> 7.1 da change de implantação).
+> Rodando como Cloud Run Job, os segredos vão para o Cloud Logging em claro e ficam até a
+> retenção de 30 dias vencer: a chave de frontend já é pública no JavaScript da aplicação, e o
+> log não se apaga (documento 09, "Entrega dos segredos da semeadura").
 
 A chave da App 03 do ambiente de produção vira o segredo do repositório
 `APP03_CHAVE_DE_APLICACAO`, consumido pelo `app-03-deploy.yml` — é o que destrava o primeiro
