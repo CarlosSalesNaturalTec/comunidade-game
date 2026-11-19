@@ -21,19 +21,41 @@ gcloud sql databases create comunidade_game_homologacao --instance=$INSTANCIA
 gcloud sql users create comunidade_homologacao --instance=$INSTANCIA --password='<gerada>'
 ```
 
-Conectado como superusuário, na base nova e na de produção:
+Usuário criado pelo `gcloud` entra no papel `cloudsqlsuperuser`, que é dono das duas bases —
+e dono sempre conecta. Por isso só `REVOKE ... FROM PUBLIC` não isola: a base nova passa a ter
+dono próprio e o usuário de homologação sai do papel. O usuário de produção (`comunidade`) não
+muda: as migrações de produção dependem dele.
+
+**1a.** Logado como `comunidade_homologacao`, na base `comunidade_game_homologacao` — ele
+ainda é `cloudsqlsuperuser` e pode transferir para si; o `postgres` pode ser recusado:
 
 ```sql
--- na base comunidade_game_homologacao
-CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS postgis;  -- antes do 1b, que tira a permissão
+ALTER DATABASE comunidade_game_homologacao OWNER TO comunidade_homologacao;
 ALTER SCHEMA public OWNER TO comunidade_homologacao;
--- isolamento: cada usuário só conecta à própria base.
--- Conceda antes de revogar, para não derrubar produção.
-GRANT CONNECT ON DATABASE comunidade_game TO <usuário de produção>;
+```
+
+**1b.** Logado como `postgres`, em qualquer base:
+
+```sql
+-- conceda antes de revogar, para não derrubar produção
+GRANT CONNECT ON DATABASE comunidade_game TO comunidade;
 REVOKE CONNECT ON DATABASE comunidade_game FROM PUBLIC;
 REVOKE CONNECT ON DATABASE comunidade_game_homologacao FROM PUBLIC;
 GRANT CONNECT ON DATABASE comunidade_game_homologacao TO comunidade_homologacao;
+REVOKE cloudsqlsuperuser FROM comunidade_homologacao;
 ```
+
+**1c.** Conferência — as duas colunas têm de vir `false`, e a API de produção seguir no ar:
+
+```sql
+SELECT has_database_privilege('comunidade_homologacao', 'comunidade_game', 'CONNECT')
+         AS hml_entra_em_producao,
+       has_database_privilege('comunidade', 'comunidade_game_homologacao', 'CONNECT')
+         AS prod_entra_em_hml;
+```
+
+Prova prática: login de `comunidade_homologacao` na base `comunidade_game` é recusado.
 
 ## 2. Bucket com CORS
 
