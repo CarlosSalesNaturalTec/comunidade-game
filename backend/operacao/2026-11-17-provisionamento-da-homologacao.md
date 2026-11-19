@@ -139,7 +139,11 @@ Em **Settings → Environments**:
 Segredo que vale igual nos dois — `GCP_PROJECT_ID`, `GCP_WIF_PROVIDER`,
 `GCP_DEPLOY_SERVICE_ACCOUNT`, `GCP_CLOUDSQL_INSTANCIA` — fica no repositório. O
 `GOOGLE_CLIENT_ID` do repositório segue sendo o de produção; o do _environment_ `homologacao`
-tem precedência sobre ele. A regra do provedor do Workload Identity tem de aceitar o _environment_
+tem precedência sobre ele.
+
+Variável de _environment_ não tem a quem cair: a `APP05_DURACAO_DE_INATIVIDADE_EM_MINUTOS`,
+que só existe em `producao`, é criada em `homologacao` com o mesmo valor — vazia, a App 05
+encerra a sessão do Guerreiro(a) logo ao entrar. A regra do provedor do Workload Identity tem de aceitar o _environment_
 `homologacao`, se hoje restringe a `producao`.
 
 ## 7. Primeira publicação e semeadura
