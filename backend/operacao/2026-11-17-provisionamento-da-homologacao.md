@@ -139,18 +139,18 @@ Em **Settings → Environments**:
 Segredo que vale igual nos dois — `GCP_PROJECT_ID`, `GCP_WIF_PROVIDER`,
 `GCP_DEPLOY_SERVICE_ACCOUNT`, `GCP_CLOUDSQL_INSTANCIA` — fica no repositório. O
 `GOOGLE_CLIENT_ID` do repositório segue sendo o de produção; o do _environment_ `homologacao`
-tem precedência sobre ele.
+tem precedência sobre ele. A regra do provedor do Workload Identity tem de aceitar o
+_environment_ `homologacao`, se hoje restringe a `producao`.
 
 Variável de _environment_ não tem a quem cair: a `APP05_DURACAO_DE_INATIVIDADE_EM_MINUTOS`,
 que só existe em `producao`, é criada em `homologacao` com o mesmo valor — vazia, a App 05
-encerra a sessão do Guerreiro(a) logo ao entrar. A regra do provedor do Workload Identity tem de aceitar o _environment_
-`homologacao`, se hoje restringe a `producao`.
+encerra a sessão do Guerreiro(a) logo ao entrar.
 
 ## 7. Primeira publicação e semeadura
 
 1. `Backend Deploy` → _Run workflow_ (publica na homologação, com migração).
-2. Semeadura com `CG_AMBIENTE=homologacao`, pelo mesmo procedimento da de produção, e o log
-   apagado em seguida (documento 09, "Entrega dos segredos da semeadura").
+2. Semeadura com `CG_AMBIENTE=homologacao`, pelo mesmo procedimento da de produção. O log
+   não se apaga (documento 09, "Entrega dos segredos da semeadura").
 3. As oito chaves `cg_homologacao_*` vão para os segredos do _environment_ `homologacao`.
 4. _Run workflow_ nas sete esteiras das Apps.
 
