@@ -85,10 +85,28 @@ apontam para segredo ou bucket de produção. A conta de deploy precisa de
 
 ## 4. Segredos
 
-Para cada segredo que o `GCP_SECRETOS_CG` de produção lista, crie `<nome>-homologacao` com
-**valor próprio** — nunca o de produção —, inclusive a chave de cifragem da biometria e o DSN,
-que aponta para `comunidade_game_homologacao` com o usuário `comunidade_homologacao`. Conceda
+Para cada segredo que o `GCP_SECRETOS_CG` de produção lista, crie `<nome>-homologacao` — o
+nome do segredo, não o da variável: a do Gemini lê `gemini-api-key`. Conceda
 `roles/secretmanager.secretAccessor` à `$SA` em cada um deles, e só neles.
+
+| Segredo                                             | Valor na homologação                                             |
+| --------------------------------------------------- | ---------------------------------------------------------------- |
+| DSN, chave de cifragem da biometria, chave do Gemini | **próprio**, nunca o de produção                                |
+| durações das sessões, _client ID_ do Google          | copiado de produção — parâmetro, não credencial                 |
+| identidade do fundador                               | copiada de produção — o fundador entra com a mesma conta Google |
+
+- **DSN:** gere a senha do usuário com `openssl rand -hex 24` — vai dentro de URL — e monte no
+  formato do de produção, com `comunidade_homologacao` e `comunidade_game_homologacao`.
+- **Biometria:** 32 bytes em base64 de URL, nunca lida a de produção.
+- **Gemini:** chave nova, com as mesmas restrições e a mesma conta vinculada da de produção.
+- **Fora da homologação:** `CG_BIOMETRIA_DIMENSAO_DO_DESCRITOR`,
+  `CG_BIOMETRIA_LIMIAR_DE_COMPARACAO` e `CG_DEEPSEEK_CHAVE_DE_API` — o núcleo não as lê mais.
+  Ficam fora também do `GCP_SECRETOS_CG` de homologação do passo 6.
+- Grave com `printf '%s'` ou pipe direto entre segredos: quebra de linha no fim estraga o
+  valor, e nenhum valor precisa passar pela tela.
+
+Conferência: os sete `-homologacao` têm só a `$SA` como leitora, e a `$SA` não aparece em
+nenhum segredo de produção.
 
 ## 5. Sites do Firebase e login do Google
 
