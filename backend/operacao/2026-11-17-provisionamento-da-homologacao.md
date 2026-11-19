@@ -89,10 +89,11 @@ Para cada segredo que o `GCP_SECRETOS_CG` de produção lista, crie `<nome>-homo
 nome do segredo, não o da variável: a do Gemini lê `gemini-api-key`. Conceda
 `roles/secretmanager.secretAccessor` à `$SA` em cada um deles, e só neles.
 
-| Segredo                                             | Valor na homologação                                             |
-| --------------------------------------------------- | ---------------------------------------------------------------- |
+| Segredo                                              | Valor na homologação                                            |
+| ---------------------------------------------------- | --------------------------------------------------------------- |
 | DSN, chave de cifragem da biometria, chave do Gemini | **próprio**, nunca o de produção                                |
-| durações das sessões, _client ID_ do Google          | copiado de produção — parâmetro, não credencial                 |
+| _client ID_ do Google                                | o do cliente OAuth de homologação (passo 5)                     |
+| durações das sessões                                 | copiadas de produção — parâmetro, não credencial                |
 | identidade do fundador                               | copiada de produção — o fundador entra com a mesma conta Google |
 
 - **DSN:** gere a senha do usuário com `openssl rand -hex 24` — vai dentro de URL — e monte no
@@ -117,8 +118,14 @@ done
 ```
 
 Site recusado por nome já tomado: escolha outro e corrija o `.firebaserc` e o prefixo
-`cg-hml` nas esteiras. No cliente OAuth do Google, acrescente as origens
-`https://cg-hml-*.web.app` das seis aplicações com login.
+`cg-hml` nas esteiras.
+
+O login Google da homologação usa **cliente OAuth próprio** — o de produção já está no limite
+de 10 origens, e com clientes distintos o núcleo de um ambiente recusa o login do outro, porque
+confere o _audience_. Em **Google Auth Platform → Clientes → Criar cliente**, tipo Aplicativo
+da Web, com as origens `https://cg-hml-<site>.web.app` das seis aplicações com login (`aula`,
+`app-03`, `minhaarea`, `responsavel`, `apoiador`, `mestre`) e sem URI de redirecionamento. O
+ID vai para o `cg-google-client-id-homologacao` e para o `GOOGLE_CLIENT_ID` do passo 6.
 
 ## 6. _Environments_ do GitHub
 
@@ -127,11 +134,12 @@ Em **Settings → Environments**:
 | _Environment_ | Segredos                                                                 |
 | ------------- | ------------------------------------------------------------------------ |
 | `producao`    | os de hoje, sem mudança                                                  |
-| `homologacao` | `GCP_SECRETOS_CG` com os nomes `-homologacao`; os sete `APPNN_CHAVE_DE_APLICACAO` do passo 7 |
+| `homologacao` | `GCP_SECRETOS_CG` com os nomes `-homologacao`; `GOOGLE_CLIENT_ID` do cliente de homologação; os sete `APPNN_CHAVE_DE_APLICACAO` do passo 7 |
 
 Segredo que vale igual nos dois — `GCP_PROJECT_ID`, `GCP_WIF_PROVIDER`,
-`GCP_DEPLOY_SERVICE_ACCOUNT`, `GCP_CLOUDSQL_INSTANCIA`, `GOOGLE_CLIENT_ID` — fica no
-repositório. A regra do provedor do Workload Identity tem de aceitar o _environment_
+`GCP_DEPLOY_SERVICE_ACCOUNT`, `GCP_CLOUDSQL_INSTANCIA` — fica no repositório. O
+`GOOGLE_CLIENT_ID` do repositório segue sendo o de produção; o do _environment_ `homologacao`
+tem precedência sobre ele. A regra do provedor do Workload Identity tem de aceitar o _environment_
 `homologacao`, se hoje restringe a `producao`.
 
 ## 7. Primeira publicação e semeadura
