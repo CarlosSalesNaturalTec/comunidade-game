@@ -8,15 +8,15 @@
 | Aplicação        | — (domínio consumido pelas Apps 03, 05, 06, 08 e 09) |
 | Onda             | 1                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v11 — 2026-08-18                                     |
+| Versão e data    | v12 — 2026-11-20                                     |
 | Depende de       | PRD-08                                               |
-| Documentos-fonte | 04 §§1–3, 05 §§2–3, 11 §5                            |
+| Documentos-fonte | 04 §§1–3, 02 §8.1, 05 §§2–3, 11 §5                   |
 
 ## 2. Contexto e objetivo
 
-Nenhuma atividade da plataforma acontece sem recurso provido. Este PRD define o **livro-razão**
-que registra o que entra, o que sai e o que sobra — e que, por isso, é o que autoriza ou barra
-o agendamento de uma aula.
+Nenhum recurso da plataforma sai sem lastro. Este PRD define o **livro-razão** que registra o
+que entra, o que sai e o que sobra — e que, por isso, é o que confirma ou deixa pendente uma
+aula e o que autoriza a entrega de uma recompensa.
 
 Ele responde a três perguntas que o projeto se comprometeu a responder em público: **quem
 sustentou o quê**, em moedas da plataforma; **o que já foi consumido**; e **o que falta** para
@@ -45,11 +45,14 @@ atividades previstas.
 - Comprovante da transferência anexado ao ressarcimento — **sem armazenar dado bancário**.
 - **Ponto de apoio** cadastrado pela gestão, ligado a uma comunidade: é onde o recurso fica
   guardado e onde a aula acontece.
+- **Finalidade do tipo de recurso** — consumo do encontro ou recompensa —, que separa o que a
+  aula reserva do que sai na entrega.
 - Saldo por tipo de recurso e ponto de apoio, com **reserva no agendamento da aula** e baixa
-  na realização dela.
+  automática no fim do horário dela, sem ato de fechamento.
 - Aula sem lastro fica **pendente de lastro**, e a falta é publicada como necessidade de
   recurso na vitrine (App 06), na área do Apoiador (App 08) e na área dos Mestres da trilha
-  (App 09), de onde o aporte pode ser assumido.
+  (App 09), de onde o aporte pode ser assumido. A recompensa de marco também gera necessidade,
+  por comunidade e trilha.
 - Poder Sustentador do provedor, derivado da soma de moedas aportadas.
 - Patrimônio permanente: exemplar tombado, responsável designado e estado de conservação.
 - Baixa definitiva de recompensa entregue — livro da linha Alpha e camisa.
@@ -100,25 +103,29 @@ atividades previstas.
 2. O Mestre (ou o Admin) provê ele mesmo: dá a aula sem receber, leva o lanche, cede o insumo,
    e **assume o aporte a partir da própria necessidade**, em um ato de confirmação.
 3. O sistema registra um **aporte por absorção** em nome de quem proveu, valorado pela tabela,
-   **no ponto de apoio da aula**.
-4. O saldo é creditado **no ato, sem homologação**, e imediatamente reservado pela aula — que
-   passa a ter lastro.
+   **no ponto de apoio da necessidade**.
+4. O saldo é creditado **no ato, sem homologação**. Se a necessidade é de aula, ela é reservada
+   na mesma operação, e a aula passa a ter lastro.
 5. O aporte entra no Poder Sustentador de quem absorveu, nasce marcado como **ressarcível** e
    soma ao selo público de quem sustentou atividade sem recurso.
 
 ### 5.3 Agendamento da aula com reserva de recurso
 
-1. A gestão agenda a aula, declarando o ponto de apoio e os recursos que ela consome.
+1. A gestão agenda a aula, declarando o ponto de apoio e os recursos que ela consome — só tipos
+   de finalidade **consumo do encontro**: lanche, material de consumo, equipe de apoio.
 2. O sistema verifica o saldo de cada tipo naquele ponto de apoio.
 3. Havendo saldo, **reserva** as quantidades; faltando, a aula fica **pendente de lastro** e o
    que falta é publicado como necessidade de recurso — na vitrine, na área do Apoiador e na
    dos Mestres da trilha.
 4. Suprida a necessidade, por aporte ou por absorção, **o sistema confirma a aula e efetiva a
    reserva no mesmo ato**, sem confirmação humana à parte.
-5. O **lançamento da atividade realizada** — o mesmo ato que registra o resultado de cada
-   participante — converte a reserva em **baixa**.
-6. Aula cancelada por Admin ou por Mestre da comunidade dela **libera** a reserva, devolvendo o
-   saldo. Aula que passa da data sem lançamento nem cancelamento **mantém** a reserva.
+5. **Passado o fim do horário**, o sistema converte a reserva em **baixa**, com o sistema como
+   autor, e a aula passa a **realizada** — não há ato de fechamento. Os resultados dos
+   participantes são lançados por atividade (PRD-09).
+6. A aula que chega ao fim ainda pendente passa a **realizada sem lastro** e sai das
+   necessidades.
+7. Aula cancelada por Admin ou por Mestre da comunidade dela **libera** a reserva, devolvendo o
+   saldo.
 
 ### 5.4 Tombamento e ficha de vida do exemplar
 
@@ -151,66 +158,83 @@ atividades previstas.
 7. O registro do ato e o **selo público permanecem** — o reconhecimento é por ter sustentado a
    atividade quando faltou recurso, não pelo valor.
 
+### 5.7 Entrega da recompensa de marco
+
+1. O Mestre autor declara, na trilha, a missão que concede a recompensa e o tipo de recurso —
+   de finalidade **recompensa**. Nada é reservado.
+2. Quando o desbloqueio passa por julgamento, a **aprovação em "Desafios a julgar"** já é a
+   entrega, se quem julga é vinculado à comunidade do Guerreiro(a); senão, e no marco sem
+   julgamento, a entrega fica na fila de entregas pendentes do Mestre vinculado.
+3. O recurso sai do ponto de apoio da aula em andamento ou, fora do encontro, da **aula
+   imediatamente anterior** da comunidade. O sistema confere o **disponível** — saldo menos o
+   reservado — e dá baixa de uma entrega.
+4. Sem lastro, a aprovação vale e a missão seguinte abre; a entrega fica pendente e a falta
+   aparece como necessidade da comunidade.
+
 ## 6. Requisitos funcionais
 
-| ID         | Requisito                                                                                                                                                                                                                                                                                            | Prioridade |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-07-47` | Admin cadastra, desativa e reativa ponto de apoio, sempre com motivo; a desativação é bloqueada por aula futura ou saldo remanescente                                                                                                                                                                | essencial  |
-| `RF-07-49` | Admin designa ou troca o responsável pelo acervo do ponto de apoio, entre os adultos cadastrados                                                                                                                                                                                                     | essencial  |
-| `RF-07-01` | Admin cadastra e mantém tipo de recurso com unidade e valor de referência em moedas                                                                                                                                                                                                                  | essencial  |
-| `RF-07-02` | Sistema versiona o valor de referência por data de vigência                                                                                                                                                                                                                                          | essencial  |
-| `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                                                                                                                                                                                                                    | essencial  |
-| `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, ponto de apoio, comprovante e data                                                                                                                                                                                                             | essencial  |
-| `RF-07-29` | Aporte declarado no pré-cadastro entra pendente, com comprovante e sem creditar nada                                                                                                                                                                                                                 | essencial  |
-| `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder Sustentador                                                                                                                                                                                                              | essencial  |
-| `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                                                                                                                                                                                                                         | essencial  |
-| `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso                                                                                                                                                                                                                 | essencial  |
-| `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                                                                                                                                                                                                                            | essencial  |
-| `RF-07-08` | Agendamento da aula reserva os recursos declarados no seu ponto de apoio; sem saldo, ela fica pendente de lastro                                                                                                                                                                                     | essencial  |
-| `RF-07-27` | Falta de lastro é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre                                                                                                                                                                                                          | essencial  |
-| `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada, declarando qual atende                                                                                                                                                                                               | essencial  |
-| `RF-07-31` | Necessidade publicada aceita cobertura parcial: o aporte homologado abate o que falta e ela só sai da lista quando o saldo fecha                                                                                                                                                                     | essencial  |
-| `RF-07-09` | Lançamento da atividade realizada converte a reserva em baixa; cancelamento da aula libera a reserva, que nunca expira sozinha                                                                                                                                                                       | essencial  |
-| `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                                                                                                                                                                                                                   | essencial  |
-| `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação                                                                                                                                                                                                            | essencial  |
-| `RF-07-13` | Mestre vinculado à comunidade do Guerreiro(a) confirma a entrega da recompensa de marco, com baixa definitiva e sem devolução; **no encontro o recurso sai do ponto de apoio da aula**, fora dele do que o Mestre escolhe; o histórico é lido pelo Mestre nas comunidades dele e pelo Admin em todas | essencial  |
-| `RF-07-48` | Perda ou dano é anotado na ficha de vida do exemplar, nunca como débito ao Guerreiro(a) ou à família                                                                                                                                                                                                 | essencial  |
-| `RF-07-15` | Sistema exige lastro da recompensa do desafio extra antes da publicação                                                                                                                                                                                                                              | essencial  |
-| `RF-07-16` | Rota pública devolve o movimentado por provedor, aula e comunidade, em moedas                                                                                                                                                                                                                        | essencial  |
-| `RF-07-17` | Apoiador consulta seus aportes e seu Poder Sustentador, sem edição                                                                                                                                                                                                                                   | essencial  |
-| `RF-07-18` | Sistema expõe o que falta de recurso para as aulas já agendadas                                                                                                                                                                                                                                      | essencial  |
-| `RF-07-19` | Lançamento é imutável; correção se faz por lançamento de ajuste, e a transferência de saldo entre pontos de apoio grava um par de débito e crédito, nunca ajuste, com motivo e autor                                                                                                                 | essencial  |
-| `RF-07-32` | Sistema aceita aporte com período apurado anterior à entrada do livro-razão no ar, com comprovante anexado                                                                                                                                                                                           | essencial  |
-| `RF-07-20` | Conferência de inventário por módulo, com resultado publicável na prestação de contas                                                                                                                                                                                                                | desejável  |
-| `RF-07-21` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento — exceto a absorção de serviço, que nasce não ressarcível                                                                                                                                                          | essencial  |
-| `RF-07-22` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário                                                                                                                                                                                                                | essencial  |
-| `RF-07-23` | Sistema aceita doação com destinação a ressarcir recursos absorvidos, que credita moedas sem virar lastro                                                                                                                                                                                            | essencial  |
-| `RF-07-24` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento                                                                                                                                                                                                        | essencial  |
-| `RF-07-25` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                                                                                                                                                                                                                            | essencial  |
-| `RF-07-26` | Card e página pública do Mestre ou Admin exibem quantas vezes ele sustentou atividade sem recurso                                                                                                                                                                                                    | essencial  |
-| `RF-07-33` | Sistema mantém o item do catálogo avulso com tipo de recurso, preço em pontos extras, estoque e comunidade                                                                                                                                                                                           | essencial  |
-| `RF-07-34` | Item do catálogo avulso só fica ativo com lastro registrado no saldo do seu tipo de recurso                                                                                                                                                                                                          | essencial  |
-| `RF-07-35` | Troca registra item, Guerreiro(a), preço cobrado, encontro e Mestre que entregou                                                                                                                                                                                                                     | essencial  |
-| `RF-07-36` | Entrega da troca gera baixa no livro-razão e decrementa o estoque do item                                                                                                                                                                                                                            | essencial  |
-| `RF-07-37` | Sistema recusa troca de item sem estoque ou sem lastro                                                                                                                                                                                                                                               | essencial  |
-| `RF-07-38` | Preço em pontos extras vem da tabela de referência vigente, sem derivação do valor em moedas do tipo de recurso                                                                                                                                                                                      | essencial  |
-| `RF-07-42` | Admin cadastra o preço de referência em pontos extras por tipo de recurso                                                                                                                                                                                                                            | essencial  |
-| `RF-07-43` | Sistema versiona o preço de referência por data de vigência, como o valor em moedas                                                                                                                                                                                                                  | essencial  |
-| `RF-07-44` | Sistema recusa preço de referência menor que 25 pontos extras                                                                                                                                                                                                                                        | essencial  |
-| `RF-07-45` | Item do catálogo herda o preço da tabela vigente; o cadastro do item não aceita preço próprio                                                                                                                                                                                                        | essencial  |
-| `RF-07-46` | Troca cobra o preço vigente na data da troca e o registra no histórico                                                                                                                                                                                                                               | essencial  |
-| `RF-07-50` | Sistema eleva a 25, na entrega do piso de 25, todo preço de referência vigente abaixo dele, com vigência nova e o histórico preservado                                                                                                                                                               | essencial  |
-| `RF-07-51` | Admin altera nome, unidade e exige comprovante do tipo de recurso, sem mudar a natureza, e abre vigência nova do valor em moedas                                                                                                                                                                     | essencial  |
-| `RF-07-52` | Tipo de recurso tem marca de ativo; o desativado é recusado só em escolha nova, e o que já existe com ele segue inalterado                                                                                                                                                                           | essencial  |
-| `RF-07-39` | Publicação de desafio extra reserva a recompensa; sem saldo, a publicação é recusada                                                                                                                                                                                                                 | essencial  |
-| `RF-07-40` | Desafio extra encerrado sem conclusão libera a reserva, devolvendo o saldo                                                                                                                                                                                                                           | essencial  |
-| `RF-07-41` | Sistema aceita custeio do desafio extra por absorção do proponente ou por saldo de recurso existente                                                                                                                                                                                                 | essencial  |
+| ID         | Requisito                                                                                                                                                                                                                                                                                                                                                                                                                                              | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-07-47` | Admin cadastra, desativa e reativa ponto de apoio, sempre com motivo; a desativação é bloqueada por aula futura ou saldo remanescente                                                                                                                                                                                                                                                                                                                  | essencial  |
+| `RF-07-49` | Admin designa ou troca o responsável pelo acervo do ponto de apoio, entre os adultos cadastrados                                                                                                                                                                                                                                                                                                                                                       | essencial  |
+| `RF-07-01` | Admin cadastra e mantém tipo de recurso com unidade, **finalidade** e valor de referência em moedas                                                                                                                                                                                                                                                                                                                                                    | essencial  |
+| `RF-07-02` | Sistema versiona o valor de referência por data de vigência                                                                                                                                                                                                                                                                                                                                                                                            | essencial  |
+| `RF-07-03` | Admin cadastra tipo novo no ato do registro de um aporte, sem interromper o fluxo                                                                                                                                                                                                                                                                                                                                                                      | essencial  |
+| `RF-07-04` | Admin registra aporte com provedor, tipo, quantidade, ponto de apoio, comprovante e data                                                                                                                                                                                                                                                                                                                                                               | essencial  |
+| `RF-07-29` | Aporte declarado no pré-cadastro entra pendente, com comprovante e sem creditar nada                                                                                                                                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-30` | Homologação do aporte pendente converte o valor em moedas e credita o Poder Sustentador                                                                                                                                                                                                                                                                                                                                                                | essencial  |
+| `RF-07-05` | Sistema converte todo aporte em moedas pela tabela vigente na data do aporte                                                                                                                                                                                                                                                                                                                                                                           | essencial  |
+| `RF-07-06` | Sistema registra aporte por absorção em nome do Mestre ou Admin que proveu o recurso                                                                                                                                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-07` | Sistema mantém saldo por tipo de recurso e ponto de apoio                                                                                                                                                                                                                                                                                                                                                                                              | essencial  |
+| `RF-07-08` | Agendamento da aula reserva os recursos declarados no seu ponto de apoio, só de finalidade consumo do encontro; sem saldo, ela fica pendente de lastro                                                                                                                                                                                                                                                                                                 | essencial  |
+| `RF-07-27` | Falta de lastro da aula e da recompensa de marco é publicada como necessidade na vitrine e nas áreas do Apoiador e do Mestre                                                                                                                                                                                                                                                                                                                           | essencial  |
+| `RF-07-28` | Mestre ou Admin assume o aporte por absorção a partir da necessidade publicada, declarando qual atende                                                                                                                                                                                                                                                                                                                                                 | essencial  |
+| `RF-07-31` | Necessidade publicada aceita cobertura parcial: o aporte homologado abate o que falta e ela só sai da lista quando o saldo fecha                                                                                                                                                                                                                                                                                                                       | essencial  |
+| `RF-07-09` | Passado o fim do horário da aula, o sistema converte a reserva em baixa, com o sistema como autor, e a aula passa a realizada; cancelamento da aula libera a reserva                                                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-10` | Sistema calcula o Poder Sustentador de cada provedor pela soma de moedas aportadas                                                                                                                                                                                                                                                                                                                                                                     | essencial  |
+| `RF-07-11` | Sistema registra exemplar tombado com ponto de apoio, responsável designado e conservação                                                                                                                                                                                                                                                                                                                                                              | essencial  |
+| `RF-07-13` | Mestre vinculado à comunidade do Guerreiro(a) confirma a entrega da recompensa de marco — pela fila de entregas pendentes ou pela aprovação do desbloqueio julgado —, com baixa definitiva de uma entrega, contra o disponível e sem devolução; **o recurso sai do ponto de apoio da aula em andamento ou, fora do encontro, da aula imediatamente anterior da comunidade**; o histórico é lido pelo Mestre nas comunidades dele e pelo Admin em todas | essencial  |
+| `RF-07-48` | Perda ou dano é anotado na ficha de vida do exemplar, nunca como débito ao Guerreiro(a) ou à família                                                                                                                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-15` | Sistema exige lastro da recompensa do desafio extra antes da publicação                                                                                                                                                                                                                                                                                                                                                                                | essencial  |
+| `RF-07-16` | Rota pública devolve o movimentado por provedor, aula e comunidade, em moedas                                                                                                                                                                                                                                                                                                                                                                          | essencial  |
+| `RF-07-17` | Apoiador consulta seus aportes e seu Poder Sustentador, sem edição                                                                                                                                                                                                                                                                                                                                                                                     | essencial  |
+| `RF-07-18` | Sistema expõe o que falta de recurso para as aulas já agendadas e para as recompensas de marco da comunidade                                                                                                                                                                                                                                                                                                                                           | essencial  |
+| `RF-07-19` | Lançamento é imutável; correção se faz por lançamento de ajuste, e a transferência de saldo entre pontos de apoio grava um par de débito e crédito, nunca ajuste, com motivo e autor                                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-32` | Sistema aceita aporte com período apurado anterior à entrada do livro-razão no ar, com comprovante anexado                                                                                                                                                                                                                                                                                                                                             | essencial  |
+| `RF-07-20` | Conferência de inventário por módulo, com resultado publicável na prestação de contas                                                                                                                                                                                                                                                                                                                                                                  | desejável  |
+| `RF-07-21` | Aporte por absorção nasce marcado como ressarcível, com situação de ressarcimento — exceto a absorção de serviço, que nasce não ressarcível                                                                                                                                                                                                                                                                                                            | essencial  |
+| `RF-07-22` | Ressarcimento pago exige comprovante anexado, e a plataforma não guarda dado bancário                                                                                                                                                                                                                                                                                                                                                                  | essencial  |
+| `RF-07-23` | Sistema aceita doação com destinação a ressarcir recursos absorvidos, que credita moedas sem virar lastro                                                                                                                                                                                                                                                                                                                                              | essencial  |
+| `RF-07-24` | Sistema lista os aportes ressarcíveis em aberto por antiguidade, e o Admin decide o pagamento                                                                                                                                                                                                                                                                                                                                                          | essencial  |
+| `RF-07-25` | Ressarcimento pago reverte as moedas do aporte e mantém o registro do ato                                                                                                                                                                                                                                                                                                                                                                              | essencial  |
+| `RF-07-26` | Card e página pública do Mestre ou Admin exibem quantas vezes ele sustentou atividade sem recurso                                                                                                                                                                                                                                                                                                                                                      | essencial  |
+| `RF-07-33` | Sistema mantém o item do catálogo avulso com tipo de recurso, preço em pontos extras, estoque e comunidade                                                                                                                                                                                                                                                                                                                                             | essencial  |
+| `RF-07-34` | Item do catálogo avulso só fica ativo com lastro registrado no saldo do seu tipo de recurso                                                                                                                                                                                                                                                                                                                                                            | essencial  |
+| `RF-07-35` | Troca registra item, Guerreiro(a), preço cobrado, encontro e Mestre que entregou                                                                                                                                                                                                                                                                                                                                                                       | essencial  |
+| `RF-07-36` | Entrega da troca gera baixa no livro-razão e decrementa o estoque do item                                                                                                                                                                                                                                                                                                                                                                              | essencial  |
+| `RF-07-37` | Sistema recusa troca de item sem estoque ou sem lastro                                                                                                                                                                                                                                                                                                                                                                                                 | essencial  |
+| `RF-07-38` | Preço em pontos extras vem da tabela de referência vigente, sem derivação do valor em moedas do tipo de recurso                                                                                                                                                                                                                                                                                                                                        | essencial  |
+| `RF-07-42` | Admin cadastra o preço de referência em pontos extras por tipo de recurso                                                                                                                                                                                                                                                                                                                                                                              | essencial  |
+| `RF-07-43` | Sistema versiona o preço de referência por data de vigência, como o valor em moedas                                                                                                                                                                                                                                                                                                                                                                    | essencial  |
+| `RF-07-44` | Sistema recusa preço de referência menor que 25 pontos extras                                                                                                                                                                                                                                                                                                                                                                                          | essencial  |
+| `RF-07-45` | Item do catálogo herda o preço da tabela vigente; o cadastro do item não aceita preço próprio                                                                                                                                                                                                                                                                                                                                                          | essencial  |
+| `RF-07-46` | Troca cobra o preço vigente na data da troca e o registra no histórico                                                                                                                                                                                                                                                                                                                                                                                 | essencial  |
+| `RF-07-50` | Sistema eleva a 25, na entrega do piso de 25, todo preço de referência vigente abaixo dele, com vigência nova e o histórico preservado                                                                                                                                                                                                                                                                                                                 | essencial  |
+| `RF-07-51` | Admin altera nome, unidade, finalidade e exige comprovante do tipo de recurso, sem mudar a natureza, e abre vigência nova do valor em moedas                                                                                                                                                                                                                                                                                                           | essencial  |
+| `RF-07-52` | Tipo de recurso tem marca de ativo; o desativado é recusado só em escolha nova, e o que já existe com ele segue inalterado                                                                                                                                                                                                                                                                                                                             | essencial  |
+| `RF-07-53` | Tipo de recurso não durável declara uma finalidade — consumo do encontro ou recompensa —; a aula aceita só consumo do encontro, e a recompensa de marco, a avulsa e a do desafio extra só recompensa                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-54` | Sistema deriva a necessidade da recompensa de marco por comunidade, ponto de apoio, tipo e trilha: Guerreiros(as) com vínculo vigente que ainda não a receberam, vezes a quantidade, menos o disponível no ponto de apoio da aula imediatamente anterior da comunidade; contam as trilhas com atividade em aula da comunidade                                                                                                                          | essencial  |
+| `RF-07-55` | Aula que chega ao fim do horário pendente de lastro passa a realizada sem lastro, sem baixa, e sai das necessidades                                                                                                                                                                                                                                                                                                                                    | essencial  |
+| `RF-07-56` | Na implantação da baixa automática, a aula que terminou antes dela não recebe baixa: a reserva é liberada e a aula passa a realizada                                                                                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-39` | Publicação de desafio extra reserva a recompensa; sem saldo, a publicação é recusada                                                                                                                                                                                                                                                                                                                                                                   | essencial  |
+| `RF-07-40` | Desafio extra encerrado sem conclusão libera a reserva, devolvendo o saldo                                                                                                                                                                                                                                                                                                                                                                             | essencial  |
+| `RF-07-41` | Sistema aceita custeio do desafio extra por absorção do proponente ou por saldo de recurso existente                                                                                                                                                                                                                                                                                                                                                   | essencial  |
 
 ## 7. Regras de negócio
 
 | ID         | Regra                                                                                                                                | Invariante | Fonte        |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------------ |
-| `RN-07-01` | Nenhuma atividade acontece sem lastro dos recursos que consome                                                                       | 9          | 04 §1        |
+| `RN-07-01` | Nenhum recurso sai sem lastro: a aula consome só o que reservou, e a recompensa só é entregue com disponível                         | 9          | 04 §1        |
 | `RN-07-02` | Todo custo de toda ação é atribuído a um provedor                                                                                    | —          | 04 §1        |
 | `RN-07-03` | Aporte não financeiro é valorado pela tabela de referência da gestão                                                                 | —          | 04 §1        |
 | `RN-07-36` | O aporte declara o ponto de apoio em que entra, e o lançamento de crédito herda esse ponto                                           | —          | 04 §1        |
@@ -237,6 +261,10 @@ atividades previstas.
 | `RN-07-18` | Ressarcimento pago reverte as moedas; o registro do ato e o destaque público permanecem                                              | —          | 04 §1        |
 | `RN-07-39` | A absorção declara o valor em reais quando houve desembolso; a absorção de serviço não declara valor em reais e não é ressarcível    | —          | 04 §1        |
 | `RN-07-40` | Só se exclui tipo de recurso nunca usado; o usado é recusado e se desativa                                                           | —          | 04 §1        |
+| `RN-07-41` | Todo tipo de recurso não durável tem uma finalidade só; tipo que serve aos dois usos é cadastrado duas vezes                         | —          | 04 §1        |
+| `RN-07-42` | A recompensa de marco não reserva saldo: é baixada na entrega, uma por entrega, contra o saldo menos o reservado                     | 9          | 02 §8.1      |
+| `RN-07-43` | Não há ato de fechamento de aula; a baixa da reserva é do sistema, no fim do horário                                                 | —          | 04 §1        |
+| `RN-07-44` | Sem lastro na aprovação do desbloqueio, a aprovação vale e a entrega fica pendente                                                   | —          | 02 §8.1      |
 | `RN-07-19` | O selo público mostra o número de absorções, nunca o valor em reais                                                                  | 16         | 11 §8.2      |
 | `RN-07-20` | Chave PIX, banco e conta nunca são armazenados; o trâmite guarda apenas o comprovante                                                | —          | 04 §1        |
 | `RN-07-21` | Aporte declarado no pré-cadastro não credita moeda alguma antes da homologação de Admin                                              | 16         | 04 §2        |
@@ -261,7 +289,7 @@ TipoDeRecurso 1 ──── N Aporte
 Provedor      1 ──── N Aporte             (Apoiador, Mestre ou Admin)
 PontoDeApoio  1 ──── N Aporte             (onde o aporte entra)
 Aporte        1 ──── 1 Lancamento         (crédito)
-Aula          1 ──── N Reserva ──── 1 Lancamento (débito, na realização)
+Aula          1 ──── N Reserva ──── 1 Lancamento (débito, no fim do horário)
 TipoDeRecurso 1 ──── 1 SaldoDeRecurso     (por ponto de apoio)
 TipoDeRecurso 1 ──── N PrecoDeReferencia  (versionado por vigência)
 TipoDeRecurso 1 ──── N ItemDeCatalogoAvulso
@@ -272,20 +300,20 @@ Aporte        0..1 ─ N ItemPatrimonial    (quando o aporte é durável)
 PontoDeApoio  1 ──── N ItemPatrimonial
 ```
 
-| Entidade               | Atributos essenciais                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PontoDeApoio`         | nome, comunidade, responsável designado pelo acervo — em designação posterior ao cadastro —, ativo, **motivo e autoria da última mudança de estado**                                                                                                                                                                                                                                                                                                                       |
-| `TipoDeRecurso`        | nome, natureza (consumível, durável, serviço, financeiro), unidade, exige comprovante                                                                                                                                                                                                                                                                                                                                                                                      |
-| `ValorDeReferencia`    | tipo, valor em moedas, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `Aporte`               | provedor, tipo, quantidade, **ponto de apoio de entrada**, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **origem do registro** (gestão, pré-cadastro ou App 08), solicitação de origem, **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), **destinação** (lastro ou ressarcimento), **aula cuja necessidade atende** — só na absorção —, comprovante, admin homologador — vazio na absorção —, data |
-| `Lancamento`           | natureza (crédito, débito, ajuste), tipo de recurso, **ponto de apoio**, quantidade, moedas, aula, aporte, data, autor, motivo do ajuste, **lançamento relacionado** — só no par da transferência                                                                                                                                                                                                                                                                          |
-| `Reserva`              | aula **ou desafio extra**, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                                                                                                                                                                            |
-| `PrecoDeReferencia`    | tipo de recurso, **preço em pontos extras**, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                                                                                                                                                   |
-| `ItemDeCatalogoAvulso` | nome, tipo de recurso, estoque, comunidade, **ponto de apoio**, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo — o **preço vem da tabela de referência**, não do cadastro do item                                                                                                                                                                                                                                                                     |
-| `Troca`                | item, Guerreiro(a), preço em pontos extras cobrado, **encontro (a `Aula` do PRD-01, sem verificação de estado nem presença)**, Mestre que entregou, data                                                                                                                                                                                                                                                                                                                   |
-| `SaldoDeRecurso`       | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `ItemPatrimonial`      | aporte de origem (opcional), título, número de tombo, ponto de apoio, estado de conservação, ficha de vida — quem cuidou dele e as perdas e danos anotados; **o responsável não é atributo próprio: deriva do responsável designado pelo acervo do `PontoDeApoio`** (documento 05 §3)                                                                                                                                                                                      |
-| `Ressarcimento`        | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                                                                                                                                                                                                                                                    |
+| Entidade               | Atributos essenciais                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PontoDeApoio`         | nome, comunidade, responsável designado pelo acervo — em designação posterior ao cadastro —, ativo, **motivo e autoria da última mudança de estado**                                                                                                                                                                                                                                                                                                                                                                            |
+| `TipoDeRecurso`        | nome, natureza (consumível, durável, serviço, financeiro), **finalidade** (consumo do encontro ou recompensa — vazia só no durável), unidade, exige comprovante                                                                                                                                                                                                                                                                                                                                                                 |
+| `ValorDeReferencia`    | tipo, valor em moedas, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `Aporte`               | provedor, tipo, quantidade, **ponto de apoio de entrada**, valor em moedas, valor de origem, forma (financeira, material, serviço, absorção), **origem do registro** (gestão, pré-cadastro ou App 08), solicitação de origem, **ressarcível**, situação de ressarcimento (não se aplica, em aberto, ressarcido), **destinação** (lastro ou ressarcimento), **necessidade que atende** — só na absorção: a aula, ou a comunidade e a trilha da recompensa de marco —, comprovante, admin homologador — vazio na absorção —, data |
+| `Lancamento`           | natureza (crédito, débito, ajuste), tipo de recurso, **ponto de apoio**, quantidade, moedas, aula, aporte, data, autor — pessoa, ou o **sistema** na baixa no fim da aula —, motivo do ajuste, **lançamento relacionado** — só no par da transferência                                                                                                                                                                                                                                                                          |
+| `Reserva`              | aula — só tipo de finalidade consumo do encontro — **ou desafio extra**, tipo de recurso, quantidade, ponto de apoio, estado (reservada, consumida, liberada)                                                                                                                                                                                                                                                                                                                                                                   |
+| `PrecoDeReferencia`    | tipo de recurso, **preço em pontos extras**, vigência inicial e final, admin responsável                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `ItemDeCatalogoAvulso` | nome, tipo de recurso, estoque, comunidade, **ponto de apoio**, quem cadastrou (Mestre ou Apoiador), situação de homologação, ativo — o **preço vem da tabela de referência**, não do cadastro do item                                                                                                                                                                                                                                                                                                                          |
+| `Troca`                | item, Guerreiro(a), preço em pontos extras cobrado, **encontro (a `Aula` do PRD-01, sem verificação de estado nem presença)**, Mestre que entregou, data                                                                                                                                                                                                                                                                                                                                                                        |
+| `SaldoDeRecurso`       | tipo, ponto de apoio, quantidade disponível, quantidade reservada                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `ItemPatrimonial`      | aporte de origem (opcional), título, número de tombo, ponto de apoio, estado de conservação, ficha de vida — quem cuidou dele e as perdas e danos anotados; **o responsável não é atributo próprio: deriva do responsável designado pelo acervo do `PontoDeApoio`** (documento 05 §3)                                                                                                                                                                                                                                           |
+| `Ressarcimento`        | aporte absorvido, valor em reais, receita destinada de origem, admin pagador, data, comprovante anexado (PDF ou imagem)                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 Imutabilidade: `Lancamento` é **somente inserção**. Erro se corrige por lançamento de
 **ajuste**, que referencia o original e guarda motivo e autor. O saldo é sempre **derivado**
@@ -303,9 +331,15 @@ não entra na fila de pagamento (`RN-07-39`).
 do saldo de recurso e não confirma aula pendente de lastro (`RN-07-38`) — é o que impede o
 mesmo dinheiro de destravar uma aula e devolver a quem absorveu.
 
-A necessidade que a absorção atende é identificada pela **aula**: há uma necessidade por aula
-e tipo de recurso, o aporte já declara o tipo, e a necessidade é derivada — não há tabela a
-referenciar (`RF-07-28`).
+A necessidade que a absorção atende tem **duas espécies**, ambas derivadas, sem tabela a
+referenciar (`RF-07-28`): a da aula, uma por aula e tipo de recurso, e a da recompensa de
+marco, uma por comunidade, ponto de apoio, tipo e trilha (`RF-07-54`). O aporte já declara o
+tipo e o ponto de apoio; resta declarar a aula ou a comunidade e a trilha.
+
+**A finalidade separa o que a aula reserva do que sai na entrega** (`RN-07-41`). A aula declara
+só consumo do encontro e o consome inteiro no fim do horário; a recompensa nunca passa pela
+aula, e a sobra de kit não fica presa numa reserva que não se usa. O durável não tem
+finalidade: é patrimônio, nem reservável nem recompensa.
 
 O `PontoDeApoio` é a dimensão do saldo: o recurso fica onde é usado. A `Aula`, entidade do
 PRD-01, passa a declarar **em qual ponto de apoio acontece** — é o que leva a reserva ao saldo
@@ -328,15 +362,17 @@ de apoio. É o que esvazia o ponto de apoio antes de o Admin desativá-lo — de
 por aula futura ou saldo remanescente, cada bloqueio dizendo o que prende o espaço, e nunca
 apagando o ponto de apoio nem o vínculo de aula ou lançamento já gravado.
 
-**O débito tem três origens, e só a baixa de reserva declara aula**: o crédito e o ajuste já não
+**O débito tem três origens, e só a baixa de reserva declara aula** — feita pelo sistema no fim
+do horário, sem ato humano (`RN-07-43`): o crédito e o ajuste já não
 declaram, e o débito emitido pela **troca** e pela **entrega de recompensa de marco** também não
-— o marco é alcançado no percurso da trilha, não num encontro. `Lancamento.aula` guarda um
+— o marco é alcançado no percurso da trilha, não num encontro, ainda que o ponto de apoio de
+onde sai venha de uma aula. `Lancamento.aula` guarda um
 significado só, a reserva daquela aula foi baixada, e o consumo por troca e por entrega é
 derivável da própria `Troca` e da própria entrega, sem entrar em `GET
 /prestacao-de-contas/aulas`. A troca exige que o Guerreiro(a) seja da **comunidade do item**, no
 mesmo filtro por comunidade que já vale no cadastro do item; a entrega exige que o Mestre esteja
 vinculado à **comunidade do Guerreiro(a)**, porque a recompensa de marco não tem ponto de apoio
-próprio (PRD-09).
+próprio (PRD-09): ele é o da aula em andamento ou da imediatamente anterior da comunidade.
 
 ## 9. Contratos de API
 
@@ -345,8 +381,8 @@ próprio (PRD-09).
 | GET    | `/prestacao-de-contas`                         | pública         | Movimentado total e por provedor, em moedas                            |
 | GET    | `/prestacao-de-contas/aulas`                   | pública         | Consumo por aula e por comunidade, em moedas                           |
 | GET    | `/provedores/{id}/poder-sustentador`           | pública         | Poder Sustentador do provedor, em moedas                               |
-| GET    | `/vitrine/necessidades`                        | pública         | O que falta de recurso para as aulas já agendadas                      |
-| GET    | `/necessidades/minhas`                         | Mestre          | Necessidades das aulas das comunidades a que o Mestre está vinculado   |
+| GET    | `/vitrine/necessidades`                        | pública         | O que falta de recurso para as aulas e as recompensas de marco         |
+| GET    | `/necessidades/minhas`                         | Mestre          | Necessidades das comunidades a que o Mestre está vinculado             |
 | POST   | `/pontos-de-apoio`                             | Admin           | Cadastra ponto de apoio, com nome e comunidade                         |
 | PUT    | `/pontos-de-apoio/{id}/responsavel`            | Admin           | Designa ou troca o responsável pelo acervo                             |
 | POST   | `/pontos-de-apoio/{id}/desativacao`            | Admin           | Desativa o ponto de apoio, com motivo                                  |
@@ -356,8 +392,8 @@ próprio (PRD-09).
 | POST   | `/itens-patrimoniais`                          | Admin           | Tomba o exemplar permanente, com aporte de origem opcional             |
 | GET    | `/itens-patrimoniais`                          | gestão          | Lê o acervo patrimonial, filtrado por comunidade                       |
 | POST   | `/itens-patrimoniais/{id}/ficha-de-vida`       | Mestre ou Admin | Anota a ficha de vida do exemplar                                      |
-| POST   | `/tipos-de-recurso`                            | Admin           | Cadastra tipo e valor de referência                                    |
-| PATCH  | `/tipos-de-recurso/{id}`                       | Admin           | Altera nome, unidade e exige comprovante                               |
+| POST   | `/tipos-de-recurso`                            | Admin           | Cadastra tipo, finalidade e valor de referência                        |
+| PATCH  | `/tipos-de-recurso/{id}`                       | Admin           | Altera nome, unidade, finalidade e exige comprovante                   |
 | POST   | `/tipos-de-recurso/{id}/valores-de-referencia` | Admin           | Abre vigência nova do valor em moedas                                  |
 | POST   | `/tipos-de-recurso/{id}/desativacao`           | Admin           | Desativa o tipo; `…/reativacao` reativa                                |
 | DELETE | `/tipos-de-recurso/{id}`                       | Admin           | Exclui o tipo nunca usado                                              |
@@ -374,12 +410,13 @@ próprio (PRD-09).
 | GET    | `/meus-aportes`                                | Apoiador        | Aportes e Poder Sustentador do próprio Apoiador                        |
 | GET    | `/meus-aportes/ressarciveis`                   | Mestre ou Admin | Situação dos aportes que absorveu                                      |
 
-Erros previstos: agendamento sem saldo (422, com a lista do que falta); homologação pelo
-próprio provedor (403); aporte de tipo inexistente (422, com a rota de cadastro do tipo);
-tentativa de editar lançamento (405); ressarcimento sem comprovante anexado (422); desativação
-de ponto de apoio com aula futura (422, com quantas aulas o prendem) ou com saldo remanescente
-(422, com os tipos que ainda têm saldo); transferência com origem igual ao destino, quantidade
-maior que o saldo da origem ou destino inativo (422).
+Erros previstos: aula que declara tipo de finalidade recompensa, ou recompensa que declara tipo
+de consumo do encontro (422); agendamento sem saldo (422, com a lista do que falta);
+homologação pelo próprio provedor (403); aporte de tipo inexistente (422, com a rota de
+cadastro do tipo); tentativa de editar lançamento (405); ressarcimento sem comprovante anexado
+(422); desativação de ponto de apoio com aula futura (422, com quantas aulas o prendem) ou com
+saldo remanescente (422, com os tipos que ainda têm saldo); transferência com origem igual ao
+destino, quantidade maior que o saldo da origem ou destino inativo (422).
 
 ## 10. Requisitos não funcionais
 
@@ -423,6 +460,15 @@ maior que o saldo da origem ou destino inativo (422).
 - Aporte por absorção registrado durante a aula credita e reserva na mesma operação, e a aula
   passa a ter lastro.
 - Cancelamento de aula devolve ao saldo exatamente a quantidade reservada.
+- Aula cujo horário terminou tem a reserva baixada pelo sistema e passa a realizada; a que
+  terminou pendente passa a realizada sem lastro e some das necessidades.
+- Aula que declara tipo de finalidade recompensa é recusada.
+- Entrega de recompensa de marco é recusada quando o saldo do ponto de apoio está todo
+  reservado; na aprovação do desbloqueio, a aprovação vale e a entrega fica pendente.
+- Comunidade com 10 Guerreiros(as), 3 já com a recompensa de quantidade 1 e disponível 4 no
+  ponto de apoio da aula anterior mostra necessidade de 3.
+- Aula terminada antes da implantação da baixa automática tem a reserva liberada, e o saldo
+  não muda.
 - Saldo aportado a um ponto de apoio não lastreia aula agendada em outro.
 - Exemplar dado como perdido é anotado na ficha de vida, entra na conferência de inventário e
   gera **nenhum** débito ao Guerreiro(a).
@@ -439,59 +485,64 @@ livro-razão contra recursos necessários às atividades previstas do Ciclo 01.
 
 ## 13. Decisões tomadas neste PRD
 
-| Decisão                                                                        | Gravada em     | Doc 09                                         |
-| ------------------------------------------------------------------------------ | -------------- | ---------------------------------------------- |
-| Ponto de apoio como entidade da gestão, ligada a uma comunidade                | 05 §2          | Ponto de apoio como entidade da plataforma     |
-| Saldo de recurso por tipo **e ponto de apoio**                                 | 04 §1          | Ponto de apoio como entidade da plataforma     |
-| A aula é a atividade que declara recursos, reserva e dá baixa                  | 04 §1          | A atividade que reserva recurso é a aula       |
-| A baixa é o lançamento da atividade realizada, sem rota de baixa à parte       | 04 §1          | A baixa do recurso é o lançamento da atividade |
-| Aula cancelada por Admin ou por Mestre da comunidade dela                      | 05 §4          | Quem cancela uma aula agendada                 |
-| Reserva de aula que passou sem desfecho não expira sozinha                     | 04 §1          | Reserva de aula que passou sem desfecho        |
-| A aula pendente de lastro é confirmada pelo aporte que fecha a diferença       | 04 §1          | Quem confirma a aula pendente de lastro        |
-| A aula declara em qual ponto de apoio acontece — altera o PRD-01               | 05 §2          | A atividade que reserva recurso é a aula       |
-| Empréstimo de bancada e reposição solidária ficam para o ciclo seguinte        | 05 §3 (já era) | Empréstimo de bancada e reposição solidária    |
-| Aporte não financeiro valorado por tabela de referência da gestão              | 04 §1          | Já decididos                                   |
-| Tipo de aporte novo cadastrado na hora por um Admin                            | 04 §1          | Já decididos                                   |
-| Moeda com duas casas decimais                                                  | 04 §1          | Já decididos                                   |
-| Lastro por saldo de tipo de recurso, com reserva no agendamento                | 04 §1          | Já decididos                                   |
-| Aporte por absorção de Mestre ou Admin                                         | 04 §1          | Já decididos                                   |
-| O aporte declara o ponto de apoio em que entra, e o crédito herda esse ponto   | 04 §1          | Onde o aporte entra no livro-razão             |
-| A absorção credita no ato, sem homologação                                     | 04 §1          | Homologação do aporte por absorção             |
-| Responsável designado pelo acervo em cada ponto de apoio                       | 05 §3          | Já decididos                                   |
-| Designação do responsável posterior ao cadastro, entre os adultos cadastrados  | 05 §3          | Ponto de apoio como entidade da plataforma     |
-| Aporte por absorção marcado como ressarcível, com destaque público pelo ato    | 04 §1, 11 §8.2 | Já decididos                                   |
-| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin     | 04 §1          | Já decididos                                   |
-| Ressarcimento reverte as moedas; o registro do ato permanece                   | 04 §1          | Já decididos                                   |
-| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado | 04 §1, 03 §11  | Já decididos                                   |
-| Produção executiva como tipo de recurso, aportada por absorção                 | 04 §1          | Já decididos                                   |
-| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente         | 04 §1          | Já decididos                                   |
-| Catálogo avulso com lastro, estoque e baixa na entrega da troca                | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
-| Preço em pontos extras sem derivação do valor em moedas                        | 02 §8.2        | Troca de pontos extras por recompensa avulsa   |
-| Preço fixado por tabela de referência da gestão, versionada por vigência       | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
-| Piso de 25 pontos extras para qualquer item do catálogo avulso                 | 02 §8.2        | Quem fixa o preço do catálogo avulso           |
-| Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso  | 04 §3          | Desafio extra — proponente, teto e custeio     |
-| Custeio do desafio extra por absorção ou por saldo já existente na plataforma  | 04 §3          | Desafio extra — proponente, teto e custeio     |
-| Horas da produção executiva declaradas por período, com commits como lastro    | 04 §1          | Apuração da produção executiva                 |
-| Valor-hora único na tabela de referência, versionado por vigência              | 04 §1          | Apuração da produção executiva                 |
-| Prestação de contas pública em painel vivo, sem fechamento periódico           | 04 §1          | Formato da prestação de contas pública         |
-| Dupla entrada fora do Ciclo 01; segue proposta no documento-fonte              | 04 §1          | Formato da prestação de contas pública         |
-| Receita destinada a ressarcir credita moedas sem virar lastro                  | 04 §1          | Receita destinada a ressarcimento              |
-| Valor em reais exigido na absorção com desembolso; serviço não é ressarcível   | 04 §1          | Valor em reais do aporte por absorção          |
-| A absorção declara qual necessidade publicada atende                           | 04 §1          | Origem da absorção na necessidade publicada    |
-| O ressarcimento pago nunca excede o que a receita destinada ainda cobre        | 04 §1          | Teto do ressarcimento pago                     |
-| `RF-04-49` é garantia da App 01; o núcleo não verifica a janela de troca       | 02 §8.2        | Janela de troca da recompensa avulsa           |
-| Lastro do item do catálogo avulso é saldo igual ou maior que o estoque         | 02 §8.2        | Lastro do item do catálogo avulso              |
-| `ItemDeCatalogoAvulso` declara o ponto de apoio, como a `Aula` já declara      | 04 §1          | Ponto de apoio do item do catálogo avulso      |
-| O encontro que a troca registra é a `Aula`, sem verificar estado nem presença  | 02 §8.2        | Encontro registrado pela troca de recompensa   |
-| Rota da troca é `POST /aulas/{id}/trocas`, com Mestre em sessão                | 02 §8.2        | Rota de registro da troca de recompensa        |
-| O débito emitido pela troca não declara aula                                   | 04 §1          | Aula no débito emitido pela troca              |
-| A troca exige que o Guerreiro(a) seja da comunidade do item                    | 02 §8.2        | Comunidade exigida na troca de recompensa      |
-| Saldo durável não é reservável pela aula nem lastreia o catálogo avulso        | 04 §1          | Patrimônio paralelo ao saldo consumível        |
-| Número de tombo digitado por quem tomba, único por ponto de apoio              | 05 §3          | Número de tombo do item patrimonial            |
-| Item de catálogo avulso de tipo durável é recusado no cadastro                 | 02 §8.2        | Item de catálogo avulso de tipo durável        |
-| Responsável do item patrimonial deriva do ponto de apoio, não é campo próprio  | 05 §3          | Responsável do item patrimonial                |
-| Admin desativa e reativa ponto de apoio, bloqueado por aula futura e saldo     | 05 §2          | Desativação de ponto de apoio                  |
-| Transferência de saldo entre pontos de apoio é par de lançamentos, não ajuste  | 04 §1          | Desativação de ponto de apoio                  |
+| Decisão                                                                           | Gravada em     | Doc 09                                       |
+| --------------------------------------------------------------------------------- | -------------- | -------------------------------------------- |
+| Ponto de apoio como entidade da gestão, ligada a uma comunidade                   | 05 §2          | Ponto de apoio como entidade da plataforma   |
+| Saldo de recurso por tipo **e ponto de apoio**                                    | 04 §1          | Ponto de apoio como entidade da plataforma   |
+| A aula declara e reserva só o consumo do encontro, com baixa no fim do horário    | 04 §1          | Consumo do encontro e recompensa de marco    |
+| Não há fechamento de aula: a baixa é do sistema, e a aula vira realizada          | 04 §1          | Consumo do encontro e recompensa de marco    |
+| Aula cancelada por Admin ou por Mestre da comunidade dela                         | 05 §4          | Quem cancela uma aula agendada               |
+| Aula que chega ao fim pendente vira realizada sem lastro                          | 04 §1          | Consumo do encontro e recompensa de marco    |
+| A aula pendente de lastro é confirmada pelo aporte que fecha a diferença          | 04 §1          | Quem confirma a aula pendente de lastro      |
+| A aula declara em qual ponto de apoio acontece — altera o PRD-01                  | 05 §2          | A atividade que reserva recurso é a aula     |
+| Empréstimo de bancada e reposição solidária ficam para o ciclo seguinte           | 05 §3 (já era) | Empréstimo de bancada e reposição solidária  |
+| Aporte não financeiro valorado por tabela de referência da gestão                 | 04 §1          | Já decididos                                 |
+| Tipo de aporte novo cadastrado na hora por um Admin                               | 04 §1          | Já decididos                                 |
+| Moeda com duas casas decimais                                                     | 04 §1          | Já decididos                                 |
+| Lastro por saldo de tipo de recurso, com reserva no agendamento                   | 04 §1          | Já decididos                                 |
+| Aporte por absorção de Mestre ou Admin                                            | 04 §1          | Já decididos                                 |
+| O aporte declara o ponto de apoio em que entra, e o crédito herda esse ponto      | 04 §1          | Onde o aporte entra no livro-razão           |
+| A absorção credita no ato, sem homologação                                        | 04 §1          | Homologação do aporte por absorção           |
+| Responsável designado pelo acervo em cada ponto de apoio                          | 05 §3          | Já decididos                                 |
+| Designação do responsável posterior ao cadastro, entre os adultos cadastrados     | 05 §3          | Ponto de apoio como entidade da plataforma   |
+| Aporte por absorção marcado como ressarcível, com destaque público pelo ato       | 04 §1, 11 §8.2 | Já decididos                                 |
+| Ressarcimento só com receita destinada, por antiguidade e decisão de Admin        | 04 §1          | Já decididos                                 |
+| Ressarcimento reverte as moedas; o registro do ato permanece                      | 04 §1          | Já decididos                                 |
+| Sem armazenar dado bancário: chave PIX por e-mail e apenas comprovante anexado    | 04 §1, 03 §11  | Já decididos                                 |
+| Produção executiva como tipo de recurso, aportada por absorção                    | 04 §1          | Já decididos                                 |
+| Faturas anteriores ao livro-razão guardadas e lançadas retroativamente            | 04 §1          | Já decididos                                 |
+| Catálogo avulso com lastro, estoque e baixa na entrega da troca                   | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
+| Preço em pontos extras sem derivação do valor em moedas                           | 02 §8.2        | Troca de pontos extras por recompensa avulsa |
+| Preço fixado por tabela de referência da gestão, versionada por vigência          | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
+| Piso de 25 pontos extras para qualquer item do catálogo avulso                    | 02 §8.2        | Quem fixa o preço do catálogo avulso         |
+| Desafio extra reserva a recompensa na publicação e libera se encerrar sem uso     | 04 §3          | Desafio extra — proponente, teto e custeio   |
+| Custeio do desafio extra por absorção ou por saldo já existente na plataforma     | 04 §3          | Desafio extra — proponente, teto e custeio   |
+| Horas da produção executiva declaradas por período, com commits como lastro       | 04 §1          | Apuração da produção executiva               |
+| Valor-hora único na tabela de referência, versionado por vigência                 | 04 §1          | Apuração da produção executiva               |
+| Prestação de contas pública em painel vivo, sem fechamento periódico              | 04 §1          | Formato da prestação de contas pública       |
+| Dupla entrada fora do Ciclo 01; segue proposta no documento-fonte                 | 04 §1          | Formato da prestação de contas pública       |
+| Receita destinada a ressarcir credita moedas sem virar lastro                     | 04 §1          | Receita destinada a ressarcimento            |
+| Valor em reais exigido na absorção com desembolso; serviço não é ressarcível      | 04 §1          | Valor em reais do aporte por absorção        |
+| A absorção declara qual necessidade publicada atende                              | 04 §1          | Origem da absorção na necessidade publicada  |
+| O ressarcimento pago nunca excede o que a receita destinada ainda cobre           | 04 §1          | Teto do ressarcimento pago                   |
+| `RF-04-49` é garantia da App 01; o núcleo não verifica a janela de troca          | 02 §8.2        | Janela de troca da recompensa avulsa         |
+| Lastro do item do catálogo avulso é saldo igual ou maior que o estoque            | 02 §8.2        | Lastro do item do catálogo avulso            |
+| `ItemDeCatalogoAvulso` declara o ponto de apoio, como a `Aula` já declara         | 04 §1          | Ponto de apoio do item do catálogo avulso    |
+| O encontro que a troca registra é a `Aula`, sem verificar estado nem presença     | 02 §8.2        | Encontro registrado pela troca de recompensa |
+| Rota da troca é `POST /aulas/{id}/trocas`, com Mestre em sessão                   | 02 §8.2        | Rota de registro da troca de recompensa      |
+| O débito emitido pela troca não declara aula                                      | 04 §1          | Aula no débito emitido pela troca            |
+| A troca exige que o Guerreiro(a) seja da comunidade do item                       | 02 §8.2        | Comunidade exigida na troca de recompensa    |
+| Saldo durável não é reservável pela aula nem lastreia o catálogo avulso           | 04 §1          | Patrimônio paralelo ao saldo consumível      |
+| Número de tombo digitado por quem tomba, único por ponto de apoio                 | 05 §3          | Número de tombo do item patrimonial          |
+| Item de catálogo avulso de tipo durável é recusado no cadastro                    | 02 §8.2        | Item de catálogo avulso de tipo durável      |
+| Responsável do item patrimonial deriva do ponto de apoio, não é campo próprio     | 05 §3          | Responsável do item patrimonial              |
+| Admin desativa e reativa ponto de apoio, bloqueado por aula futura e saldo        | 05 §2          | Desativação de ponto de apoio                |
+| Transferência de saldo entre pontos de apoio é par de lançamentos, não ajuste     | 04 §1          | Desativação de ponto de apoio                |
+| Tipo de recurso não durável tem finalidade: consumo do encontro ou recompensa     | 04 §1          | Consumo do encontro e recompensa de marco    |
+| Recompensa de marco sem reserva, baixada na entrega contra o disponível           | 02 §8.1        | Consumo do encontro e recompensa de marco    |
+| Aprovação do desbloqueio julgado é a entrega, com ponto de apoio da aula anterior | 02 §8.1        | Consumo do encontro e recompensa de marco    |
+| Necessidade da recompensa de marco por comunidade, ponto de apoio, tipo e trilha  | 04 §1          | Consumo do encontro e recompensa de marco    |
+| Aula terminada antes da implantação tem a reserva liberada, sem baixa             | 04 §1          | Consumo do encontro e recompensa de marco    |
 
 ## 14. Pendências que permanecem
 
@@ -516,34 +567,36 @@ qualquer número de pontos de apoio.
 
 ## 15. Rastreabilidade
 
-| Requisito                          | Origem                                           |
-| ---------------------------------- | ------------------------------------------------ |
-| `RF-07-47`                         | 05 §2 (pontos de apoio) e 04 §1 (saldo)          |
-| `RF-07-49`                         | 05 §3 (responsável designado pelo acervo)        |
-| `RF-07-01` a `RF-07-05`            | 04 §1 (moeda e tabela de referência)             |
-| `RF-07-06`                         | 04 §1 (aporte por absorção)                      |
-| `RF-07-07` a `RF-07-09`            | 04 §1 (regra de lastro, com a aula reservando)   |
-| `RF-07-10`                         | 04 §1 (Poder Sustentador)                        |
-| `RF-07-11` e `RF-07-13`            | 05 §3 (tombamento e baixa definitiva)            |
-| `RF-07-48`                         | 05 §3 (perda anotada na ficha de vida)           |
-| `RF-07-15`                         | 04 §3 (desafios extras)                          |
-| `RF-07-16` a `RF-07-18`            | 04 §1 (transparência) e 10 §3 (hipótese H3)      |
-| `RF-07-19`                         | 04 §1 (livro-razão auditável)                    |
-| `RF-07-20`                         | 05 §3 (conferência de inventário)                |
-| `RF-07-21` a `RF-07-25`            | 04 §§1–2 (absorção, ressarcimento e comprovante) |
-| `RF-07-26`                         | 11 §8.2 (cards e páginas individuais)            |
-| `RF-07-33` a `RF-07-38`            | 02 §8.2 (catálogo avulso, lastro e entrega)      |
-| `RF-07-42` a `RF-07-46`            | 02 §8.2 (tabela de referência e piso de 25)      |
-| `RF-07-50`                         | 02 §8.2 e 09 §1 (subida do piso para 25)         |
-| `RF-07-51`, `RF-07-52`, `RN-07-40` | 04 §1 e 09 §1 (edição e exclusão do catálogo)    |
-| `RF-07-39` a `RF-07-41`            | 04 §3 (custeio e reserva do desafio extra)       |
-| `RF-07-27` e `RF-07-28`            | 04 §1 (necessidade publicada e absorção)         |
-| `RF-07-32`                         | 04 §1 (custos anteriores ao livro-razão)         |
-| `RF-07-29` e `RF-07-30`            | 04 §2 (pré-cadastro, comprovante e homologação)  |
-| `RF-07-31`                         | 04 §1 (cobertura parcial da necessidade)         |
-| `RN-07-20`                         | 04 §1 (sem armazenamento de dado bancário)       |
-| `RN-07-33`                         | 05 §2 (estrutura física — pontos de apoio)       |
-| `RN-07-35` e `RN-07-36`            | 04 §1 (onde o aporte entra e como se homologa)   |
-| `RN-07-37`                         | 04 §1 (confirmação da aula pendente de lastro)   |
-| `RN-07-31` e `RN-07-32`            | 04 §1 (painel vivo e horas declaradas)           |
-| `RN-07-38` e `RN-07-39`            | 04 §1 (receita destinada e valor da absorção)    |
+| Requisito                                       | Origem                                            |
+| ----------------------------------------------- | ------------------------------------------------- |
+| `RF-07-47`                                      | 05 §2 (pontos de apoio) e 04 §1 (saldo)           |
+| `RF-07-49`                                      | 05 §3 (responsável designado pelo acervo)         |
+| `RF-07-01` a `RF-07-05`                         | 04 §1 (moeda e tabela de referência)              |
+| `RF-07-06`                                      | 04 §1 (aporte por absorção)                       |
+| `RF-07-07` a `RF-07-09`, `RF-07-55`, `RF-07-56` | 04 §1 (regra de lastro, com a aula reservando)    |
+| `RF-07-10`                                      | 04 §1 (Poder Sustentador)                         |
+| `RF-07-11` e `RF-07-13`                         | 05 §3 (tombamento e baixa definitiva)             |
+| `RF-07-48`                                      | 05 §3 (perda anotada na ficha de vida)            |
+| `RF-07-15`                                      | 04 §3 (desafios extras)                           |
+| `RF-07-16` a `RF-07-18`                         | 04 §1 (transparência) e 10 §3 (hipótese H3)       |
+| `RF-07-19`                                      | 04 §1 (livro-razão auditável)                     |
+| `RF-07-20`                                      | 05 §3 (conferência de inventário)                 |
+| `RF-07-21` a `RF-07-25`                         | 04 §§1–2 (absorção, ressarcimento e comprovante)  |
+| `RF-07-26`                                      | 11 §8.2 (cards e páginas individuais)             |
+| `RF-07-33` a `RF-07-38`                         | 02 §8.2 (catálogo avulso, lastro e entrega)       |
+| `RF-07-42` a `RF-07-46`                         | 02 §8.2 (tabela de referência e piso de 25)       |
+| `RF-07-50`                                      | 02 §8.2 e 09 §1 (subida do piso para 25)          |
+| `RF-07-51`, `RF-07-52`, `RN-07-40`              | 04 §1 e 09 §1 (edição e exclusão do catálogo)     |
+| `RF-07-39` a `RF-07-41`                         | 04 §3 (custeio e reserva do desafio extra)        |
+| `RF-07-27` e `RF-07-28`                         | 04 §1 (necessidade publicada e absorção)          |
+| `RF-07-32`                                      | 04 §1 (custos anteriores ao livro-razão)          |
+| `RF-07-29` e `RF-07-30`                         | 04 §2 (pré-cadastro, comprovante e homologação)   |
+| `RF-07-31`                                      | 04 §1 (cobertura parcial da necessidade)          |
+| `RN-07-20`                                      | 04 §1 (sem armazenamento de dado bancário)        |
+| `RN-07-33`                                      | 05 §2 (estrutura física — pontos de apoio)        |
+| `RN-07-35` e `RN-07-36`                         | 04 §1 (onde o aporte entra e como se homologa)    |
+| `RN-07-37`                                      | 04 §1 (confirmação da aula pendente de lastro)    |
+| `RN-07-31` e `RN-07-32`                         | 04 §1 (painel vivo e horas declaradas)            |
+| `RN-07-38` e `RN-07-39`                         | 04 §1 (receita destinada e valor da absorção)     |
+| `RF-07-53`, `RN-07-41`, `RN-07-43`              | 04 §1 (finalidade e baixa no fim da aula)         |
+| `RF-07-54`, `RN-07-42`, `RN-07-44`              | 04 §1 e 02 §8.1 (recompensa de marco sem reserva) |

@@ -398,7 +398,7 @@ que existe apenas dentro de um PRD está no lugar errado.
 | PRD-03 | `prd-03-vitrine-publica.md`       | PRD-01, PRD-13                 | 02, 03, 04, 11             |
 | PRD-04 | `prd-04-aula-presencial.md`       | PRD-01, PRD-02, PRD-09, PRD-07 | 02, 03, 05, 06, 11         |
 | PRD-05 | `prd-05-area-do-guerreiro.md`     | PRD-01, PRD-09                 | 02, 03, 05, 11             |
-| PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08                         | 04, 05                     |
+| PRD-07 | `prd-07-economia-e-ledger.md`     | PRD-08                         | 02, 04, 05                 |
 | PRD-08 | `prd-08-comunidades-virtuais.md`  | —                              | 02, 03, 11                 |
 | PRD-09 | `prd-09-area-do-mestre.md`        | PRD-01, PRD-07, PRD-02         | 02, 03, 04, 05, 06, 07, 11 |
 | PRD-10 | `prd-10-batalhas.md`              | PRD-01, PRD-09                 | 02, 07, 11                 |
