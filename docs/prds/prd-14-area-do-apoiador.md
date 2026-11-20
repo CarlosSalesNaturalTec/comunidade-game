@@ -8,7 +8,7 @@
 | Aplicação        | App 08 — Área do Apoiador                          |
 | Onda             | 5                                                  |
 | Situação         | aprovado                                           |
-| Versão e data    | v2 — 2026-08-07                                    |
+| Versão e data    | v5 — 2026-11-20                                    |
 | Depende de       | PRD-07, PRD-02                                     |
 | Documentos-fonte | 02 §1, 03 §§1.1, 10, 04 §§1–3, 11 §8.2, 12, 14, 15 |
 
@@ -55,8 +55,8 @@ que já é público.
 - **Novo aporte em dinheiro** de quem já é cadastrado, a partir de uma missão, de uma
   necessidade publicada ou por valor sugerido ou livre, sempre com comprovante. O valor
   sugerido vem da **escada do perfil declarado**.
-- **Necessidades de recurso em aberto**, publicadas pelas atividades sem lastro, com o caminho
-  direto para cobri-las.
+- **Necessidades de recurso em aberto**, publicadas pelas aulas sem lastro e pelas recompensas
+  de marco que a comunidade ainda não tem, com o caminho direto para cobri-las.
 - **Proposição de desafios extras**, abertos ou direcionados, com acompanhamento do fluxo de
   validação do Mestre e aprovação do Admin.
 - **Efetividade do apoio** em painel vivo, agregado e por avatar, com a cobertura de ODS
@@ -149,8 +149,8 @@ que responde pelos atos registrados no cadastro.
 
 ### 5.3 Aportar de novo
 
-1. O Apoiador cadastrado abre **Necessidades em aberto** e vê o que falta de recurso nas
-   atividades previstas, com a comunidade e o valor em moedas.
+1. O Apoiador cadastrado abre **Necessidades em aberto** e vê o que falta de recurso nas aulas
+   previstas e nas recompensas de marco das comunidades, com a comunidade e o valor em moedas.
 2. Escolhe cobrir uma necessidade, ou declara um **valor sugerido** da escada do seu perfil ou
    um **valor livre**.
 3. Transfere pela chave PIX e anexa o comprovante.
@@ -286,16 +286,16 @@ que responde pelos atos registrados no cadastro.
 
 ### 6.3 Aportes e necessidades
 
-| ID         | Requisito                                                                                              | Prioridade |
-| ---------- | ------------------------------------------------------------------------------------------------------ | ---------- |
-| `RF-14-21` | "Meus aportes" lista os aportes homologados em moedas, com data, tipo e destino                        | essencial  |
-| `RF-14-22` | Poder Sustentador é exibido como total acumulado em moedas                                             | essencial  |
-| `RF-14-23` | Nenhuma tela exibe reais, salvo aquela em que se declara a transferência, sempre com moedas            | essencial  |
-| `RF-14-24` | Necessidades em aberto são listadas com atividade, comunidade e o que falta em moedas                  | essencial  |
-| `RF-14-25` | Apoiador declara novo aporte a partir de uma missão, de uma necessidade ou por valor sugerido ou livre | essencial  |
-| `RF-14-26` | Aporte declarado exige comprovante e entra pendente, sem creditar moeda nem abater o que falta         | essencial  |
-| `RF-14-27` | Apoiador acompanha a situação do aporte: pendente, homologado ou recusado com motivo                   | essencial  |
-| `RF-14-28` | Aplicação não aceita aporte em material, serviço ou divulgação, e orienta procurar a gestão            | essencial  |
+| ID         | Requisito                                                                                                                                     | Prioridade |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-14-21` | "Meus aportes" lista os aportes homologados em moedas, com data, tipo e destino                                                               | essencial  |
+| `RF-14-22` | Poder Sustentador é exibido como total acumulado em moedas                                                                                    | essencial  |
+| `RF-14-23` | Nenhuma tela exibe reais, salvo aquela em que se declara a transferência, sempre com moedas                                                   | essencial  |
+| `RF-14-24` | Necessidades em aberto são listadas com comunidade e o que falta em moedas — a da aula com a data dela, a da recompensa de marco com a trilha | essencial  |
+| `RF-14-25` | Apoiador declara novo aporte a partir de uma missão, de uma necessidade ou por valor sugerido ou livre                                        | essencial  |
+| `RF-14-26` | Aporte declarado exige comprovante e entra pendente, sem creditar moeda nem abater o que falta                                                | essencial  |
+| `RF-14-27` | Apoiador acompanha a situação do aporte: pendente, homologado ou recusado com motivo                                                          | essencial  |
+| `RF-14-28` | Aplicação não aceita aporte em material, serviço ou divulgação, e orienta procurar a gestão                                                   | essencial  |
 
 ### 6.4 Desafios extras
 
@@ -450,7 +450,7 @@ SeloDoApoiador              [entidade nova] — creditado na homologação
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `DesafioExtra`     | proponente, trilha, missão opcional, modalidade (aberto ou direcionado), nick do destinatário e justificativa do vínculo (só no direcionado), recompensa, quantidade disponível, critério de atribuição, pontos extras, vigência, Mestre validador, Admin aprovador, aporte de lastro, situação, etiquetas ODS herdadas |
 | `Favorito`         | Apoiador, alvo (Guerreiro(a) ou Mestre), data de inclusão                                                                                                                                                                                                                                                               |
-| `MissaoDoApoiador` | necessidade de recurso de origem, nível de necessidade (existir, acontecer, reconhecer, permanecer), título, o que se pede, quantidade em moedas ou itens, prazo, selo que rende, situação (aberta, concluída, vencida), Admin que publicou                                                                             |
+| `MissaoDoApoiador` | necessidade de recurso de origem — de aula ou de recompensa de marco (PRD-07) —, nível de necessidade (existir, acontecer, reconhecer, permanecer), título, o que se pede, quantidade em moedas ou itens, prazo, selo que rende, situação (aberta, concluída, vencida), Admin que publicou                              |
 | `SeloDoApoiador`   | Apoiador, família (frente, modalidade, ato, multiplicação), selo, missão ou aporte de origem, data do crédito                                                                                                                                                                                                           |
 
 Imutabilidade e derivação:
@@ -653,6 +653,11 @@ tela de pré-cadastro declarando isso (documento 04 §2), e o **apoio em código
 hora declarada com o _pull request_ integrado como lastro, homologado por Admin e valorado pelo
 valor-hora único da tabela de referência (documento 04 §1). A segunda abre a **segunda via para
 o nível 5 de sustento**, que deixa de exigir virar Mestre.
+
+**Na v5** nenhuma decisão nasceu aqui: a decisão do fundador de 2026-11-20 (linha "Consumo do
+encontro e recompensa de marco" do documento 09; PRD-07 v12) cria a necessidade da recompensa
+de marco, por comunidade, ponto de apoio, tipo e trilha, que esta aplicação lista e cobre como
+a da aula (`RF-14-24`), e de que a missão do Apoiador também pode nascer.
 
 ## 14. Pendências que permanecem
 

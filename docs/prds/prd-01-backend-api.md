@@ -8,7 +8,7 @@
 | Aplicação        | — (núcleo consumido pelas oito aplicações e por terceiros) |
 | Onda             | 1                                                          |
 | Situação         | implementado                                               |
-| Versão e data    | v18 — 2026-08-18                                           |
+| Versão e data    | v19 — 2026-11-20                                           |
 | Depende de       | PRD-07, PRD-08                                             |
 | Documentos-fonte | 02, 03 §§1–3, 5, 8, 9, 11 e 12, 04, 05 §2, 11              |
 
@@ -244,6 +244,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-32` | Núcleo deriva a disponibilidade do App 01 da aula agendada para a data e o horário correntes                                                                                                                             | essencial  |
 | `RF-01-71` | Aula declara, obrigatoriamente, o ponto de apoio em que acontece                                                                                                                                                         | essencial  |
 | `RF-01-72` | Aula agendada é cancelada por Admin ou por Mestre da comunidade dela, com motivo, e o cancelamento libera os recursos reservados                                                                                         | essencial  |
+| `RF-01-91` | Aula passa a realizada no fim do horário, com a reserva baixada pelo sistema, ou a realizada sem lastro se estava pendente; não há ato de fechamento, e o lançamento de resultados não muda a situação                   | essencial  |
 | `RF-01-33` | Núcleo responde à consulta pública por **nick exato**, apenas de Guerreiro(a) com divulgação autorizada                                                                                                                  | essencial  |
 | `RF-01-34` | Núcleo não expõe busca parcial, sugestão nem completação de nick; a exibição pública alcança só quem tem divulgação autorizada                                                                                           | essencial  |
 
@@ -386,12 +387,14 @@ Sessao              Conteudo
 A `Aula/Agenda` carrega **comunidade, ponto de apoio, data, horário inicial e final**, os
 **Mestres que a ministram** — um ou mais, obrigatórios, e é a escalação deles que abre o
 vínculo do Mestre com a comunidade — e a **situação** — prevista, pendente de lastro,
-confirmada, realizada ou cancelada: é dela que o
+confirmada, realizada, realizada sem lastro ou cancelada: é dela que o
 App 01 tira a comunidade do novo cadastro, e é a existência dela que habilita o onboarding
 naquele momento. Não há parâmetro de liberação separado. O **ponto de apoio** é obrigatório e é
-o que liga a aula ao saldo de recursos do PRD-07 (`RF-01-71`). A aula passa a **realizada** pelo
-lançamento da atividade, e a **cancelada** por ato de Admin ou de Mestre da comunidade dela
-(`RF-01-72`); não há desfecho automático por decurso de prazo.
+o que liga a aula ao saldo de recursos do PRD-07 (`RF-01-71`). A aula passa a **realizada**
+sozinha, no fim do horário, com a reserva baixada pelo sistema — ou a **realizada sem lastro**,
+se ainda estava pendente —, sem ato de fechamento (`RF-01-91`); e a **cancelada** por ato de
+Admin ou de Mestre da comunidade dela (`RF-01-72`). Os resultados se lançam por atividade e não
+mudam a situação da aula.
 
 A `Equipe` tem **dois tempos de vida**, definidos no documento 02 §5: a da aula, que termina com
 ela, e a da trilha, fixa depois de homologada e sujeito da criação original. É a mesma entidade,
@@ -593,9 +596,9 @@ e o dos desafios de desbloqueio de cada trilha.
 | Falha, ausência de _template_ ou recusa da biometria caem na confirmação humana, no encontro         | 03 §§1.1, 3.3     | Já decididos                                                |
 | App 01 exige câmera e Mestre ou Admin presente; sem isso não há onboarding                           | 03 §3.2           | Já decididos                                                |
 | Equipe formada pelo Guerreiro(a) no App 01, vinculada à aula e encerrada com ela                     | 02 §5             | Já decididos                                                |
-| A aula passa a realizada pelo lançamento da atividade, sem operação de baixa à parte                 | 04 §1             | A baixa do recurso é o lançamento da atividade              |
+| A aula passa a realizada no fim do horário, com baixa pelo sistema, sem ato de fechamento            | 04 §1             | Consumo do encontro e recompensa de marco                   |
 | Aula cancelada por Admin ou por Mestre da comunidade dela, liberando a reserva                       | 05 §4             | Quem cancela uma aula agendada                              |
-| Reserva de aula que passou sem desfecho não expira: só sai por lançamento ou cancelamento            | 04 §1             | Reserva de aula que passou sem desfecho                     |
+| Aula que chega ao fim pendente de lastro passa a realizada sem lastro                                | 04 §1             | Consumo do encontro e recompensa de marco                   |
 | Criança sem o responsável: onboarding sem imagem, e cadastro biométrico após a aprovação dele        | 03 §§3.2, 3.3     | Já decididos                                                |
 | Mestre cadastra e vincula responsável de qualquer Guerreiro(a)                                       | 02 §1, 03 §11     | Já decididos                                                |
 | A imagem do onboarding identifica o Guerreiro(a): presença **e** autenticação                        | 03 §§3.2, 3.3, 12 | Já decididos                                                |
@@ -713,6 +716,7 @@ antes no documento 09.
 | `RF-01-32`                                       | 03 §§3, 5 (App 01 habilitado pela aula agendada)               |
 | `RF-01-71`                                       | 05 §2 (a aula acontece num ponto de apoio)                     |
 | `RF-01-72`                                       | 05 §4 (quem cancela o encontro agendado)                       |
+| `RF-01-91`                                       | 04 §1 (aula realizada pelo horário, sem fechamento)            |
 | `RF-01-33` e `RF-01-34`                          | 02 §1 e 03 §10 (acompanhamento por nick)                       |
 | `RF-01-35`                                       | 03 §7 (apoio escolar com corpus fechado)                       |
 | `RF-01-36`                                       | 05 §5 e 11 §5 (resposta e pontuação do quiz)                   |

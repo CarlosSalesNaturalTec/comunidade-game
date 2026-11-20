@@ -8,7 +8,7 @@
 | Aplicação        | App 06 — Vitrine pública                              |
 | Onda             | 4                                                     |
 | Situação         | aprovado                                              |
-| Versão e data    | v4 — 2026-08-10                                       |
+| Versão e data    | v5 — 2026-11-20                                       |
 | Depende de       | PRD-01, PRD-13                                        |
 | Documentos-fonte | 02 §§1, 4, 03 §§8, 12, 04 §§1, 2, 4, 11 §§8.1–8.3, 15 |
 
@@ -69,7 +69,8 @@ hora — o sentido do fluxo é sempre esse.
   plataforma serve ao município e ao estado, com os limites declarados na mesma tela.
 - **Card de Apoiador padronizado**: moldura comum, avatar centralizado, nick e **total de
   moedas em destaque**.
-- **Necessidades de recurso em aberto** das atividades sem lastro, na porta da chamada.
+- **Necessidades de recurso em aberto** das aulas sem lastro e das recompensas de marco das
+  comunidades, na porta da chamada.
 - **Seções institucionais** exibidas — "Quem somos" e "Contatos" — e o vídeo de apresentação.
   "Como apoiar" segue publicável pelo Admin **sem tela pública**, e a chave PIX dela chega ao
   visitante pela porta da chamada. A **nota de transparência sobre IA** fica **dentro de
@@ -125,7 +126,7 @@ fila, nunca acesso.
    trilhas, badges e níveis por poder, portfólio de criações e participação em batalhas.
 4. Navega para Mestres, Batalhas, Apoiadores e Comunidades Virtuais pelo mesmo padrão
    de lista e página, e procura um Guerreiro(a) pelo nick exato.
-5. Encontra as **necessidades de recurso em aberto** das atividades sem lastro e a chave PIX
+5. Encontra as **necessidades de recurso em aberto** — de aula e de recompensa — e a chave PIX
    na porta da chamada — "Como apoiar" não tem tela pública.
 6. Trocando de recorte, continua na mesma vitrine: muda a porta de entrada e a ordem, não o
    conteúdo nem o direito de acesso.
@@ -327,25 +328,25 @@ eles.
 
 ### 6.5 Institucional e transparência
 
-| ID         | Requisito                                                                                                                                       | Prioridade |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-03-45` | Seções "Quem somos" e "Contatos" exibem o conteúdo publicado na App 03; "Como apoiar" não tem tela pública                                      | essencial  |
-| `RF-03-46` | A porta da chamada exibe a chave PIX da pessoa jurídica vinculada, única tela pública que a traz                                                | essencial  |
-| `RF-03-47` | Vitrine publica as necessidades de recurso em aberto, com tipo, quantidade, valor em moedas, comunidade, ponto de apoio, data e horário da aula | essencial  |
-| `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete ao bloco "Licenças"                                                         | essencial  |
-| `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade                                                                       | desejável  |
-| `RF-03-50` | Vitrine não exibe publicidade nem patrocínio                                                                                                    | essencial  |
-| `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                                                                             | essencial  |
-| `RF-03-52` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo                                                          | essencial  |
-| `RF-03-53` | Área detalhada declara que a vitrine não coleta dado do visitante                                                                               | essencial  |
-| `RF-03-58` | Botão "Entrar" fica na abertura, no herói, e pergunta qual persona está entrando                                                                | essencial  |
-| `RF-03-59` | Cada persona é encaminhada à sua aplicação, sem autenticação na vitrine                                                                         | essencial  |
-| `RF-03-60` | Escolha de persona não é guardada, no servidor ou no aparelho                                                                                   | essencial  |
-| `RF-03-61` | Nenhuma tela de entrada revela nick, conta ou existência de cadastro                                                                            | essencial  |
-| `RF-03-62` | Quem não tem cadastro recebe a orientação da sua persona, sem prometer acesso                                                                   | essencial  |
-| `RF-03-63` | Recorte de gestores abre com bloco em destaque sobre a utilidade ao município                                                                   | essencial  |
-| `RF-03-64` | O bloco lista usos concretos do dado e o caminho para pedir o conjunto completo                                                                 | essencial  |
-| `RF-03-65` | O bloco declara os limites: dado agregado, nunca por Guerreiro(a), e não oficial                                                                | essencial  |
+| ID         | Requisito                                                                                                                                                                                              | Prioridade |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `RF-03-45` | Seções "Quem somos" e "Contatos" exibem o conteúdo publicado na App 03; "Como apoiar" não tem tela pública                                                                                             | essencial  |
+| `RF-03-46` | A porta da chamada exibe a chave PIX da pessoa jurídica vinculada, única tela pública que a traz                                                                                                       | essencial  |
+| `RF-03-47` | Vitrine publica as necessidades de recurso em aberto, com tipo, quantidade, valor em moedas, comunidade e ponto de apoio — e, na de aula, a data e o horário dela; na de recompensa de marco, a trilha | essencial  |
+| `RF-03-48` | Nota de transparência sobre IA vive dentro de "Quem somos" e remete ao bloco "Licenças"                                                                                                                | essencial  |
+| `RF-03-49` | Vitrine exibe o vídeo de apresentação e a identidade visual de comunidade                                                                                                                              | desejável  |
+| `RF-03-50` | Vitrine não exibe publicidade nem patrocínio                                                                                                                                                           | essencial  |
+| `RF-03-51` | Vitrine não instala cookie, rastreador ou perfilamento do visitante                                                                                                                                    | essencial  |
+| `RF-03-52` | Área detalhada explica o que a plataforma coleta, de quem, para quê e por quanto tempo                                                                                                                 | essencial  |
+| `RF-03-53` | Área detalhada declara que a vitrine não coleta dado do visitante                                                                                                                                      | essencial  |
+| `RF-03-58` | Botão "Entrar" fica na abertura, no herói, e pergunta qual persona está entrando                                                                                                                       | essencial  |
+| `RF-03-59` | Cada persona é encaminhada à sua aplicação, sem autenticação na vitrine                                                                                                                                | essencial  |
+| `RF-03-60` | Escolha de persona não é guardada, no servidor ou no aparelho                                                                                                                                          | essencial  |
+| `RF-03-61` | Nenhuma tela de entrada revela nick, conta ou existência de cadastro                                                                                                                                   | essencial  |
+| `RF-03-62` | Quem não tem cadastro recebe a orientação da sua persona, sem prometer acesso                                                                                                                          | essencial  |
+| `RF-03-63` | Recorte de gestores abre com bloco em destaque sobre a utilidade ao município                                                                                                                          | essencial  |
+| `RF-03-64` | O bloco lista usos concretos do dado e o caminho para pedir o conjunto completo                                                                                                                        | essencial  |
+| `RF-03-65` | O bloco declara os limites: dado agregado, nunca por Guerreiro(a), e não oficial                                                                                                                       | essencial  |
 
 ### 6.6 Área do Apoiador Desenvolvedor
 
@@ -626,6 +627,13 @@ Decisão do fundador de 2026-11-12, elicitada em `/opsx:explore`: a **customiza�
 recebido** passa a ser fonte de ponto extra (documento 11 §5; linha "Customização do kit
 recebido" do documento 09). Na vitrine ela entra como terceira fonte do acervo (`RF-03-88`),
 sob o mesmo portão de aprovação e autorização do responsável.
+
+### Decisões de 2026-11-20
+
+Decisão do fundador de 2026-11-20 (linha "Consumo do encontro e recompensa de marco" do
+documento 09; PRD-07 v12): a recompensa de marco também gera necessidade, por comunidade,
+ponto de apoio, tipo e trilha, e a vitrine a publica ao lado da de aula, com a trilha no lugar
+da data (`RF-03-47`).
 
 ## 14. Pendências que permanecem
 
