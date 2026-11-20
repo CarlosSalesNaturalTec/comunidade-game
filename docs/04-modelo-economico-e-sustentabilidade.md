@@ -55,8 +55,8 @@ Regras derivadas:
   de recurso e trilha: os Guerreiros(as) com vínculo vigente na comunidade que ainda não a
   receberam, vezes a quantidade de cada entrega, menos o disponível. Contam as trilhas com
   atividade programada em aula da comunidade; o ponto de apoio é o da **aula imediatamente
-  anterior** da comunidade, o mesmo de onde sai a entrega fora do encontro. Vitrine, missão do Apoiador e absorção tratam essa necessidade
-  como a da aula.
+  anterior** da comunidade, o mesmo de onde sai a entrega fora do encontro. Vitrine, missão
+  do Apoiador e absorção tratam essa necessidade como a da aula.
 - **A necessidade publicada mostra** o tipo de recurso, a quantidade, o valor em moedas, a
   comunidade e o **ponto de apoio, a data e o horário** da aula — na de recompensa, a trilha no
   lugar da aula —, também na vitrine pública, para que quem vai prover o recurso saiba onde e
