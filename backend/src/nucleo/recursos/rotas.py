@@ -36,6 +36,7 @@ class TipoDeRecursoSaida(BaseModel):
     unidade: str
     exige_comprovante: bool
     ativo: bool
+    finalidade: str | None
     valor_em_moedas: Decimal | None
     vigencia_inicio: date | None
 
@@ -48,6 +49,7 @@ def _saida(tipo: TipoDeRecurso, valor: ValorDeReferencia | None) -> TipoDeRecurs
         unidade=tipo.unidade,
         exige_comprovante=tipo.exige_comprovante,
         ativo=tipo.ativo,
+        finalidade=tipo.finalidade.value if tipo.finalidade is not None else None,
         valor_em_moedas=valor.valor_em_moedas if valor is not None else None,
         vigencia_inicio=valor.vigencia_inicio if valor is not None else None,
     )
@@ -88,6 +90,7 @@ class CadastrarTipoDeRecursoEntrada(BaseModel):
     valor_em_moedas: Decimal
     vigencia_inicio: date
     exige_comprovante: bool = False
+    finalidade: str | None = None
 
 
 @roteador.post("/tipos-de-recurso", status_code=201)
@@ -106,6 +109,7 @@ def cadastrar_tipo_de_recurso_rota(
         natureza=entrada.natureza,
         unidade=entrada.unidade,
         exige_comprovante=entrada.exige_comprovante,
+        finalidade=entrada.finalidade,
     )
     valor = registrar_valor_de_referencia(
         sessao_bd,
@@ -198,6 +202,7 @@ class AlterarTipoDeRecursoEntrada(BaseModel):
     unidade: str | None = None
     exige_comprovante: bool | None = None
     natureza: str | None = None
+    finalidade: str | None = None
 
 
 def _saida_vigente(sessao_bd: Session, tipo: TipoDeRecurso) -> TipoDeRecursoSaida:
@@ -211,8 +216,8 @@ def alterar_tipo_de_recurso_rota(
     contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
     sessao_bd: Annotated[Session, Depends(obter_sessao)],
 ) -> TipoDeRecursoSaida:
-    """Restrita ao Admin — nome, unidade e exige comprovante; a natureza é
-    recusada (`RF-07-51`)."""
+    """Restrita ao Admin — nome, unidade, finalidade e exige comprovante; a
+    natureza é recusada (`RF-07-51`, `RF-07-53`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     tipo = _buscar_tipo(sessao_bd, id_do_tipo)
     alterar_tipo_de_recurso(
@@ -223,6 +228,7 @@ def alterar_tipo_de_recurso_rota(
         unidade=entrada.unidade,
         exige_comprovante=entrada.exige_comprovante,
         natureza=entrada.natureza,
+        finalidade=entrada.finalidade,
     )
     sessao_bd.commit()
     return _saida_vigente(sessao_bd, tipo)

@@ -35,6 +35,9 @@ export interface TipoDeRecurso {
   exige_comprovante: boolean;
   // Desativado não é oferecido em escolha nova (`RF-07-52`).
   ativo: boolean;
+  // A declaração de recompensa só oferece a de recompensa; nula só no durável
+  // (`RF-07-53`, `RF-09-71`).
+  finalidade: "consumo_do_encontro" | "recompensa" | null;
   valor_em_moedas: string;
   vigencia_inicio: string;
 }

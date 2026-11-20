@@ -8,8 +8,12 @@ from ..erros import ErroDeValidacao, PermissaoNegada
 from ..livro_razao.regra import saldo_de
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
-from ..recursos.regra import consultar_preco_de_referencia, exigir_tipo_de_recurso_ativo
+from ..recursos.modelo import FinalidadeDoRecurso, NaturezaDoRecurso, TipoDeRecurso
+from ..recursos.regra import (
+    consultar_preco_de_referencia,
+    exigir_finalidade,
+    exigir_tipo_de_recurso_ativo,
+)
 from ..tempo import agora
 from ..trocas.modelo import Troca
 from .modelo import ItemDeCatalogoAvulso, OrigemDoCadastroDoItem, SituacaoDeHomologacao
@@ -108,6 +112,7 @@ def cadastrar_item(
             ),
             campo="tipo_de_recurso_id",
         )
+    exigir_finalidade(tipo, FinalidadeDoRecurso.recompensa)
     if comunidade is None:
         raise ErroDeValidacao(
             mensagem="Item do catálogo avulso exige uma comunidade.",

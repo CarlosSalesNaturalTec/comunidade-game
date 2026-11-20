@@ -78,6 +78,7 @@ const TIPO_DE_RECURSO_UM = {
   natureza: "material",
   unidade: "unidade",
   exige_comprovante: false,
+  finalidade: "consumo_do_encontro" as const,
   ativo: true,
   valor_em_moedas: "1",
   vigencia_inicio: "2026-01-01",
@@ -89,6 +90,7 @@ const TIPO_DE_RECURSO_DOIS = {
   natureza: "material",
   unidade: "passagem",
   exige_comprovante: false,
+  finalidade: "consumo_do_encontro" as const,
   ativo: true,
   valor_em_moedas: "2",
   vigencia_inicio: "2026-01-01",
@@ -343,6 +345,42 @@ describe("agenda de aulas", () => {
     vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([
       TIPO_DE_RECURSO_UM,
       { ...TIPO_DE_RECURSO_DOIS, ativo: false },
+    ]);
+
+    render(
+      <FormularioDeAgendamento
+        comunidades={[COMUNIDADE_UM]}
+        onAgendada={vi.fn()}
+        onCancelar={vi.fn()}
+      />,
+    );
+    const usuario = userEvent.setup();
+    await screen.findByRole("option", { name: PONTO_DE_APOIO.nome });
+    await usuario.click(screen.getByRole("button", { name: /acrescentar recurso/i }));
+
+    const [seletor] = await screen.findAllByLabelText(/tipo de recurso/i);
+    await waitFor(() =>
+      expect(
+        within(seletor).getByRole("option", { name: TIPO_DE_RECURSO_UM.nome }),
+      ).toBeTruthy(),
+    );
+    expect(
+      within(seletor).queryByRole("option", { name: TIPO_DE_RECURSO_DOIS.nome }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("o agendamento não oferece tipo de recurso de recompensa", async () => {
+    // A aula declara só consumo do encontro; o kit sai na entrega
+    // (`RF-02-31`, `RF-07-53`).
+    configurarSessao(SESSAO_DE_ADMIN);
+    configurarCatalogoDeMestres();
+    vi.spyOn(pontosDeApoioApi, "listarPontosDeApoio").mockResolvedValue({
+      itens: [PONTO_DE_APOIO],
+      proximo_cursor: null,
+    });
+    vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([
+      TIPO_DE_RECURSO_UM,
+      { ...TIPO_DE_RECURSO_DOIS, finalidade: "recompensa" },
     ]);
 
     render(

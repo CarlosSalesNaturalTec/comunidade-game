@@ -1,7 +1,11 @@
 import { EstadoDaLista } from "comum/react";
 import type { ReactNode } from "react";
 import type { NaturezaDoRecurso } from "../recursos/api";
-import { ROTULO_DA_NATUREZA_DO_RECURSO, type TipoDeRecurso } from "../recursos/api";
+import {
+  ROTULO_DA_FINALIDADE_DO_RECURSO,
+  ROTULO_DA_NATUREZA_DO_RECURSO,
+  type TipoDeRecurso,
+} from "../recursos/api";
 import "./Catalogos.css";
 
 interface Props {
@@ -48,6 +52,11 @@ export function ListaDeTiposDeRecurso({ tipos, acoes }: Props) {
                   {ROTULO_DA_NATUREZA_DO_RECURSO[tipo.natureza as NaturezaDoRecurso] ??
                     tipo.natureza}
                 </span>
+                {tipo.finalidade && (
+                  <span className="catalogo__marca">
+                    {ROTULO_DA_FINALIDADE_DO_RECURSO[tipo.finalidade]}
+                  </span>
+                )}
                 <span className="catalogo__marca">Unidade: {tipo.unidade}</span>
                 <span className="catalogo__marca">{tipo.valor_em_moedas} moedas</span>
                 {tipo.exige_comprovante && (

@@ -16,8 +16,8 @@ from ..ponto_extra.regra import (
     estornar_ponto_extra_da_presenca,
 )
 from ..pontos_de_apoio.modelo import PontoDeApoio
-from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
-from ..recursos.regra import exigir_tipo_de_recurso_ativo
+from ..recursos.modelo import FinalidadeDoRecurso, NaturezaDoRecurso, TipoDeRecurso
+from ..recursos.regra import exigir_finalidade, exigir_tipo_de_recurso_ativo
 from ..reservas.regra import liberar_reservas_da_aula, tentar_reservar_recursos
 from ..tempo import agora
 from .modelo import (
@@ -122,6 +122,10 @@ def agendar_aula(
                 ),
                 campo="recursos_declarados",
             )
+        # O kit que é recompensa sai na entrega, nunca pela aula (`RF-07-53`).
+        exigir_finalidade(
+            entrada.tipo, FinalidadeDoRecurso.consumo_do_encontro, campo="recursos_declarados"
+        )
         if entrada.quantidade is None or entrada.quantidade <= 0:
             raise ErroDeValidacao(
                 mensagem="Recurso declarado exige quantidade maior que zero.",

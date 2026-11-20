@@ -89,6 +89,7 @@ from nucleo.principal import criar_app, incluir_roteador_de_dados
 from nucleo.protecao.freio import exigir_freio_por_origem
 from nucleo.recompensas_de_marco.modelo import EntregaDeRecompensa, RecompensaDeMarco
 from nucleo.recursos.modelo import (
+    FinalidadeDoRecurso,
     NaturezaDoRecurso,
     PrecoDeReferencia,
     TipoDeRecurso,
@@ -1262,12 +1263,19 @@ def criar_tipo_de_recurso(sessao):
         natureza: NaturezaDoRecurso = NaturezaDoRecurso.consumivel,
         unidade: str = "unidade",
         exige_comprovante: bool = False,
+        finalidade: FinalidadeDoRecurso | str | None = FinalidadeDoRecurso.consumo_do_encontro,
     ) -> TipoDeRecurso:
+        # O durável não tem finalidade (`RN-07-41`): a fábrica a descarta nele.
         tipo = TipoDeRecurso(
             nome=nome,
             natureza=natureza,
             unidade=unidade,
             exige_comprovante=exige_comprovante,
+            finalidade=(
+                None
+                if natureza == NaturezaDoRecurso.duravel or finalidade is None
+                else FinalidadeDoRecurso(finalidade)
+            ),
             autor_id=autor.id,
             papel_do_autor=autor.papel.value,
         )

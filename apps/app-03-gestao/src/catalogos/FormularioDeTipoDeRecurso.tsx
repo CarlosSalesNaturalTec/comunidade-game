@@ -4,7 +4,9 @@ import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
 import {
   cadastrarTipoDeRecurso,
+  type FinalidadeDoRecurso,
   type NaturezaDoRecurso,
+  ROTULO_DA_FINALIDADE_DO_RECURSO,
   ROTULO_DA_NATUREZA_DO_RECURSO,
 } from "../recursos/api";
 
@@ -32,9 +34,11 @@ function hoje(): string {
 export function FormularioDeTipoDeRecurso({ onSalvo, onCancelar }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDaNatureza = useId();
+  const idDaFinalidade = useId();
   const idDoComprovante = useId();
   const [nome, definirNome] = useState("");
   const [natureza, definirNatureza] = useState<NaturezaDoRecurso>("consumivel");
+  const [finalidade, definirFinalidade] = useState<FinalidadeDoRecurso>("consumo_do_encontro");
   const [unidade, definirUnidade] = useState("");
   const [valorEmMoedas, definirValorEmMoedas] = useState("");
   const [vigenciaInicio, definirVigenciaInicio] = useState(hoje);
@@ -85,6 +89,8 @@ export function FormularioDeTipoDeRecurso({ onSalvo, onCancelar }: Props) {
           valor_em_moedas: valorEmMoedas,
           vigencia_inicio: vigenciaInicio,
           exige_comprovante: exigeComprovante,
+          // O durável é patrimônio e não tem finalidade (`RF-07-53`).
+          ...(natureza === "duravel" ? {} : { finalidade }),
         },
         sessao.token,
       );
@@ -142,6 +148,35 @@ export function FormularioDeTipoDeRecurso({ onSalvo, onCancelar }: Props) {
           </p>
         )}
       </div>
+
+      {natureza !== "duravel" && (
+        <div className="cg-campo">
+          <label htmlFor={idDaFinalidade}>Finalidade</label>
+          <select
+            id={idDaFinalidade}
+            value={finalidade}
+            onChange={(evento) =>
+              definirFinalidade(evento.target.value as FinalidadeDoRecurso)
+            }
+            aria-invalid={erroDeCampo?.campo === "finalidade" || undefined}
+          >
+            {Object.entries(ROTULO_DA_FINALIDADE_DO_RECURSO).map(([valor, rotulo]) => (
+              <option key={valor} value={valor}>
+                {rotulo}
+              </option>
+            ))}
+          </select>
+          <p>
+            Consumo do encontro é o que a aula reserva — lanche, material, equipe de apoio.
+            Recompensa é o que sai na entrega ao Guerreiro(a) — kit, livro, camisa.
+          </p>
+          {erroDeCampo?.campo === "finalidade" && (
+            <p role="alert" className="cg-campo__erro">
+              {erroDeCampo.mensagem}
+            </p>
+          )}
+        </div>
+      )}
 
       <Campo
         rotulo="Unidade"

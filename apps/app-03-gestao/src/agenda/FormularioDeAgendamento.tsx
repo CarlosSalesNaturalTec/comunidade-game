@@ -5,7 +5,12 @@ import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import type { ComunidadeDaLista } from "../comunidades/api";
 import { type AdultoDaLista, listarMestres } from "../personas/api";
 import { listarPontosDeApoio, type PontoDeApoioDaLista } from "../pontos-de-apoio/api";
-import { apenasAtivos, listarTiposDeRecurso, type TipoDeRecurso } from "../recursos/api";
+import {
+  apenasAtivos,
+  apenasConsumoDoEncontro,
+  listarTiposDeRecurso,
+  type TipoDeRecurso,
+} from "../recursos/api";
 import { agendarAula } from "./api";
 
 interface RecursoDoFormulario {
@@ -54,7 +59,9 @@ export function FormularioDeAgendamento({ comunidades, onAgendada, onCancelar }:
     if (!sessao) return;
     // Escolha nova: o tipo desativado não é oferecido (`RF-07-52`).
     listarTiposDeRecurso(sessao.token)
-      .then((tipos) => definirTiposDeRecurso(apenasAtivos(tipos)))
+      // A aula declara só o que se consome no encontro; o kit que é recompensa
+      // sai na entrega (`RF-02-31`, `RF-07-53`).
+      .then((tipos) => definirTiposDeRecurso(apenasConsumoDoEncontro(apenasAtivos(tipos))))
       .catch(() => definirTiposDeRecurso([]));
     listarMestres(sessao.token)
       .then((lista) => definirMestres(lista.itens))

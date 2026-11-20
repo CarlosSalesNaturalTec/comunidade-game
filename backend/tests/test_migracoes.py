@@ -327,3 +327,50 @@ def test_a_remocao_do_template_apaga_a_tabela_e_a_marca_de_tecnico(banco_vazio, 
     finally:
         motor.dispose()
         obter_configuracao.cache_clear()
+
+
+def test_a_finalidade_nasce_recompensa_nos_tipos_nao_duraveis(banco_vazio, monkeypatch):
+    """`RF-07-53`, `RN-07-41`: a migração dá recompensa a todo tipo não durável
+    já cadastrado e deixa o durável sem finalidade; depois dela, o banco recusa
+    tipo não durável sem finalidade (decisão do fundador de 2026-11-20)."""
+    configuracao = _configuracao_do_alembic(banco_vazio, monkeypatch)
+    command.upgrade(configuracao, "c2e4a6b8d0f1")
+
+    consumivel, duravel, autor = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+    motor = sa.create_engine(banco_vazio)
+    try:
+        with motor.begin() as conexao:
+            conexao.execute(
+                sa.text("INSERT INTO persona (id, papel) VALUES (:autor, 'admin')"),
+                {"autor": autor},
+            )
+            for tipo, natureza in ((consumivel, "consumivel"), (duravel, "duravel")):
+                conexao.execute(
+                    sa.text(
+                        "INSERT INTO tipo_de_recurso (id, nome, natureza, unidade, autor_id, "
+                        "papel_do_autor) VALUES (:tipo, :nome, :natureza, 'unidade', "
+                        ":autor, 'admin')"
+                    ),
+                    {"tipo": tipo, "nome": natureza, "natureza": natureza, "autor": autor},
+                )
+
+        command.upgrade(configuracao, "head")
+
+        with motor.connect() as conexao:
+            finalidades = dict(
+                conexao.execute(sa.text("SELECT id, finalidade FROM tipo_de_recurso")).all()
+            )
+        assert finalidades == {consumivel: "recompensa", duravel: None}
+
+        with pytest.raises(sa.exc.IntegrityError), motor.begin() as conexao:
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO tipo_de_recurso (id, nome, natureza, unidade, autor_id, "
+                    "papel_do_autor) VALUES (gen_random_uuid(), 'Lanche', 'consumivel', "
+                    "'unidade', :autor, 'admin')"
+                ),
+                {"autor": autor},
+            )
+    finally:
+        motor.dispose()
+        obter_configuracao.cache_clear()

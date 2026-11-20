@@ -56,6 +56,7 @@ function tipoDeRecurso(sobrescreve: Partial<TipoDeRecurso> = {}): TipoDeRecurso 
     natureza: "consumivel",
     unidade: "kit",
     exige_comprovante: false,
+    finalidade: "consumo_do_encontro" as const,
     ativo: true,
     valor_em_moedas: "12.50",
     vigencia_inicio: "2026-08-01",
@@ -132,6 +133,7 @@ describe("A área Catálogos apresenta os tipos de recurso com o valor vigente",
         tipoDeRecurso({
           nome: "Hora-aula",
           exige_comprovante: true,
+          finalidade: "consumo_do_encontro" as const,
           ativo: true,
           valor_em_moedas: "30.00",
         }),
@@ -183,6 +185,32 @@ describe("O Admin cadastra o tipo de recurso pela aplicação", () => {
     expect(entrada.nome).toBe("Lanche");
     expect(entrada.valor_em_moedas).toBe("12.50");
     expect(entrada.vigencia_inicio).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it("pede a finalidade no não durável e não a pede no durável", async () => {
+    // `RF-02-107`, `RF-07-53`: consumo do encontro ou recompensa; o durável é
+    // patrimônio e não tem finalidade.
+    configurarSessao(SESSAO_DE_ADMIN);
+    dublarCatalogos([], []);
+    const cadastrar = vi
+      .spyOn(recursosApi, "cadastrarTipoDeRecurso")
+      .mockResolvedValue(tipoDeRecurso());
+
+    render(<TelaDeCatalogos />);
+    await userEvent.click(await screen.findByRole("button", { name: "Novo tipo de recurso" }));
+
+    await userEvent.type(screen.getByLabelText("Nome"), "Kit Robô");
+    await userEvent.selectOptions(screen.getByLabelText("Finalidade"), "recompensa");
+    await userEvent.type(screen.getByLabelText("Unidade"), "kit");
+    await userEvent.type(screen.getByLabelText("Valor de referência em moedas"), "5");
+    await userEvent.click(screen.getByRole("button", { name: "Cadastrar" }));
+
+    await waitFor(() => expect(cadastrar).toHaveBeenCalledTimes(1));
+    expect(cadastrar.mock.calls[0][0].finalidade).toBe("recompensa");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Novo tipo de recurso" }));
+    await userEvent.selectOptions(screen.getByLabelText("Natureza"), "duravel");
+    expect(screen.queryByLabelText("Finalidade")).not.toBeInTheDocument();
   });
 
   it("oferece a natureza como escolha, nunca como texto livre", async () => {
@@ -489,6 +517,36 @@ describe("O Admin altera o tipo de recurso pela aplicação", () => {
     );
     expect(valor).not.toHaveBeenCalled();
     expect(preco).not.toHaveBeenCalled();
+  });
+
+  it("mostra e corrige a finalidade do tipo", async () => {
+    // `RF-02-113`, `RF-07-51`, `RF-07-53`.
+    configurarSessao(SESSAO_DE_ADMIN);
+    dublarCatalogos([tipoDeRecurso({ finalidade: "recompensa" })], []);
+    dublarPrecos();
+    const alterar = vi
+      .spyOn(recursosApi, "alterarTipoDeRecurso")
+      .mockResolvedValue(tipoDeRecurso());
+
+    render(<TelaDeCatalogos />);
+    expect(await screen.findByText("Recompensa")).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole("button", { name: "Editar" }));
+    const formulario = screen.getByRole("form", { name: "Editar tipo de recurso" });
+    await userEvent.selectOptions(
+      within(formulario).getByLabelText("Finalidade"),
+      "consumo_do_encontro",
+    );
+    await userEvent.click(
+      within(formulario).getByRole("button", { name: "Salvar alterações" }),
+    );
+
+    await waitFor(() =>
+      expect(alterar).toHaveBeenCalledWith(
+        "tipo-recurso-1",
+        { finalidade: "consumo_do_encontro" },
+        "token-do-admin",
+      ),
+    );
   });
 
   it("apresenta a natureza só como leitura e o preço vigente", async () => {

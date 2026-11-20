@@ -9,6 +9,8 @@ export interface TipoDeRecurso {
   // Desativado sai só da escolha nova; a leitura por nome segue com todos
   // (`RF-07-52`, `RF-02-115`).
   ativo: boolean;
+  // Nula só no durável, que é patrimônio (`RF-07-53`, `RN-07-41`).
+  finalidade: FinalidadeDoRecurso | null;
   valor_em_moedas: string;
   vigencia_inicio: string;
 }
@@ -28,6 +30,19 @@ export function listarTiposDeRecurso(token: string): Promise<TipoDeRecurso[]> {
 
 export type NaturezaDoRecurso = "consumivel" | "duravel" | "servico" | "financeiro";
 
+export type FinalidadeDoRecurso = "consumo_do_encontro" | "recompensa";
+
+export const ROTULO_DA_FINALIDADE_DO_RECURSO: Record<FinalidadeDoRecurso, string> = {
+  consumo_do_encontro: "Consumo do encontro",
+  recompensa: "Recompensa",
+};
+
+// A aula declara só o que se consome no encontro; o kit que é recompensa sai
+// na entrega (`RF-02-31`, `RF-07-53`).
+export function apenasConsumoDoEncontro(tipos: TipoDeRecurso[]): TipoDeRecurso[] {
+  return tipos.filter((tipo) => tipo.finalidade === "consumo_do_encontro");
+}
+
 export const ROTULO_DA_NATUREZA_DO_RECURSO: Record<NaturezaDoRecurso, string> = {
   consumivel: "Consumível",
   duravel: "Durável",
@@ -42,6 +57,7 @@ export interface CadastrarTipoDeRecursoEntrada {
   valor_em_moedas: string;
   vigencia_inicio: string;
   exige_comprovante?: boolean;
+  finalidade?: FinalidadeDoRecurso;
 }
 
 // O tipo e a primeira vigência do valor de referência num ato só, porque é
@@ -62,10 +78,11 @@ export interface AlterarTipoDeRecursoEntrada {
   nome?: string;
   unidade?: string;
   exige_comprovante?: boolean;
+  finalidade?: FinalidadeDoRecurso;
 }
 
-// Nome, unidade e exige comprovante; a natureza não se altera
-// (`RF-02-113`, `RF-07-51`).
+// Nome, unidade, finalidade e exige comprovante; a natureza não se altera
+// (`RF-02-113`, `RF-07-51`, `RF-07-53`).
 export function alterarTipoDeRecurso(
   id: string,
   entrada: AlterarTipoDeRecursoEntrada,

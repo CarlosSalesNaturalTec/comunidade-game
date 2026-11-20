@@ -14,6 +14,7 @@ def test_admin_cadastra_tipo_de_recurso_pela_rota(
         json={
             "nome": "Lanche",
             "natureza": NaturezaDoRecurso.consumivel.value,
+            "finalidade": "consumo_do_encontro",
             "unidade": "unidade",
             "valor_em_moedas": "1.50",
             "vigencia_inicio": "2026-01-01",
@@ -42,6 +43,7 @@ def test_quem_nao_e_admin_recebe_403_ao_cadastrar_tipo_de_recurso(
         json={
             "nome": "Lanche",
             "natureza": NaturezaDoRecurso.consumivel.value,
+            "finalidade": "consumo_do_encontro",
             "unidade": "unidade",
             "valor_em_moedas": "1.50",
             "vigencia_inicio": "2026-01-01",
@@ -63,6 +65,7 @@ def test_cadastro_de_tipo_de_recurso_sem_chave_e_recusado_com_401(
         json={
             "nome": "Lanche",
             "natureza": NaturezaDoRecurso.consumivel.value,
+            "finalidade": "consumo_do_encontro",
             "unidade": "unidade",
             "valor_em_moedas": "1.50",
             "vigencia_inicio": "2026-01-01",
@@ -85,6 +88,7 @@ def test_valor_negativo_e_recusado_com_422_pela_rota(
         json={
             "nome": "Lanche",
             "natureza": NaturezaDoRecurso.consumivel.value,
+            "finalidade": "consumo_do_encontro",
             "unidade": "unidade",
             "valor_em_moedas": "-1.50",
             "vigencia_inicio": "2026-01-01",
@@ -110,6 +114,7 @@ def test_admin_le_o_catalogo_de_tipos_de_recurso(
         json={
             "nome": "Lanche",
             "natureza": NaturezaDoRecurso.consumivel.value,
+            "finalidade": "consumo_do_encontro",
             "unidade": "unidade",
             "valor_em_moedas": "1.50",
             "vigencia_inicio": "2026-01-01",
@@ -121,6 +126,7 @@ def test_admin_le_o_catalogo_de_tipos_de_recurso(
         json={
             "nome": "Cloud",
             "natureza": NaturezaDoRecurso.financeiro.value,
+            "finalidade": "consumo_do_encontro",
             "unidade": "mês",
             "valor_em_moedas": "40.00",
             "vigencia_inicio": "2026-01-01",
@@ -150,6 +156,7 @@ def test_mestre_le_o_catalogo_de_tipos_de_recurso(
         json={
             "nome": "Lanche",
             "natureza": NaturezaDoRecurso.consumivel.value,
+            "finalidade": "consumo_do_encontro",
             "unidade": "unidade",
             "valor_em_moedas": "1.50",
             "vigencia_inicio": "2026-01-01",
@@ -378,3 +385,43 @@ def test_exclusao_do_nunca_usado_e_recusa_do_usado(
 
     ids = {item["id"] for item in cliente.get("/v1/tipos-de-recurso", headers=cabecalhos).json()}
     assert str(livre.id) not in ids and str(usado.id) in ids
+
+
+def test_admin_corrige_a_finalidade_pela_rota(
+    cliente, admin_na_rota, criar_tipo_de_recurso, criar_valor_de_referencia
+):
+    """`RF-07-51`, `RF-07-53`: a finalidade se corrige pelo `PATCH` e sai na
+    leitura do catálogo."""
+    admin, cabecalhos = admin_na_rota
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
+    criar_valor_de_referencia(admin, tipo, vigencia_inicio=date(2026, 1, 1))
+
+    resposta = cliente.patch(
+        f"/v1/tipos-de-recurso/{tipo.id}",
+        json={"finalidade": "consumo_do_encontro"},
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.json()["finalidade"] == "consumo_do_encontro"
+    catalogo = cliente.get("/v1/tipos-de-recurso", headers=cabecalhos).json()
+    assert [item["finalidade"] for item in catalogo] == ["consumo_do_encontro"]
+
+
+def test_cadastro_sem_finalidade_e_recusado_pela_rota(cliente, admin_na_rota):
+    _admin, cabecalhos = admin_na_rota
+
+    resposta = cliente.post(
+        "/v1/tipos-de-recurso",
+        json={
+            "nome": "Lanche",
+            "natureza": "consumivel",
+            "unidade": "unidade",
+            "valor_em_moedas": "1.00",
+            "vigencia_inicio": "2026-01-01",
+        },
+        headers=cabecalhos,
+    )
+
+    assert resposta.status_code == 422
+    assert resposta.json()["campo"] == "finalidade"

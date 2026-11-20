@@ -29,7 +29,9 @@ def cenario(
     apoiador = criar_persona(Papel.apoiador)
     comunidade = criar_comunidade()
     ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
-    tipo_duravel = criar_tipo_de_recurso(admin, nome="Livro", natureza=NaturezaDoRecurso.duravel)
+    tipo_duravel = criar_tipo_de_recurso(
+        admin, nome="Livro", natureza=NaturezaDoRecurso.duravel, finalidade="recompensa"
+    )
     criar_valor_de_referencia(admin, tipo_duravel, valor_em_moedas=Decimal("1.00"))
     return admin, apoiador, comunidade, ponto_de_apoio, tipo_duravel
 
@@ -114,7 +116,7 @@ def test_item_de_catalogo_consumivel_sem_lastro_segue_aceito_e_inativo(
 ):
     admin, _, comunidade, ponto_de_apoio, _ = cenario
     tipo_consumivel = criar_tipo_de_recurso(
-        admin, nome="Kit", natureza=NaturezaDoRecurso.consumivel
+        admin, nome="Kit", natureza=NaturezaDoRecurso.consumivel, finalidade="recompensa"
     )
     mestre = criar_persona(Papel.mestre, criada_por=admin)
     criar_vinculo_do_mestre(mestre, comunidade)

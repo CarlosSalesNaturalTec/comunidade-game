@@ -104,11 +104,12 @@ export function DeclaracaoDeRecompensa({
               onChange={(evento) => definirTipoDeRecursoId(evento.target.value)}
             >
               <option value="">Selecione</option>
-              {/* Escolha nova: o tipo desativado não é oferecido; o mapa por id,
-                  que dá nome à recompensa já declarada, segue com todos
-                  (`RF-07-52`, `RF-09-84`). */}
+              {/* Escolha nova: só o tipo ativo de finalidade recompensa é
+                  oferecido; o mapa por id, que dá nome à recompensa já
+                  declarada, segue com todos (`RF-07-52`, `RF-07-53`,
+                  `RF-09-71`, `RF-09-84`). */}
               {tiposDeRecurso
-                .filter((tipo) => tipo.ativo !== false)
+                .filter((tipo) => tipo.ativo !== false && tipo.finalidade === "recompensa")
                 .map((tipo) => (
                   <option key={tipo.id} value={tipo.id}>
                     {tipo.nome}

@@ -23,6 +23,7 @@ def test_admin_cadastra_tipo_de_recurso_com_autoria_gravada(sessao, criar_person
         nome="Lanche",
         natureza=NaturezaDoRecurso.consumivel.value,
         unidade="unidade",
+        finalidade="consumo_do_encontro",
     )
     sessao.commit()
 
@@ -42,6 +43,7 @@ def test_tipo_nasce_sem_exigir_comprovante_quando_nao_declarado(sessao, criar_pe
         nome="Lanche",
         natureza=NaturezaDoRecurso.consumivel.value,
         unidade="unidade",
+        finalidade="consumo_do_encontro",
     )
     sessao.commit()
 
@@ -58,6 +60,7 @@ def test_tipo_cadastrado_exigindo_comprovante(sessao, criar_persona):
         natureza=NaturezaDoRecurso.financeiro.value,
         unidade="mês",
         exige_comprovante=True,
+        finalidade="consumo_do_encontro",
     )
     sessao.commit()
 
