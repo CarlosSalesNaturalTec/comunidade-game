@@ -613,6 +613,14 @@ passa a valer no ato da entrega.
 | Alcance               | **No encontro**, só quem tem **presença registrada naquela aula** — quem o Mestre tem à frente é quem chegou; fora dele, a comunidade inteira                                         |
 | Baixa no livro-razão  | Sai **nesse ato**, uma por entrega, sem aula declarada e sem devolução possível; a aula nunca declara nem reserva recompensa                                                          |
 
+**Desbloqueio julgado é entrega.** Quando o desbloqueio da missão passa por julgamento, a
+aprovação do Mestre em "Desafios a julgar" já é a entrega da recompensa, com a baixa no mesmo
+ato; a fila de entregas pendentes fica para o marco que não passa por julgamento.
+
+> **A definir:** na aprovação, de que ponto de apoio o recurso sai, o que acontece se faltar
+> lastro e se basta o Mestre autor da trilha, que é quem julga, ou se vale a regra de quem
+> confirma da tabela acima.
+
 **A missão é o marco de uso corrente.** Ao cadastrar uma missão, o Mestre declara se o
 desbloqueio dela libera recompensa — e é por aí que saem **as camisas, os livros e os kits do
 acervo**, além dos kits de alimentos. Etapa, batalha e culminância continuam valendo como
