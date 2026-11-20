@@ -99,7 +99,9 @@ doc 15**.
 | Moeda da plataforma (1 moeda = R$ 10,00; escala fixa por ciclo)            | 04 §1                                      | 03 §8, 08, 11 §8.2, 12         |
 | Entrega de dados (gratuita, íntegra e aprovada por Admin)                  | 03 §12.3                                   | 04 §2, 08, 09                  |
 | Ponto de apoio (cadastro da gestão; dimensão do saldo e sede da aula)      | 05 §2                                      | 04 §1, 08, 09, 10              |
-| Lastro da aula (reserva no agendamento, baixa na realização)               | 04 §1                                      | 05 §2, 08, 09                  |
+| Lastro da aula (reserva no agendamento, baixa no fim do horário)           | 04 §1                                      | 05 §2, 08, 09                  |
+| Finalidade do tipo de recurso (consumo do encontro ou recompensa)          | 04 §1                                      | 02 §8, 09                      |
+| Necessidade da recompensa de marco (por comunidade, sem reserva)           | 04 §1                                      | 02 §8.1, 09                    |
 | Produção executiva (tempo do fundador e dos Admins, por absorção)          | 04 §1                                      | 08, 09, 10 §4.3                |
 | Recortes da vitrine (sociedade civil, pesquisadores, gestores)             | 03 §8                                      | 04 §4, 08, 09                  |
 | Nome do projeto e endereço canônico da plataforma                          | 01 §1                                      | 03 §1, 09                      |
@@ -140,7 +142,7 @@ doc 15**.
 | Licença do conteúdo educacional (CC BY-SA)                                 | 03 §1                                      | 01, 08, 09                     |
 | Marca reservada (fora da AGPL e da CC BY-SA)                               | 03 §1                                      | 09, 15                         |
 | Canal de contato do projeto (endereço único em "Contatos")                 | 03 §8                                      | 04 §1, 09                      |
-| Regra de lastro (atividade só com recurso provido)                         | 04 §1                                      | 02, 05, 10, 11, 12             |
+| Regra de lastro (nenhum recurso sai sem lastro)                            | 04 §1                                      | 02, 05, 10, 11, 12             |
 | Poder Sustentador                                                          | 04 §1                                      | 02, 12, 14                     |
 | Cobertura parcial da necessidade de recurso                                | 04 §1                                      | 08, 12, 14                     |
 | Escadas de valores sugeridos (pessoa física e pessoa jurídica)             | 04 §2                                      | 02 §1, 08, 12, 14              |
@@ -284,9 +286,10 @@ Contradizer qualquer item abaixo é erro de documentação, não variação de r
    **acumulado, nunca o saldo disponível**: trocar por recompensa avulsa **não enfraquece o
    personagem**. O personagem é escolhido **estritamente entre os Guerreiros e Guerreiras com
    divulgação autorizada**, como na vitrine.
-9. **Nenhuma atividade acontece sem lastro** de recursos providos por Mestre ou Apoiador. Vale
-   igualmente para a **recompensa avulsa** do catálogo e para a recompensa do **desafio
-   extra**, providas antes de entrar no catálogo ou de o desafio publicar.
+9. **Nenhum recurso sai sem lastro** provido por Mestre ou Apoiador: a aula consome só o que
+   reservou, e a **recompensa de marco** só é entregue com disponível no ponto de apoio. A
+   **recompensa avulsa** e a do **desafio extra** são providas antes de entrar no catálogo ou
+   de o desafio publicar. Kit de recompensa nunca é declarado na aula.
 10. **Nenhum contato direto entre Apoiador e Guerreiro(a)**; toda interação adulto–criança é
     mediada pela plataforma.
 11. **Nenhuma recusa de consentimento exclui o Guerreiro(a) da atividade** — sempre há

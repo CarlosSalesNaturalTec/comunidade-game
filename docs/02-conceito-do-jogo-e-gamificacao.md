@@ -603,15 +603,23 @@ desde o começo o que cada conquista lhe rende. A trilha é bem comum e não tem
 lastro do recurso **não** é exigido na publicação, e a garantia de que a recompensa está provida
 passa a valer no ato da entrega.
 
-| Regra                 | Definição                                                                                                                                     |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Quem confirma         | O **Mestre vinculado à comunidade do Guerreiro(a)**; o Admin nunca confirma                                                                   |
-| De onde o recurso sai | **No encontro**, o ponto de apoio **da aula**, automático; **fora do encontro**, o que o Mestre escolhe                                       |
-| Quantidade            | O que **cada** Guerreiro(a) recebe numa entrega, **uma por Guerreiro(a)**; não é teto da turma — quem limita quantos recebem é o lastro       |
-| Lastro                | **Reverificado no ato da entrega**, contra o saldo do ponto de apoio de onde o recurso sai                                                    |
-| Marco alcançado       | Conferido contra o percurso já derivado da pontuação (missões concluídas)                                                                     |
-| Alcance               | **No encontro**, só quem tem **presença registrada naquela aula** — quem o Mestre tem à frente é quem chegou; fora dele, a comunidade inteira |
-| Baixa no livro-razão  | Sai **nesse ato**, junto da entrega, sem aula declarada e sem devolução possível                                                              |
+| Regra                 | Definição                                                                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Quem confirma         | O **Mestre vinculado à comunidade do Guerreiro(a)**; o Admin nunca confirma                                                                                                           |
+| De onde o recurso sai | **No encontro**, o ponto de apoio **da aula**, automático; **fora do encontro**, o que o Mestre escolhe                                                                               |
+| Quantidade            | O que **cada** Guerreiro(a) recebe numa entrega, **uma por Guerreiro(a)**; não é teto da turma — quem limita quantos recebem é o lastro                                               |
+| Lastro                | **Reverificado no ato da entrega**, contra o disponível — saldo menos o reservado — do ponto de apoio de onde o recurso sai; a falta vira necessidade da comunidade (documento 04 §1) |
+| Marco alcançado       | Conferido contra o percurso já derivado da pontuação (missões concluídas)                                                                                                             |
+| Alcance               | **No encontro**, só quem tem **presença registrada naquela aula** — quem o Mestre tem à frente é quem chegou; fora dele, a comunidade inteira                                         |
+| Baixa no livro-razão  | Sai **nesse ato**, uma por entrega, sem aula declarada e sem devolução possível; a aula nunca declara nem reserva recompensa                                                          |
+
+**Desbloqueio julgado é entrega.** Quando o desbloqueio da missão passa por julgamento, a
+aprovação do Mestre em "Desafios a julgar" já é a entrega da recompensa, com a baixa no mesmo
+ato, desde que quem julga seja também vinculado à comunidade do Guerreiro(a); se não for, a
+entrega cai na fila de entregas pendentes do Mestre vinculado. O recurso sai do ponto de apoio
+da aula em andamento ou, fora do encontro, da **aula imediatamente anterior** da comunidade.
+Sem lastro, a aprovação vale — a missão seguinte abre — e a entrega fica na fila de entregas
+pendentes, que também atende o marco que não passa por julgamento.
 
 **A missão é o marco de uso corrente.** Ao cadastrar uma missão, o Mestre declara se o
 desbloqueio dela libera recompensa — e é por aí que saem **as camisas, os livros e os kits do

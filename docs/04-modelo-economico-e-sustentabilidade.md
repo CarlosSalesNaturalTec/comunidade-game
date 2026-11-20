@@ -15,15 +15,22 @@ Regras derivadas:
   fornecidos por Mestres ou Apoiadores.
 - Cada recurso alocado é **computado para o respectivo provedor** e acumulado no seu
   histórico.
-- **Cada atividade só acontece se tiver os recursos providos** — não há atividade sem lastro.
-  A atividade que se agenda e reserva recurso é a **aula**, que declara o que consome e em que
-  ponto de apoio acontece. O livro-razão mantém **saldo por tipo de recurso e ponto de apoio**,
-  porque o material fica onde é usado (documento 05). **O aporte declara em que ponto de
-  apoio entra**, inclusive quando é serviço ou dinheiro: é ali que o saldo dele fica. Agendar
-  a aula **reserva** o que ela consome, e o **lançamento da atividade realizada** — o mesmo ato
-  que registra o resultado de cada participante — converte a reserva em baixa. Cancelar a aula
-  **libera** a reserva, devolvendo o saldo. A reserva **não expira sozinha**: sai por lançamento
-  ou por cancelamento, sempre com autor e momento.
+- **Nenhum recurso sai sem lastro**: a aula consome só o que reservou, e a recompensa só é
+  entregue com saldo disponível. A atividade que se agenda e reserva recurso é a **aula**, que
+  declara o que consome e em que ponto de apoio acontece. O livro-razão mantém **saldo por tipo
+  de recurso e ponto de apoio**, porque o material fica onde é usado (documento 05). **O aporte
+  declara em que ponto de apoio entra**, inclusive quando é serviço ou dinheiro: é ali que o
+  saldo dele fica. Agendar a aula **reserva** o que ela consome; **passado o horário de fim**,
+  o sistema converte a reserva em baixa e a aula passa a **realizada** — não há ato humano de
+  fechamento. Cancelar a aula **libera** a reserva, devolvendo o saldo. A baixa no fim da aula
+  tem como autor o **sistema**.
+- **Todo tipo de recurso não durável tem uma finalidade**, uma só: **consumo do encontro** —
+  lanche, material de consumo, equipe de apoio (natureza serviço) — ou **recompensa** — kit,
+  livro, camisa. A aula declara e reserva **só** consumo do encontro; a recompensa de marco, a
+  avulsa e a do desafio extra declaram **só** recompensa. Tipo que serve aos dois é cadastrado
+  duas vezes. A recompensa de marco **não reserva**: sai do saldo na entrega (documento 02). A
+  finalidade é declarada no cadastro, e o Admin pode corrigi-la depois.
+
 - **O item do catálogo avulso (documento 02 §8.2) também declara o ponto de apoio** em que o
   estoque fica guardado, pela mesma razão da aula: o saldo que o lastreia é por tipo **e**
   ponto de apoio.
@@ -39,13 +46,21 @@ Regras derivadas:
   aula** — é o vínculo que o núcleo guarda. A atividade fica **pendente de lastro** e só é
   confirmada quando a necessidade é suprida. A confirmação é **automática**: o aporte
   homologado que fecha a diferença confirma a aula e efetiva a reserva no mesmo ato, sem
-  confirmação humana à parte.
+  confirmação humana à parte. A aula que chega ao fim do horário ainda pendente passa a
+  **realizada sem lastro**, e a necessidade dela sai da lista.
 - **Há uma necessidade por aula e tipo de recurso**, nunca uma soma por ponto de apoio: quem
   aporta escolhe qual aula destrava. Disputando o mesmo saldo, a aula de **horário inicial
   mais próximo** conta primeiro o que falta, na mesma ordem em que a confirmação atende.
+- **A recompensa de marco também gera necessidade**, uma por comunidade, ponto de apoio, tipo
+  de recurso e trilha: os Guerreiros(as) com vínculo vigente na comunidade que ainda não a
+  receberam, vezes a quantidade de cada entrega, menos o disponível. Contam as trilhas com
+  atividade programada em aula da comunidade; o ponto de apoio é o da **aula imediatamente
+  anterior** da comunidade, o mesmo de onde sai a entrega fora do encontro. Vitrine, missão
+  do Apoiador e absorção tratam essa necessidade como a da aula.
 - **A necessidade publicada mostra** o tipo de recurso, a quantidade, o valor em moedas, a
-  comunidade e o **ponto de apoio, a data e o horário** da aula — também na vitrine pública,
-  para que quem vai prover o recurso saiba onde e quando ele é preciso.
+  comunidade e o **ponto de apoio, a data e o horário** da aula — na de recompensa, a trilha no
+  lugar da aula —, também na vitrine pública, para que quem vai prover o recurso saiba onde e
+  quando ele é preciso.
 - **A necessidade admite cobertura parcial.** Aporte menor que a necessidade publicada abate
   o que falta em vez de ser recusado, e a necessidade só sai da lista quando o saldo fecha —
   é o que permite a várias pessoas cobrirem juntas o que nenhuma cobriria sozinha. Cada uma
@@ -115,9 +130,10 @@ Aportes em material, serviço e conteúdo são convertidos em moedas por uma **t
 referência** mantida pela gestão: cada tipo de aporte — hora-aula, kit, livro, camisa, lanche,
 insumo — tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável
 o Poder Sustentador entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o
-seu valor de referência, para que nenhum aporte fique represado. O Admin corrige nome, unidade
-e exigência de comprovante — nunca a natureza —, muda o valor só por **vigência nova**, exclui
-apenas o tipo **nunca usado** e **desativa** o usado, que sai só da escolha nova.
+seu valor de referência, para que nenhum aporte fique represado. O Admin corrige nome, unidade,
+finalidade e exigência de comprovante — nunca a natureza —, muda o valor só por
+**vigência nova**, exclui apenas o tipo **nunca usado** e **desativa** o usado, que sai só da
+escolha nova.
 
 **[Proposta] Apoio em código como aporte.** Melhoria da plataforma, aplicação sobre a API e
 jogo sobre a API entram no livro-razão como aporte do Apoiador que os fez, valorados em
