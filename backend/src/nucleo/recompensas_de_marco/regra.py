@@ -5,11 +5,11 @@ from decimal import Decimal
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula, Presenca
-from ..aulas.regra import presenca_vigente
+from ..aulas.regra import aula_de_referencia_da_comunidade, presenca_vigente
 from ..comunidades.modelo import VinculoJogador
 from ..comunidades.regra import comunidades_do_mestre, filtrar_personas_por_comunidades
 from ..erros import ErroDeValidacao, PermissaoNegada
-from ..livro_razao.regra import lancar_debito, saldo_de
+from ..livro_razao.regra import lancar_debito
 from ..personas.modelo import Nick, Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import FinalidadeDoRecurso, NaturezaDoRecurso, TipoDeRecurso
@@ -18,6 +18,7 @@ from ..recursos.regra import (
     exigir_finalidade,
     exigir_tipo_de_recurso_ativo,
 )
+from ..reservas.regra import disponivel_de
 from ..tempo import agora
 from ..trilhas.modelo import Missao, Trilha
 from ..trilhas.regra import conferir_posse_da_trilha, missoes_desbloqueadas_pelo_guerreiro
@@ -156,7 +157,9 @@ def _validar_entrega(
             campo="recompensa_de_marco_id",
         )
 
-    saldo_disponivel = saldo_de(
+    # O disponível, não o saldo: o reservado para aula ou desafio extra não
+    # lastreia a entrega (`RF-07-13`, `RN-07-01`, `RN-07-42`).
+    saldo_disponivel = disponivel_de(
         sessao, tipo_de_recurso_id=tipo.id, ponto_de_apoio_id=ponto_de_apoio.id
     )
     if saldo_disponivel < recompensa.quantidade:
@@ -196,7 +199,6 @@ def registrar_entrega(
     operador: Persona,
     recompensa: RecompensaDeMarco | None,
     guerreiro: Persona | None,
-    ponto_de_apoio: PontoDeApoio | None,
     aula: Aula | None = None,
 ) -> EntregaDeRecompensa:
     """Restrita ao Mestre — o Admin nunca confirma a entrega (`RF-02-50`,
@@ -204,9 +206,11 @@ def registrar_entrega(
     só, sem tocar ponto regular nem extra do Guerreiro(a) (`RF-07-13`,
     `RN-07-08`, `RN-07-36`, `RN-07-15`).
 
-    O ponto de apoio vem **escolhido** (App 09, fora de encontro) **ou** da
-    `aula` declarada (App 01, no encontro), nunca dos dois e nunca de
-    nenhum. Declarada a aula, o recurso sai do ponto de apoio dela — que ela
+    O ponto de apoio vem da `aula` declarada (App 01, no encontro) ou, sem
+    ela, da **aula imediatamente anterior** da comunidade do Guerreiro(a) —
+    o Mestre nunca o escolhe (`RF-09-76`, change
+    `entrega-pelo-disponivel-e-pela-aprovacao`, design — decisão 3).
+    Declarada a aula, o recurso sai do ponto de apoio dela — que ela
     declara obrigatoriamente (`RF-01-71`) —, o lastro é reverificado contra o
     saldo desse ponto pela mesma conferência de sempre, e a entrega exige
     presença registrada e não anulada do Guerreiro(a) naquela aula: no
@@ -221,25 +225,26 @@ def registrar_entrega(
         )
     if guerreiro is None:
         raise ErroDeValidacao(mensagem="Entrega exige o Guerreiro(a).", campo="guerreiro_id")
-    if ponto_de_apoio is not None and aula is not None:
-        raise ErroDeValidacao(
-            mensagem="Entrega declara o ponto de apoio ou a aula, nunca os dois: no encontro o "
-            "ponto de apoio é o da aula.",
-            campo="aula_id",
+    if aula is None:
+        vinculo = guerreiro.vinculo_vigente
+        aula = (
+            aula_de_referencia_da_comunidade(sessao, comunidade_id=vinculo.comunidade_virtual_id)
+            if vinculo is not None
+            else None
         )
-    if aula is not None:
-        if presenca_vigente(sessao, aula_id=aula.id, guerreiro_id=guerreiro.id) is None:
+        if aula is None:
             raise ErroDeValidacao(
-                mensagem="No encontro a entrega é de quem chegou: este Guerreiro(a) não tem "
-                "presença registrada nesta aula.",
-                campo="guerreiro_id",
+                mensagem="A comunidade deste Guerreiro(a) ainda não teve aula: não há ponto de "
+                "apoio de onde a recompensa saia.",
+                campo="aula_id",
             )
-        ponto_de_apoio = sessao.get(PontoDeApoio, aula.ponto_de_apoio_id)
-    if ponto_de_apoio is None:
+    elif presenca_vigente(sessao, aula_id=aula.id, guerreiro_id=guerreiro.id) is None:
         raise ErroDeValidacao(
-            mensagem="Entrega exige o ponto de apoio de onde o recurso sai.",
-            campo="ponto_de_apoio_id",
+            mensagem="No encontro a entrega é de quem chegou: este Guerreiro(a) não tem "
+            "presença registrada nesta aula.",
+            campo="guerreiro_id",
         )
+    ponto_de_apoio = sessao.get(PontoDeApoio, aula.ponto_de_apoio_id)
 
     tipo = sessao.get(TipoDeRecurso, recompensa.tipo_de_recurso_id)
 
@@ -549,3 +554,49 @@ def listar_entregas_pendentes(
                 )
             )
     return pendencias
+
+
+def entregar_na_aprovacao(
+    sessao: Session,
+    *,
+    operador: Persona,
+    guerreiro: Persona,
+    trilha_id: uuid.UUID,
+    desbloqueadas_antes: set[uuid.UUID],
+) -> list[EntregaDeRecompensa]:
+    """A aprovação do desafio prático **é** a entrega: cada recompensa da
+    trilha cujo marco entrou no percurso com este julgamento é entregue no
+    mesmo ato, pela mesma `registrar_entrega` — mesma conferência, mesmo
+    ponto de apoio da aula anterior. Cada tentativa corre num `SAVEPOINT`: a
+    recusa — quem julga sem vínculo com a comunidade, sem lastro, sem aula —
+    desfaz só aquela entrega, que fica na fila, e nunca o julgamento
+    (`RF-09-146`, `RN-09-63`, `RN-07-44`, design — decisão 4)."""
+    alcancadas = (
+        missoes_desbloqueadas_pelo_guerreiro(sessao, guerreiro_id=guerreiro.id, trilha_id=trilha_id)
+        - desbloqueadas_antes
+    )
+    if not alcancadas or operador.papel != Papel.mestre:
+        return []
+
+    recompensas = (
+        sessao.query(RecompensaDeMarco)
+        .filter(
+            RecompensaDeMarco.trilha_id == trilha_id,
+            RecompensaDeMarco.missao_id.in_(alcancadas),
+        )
+        .order_by(RecompensaDeMarco.registrado_em.asc())
+        .all()
+    )
+    entregues = []
+    for recompensa in recompensas:
+        ponto_de_restauracao = sessao.begin_nested()
+        try:
+            entrega = registrar_entrega(
+                sessao, operador=operador, recompensa=recompensa, guerreiro=guerreiro
+            )
+        except (ErroDeValidacao, PermissaoNegada):
+            ponto_de_restauracao.rollback()
+            continue
+        ponto_de_restauracao.commit()
+        entregues.append(entrega)
+    return entregues

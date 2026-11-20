@@ -61,7 +61,6 @@ export function listarEntregasPendentes(token: string): Promise<PendenciaDeEntre
 
 export interface RegistrarEntregaEntrada {
   guerreiro_id: string;
-  ponto_de_apoio_id: string;
 }
 
 export interface EntregaDeRecompensa {
@@ -79,8 +78,9 @@ export interface EntregaDeRecompensa {
 }
 
 // A confirmação exige o Mestre vinculado à comunidade do Guerreiro(a) e o
-// lastro no ponto de apoio escolhido — as cinco recusas já são do núcleo
-// (`RF-07-13`, `RN-09-26`, `RN-09-27`).
+// lastro no ponto de apoio da aula imediatamente anterior da comunidade, que
+// o núcleo deriva — o Mestre não o escolhe (`RF-07-13`, `RF-09-76`,
+// `RN-09-26`, `RN-09-27`).
 export function registrarEntrega(
   idDaRecompensa: string,
   entrada: RegistrarEntregaEntrada,

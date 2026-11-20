@@ -1,4 +1,4 @@
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 import pytest
@@ -70,6 +70,7 @@ def cenario(
     criar_trilha,
     criar_missao,
     criar_recompensa_de_marco,
+    criar_aula,
 ):
     def _montar(
         *,
@@ -81,6 +82,16 @@ def cenario(
         admin = criar_persona(Papel.admin)
         comunidade = criar_comunidade()
         ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+        # A aula de ontem é a imediatamente anterior: fora do encontro o
+        # recurso sai do ponto de apoio dela (`RF-09-76`).
+        ontem = datetime.now(UTC) - timedelta(days=1)
+        criar_aula(
+            admin,
+            comunidade,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=ontem - timedelta(hours=2),
+            fim_em=ontem,
+        )
         tipo = criar_tipo_de_recurso(admin, natureza=natureza)
         criar_valor_de_referencia(admin, tipo, valor_em_moedas=Decimal("1.00"))
         criar_lancamento(
@@ -126,7 +137,6 @@ def test_recompensa_de_tipo_duravel_nao_e_entregue(sessao, cenario):
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert excinfo.value.campo == "recompensa_de_marco_id"
     assert sessao.query(EntregaDeRecompensa).count() == 0
@@ -142,7 +152,6 @@ def test_lastro_insuficiente_recusa_a_entrega(sessao, cenario):
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert excinfo.value.campo == "ponto_de_apoio_id"
     assert sessao.query(EntregaDeRecompensa).count() == 0
@@ -163,7 +172,6 @@ def test_quantidade_um_chega_a_todos_que_alcancaram_o_marco(sessao, cenario, cri
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=guerreiro,
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
         sessao.commit()
 
@@ -180,7 +188,6 @@ def test_o_mesmo_guerreiro_nao_recebe_duas_vezes(sessao, cenario):
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -190,7 +197,6 @@ def test_o_mesmo_guerreiro_nao_recebe_duas_vezes(sessao, cenario):
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert excinfo.value.campo == "guerreiro_id"
     assert sessao.query(EntregaDeRecompensa).count() == 1
@@ -213,7 +219,6 @@ def test_mestre_de_outra_comunidade_nao_entrega(
             operador=outro_mestre,
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert excinfo.value.campo == "guerreiro_id"
     assert sessao.query(EntregaDeRecompensa).count() == 0
@@ -228,7 +233,6 @@ def test_marco_nao_alcancado_recusa_a_entrega(sessao, cenario):
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert excinfo.value.campo == "guerreiro_id"
     assert sessao.query(EntregaDeRecompensa).count() == 0
@@ -246,7 +250,6 @@ def test_resultado_sem_desbloqueio_nao_alcanca_o_marco(sessao, cenario):
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert excinfo.value.campo == "guerreiro_id"
     assert sessao.query(EntregaDeRecompensa).count() == 0
@@ -266,7 +269,6 @@ def test_desbloqueio_pratico_nao_julgado_nao_alcanca_o_marco(sessao, cenario):
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert excinfo.value.campo == "guerreiro_id"
     assert sessao.query(EntregaDeRecompensa).count() == 0
@@ -281,7 +283,6 @@ def test_admin_nao_confirma_a_entrega(sessao, cenario):
             operador=c["admin"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     assert sessao.query(EntregaDeRecompensa).count() == 0
 
@@ -307,7 +308,6 @@ def test_entrega_debita_saldo_e_nao_toca_pontos_do_guerreiro(sessao, cenario):
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -363,7 +363,6 @@ def test_falha_no_lancamento_desfaz_a_entrega(sessao, cenario):
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
         )
     sessao.rollback()
 
@@ -383,7 +382,6 @@ def test_duas_entregas_da_mesma_recompensa_convivem(sessao, cenario, criar_perso
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
     entrega2 = registrar_entrega(
@@ -391,7 +389,6 @@ def test_duas_entregas_da_mesma_recompensa_convivem(sessao, cenario, criar_perso
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=outro_guerreiro,
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -416,14 +413,12 @@ def test_guerreiro_le_apenas_as_proprias_entregas(sessao, cenario, criar_persona
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     entrega_de_outro = registrar_entrega(
         sessao,
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=outro_guerreiro,
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -442,14 +437,12 @@ def test_mestre_le_entregas_da_sua_comunidade(sessao, cenario):
         operador=c1["mestre"],
         recompensa=c1["recompensa"],
         guerreiro=c1["guerreiro"],
-        ponto_de_apoio=c1["ponto_de_apoio"],
     )
     registrar_entrega(
         sessao,
         operador=c2["mestre"],
         recompensa=c2["recompensa"],
         guerreiro=c2["guerreiro"],
-        ponto_de_apoio=c2["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -473,14 +466,12 @@ def test_admin_le_entregas_de_todas_as_comunidades(sessao, cenario):
         operador=c1["mestre"],
         recompensa=c1["recompensa"],
         guerreiro=c1["guerreiro"],
-        ponto_de_apoio=c1["ponto_de_apoio"],
     )
     entrega2 = registrar_entrega(
         sessao,
         operador=c2["mestre"],
         recompensa=c2["recompensa"],
         guerreiro=c2["guerreiro"],
-        ponto_de_apoio=c2["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -498,7 +489,6 @@ def test_leitura_por_rota_nao_traz_moedas_nem_reais(
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -533,7 +523,6 @@ def test_leitura_por_rota_traz_tipo_de_recurso_quantidade_e_lancamento_para_o_ad
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -567,14 +556,12 @@ def test_mestre_le_entregas_das_duas_comunidades(sessao, cenario, criar_vinculo_
         operador=c1["mestre"],
         recompensa=c1["recompensa"],
         guerreiro=c1["guerreiro"],
-        ponto_de_apoio=c1["ponto_de_apoio"],
     )
     entrega2 = registrar_entrega(
         sessao,
         operador=c1["mestre"],
         recompensa=c2["recompensa"],
         guerreiro=c2["guerreiro"],
-        ponto_de_apoio=c2["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -608,7 +595,6 @@ def test_entrega_por_aula_baixa_do_ponto_de_apoio_dela(
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=None,
         aula=aula,
     )
     sessao.commit()
@@ -636,7 +622,6 @@ def test_entrega_por_aula_sem_lastro_no_ponto_dela_e_recusada(
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=None,
             aula=aula,
         )
 
@@ -654,7 +639,6 @@ def test_entrega_por_aula_exige_presenca_registrada(sessao, cenario, criar_aula)
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=None,
             aula=aula,
         )
 
@@ -675,7 +659,6 @@ def test_entrega_por_aula_com_presenca_anulada_e_recusada(
             operador=c["mestre"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=None,
             aula=aula,
         )
 
@@ -694,76 +677,70 @@ def test_admin_nao_confirma_entrega_no_encontro(sessao, cenario, criar_aula, cri
             operador=c["admin"],
             recompensa=c["recompensa"],
             guerreiro=c["guerreiro"],
-            ponto_de_apoio=None,
             aula=aula,
         )
 
     assert sessao.query(EntregaDeRecompensa).count() == 0
 
 
-def test_ponto_de_apoio_e_aula_juntos_sao_recusados(sessao, cenario, criar_aula, criar_presenca):
+def test_entrega_fora_do_encontro_sai_do_ponto_da_aula_anterior(sessao, cenario):
+    """`RF-09-76`, `RF-07-13`: sem aula declarada, o recurso sai do ponto de
+    apoio da aula imediatamente anterior da comunidade — o Mestre não o
+    escolhe."""
     c = cenario()
-    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
-    criar_presenca(aula, c["guerreiro"])
+
+    entrega = registrar_entrega(
+        sessao, operador=c["mestre"], recompensa=c["recompensa"], guerreiro=c["guerreiro"]
+    )
+
+    assert entrega.ponto_de_apoio_id == c["ponto_de_apoio"].id
+
+
+def test_comunidade_sem_aula_anterior_nao_recebe_a_entrega(
+    sessao, cenario, criar_persona, criar_comunidade, criar_vinculo_do_mestre
+):
+    c = cenario()
+    comunidade_nova = criar_comunidade()
+    criar_vinculo_do_mestre(c["mestre"], comunidade_nova)
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade_nova)
+    _marcar_marco_alcancado(sessao, mestre=c["mestre"], guerreiro=guerreiro, missao=c["missao"])
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         registrar_entrega(
-            sessao,
-            operador=c["mestre"],
-            recompensa=c["recompensa"],
-            guerreiro=c["guerreiro"],
-            ponto_de_apoio=c["ponto_de_apoio"],
-            aula=aula,
+            sessao, operador=c["mestre"], recompensa=c["recompensa"], guerreiro=guerreiro
         )
 
     assert excinfo.value.campo == "aula_id"
     assert sessao.query(EntregaDeRecompensa).count() == 0
 
 
-def test_entrega_sem_ponto_de_apoio_e_sem_aula_e_recusada(sessao, cenario):
-    c = cenario()
-
-    with pytest.raises(ErroDeValidacao) as excinfo:
-        registrar_entrega(
-            sessao,
-            operador=c["mestre"],
-            recompensa=c["recompensa"],
-            guerreiro=c["guerreiro"],
-            ponto_de_apoio=None,
-        )
-
-    assert excinfo.value.campo == "ponto_de_apoio_id"
-
-
-def test_rota_da_entrega_recusa_os_dois_e_recusa_nenhum(
-    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario, criar_aula, criar_presenca
+def test_rota_da_entrega_recusa_o_ponto_de_apoio_e_aceita_so_o_guerreiro(
+    sessao, cliente, criar_chave, criar_sessao_de_teste, cenario
 ):
-    """A exclusividade é do contrato, e os dois desvios saem 422
-    (design — decisão 2)."""
+    """O ponto de apoio não se escolhe: a entrada que o traz é 422; só o
+    Guerreiro(a) basta (`RF-09-76`, design — decisão 3)."""
     c = cenario()
-    aula = criar_aula(c["admin"], c["comunidade"], ponto_de_apoio=c["ponto_de_apoio"])
-    criar_presenca(aula, c["guerreiro"])
     chave, _ = criar_chave()
     token, _ = criar_sessao_de_teste(c["mestre"])
     cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
     caminho = f"/v1/recompensas-de-marco/{c['recompensa'].id}/entregas"
 
-    os_dois = cliente.post(
+    com_ponto = cliente.post(
         caminho,
         headers=cabecalhos,
         json={
             "guerreiro_id": str(c["guerreiro"].id),
             "ponto_de_apoio_id": str(c["ponto_de_apoio"].id),
-            "aula_id": str(aula.id),
         },
     )
-    nenhum = cliente.post(
+    assert com_ponto.status_code == 422
+    assert sessao.query(EntregaDeRecompensa).count() == 0
+
+    so_o_guerreiro = cliente.post(
         caminho, headers=cabecalhos, json={"guerreiro_id": str(c["guerreiro"].id)}
     )
-
-    assert os_dois.status_code == 422
-    assert nenhum.status_code == 422
-    assert sessao.query(EntregaDeRecompensa).count() == 0
+    assert so_o_guerreiro.status_code == 201
+    assert so_o_guerreiro.json()["ponto_de_apoio_id"] == str(c["ponto_de_apoio"].id)
 
 
 def test_rota_da_entrega_por_aula_grava_a_baixa_no_ponto_da_aula(

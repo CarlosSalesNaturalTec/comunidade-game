@@ -207,6 +207,7 @@ export function TelaDeDesbloqueiosPendentes() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [pendentes, definirPendentes] = useState<DesbloqueioPendente[] | null>(null);
   const [erro, definirErro] = useState<string | null>(null);
+  const [aviso, definirAviso] = useState<string | null>(null);
   const [julgando, definirJulgando] = useState<string | null>(null);
 
   const carregar = useCallback(async () => {
@@ -234,14 +235,21 @@ export function TelaDeDesbloqueiosPendentes() {
     if (!sessao) return;
     definirJulgando(pendente.id);
     definirErro(null);
+    definirAviso(null);
     try {
-      await julgarDesafioPratico(
+      const julgado = await julgarDesafioPratico(
         pendente.missao_id,
         pendente.guerreiro_id,
         veredito,
         sessao.token,
       );
       definirPendentes((atual) => (atual ?? []).filter((item) => item.id !== pendente.id));
+      // A aprovação já é a entrega quando há lastro e o Mestre é da
+      // comunidade do Guerreiro(a); senão a entrega fica na fila
+      // (`RF-09-146`, `RN-09-63`).
+      if ((julgado.recompensas_entregues ?? []).length > 0) {
+        definirAviso("Recompensa entregue.");
+      }
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -270,6 +278,7 @@ export function TelaDeDesbloqueiosPendentes() {
       </p>
 
       {erro && <Aviso tipo="erro">{erro}</Aviso>}
+      {aviso && <Aviso tipo="sucesso">{aviso}</Aviso>}
 
       {pendentes === null && <EstadoDaLista>Carregando a bancada…</EstadoDaLista>}
       {pendentes !== null && pendentes.length === 0 && (
