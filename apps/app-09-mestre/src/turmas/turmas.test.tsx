@@ -215,6 +215,18 @@ describe("caminho para o painel do dia (RF-09-50)", () => {
     expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
   });
 
+  it("aula realizada sem lastro aparece com o rótulo próprio", async () => {
+    // A pendente que chegou ao fim do horário (`RF-07-55`, `RF-01-91`).
+    configurarSessao();
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
+      turmas({ itens: [aula({ ...janelaPassada(), situacao: "realizada_sem_lastro" })] }),
+    );
+
+    render(<TelaDeMinhasTurmas />);
+
+    expect(await screen.findByText(/realizada sem lastro/i)).toBeInTheDocument();
+  });
+
   it("aula cancelada dentro da janela não oferece o caminho", async () => {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(

@@ -479,6 +479,17 @@ describe("agenda de aulas", () => {
           cancelamento_motivo: null,
           recursos_faltantes: [],
         },
+        {
+          // A pendente que chegou ao fim do horário (`RN-02-09`, `RF-07-55`).
+          id: "aula-sem-lastro",
+          comunidade_virtual_id: COMUNIDADE_UM.id,
+          ponto_de_apoio_id: PONTO_DE_APOIO.id,
+          inicio_em: "2026-08-04T10:00:00Z",
+          fim_em: "2026-08-04T12:00:00Z",
+          situacao: "realizada_sem_lastro",
+          cancelamento_motivo: null,
+          recursos_faltantes: [],
+        },
       ],
       proximo_cursor: null,
     });
@@ -487,6 +498,7 @@ describe("agenda de aulas", () => {
 
     expect(await screen.findByText("Confirmada")).toBeInTheDocument();
     expect(screen.getByText("Pendente de lastro")).toBeInTheDocument();
+    expect(screen.getByText("Realizada sem lastro")).toBeInTheDocument();
     // O Mestre não declara comunidade — o núcleo já deriva do vínculo
     // (`RF-01-18`).
     expect(listarAgendaEspiado).toHaveBeenCalledWith(

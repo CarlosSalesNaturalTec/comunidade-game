@@ -13,6 +13,8 @@ const ROTULO_DA_SITUACAO: Record<string, string> = {
   pendente_de_lastro: "Pendente de lastro",
   confirmada: "Confirmada",
   realizada: "Realizada",
+  // A pendente que chegou ao fim do horário (`RF-07-55`).
+  realizada_sem_lastro: "Realizada sem lastro",
   cancelada: "Cancelada",
 };
 

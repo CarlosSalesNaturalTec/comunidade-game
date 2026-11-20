@@ -280,14 +280,10 @@ def test_previsto_e_provido_saem_juntos(
     assert painel.recursos_providos[0].tipo_de_recurso_unidade == "porção"
 
 
-def test_lancamento_pendente_entra_e_sai(sessao, cenario):
-    admin, _comunidade, _ponto, aula = cenario
-
-    painel = montar_painel_do_dia(sessao, operador=admin)
-    assert any(p.tipo == "lancamento_da_atividade_realizada" for p in painel.pendencias)
-
-    aula.situacao = SituacaoDaAula.realizada
-    sessao.commit()
+def test_atividade_nao_lancada_nao_e_pendencia(sessao, cenario):
+    """A aula não tem fechamento: a atividade realizada nunca é pendência
+    (`RF-02-46`, `RF-02-47`, `RN-07-43`)."""
+    admin, _comunidade, _ponto, _aula = cenario
 
     painel = montar_painel_do_dia(sessao, operador=admin)
     assert all(p.tipo != "lancamento_da_atividade_realizada" for p in painel.pendencias)
@@ -391,7 +387,7 @@ def test_painel_pela_rota_mostra_saldo_e_pendencias(
     assert resposta.status_code == 200
     corpo = resposta.json()
     assert corpo["saldo_do_ponto_de_apoio"][0]["tipo_de_recurso_id"] == str(tipo.id)
-    assert any(p["tipo"] == "lancamento_da_atividade_realizada" for p in corpo["pendencias"])
+    assert all(p["tipo"] != "lancamento_da_atividade_realizada" for p in corpo["pendencias"])
 
 
 def test_rota_do_painel_esta_no_openapi_sob_v1(cliente):

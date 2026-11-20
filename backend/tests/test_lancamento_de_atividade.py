@@ -25,7 +25,7 @@ def _entrada(guerreiro, atividade, desfecho=DesfechoDoResultado.realizada):
     )
 
 
-def test_lancamento_gera_um_debito_por_reserva_e_derruba_o_saldo(
+def test_lancamento_grava_os_resultados_sem_baixar_reserva(
     sessao,
     criar_persona,
     criar_comunidade,
@@ -65,26 +65,18 @@ def test_lancamento_gera_um_debito_por_reserva_e_derruba_o_saldo(
     )
     sessao.commit()
 
-    assert aula_atualizada.situacao == SituacaoDaAula.realizada
+    # A aula não tem fechamento: o lançamento só grava os resultados, e a
+    # baixa é do sistema no fim do horário (`RF-02-33`, `RF-02-35`, `RN-07-43`).
+    assert aula_atualizada.situacao == SituacaoDaAula.confirmada
     assert len(resultados) == 1
 
     reservas = sessao.query(Reserva).filter_by(aula_id=aula.id).all()
     assert len(reservas) == 2
-    assert all(r.estado == EstadoDaReserva.consumida for r in reservas)
-
-    debitos = sessao.query(Lancamento).filter_by(natureza=NaturezaDoLancamento.debito).all()
-    assert len(debitos) == 2
-    assert {(d.tipo_de_recurso_id, d.quantidade) for d in debitos} == {
-        (tipo_um.id, Decimal("3.00")),
-        (tipo_dois.id, Decimal("2.00")),
-    }
-
+    assert all(r.estado == EstadoDaReserva.reservada for r in reservas)
+    assert sessao.query(Lancamento).filter_by(natureza=NaturezaDoLancamento.debito).count() == 0
     assert saldo_de(
         sessao, tipo_de_recurso_id=tipo_um.id, ponto_de_apoio_id=ponto_de_apoio.id
-    ) == Decimal("7.00")
-    assert saldo_de(
-        sessao, tipo_de_recurso_id=tipo_dois.id, ponto_de_apoio_id=ponto_de_apoio.id
-    ) == Decimal("8.00")
+    ) == Decimal("10.00")
 
 
 def test_lancamento_de_aula_sem_reservas_apenas_registra_os_resultados(
@@ -112,7 +104,7 @@ def test_lancamento_de_aula_sem_reservas_apenas_registra_os_resultados(
     )
     sessao.commit()
 
-    assert aula_atualizada.situacao == SituacaoDaAula.realizada
+    assert aula_atualizada.situacao == SituacaoDaAula.confirmada
     assert len(resultados) == 1
     assert sessao.query(Lancamento).filter_by(natureza=NaturezaDoLancamento.debito).count() == 0
     assert sessao.query(Resultado).filter_by(aula_id=aula.id).count() == 1
@@ -130,7 +122,7 @@ def test_mestre_nao_lanca_a_atividade_da_aula(sessao, criar_persona, criar_comun
     assert aula.situacao != SituacaoDaAula.realizada
 
 
-def test_lancamento_em_aula_ja_realizada_e_recusado(
+def test_lancamento_e_aceito_em_aula_ja_realizada(
     sessao,
     criar_persona,
     criar_comunidade,
@@ -147,16 +139,15 @@ def test_lancamento_em_aula_ja_realizada_e_recusado(
     missao = criar_missao(trilha, admin)
     atividade = criar_atividade(missao, admin)
 
-    lancar_atividade_realizada(
+    aula.situacao = SituacaoDaAula.realizada
+    sessao.commit()
+
+    # Depois do fim da aula o resultado ainda se lança (`RF-02-33`).
+    _, resultados = lancar_atividade_realizada(
         sessao, operador=admin, aula=aula, resultados=[_entrada(guerreiro, atividade)]
     )
     sessao.commit()
-
-    with pytest.raises(ErroDeValidacao) as excinfo:
-        lancar_atividade_realizada(
-            sessao, operador=admin, aula=aula, resultados=[_entrada(guerreiro, atividade)]
-        )
-    assert excinfo.value.campo == "situacao"
+    assert len(resultados) == 1
 
 
 def test_lancamento_em_aula_cancelada_e_recusado(

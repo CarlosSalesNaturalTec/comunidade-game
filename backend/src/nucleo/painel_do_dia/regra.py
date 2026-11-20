@@ -4,7 +4,7 @@ from decimal import Decimal
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from ..aulas.modelo import Aula, Presenca, SituacaoDaAula
+from ..aulas.modelo import Aula, Presenca
 from ..aulas.regra import aulas_vigentes
 from ..comunidades.regra import comunidades_do_mestre
 from ..consentimentos.modelo import (
@@ -25,8 +25,6 @@ from ..tempo import agora
 from ..trilhas.modelo import Atividade, Missao, SituacaoDaTrilha, Trilha
 from ..trilhas.regra import atividade_vigente
 from ..vitrine.publico import AvatarENickSaida, buscar_avatares_e_nicks
-
-_SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
 
 
 class PresencaDoPainelSaida(BaseModel):
@@ -271,12 +269,11 @@ def _saldo_do_ponto_de_apoio(
 
 
 def _pendencias(sessao: Session, aula: Aula) -> list[PendenciaDoPainelSaida]:
-    """O que falta lançar antes de a aula terminar: a atividade realizada
-    ainda não lançada e os termos de biometria assinados no encontro e
-    ainda sem digitalização anexada (`RF-02-46`, `RF-02-47`, `RF-02-69`)."""
+    """O que falta lançar: os termos de biometria assinados no encontro e
+    ainda sem digitalização anexada. A atividade realizada não é pendência:
+    a aula não tem fechamento (`RF-02-46`, `RF-02-47`, `RF-02-69`,
+    `RN-07-43`)."""
     pendencias: list[PendenciaDoPainelSaida] = []
-    if aula.situacao not in _SITUACOES_COM_DESFECHO:
-        pendencias.append(PendenciaDoPainelSaida(tipo="lancamento_da_atividade_realizada"))
 
     guerreiro_ids = [
         guerreiro_id

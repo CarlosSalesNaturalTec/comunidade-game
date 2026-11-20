@@ -187,7 +187,9 @@ def test_lancamentos_pela_rota_lanca_a_atividade_realizada(
     )
 
     assert resposta.status_code == 201
-    assert resposta.json()["situacao"] == "realizada"
+    # O lançamento só grava os resultados; a aula não tem fechamento
+    # (`RF-02-35`, `RN-07-43`).
+    assert resposta.json()["situacao"] == "confirmada"
 
 
 def test_mestre_nao_lanca_atividade_pela_rota(

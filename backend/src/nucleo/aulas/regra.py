@@ -29,7 +29,11 @@ from .modelo import (
     SituacaoDaAula,
 )
 
-_SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
+_SITUACOES_COM_DESFECHO = (
+    SituacaoDaAula.realizada,
+    SituacaoDaAula.realizada_sem_lastro,
+    SituacaoDaAula.cancelada,
+)
 
 
 @dataclass
@@ -209,6 +213,13 @@ def cancelar_aula(
     if aula.situacao in _SITUACOES_COM_DESFECHO:
         raise ErroDeValidacao(
             mensagem="Esta aula já teve desfecho; o cancelamento não se repete.",
+            campo="situacao",
+        )
+    # Encontro cujo horário já terminou está realizado e não se cancela
+    # (`RF-01-91`, documento 05).
+    if aula.fim_em <= agora():
+        raise ErroDeValidacao(
+            mensagem="Esta aula já terminou; aula realizada não se cancela.",
             campo="situacao",
         )
 

@@ -18,8 +18,10 @@ interface LinhaDoParticipante {
   desfecho: Desfecho;
 }
 
-const MENSAGEM_DE_SUCESSO =
-  "Lançamento gravado: a aula passou a realizada e as reservas viraram baixa.";
+// A aula não tem fechamento: o lançamento grava os resultados, e a baixa e a
+// passagem a realizada são do sistema no fim do horário (`RF-02-33`,
+// `RF-02-35`, `RN-07-43`).
+const MENSAGEM_DE_SUCESSO = "Resultados gravados.";
 
 const DADO_COLETADO = "o resultado da atividade do Guerreiro(a)";
 

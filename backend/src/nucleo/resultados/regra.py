@@ -10,12 +10,9 @@ from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
 from ..ponto_extra.regra import creditar_ponto_extra_do_resultado
 from ..pontuacao.regra import creditar_pontuacao_do_resultado
-from ..reservas.regra import consumir_reservas_da_aula
 from ..trilhas.modelo import Atividade, Missao, ModalidadeDeAtividade, Trilha
 from ..trilhas.regra import conferir_atividade_vigente, conferir_posse_da_trilha
 from .modelo import DesfechoDoResultado, Resultado
-
-_SITUACOES_COM_DESFECHO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
 
 
 def registrar_resultado(
@@ -149,25 +146,23 @@ def lancar_atividade_realizada(
     resultados: list[ResultadoDeclarado],
 ) -> tuple[Aula, list[Resultado]]:
     """Ato **por aula**, restrito ao Admin: registra em uma operação os
-    Resultados de todos os participantes, converte cada reserva da aula em
-    baixa e leva a aula a **realizada** — não há operação de baixa separada
-    deste ato (`RF-07-09`, `RF-02-35`, `RN-07-36`, `RF-01-16`, documento
-    04 §1, design — Decisions 7).
+    Resultados dos participantes, durante ou depois da aula. Não baixa
+    reserva nem muda a situação — a aula não tem fechamento, e isso é do
+    sistema no fim do horário (`RF-02-33`, `RF-02-35`, `RN-07-43`,
+    `RF-01-16`, change `baixa-no-fim-da-aula`, design — decisão 5). O
+    Resultado repetido segue recusado por `_registrar_resultados`.
     """
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin lança a atividade realizada da aula.")
     if aula is None:
         raise ErroDeValidacao(mensagem="Lançamento exige uma aula.", campo="aula_id")
-    if aula.situacao in _SITUACOES_COM_DESFECHO:
+    if aula.situacao == SituacaoDaAula.cancelada:
         raise ErroDeValidacao(
-            mensagem="Esta aula já teve desfecho; o lançamento não se repete.",
+            mensagem="Esta aula foi cancelada; não há resultado a lançar.",
             campo="situacao",
         )
 
     gravados = _registrar_resultados(sessao, operador=operador, aula=aula, resultados=resultados)
-
-    consumir_reservas_da_aula(sessao, aula=aula, operador=operador)
-    aula.situacao = SituacaoDaAula.realizada
     sessao.flush()
 
     return aula, gravados

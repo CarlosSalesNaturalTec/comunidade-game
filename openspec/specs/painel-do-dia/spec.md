@@ -183,47 +183,6 @@ Em recursos providos e no saldo, cada tipo de recurso SHALL aparecer pelo **nome
 - **THEN** a reserva e o saldo aparecem com o nome, a quantidade e a unidade do tipo
 - **AND** o identificador interno do tipo não aparece na tela
 
-### Requirement: O painel lista o que falta lançar antes de a aula terminar
-
-O painel SHALL listar os **lançamentos pendentes do encontro** — o que precisa ser lançado antes
-de a aula terminar. São pendências enquanto a aula não passa a **realizada**: o **lançamento da
-atividade realizada**, que é ato por aula (`RF-07-09`), e a **digitalização do termo de
-biometria** assinado no encontro e ainda não anexada (`RF-02-69`).
-
-O painel SHALL apenas **listar**: ele NEVER SHALL lançar, e cada pendência SHALL ser resolvida
-na rota que já a atende. Lançada a atividade realizada, a pendência SHALL sair da lista na
-consulta seguinte, sem ato de ninguém.
-
-`RF-02-46` e `RF-02-47` enunciam o mesmo requisito, em redação duplicada — decisão do fundador,
-2026-08-25, que os consolida num só. (`RF-02-46`, `RF-02-47`, `RF-02-69`, `RN-02-12`,
-PRD-02 §§6.4, 12)
-
-#### Scenario: A atividade não lançada é pendência do encontro
-
-- **WHEN** o painel é consultado numa aula em andamento cuja atividade realizada não foi lançada
-- **THEN** o lançamento da atividade realizada aparece entre as pendências
-
-#### Scenario: Termo de biometria sem digitalização é pendência
-
-- **WHEN** um Guerreiro(a) do encontro tem consentimento de biometria e nenhuma digitalização
-  anexada
-- **THEN** o painel o lista entre os termos que aguardam digitalização
-
-#### Scenario: Anexada a digitalização, a pendência sai
-
-- **WHEN** um Admin anexa a digitalização do termo
-- **THEN** a consulta seguinte do painel não traz mais aquele termo entre as pendências
-
-#### Scenario: Lançada a atividade, a pendência sai
-
-- **WHEN** o Admin lança a atividade realizada e a aula passa a realizada
-- **THEN** a consulta seguinte não traz mais aquele lançamento entre as pendências
-
-#### Scenario: O painel não lança
-
-- **WHEN** o painel é consultado
-- **THEN** nenhuma escrita acontece por causa da consulta, e as pendências seguem como estavam
-
 ### Requirement: O painel nunca expõe imagem real nem dado pessoal de criança
 
 O painel SHALL apresentar cada Guerreiro(a) por **nick e avatar**, e NEVER SHALL devolver
@@ -243,3 +202,34 @@ devolver o conteúdo da digitalização já anexada: o painel diz que falta, nã
 
 - **WHEN** o painel devolve a lista de termos que aguardam digitalização
 - **THEN** nenhum descritor biométrico e nenhuma digitalização acompanham a resposta
+
+### Requirement: O painel lista a digitalização do termo que falta anexar
+
+O painel SHALL listar os **lançamentos pendentes do encontro**: a **digitalização do termo de
+biometria** assinado no encontro e ainda não anexada (`RF-02-69`). A atividade realizada NEVER
+SHALL ser pendência: a aula não tem fechamento, e a passagem a realizada é do sistema no fim do
+horário.
+
+O painel SHALL apenas **listar**: ele NEVER SHALL lançar, e cada pendência SHALL ser resolvida
+na rota que já a atende. (`RF-02-46`, `RF-02-47`, `RF-02-69`, `RN-02-12`, `RN-07-43`)
+
+#### Scenario: A atividade não lançada não é pendência
+
+- **WHEN** o painel é consultado numa aula em andamento sem resultado lançado
+- **THEN** nenhuma pendência de atividade realizada aparece
+
+#### Scenario: Termo de biometria sem digitalização é pendência
+
+- **WHEN** um Guerreiro(a) do encontro tem consentimento de biometria e nenhuma digitalização
+  anexada
+- **THEN** o painel o lista entre os termos que aguardam digitalização
+
+#### Scenario: Anexada a digitalização, a pendência sai
+
+- **WHEN** um Admin anexa a digitalização do termo
+- **THEN** a consulta seguinte do painel não traz mais aquele termo entre as pendências
+
+#### Scenario: O painel não lança
+
+- **WHEN** o painel é consultado
+- **THEN** nenhuma escrita acontece por causa da consulta, e as pendências seguem como estavam

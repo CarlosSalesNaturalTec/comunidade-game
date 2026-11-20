@@ -16,12 +16,14 @@ const ROTULO_DA_SITUACAO: Record<string, string> = {
   pendente_de_lastro: "Pendente de lastro",
   confirmada: "Confirmada",
   realizada: "Realizada",
+  // A pendente que chegou ao fim do horário (`RN-02-09`, `RF-07-55`).
+  realizada_sem_lastro: "Realizada sem lastro",
   cancelada: "Cancelada",
 };
 
-// Aula com desfecho (realizada ou cancelada) não oferece cancelamento
-// (`RF-01-72`, `RN-02-20`).
-const SITUACOES_COM_DESFECHO = new Set(["realizada", "cancelada"]);
+// Aula com desfecho (realizada, realizada sem lastro ou cancelada) não
+// oferece cancelamento (`RF-01-72`, `RN-02-20`, `RF-01-91`).
+const SITUACOES_COM_DESFECHO = new Set(["realizada", "realizada_sem_lastro", "cancelada"]);
 
 function formatarHorario(valorComFuso: string): string {
   const data = new Date(valorComFuso);
