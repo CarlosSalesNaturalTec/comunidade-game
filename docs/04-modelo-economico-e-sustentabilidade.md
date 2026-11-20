@@ -22,15 +22,17 @@ Regras derivadas:
   declara em que ponto de apoio entra**, inclusive quando é serviço ou dinheiro: é ali que o
   saldo dele fica. Agendar a aula **reserva** o que ela consome; **passado o horário de fim**,
   o sistema converte a reserva em baixa e a aula passa a **realizada** — não há ato humano de
-  fechamento. Cancelar a aula **libera** a reserva, devolvendo o saldo.
+  fechamento. Cancelar a aula **libera** a reserva, devolvendo o saldo. A baixa no fim da aula
+  tem como autor o **Mestre da aula**.
 - **Todo tipo de recurso não durável tem uma finalidade**, uma só: **consumo do encontro** —
   lanche, material de consumo, equipe de apoio (natureza serviço) — ou **recompensa** — kit,
   livro, camisa. A aula declara e reserva **só** consumo do encontro; a recompensa de marco, a
   avulsa e a do desafio extra declaram **só** recompensa. Tipo que serve aos dois é cadastrado
-  duas vezes. A recompensa de marco **não reserva**: sai do saldo na entrega (documento 02).
+  duas vezes. A recompensa de marco **não reserva**: sai do saldo na entrega (documento 02). A
+  finalidade é declarada no cadastro e, como a natureza, não se altera; o tipo cadastrado antes
+  dela a recebe uma única vez, na implantação.
 
-> **A definir:** quem fica como autor da baixa automática no fim da aula, e se a finalidade do
-> tipo de recurso pode ser corrigida depois do cadastro.
+> **A definir:** qual Mestre fica como autor da baixa quando a aula tem mais de um.
 
 - **O item do catálogo avulso (documento 02 §8.2) também declara o ponto de apoio** em que o
   estoque fica guardado, pela mesma razão da aula: o saldo que o lastreia é por tipo **e**
@@ -132,8 +134,9 @@ referência** mantida pela gestão: cada tipo de aporte — hora-aula, kit, livr
 insumo — tem um valor padrão, e todo aporte do mesmo tipo vale o mesmo, o que torna comparável
 o Poder Sustentador entre apoiadores. **Tipo novo é cadastrado na hora por um Admin**, com o
 seu valor de referência, para que nenhum aporte fique represado. O Admin corrige nome, unidade
-e exigência de comprovante — nunca a natureza —, muda o valor só por **vigência nova**, exclui
-apenas o tipo **nunca usado** e **desativa** o usado, que sai só da escolha nova.
+e exigência de comprovante — nunca a natureza nem a finalidade —, muda o valor só por
+**vigência nova**, exclui apenas o tipo **nunca usado** e **desativa** o usado, que sai só da
+escolha nova.
 
 **[Proposta] Apoio em código como aporte.** Melhoria da plataforma, aplicação sobre a API e
 jogo sobre a API entram no livro-razão como aporte do Apoiador que os fez, valorados em
