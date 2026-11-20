@@ -6,7 +6,13 @@ from sqlalchemy.orm import Session
 from ..erros import ErroDeValidacao, PermissaoNegada, TipoEmUso
 from ..personas.modelo import Papel, Persona
 from ..referencias import esta_em_uso
-from .modelo import NaturezaDoRecurso, PrecoDeReferencia, TipoDeRecurso, ValorDeReferencia
+from .modelo import (
+    FinalidadeDoRecurso,
+    NaturezaDoRecurso,
+    PrecoDeReferencia,
+    TipoDeRecurso,
+    ValorDeReferencia,
+)
 
 PISO_DE_PONTOS_EXTRAS = 25
 
@@ -19,10 +25,13 @@ def cadastrar_tipo_de_recurso(
     natureza: str | None,
     unidade: str | None,
     exige_comprovante: bool = False,
+    finalidade: str | None = None,
 ) -> TipoDeRecurso:
     """Só Admin cadastra tipo de recurso, operação avulsa que não depende de
     nenhum outro fluxo (`RF-07-01`, `RF-07-03`). `exige_comprovante` é
-    opcional e nasce falsa quando não declarada (`RN-07-22`)."""
+    opcional e nasce falsa quando não declarada (`RN-07-22`). A finalidade
+    é exigida no não durável e recusada no durável (`RF-07-53`,
+    `RN-07-41`)."""
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin cadastra tipo de recurso.")
     if not nome or not nome.strip():
@@ -36,17 +45,45 @@ def cadastrar_tipo_de_recurso(
             mensagem="Natureza fora dos valores previstos.", campo="natureza"
         ) from exc
 
+    finalidade_valida = _validar_finalidade(natureza_valida, finalidade)
+
     tipo = TipoDeRecurso(
         nome=nome,
         natureza=natureza_valida,
         unidade=unidade,
         exige_comprovante=exige_comprovante,
+        finalidade=finalidade_valida,
         autor_id=operador.id,
         papel_do_autor=operador.papel.value,
     )
     sessao.add(tipo)
     sessao.flush()
     return tipo
+
+
+def _validar_finalidade(
+    natureza: NaturezaDoRecurso, finalidade: str | None
+) -> FinalidadeDoRecurso | None:
+    """O durável não tem finalidade — é patrimônio —, e todo outro tem uma,
+    das duas previstas (`RF-07-53`, `RN-07-41`, design — decisão 1)."""
+    if natureza == NaturezaDoRecurso.duravel:
+        if finalidade is not None:
+            raise ErroDeValidacao(
+                mensagem="Tipo de recurso durável é patrimônio e não tem finalidade.",
+                campo="finalidade",
+            )
+        return None
+    if finalidade is None:
+        raise ErroDeValidacao(
+            mensagem="Tipo de recurso exige a finalidade: consumo do encontro ou recompensa.",
+            campo="finalidade",
+        )
+    try:
+        return FinalidadeDoRecurso(finalidade)
+    except ValueError as exc:
+        raise ErroDeValidacao(
+            mensagem="Finalidade fora dos valores previstos.", campo="finalidade"
+        ) from exc
 
 
 def registrar_valor_de_referencia(
@@ -241,11 +278,14 @@ def alterar_tipo_de_recurso(
     unidade: str | None = None,
     exige_comprovante: bool | None = None,
     natureza: str | None = None,
+    finalidade: str | None = None,
 ) -> TipoDeRecurso:
     """Só Admin altera nome, unidade e a marca de exige comprovante. A
     natureza nunca se altera — decide se há valor de origem em reais a
     declarar —, e as vigências de valor e de preço não são tocadas
-    (`RF-07-51`, design — decisão 2)."""
+    (`RF-07-51`, design — decisão 2). A finalidade se corrige, só no não
+    durável, e vale para escolha nova; o que já foi gravado com o tipo segue
+    como está (`RF-07-53`)."""
     _exigir_admin(operador, "Só o Admin altera tipo de recurso.")
     if natureza is not None:
         raise ErroDeValidacao(
@@ -255,12 +295,17 @@ def alterar_tipo_de_recurso(
         raise ErroDeValidacao(mensagem="Tipo de recurso exige nome.", campo="nome")
     if unidade is not None and not unidade.strip():
         raise ErroDeValidacao(mensagem="Tipo de recurso exige unidade.", campo="unidade")
+    finalidade_valida = (
+        _validar_finalidade(tipo.natureza, finalidade) if finalidade is not None else None
+    )
     if nome is not None:
         tipo.nome = nome
     if unidade is not None:
         tipo.unidade = unidade
     if exige_comprovante is not None:
         tipo.exige_comprovante = exige_comprovante
+    if finalidade_valida is not None:
+        tipo.finalidade = finalidade_valida
     sessao.flush()
     return tipo
 
@@ -295,6 +340,33 @@ def exigir_tipo_de_recurso_ativo(
     if tipo is not None and not tipo.ativo:
         raise ErroDeValidacao(
             mensagem="O tipo de recurso está desativado e não pode ser escolhido.",
+            campo=campo,
+        )
+
+
+_NOME_DA_FINALIDADE = {
+    FinalidadeDoRecurso.consumo_do_encontro: "consumo do encontro",
+    FinalidadeDoRecurso.recompensa: "recompensa",
+}
+
+
+def exigir_finalidade(
+    tipo: TipoDeRecurso | None,
+    esperada: FinalidadeDoRecurso,
+    *,
+    campo: str = "tipo_de_recurso_id",
+) -> None:
+    """Guarda dos atos de **escolha nova** de tipo de recurso, irmã de
+    `exigir_tipo_de_recurso_ativo`: a aula escolhe consumo do encontro, e as
+    três recompensas escolhem recompensa. Recusa também o durável, que não
+    tem finalidade. O ato que só segue fato já gravado não a chama
+    (`RF-07-53`, `RN-07-41`, design — decisão 2)."""
+    if tipo is not None and tipo.finalidade != esperada:
+        raise ErroDeValidacao(
+            mensagem=(
+                f"Aqui só se escolhe tipo de recurso de {_NOME_DA_FINALIDADE[esperada]}; "
+                f"{tipo.nome} não é."
+            ),
             campo=campo,
         )
 

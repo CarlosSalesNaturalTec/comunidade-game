@@ -95,7 +95,7 @@ def test_proposta_completa_e_registrada(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     desafio = _propor(sessao, apoiador=apoiador, trilha=trilha, tipo=tipo, ponto=ponto)
@@ -115,7 +115,7 @@ def test_so_apoiador_propoe_desafio_extra(
 ):
     admin = criar_persona(Papel.admin)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     with pytest.raises(PermissaoNegada):
@@ -133,7 +133,7 @@ def test_trilha_fora_de_andamento_e_recusada(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.rascunho)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     with pytest.raises(ErroDeValidacao):
@@ -151,7 +151,7 @@ def test_ausencia_de_formato_e_recusada(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     with pytest.raises(ErroDeValidacao):
@@ -187,7 +187,7 @@ def test_ausencia_de_custeio_e_recusada(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     with pytest.raises(ErroDeValidacao):
@@ -223,7 +223,7 @@ def test_teto_de_10_pontos_extras(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     with pytest.raises(ErroDeValidacao):
@@ -241,7 +241,7 @@ def test_nao_ha_teto_de_propostas_simultaneas(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     primeiro = _propor(sessao, apoiador=apoiador, trilha=trilha, tipo=tipo, ponto=ponto)
@@ -265,7 +265,7 @@ def test_direcionado_sem_justificativa_e_recusado(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     with pytest.raises(ErroDeValidacao):
@@ -292,7 +292,7 @@ def test_direcionado_com_nick_inexistente_e_aceito(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     desafio = _propor(
@@ -322,7 +322,7 @@ def test_mestre_autor_propoe_e_nasce_em_aprovacao_do_admin(
 ):
     mestre_autor = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
 
     desafio = _propor(sessao, apoiador=mestre_autor, trilha=trilha, tipo=tipo, ponto=ponto)
@@ -343,7 +343,7 @@ def test_outro_mestre_propoe_e_nasce_em_validacao_e_aparece_na_fila_do_autor(
     mestre_autor = criar_persona(Papel.mestre)
     outro_mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
 
     desafio = _propor(sessao, apoiador=outro_mestre, trilha=trilha, tipo=tipo, ponto=ponto)
@@ -365,7 +365,7 @@ def test_direcionado_do_mestre_sem_justificativa_e_recusado(
     mestre_autor = criar_persona(Papel.mestre)
     outro_mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
 
     with pytest.raises(ErroDeValidacao):
@@ -391,7 +391,7 @@ def test_direcionado_do_mestre_com_nick_inexistente_e_aceito(
 ):
     mestre_autor = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
 
     desafio = _propor(
@@ -420,7 +420,7 @@ def test_validacao_com_parecer_leva_o_desafio_ao_admin(
     mestre_autor = criar_persona(Papel.mestre)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
@@ -447,7 +447,7 @@ def test_validacao_sem_parecer_nao_passa(
     mestre_autor = criar_persona(Papel.mestre)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
@@ -471,7 +471,7 @@ def test_mestre_de_outra_trilha_nao_valida(
     outro_mestre = criar_persona(Papel.mestre)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
@@ -494,7 +494,7 @@ def test_validacao_de_desafio_em_outra_situacao_da_409(
     mestre_autor = criar_persona(Papel.mestre)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
@@ -516,7 +516,7 @@ def test_recusa_do_mestre_sem_motivo_nao_passa(
     mestre_autor = criar_persona(Papel.mestre)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
@@ -541,7 +541,7 @@ def test_recusa_do_mestre_grava_o_motivo_e_nao_chega_a_fila_do_admin(
     mestre_autor = criar_persona(Papel.mestre)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
@@ -572,7 +572,7 @@ def test_fila_do_mestre_so_traz_as_proprias_trilhas(
     apoiador = criar_persona(Papel.apoiador)
     trilha_do_autor = criar_trilha(mestre_autor, situacao=SituacaoDaTrilha.publicada)
     trilha_do_outro = criar_trilha(outro_mestre, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(mestre_autor)
+    tipo = criar_tipo_de_recurso(mestre_autor, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(mestre_autor, criar_comunidade())
     esperado = criar_desafio_extra(
         apoiador,
@@ -622,7 +622,7 @@ def test_lastro_provido_por_saldo_suficiente(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     _com_saldo(sessao, criar_lancamento, admin, tipo, ponto, "10")
 
@@ -644,7 +644,7 @@ def test_lastro_nao_provido_por_saldo_insuficiente(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     desafio = _propor(
@@ -667,7 +667,7 @@ def test_lastro_provido_por_aporte_homologado(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     lancamento = criar_lancamento(admin, tipo, ponto, natureza=NaturezaDoLancamento.credito)
     aporte = criar_aporte(admin, apoiador, tipo, ponto, lancamento, admin_homologador=admin)
@@ -699,7 +699,7 @@ def test_lastro_nao_provido_por_aporte_de_outro_proponente(
     apoiador = criar_persona(Papel.apoiador)
     outro_apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     lancamento = criar_lancamento(admin, tipo, ponto, natureza=NaturezaDoLancamento.credito)
     criar_aporte(admin, outro_apoiador, tipo, ponto, lancamento, admin_homologador=admin)
@@ -729,7 +729,7 @@ def test_publicacao_sem_lastro_provido_e_recusada(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
 
     desafio = _propor(sessao, apoiador=apoiador, trilha=trilha, tipo=tipo, ponto=ponto)
@@ -753,7 +753,7 @@ def test_alteracao_de_publicado_e_recusada_com_405(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.publicado
@@ -775,7 +775,7 @@ def test_desafio_nao_publicado_e_editavel(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
@@ -799,7 +799,7 @@ def test_desafio_em_validacao_do_mestre_nao_aparece_na_fila_e_aprovacao_da_409(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_validacao_do_mestre
@@ -823,7 +823,7 @@ def test_aprovacao_sem_lastro_e_recusada_e_desafio_segue_na_fila(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
@@ -849,7 +849,7 @@ def test_aprovacao_com_lastro_publica_e_grava_o_aprovador(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_lancamento(
         admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("5")
@@ -883,7 +883,7 @@ def test_recusa_sem_motivo_e_recusada(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
@@ -907,7 +907,7 @@ def test_recusa_grava_o_motivo_e_nao_deixa_reserva(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
@@ -933,7 +933,7 @@ def test_publicacao_grava_a_reserva_e_reduz_a_disponivel_sem_mexer_no_saldo(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_lancamento(
         admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("10")
@@ -973,7 +973,7 @@ def test_recompensa_que_nao_cabe_na_disponivel_e_recusada_sem_publicar(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_lancamento(
         admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("2")
@@ -1007,7 +1007,7 @@ def test_recompensa_de_tipo_duravel_e_recusada(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin, natureza=NaturezaDoRecurso.duravel)
+    tipo = criar_tipo_de_recurso(admin, natureza=NaturezaDoRecurso.duravel, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio = criar_desafio_extra(
         apoiador,
@@ -1037,7 +1037,7 @@ def test_encerramento_libera_a_reserva_e_devolve_a_disponivel(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_lancamento(
         admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("5")
@@ -1080,7 +1080,7 @@ def test_encerrar_fora_de_publicado_ou_duas_vezes_da_409(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     desafio_nao_publicado = criar_desafio_extra(
         apoiador, trilha, tipo, ponto, situacao=SituacaoDoDesafioExtra.em_aprovacao_do_admin
@@ -1122,7 +1122,7 @@ def test_vigencia_vencida_sem_encerramento_mantem_a_reserva(
     admin = criar_persona(Papel.admin)
     apoiador = criar_persona(Papel.apoiador)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_lancamento(
         admin, tipo, ponto, natureza=NaturezaDoLancamento.credito, quantidade=Decimal("5")
@@ -1168,7 +1168,7 @@ def test_aberto_alcanca_todos_os_inscritos_na_trilha(
     apoiador = criar_persona(Papel.apoiador)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_inscricao_na_trilha(guerreiro, trilha)
     desafio = criar_desafio_extra(
@@ -1201,7 +1201,7 @@ def test_direcionado_alcanca_so_o_dono_do_nick(
     destinatario = criar_persona(Papel.guerreiro)
     outro_guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_inscricao_na_trilha(destinatario, trilha)
     criar_inscricao_na_trilha(outro_guerreiro, trilha)
@@ -1245,7 +1245,7 @@ def test_nick_casa_sem_distinguir_maiusculas(
     apoiador = criar_persona(Papel.apoiador)
     destinatario = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_inscricao_na_trilha(destinatario, trilha)
     criar_nick(destinatario, "Guerreira-Zeferina")
@@ -1282,7 +1282,7 @@ def test_direcionado_a_quem_nao_esta_na_trilha_nao_aparece(
     apoiador = criar_persona(Papel.apoiador)
     destinatario = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_nick(destinatario, "guerreira-zeferina")
     criar_desafio_extra(
@@ -1318,7 +1318,7 @@ def test_nao_publicado_recusado_encerrado_ou_fora_da_vigencia_nao_aparecem(
     apoiador = criar_persona(Papel.apoiador)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_inscricao_na_trilha(guerreiro, trilha)
 
@@ -1387,7 +1387,7 @@ def test_esgotado_continua_aparecendo_com_restante_zero(
     guerreiro = criar_persona(Papel.guerreiro)
     outro_guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_inscricao_na_trilha(guerreiro, trilha)
     criar_inscricao_na_trilha(outro_guerreiro, trilha)
@@ -1429,7 +1429,7 @@ def test_sem_inscricao_lista_vazia(
     apoiador = criar_persona(Papel.apoiador)
     guerreiro = criar_persona(Papel.guerreiro)
     trilha = criar_trilha(admin, situacao=SituacaoDaTrilha.publicada)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     ponto = criar_ponto_de_apoio(admin, criar_comunidade())
     criar_desafio_extra(
         apoiador,

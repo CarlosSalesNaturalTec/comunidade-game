@@ -4,9 +4,11 @@ import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useEffect, useId, useState } from "react";
 import {
   alterarTipoDeRecurso,
+  type FinalidadeDoRecurso,
   listarPrecosDeReferencia,
   type NaturezaDoRecurso,
   type PrecoDeReferencia,
+  ROTULO_DA_FINALIDADE_DO_RECURSO,
   ROTULO_DA_NATUREZA_DO_RECURSO,
   registrarPrecoDeReferencia,
   registrarValorDeReferencia,
@@ -42,14 +44,19 @@ function precoVigente(precos: PrecoDeReferencia[], data: string): PrecoDeReferen
 
 // Componente próprio, e não o formulário de cadastro em modo de edição: o
 // cadastro grava tipo e primeira vigência num ato só, e a edição não. Altera
-// nome, unidade e exige comprovante; a natureza aparece só como leitura. As
+// nome, unidade, finalidade e exige comprovante; a natureza aparece só como
+// leitura, e o durável não tem finalidade (`RF-07-53`). As
 // duas réguas mudam por **vigência nova**, opcional cada uma — a edição que
 // só corrige o nome não abre vigência alguma (`RF-02-113`, `RF-07-51`,
 // `RF-07-02`, `RF-07-43`, design — decisão 8).
 export function EdicaoDeTipoDeRecurso({ tipo, onSalvo, onCancelar }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoComprovante = useId();
+  const idDaFinalidade = useId();
   const [nome, definirNome] = useState(tipo.nome);
+  const [finalidade, definirFinalidade] = useState<FinalidadeDoRecurso | null>(
+    tipo.finalidade,
+  );
   const [unidade, definirUnidade] = useState(tipo.unidade);
   const [exigeComprovante, definirExigeComprovante] = useState(tipo.exige_comprovante);
   const [novoValor, definirNovoValor] = useState("");
@@ -96,8 +103,15 @@ export function EdicaoDeTipoDeRecurso({ tipo, onSalvo, onCancelar }: Props) {
     let campoEmCurso = "";
     definirEnviando(true);
     try {
-      const alteracao: { nome?: string; unidade?: string; exige_comprovante?: boolean } = {};
+      const alteracao: {
+        nome?: string;
+        unidade?: string;
+        exige_comprovante?: boolean;
+        finalidade?: FinalidadeDoRecurso;
+      } = {};
       if (nome !== tipo.nome) alteracao.nome = nome;
+      if (finalidade !== null && finalidade !== tipo.finalidade)
+        alteracao.finalidade = finalidade;
       if (unidade !== tipo.unidade) alteracao.unidade = unidade;
       if (exigeComprovante !== tipo.exige_comprovante) {
         alteracao.exige_comprovante = exigeComprovante;
@@ -167,6 +181,32 @@ export function EdicaoDeTipoDeRecurso({ tipo, onSalvo, onCancelar }: Props) {
       <p>
         Natureza: <strong>{rotuloDaNatureza}</strong> — a natureza não se altera.
       </p>
+
+      {finalidade !== null && (
+        <div className="cg-campo">
+          <label htmlFor={idDaFinalidade}>Finalidade</label>
+          <select
+            id={idDaFinalidade}
+            value={finalidade}
+            onChange={(evento) =>
+              definirFinalidade(evento.target.value as FinalidadeDoRecurso)
+            }
+            aria-invalid={erroEm("finalidade") ? true : undefined}
+          >
+            {Object.entries(ROTULO_DA_FINALIDADE_DO_RECURSO).map(([valor, rotulo]) => (
+              <option key={valor} value={valor}>
+                {rotulo}
+              </option>
+            ))}
+          </select>
+          <p>Vale para a escolha nova; o que já foi gravado com o tipo segue como está.</p>
+          {erroEm("finalidade") && (
+            <p role="alert" className="cg-campo__erro">
+              {erroEm("finalidade")}
+            </p>
+          )}
+        </div>
+      )}
 
       <Campo
         rotulo="Unidade"

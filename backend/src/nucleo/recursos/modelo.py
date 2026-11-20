@@ -30,6 +30,15 @@ class NaturezaDoRecurso(enum.StrEnum):
     financeiro = "financeiro"
 
 
+class FinalidadeDoRecurso(enum.StrEnum):
+    """O que separa o que a aula reserva do que sai na entrega de uma
+    recompensa — uma só por tipo não durável; o durável não tem, porque é
+    patrimônio (`RF-07-53`, `RN-07-41`)."""
+
+    consumo_do_encontro = "consumo_do_encontro"
+    recompensa = "recompensa"
+
+
 class TipoDeRecurso(Base, ComAutoria):
     """O catálogo do que se consome e se recebe — hora-aula, lanche, insumo,
     kit, cloud e afins —, cadastrado por Admin (`RF-07-01`). O valor de
@@ -41,6 +50,12 @@ class TipoDeRecurso(Base, ComAutoria):
     """
 
     __tablename__ = "tipo_de_recurso"
+    __table_args__ = (
+        CheckConstraint(
+            "(natureza = 'duravel') = (finalidade IS NULL)",
+            name="ck_tipo_de_recurso_finalidade_so_no_nao_duravel",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     nome: Mapped[str] = mapped_column(String(128), nullable=False)
@@ -56,6 +71,12 @@ class TipoDeRecurso(Base, ComAutoria):
     # (`RF-07-52`, design — decisão 7).
     ativo: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, server_default="true"
+    )
+    # Nula só no durável; os tipos anteriores à coluna nasceram recompensa, e
+    # o Admin corrige os de consumo do encontro (`RF-07-53`, decisão do
+    # fundador de 2026-11-20, design — decisões 1 e 4).
+    finalidade: Mapped[FinalidadeDoRecurso | None] = mapped_column(
+        Enum(FinalidadeDoRecurso, native_enum=False, length=24), nullable=True
     )
 
 

@@ -14,7 +14,7 @@ def test_mestre_autor_declara_recompensa_de_marco(
     mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
-    tipo = criar_tipo_de_recurso(mestre)
+    tipo = criar_tipo_de_recurso(mestre, finalidade="recompensa")
 
     recompensa = declarar_recompensa_de_marco(
         sessao,
@@ -41,7 +41,7 @@ def test_mestre_que_nao_e_autor_nao_declara(
     outro_mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
-    tipo = criar_tipo_de_recurso(mestre)
+    tipo = criar_tipo_de_recurso(mestre, finalidade="recompensa")
 
     with pytest.raises(PermissaoNegada):
         declarar_recompensa_de_marco(
@@ -62,7 +62,7 @@ def test_marco_que_nao_e_missao_da_trilha_e_recusado(
     trilha = criar_trilha(mestre)
     outra_trilha = criar_trilha(mestre, nome="Outra Trilha")
     missao_de_outra_trilha = criar_missao(outra_trilha, mestre)
-    tipo = criar_tipo_de_recurso(mestre)
+    tipo = criar_tipo_de_recurso(mestre, finalidade="recompensa")
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         declarar_recompensa_de_marco(
@@ -82,7 +82,7 @@ def test_declaracao_sem_marco_e_recusada(
 ):
     mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre)
-    tipo = criar_tipo_de_recurso(mestre)
+    tipo = criar_tipo_de_recurso(mestre, finalidade="recompensa")
 
     with pytest.raises(ErroDeValidacao) as excinfo:
         declarar_recompensa_de_marco(
@@ -105,7 +105,7 @@ def test_declaracao_com_preco_e_recusada_pela_rota(
     mestre = criar_persona(Papel.mestre)
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
-    tipo = criar_tipo_de_recurso(mestre)
+    tipo = criar_tipo_de_recurso(mestre, finalidade="recompensa")
     sessao.commit()
 
     chave, _ = criar_chave()

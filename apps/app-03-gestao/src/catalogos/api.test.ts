@@ -115,6 +115,7 @@ describe("cadastrarTipoDeRecurso", () => {
         valor_em_moedas: "12.50",
         vigencia_inicio: "2026-09-09",
         exige_comprovante: false,
+        finalidade: "consumo_do_encontro" as const,
       },
       "token-do-admin",
     );
@@ -128,6 +129,7 @@ describe("cadastrarTipoDeRecurso", () => {
         valor_em_moedas: "12.50",
         vigencia_inicio: "2026-09-09",
         exige_comprovante: false,
+        finalidade: "consumo_do_encontro" as const,
       },
       token: "token-do-admin",
     });
@@ -191,6 +193,7 @@ describe("As chamadas de edição dos catálogos (RF-02-113 a RF-02-115)", () =>
       natureza: "consumivel",
       unidade: "kit",
       exige_comprovante: false,
+      finalidade: "consumo_do_encontro" as const,
       valor_em_moedas: "1.00",
       vigencia_inicio: "2026-01-01",
     };

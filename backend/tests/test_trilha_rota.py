@@ -529,7 +529,7 @@ def test_fluxo_completo_de_autoria_destrava_rotas_orfas(
     )
     assert resposta_desafio_de_coleta.status_code == 201
 
-    tipo_de_recurso = criar_tipo_de_recurso(mestre)
+    tipo_de_recurso = criar_tipo_de_recurso(mestre, finalidade="recompensa")
     resposta_recompensa = cliente.post(
         f"/v1/trilhas/{trilha_id}/recompensas-de-marco",
         json={
@@ -1458,7 +1458,7 @@ def test_minhas_trilhas_devolvem_a_bibliografia_ja_gravada(
     trilha = criar_trilha(mestre)
     missao = criar_missao(trilha, mestre)
     ponto_de_apoio = criar_ponto_de_apoio(admin, criar_comunidade())
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     lancamento = criar_lancamento(admin, tipo, ponto_de_apoio)
     aporte = criar_aporte(admin, apoiador, tipo, ponto_de_apoio, lancamento)
     item_com_aporte = criar_item_patrimonial(

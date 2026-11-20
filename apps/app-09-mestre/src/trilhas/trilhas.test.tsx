@@ -4703,6 +4703,7 @@ const KIT_DE_ROBOTICA: recursosApi.TipoDeRecurso = {
   natureza: "bem",
   unidade: "unidade",
   exige_comprovante: false,
+  finalidade: "recompensa" as const,
   ativo: true,
   valor_em_moedas: "0",
   vigencia_inicio: "2026-01-01T00:00:00-03:00",

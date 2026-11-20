@@ -68,6 +68,7 @@ function tipoDeRecurso(): TipoDeRecurso {
     natureza: "duravel",
     unidade: "unidade",
     exige_comprovante: false,
+    finalidade: "recompensa" as const,
     ativo: true,
     valor_em_moedas: "10.00",
     vigencia_inicio: "2026-01-01",

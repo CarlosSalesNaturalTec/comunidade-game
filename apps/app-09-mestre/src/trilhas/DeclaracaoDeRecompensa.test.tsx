@@ -65,9 +65,10 @@ function tipoDeRecurso(): TipoDeRecurso {
   return {
     id: "tipo-1",
     nome: "Camisa",
-    natureza: "duravel",
+    natureza: "consumivel",
     unidade: "unidade",
     exige_comprovante: false,
+    finalidade: "recompensa" as const,
     ativo: true,
     valor_em_moedas: "10.00",
     vigencia_inicio: "2026-01-01",
@@ -221,5 +222,36 @@ describe("A declaração de recompensa não oferece tipo de recurso desativado",
     );
 
     expect(screen.getByText(/Boné/)).toBeInTheDocument();
+  });
+});
+
+describe("A declaração de recompensa oferece só tipo de recompensa", () => {
+  it("o seletor não oferece o tipo de consumo do encontro", async () => {
+    // Escolha nova: o lanche é consumo do encontro e nunca recompensa
+    // (`RF-09-71`, `RF-09-84`, `RF-07-53`).
+    configurarSessao();
+    const lanche: TipoDeRecurso = {
+      ...tipoDeRecurso(),
+      id: "tipo-3",
+      nome: "Lanche",
+      finalidade: "consumo_do_encontro",
+    };
+
+    render(
+      <DeclaracaoDeRecompensa
+        idDaTrilha="trilha-1"
+        missao={missao()}
+        tiposDeRecurso={[tipoDeRecurso(), lanche]}
+        recompensas={[]}
+        onDeclarada={vi.fn()}
+      />,
+    );
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: /^declarar recompensa$/i }));
+
+    const seletor = screen.getByLabelText(/tipo de recurso/i);
+    expect(within(seletor).getByRole("option", { name: "Camisa" })).toBeInTheDocument();
+    expect(within(seletor).queryByRole("option", { name: "Lanche" })).not.toBeInTheDocument();
   });
 });

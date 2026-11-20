@@ -47,7 +47,7 @@ def test_mestre_cadastra_item_na_sua_comunidade(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     mestre = criar_persona(Papel.mestre)
     criar_vinculo_do_mestre(mestre, comunidade)
 
@@ -73,7 +73,7 @@ def test_apoiador_oferta_item_ao_catalogo(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
 
     item = cadastrar_item(
@@ -98,7 +98,7 @@ def test_ponto_de_apoio_de_outra_comunidade_e_recusado(
     comunidade = criar_comunidade()
     outra_comunidade = criar_comunidade("Outra Comunidade")
     ponto_de_outra = criar_ponto_de_apoio(admin, outra_comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
@@ -127,7 +127,7 @@ def test_mestre_fora_do_vinculo_nao_cadastra(
     comunidade = criar_comunidade()
     outra_comunidade = criar_comunidade("Outra Comunidade")
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     mestre = criar_persona(Papel.mestre)
     criar_vinculo_do_mestre(mestre, outra_comunidade)
 
@@ -150,7 +150,7 @@ def test_guerreiro_nao_cadastra_item(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
 
     with pytest.raises(PermissaoNegada):
@@ -172,7 +172,7 @@ def test_estoque_menor_que_um_e_recusado(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
@@ -195,7 +195,7 @@ def test_cadastro_com_preco_declarado_e_recusado(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
 
     with pytest.raises(ErroDeValidacao) as excinfo:
@@ -227,7 +227,7 @@ def test_item_de_mestre_dispensa_homologacao(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     mestre = criar_persona(Papel.mestre)
     criar_vinculo_do_mestre(mestre, comunidade)
 
@@ -257,7 +257,7 @@ def test_item_de_apoiador_nasce_pendente_e_inativo_mesmo_com_lastro(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     apoiador = criar_persona(Papel.apoiador)
@@ -289,7 +289,7 @@ def test_admin_homologa_item_pendente_com_lastro_e_ativa(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     apoiador = criar_persona(Papel.apoiador)
@@ -319,7 +319,7 @@ def test_admin_recusa_item_pendente_com_motivo(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
     item = cadastrar_item(
         sessao,
@@ -357,7 +357,7 @@ def test_mestre_nao_homologa_item_de_apoiador(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
     item = cadastrar_item(
         sessao,
@@ -399,7 +399,7 @@ def test_item_com_saldo_igual_ao_estoque_nasce_ativo(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
@@ -432,7 +432,7 @@ def test_item_sem_lastro_suficiente_nasce_inativo_dizendo_o_que_falta(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "4")
     mestre = criar_persona(Papel.mestre)
@@ -467,7 +467,7 @@ def test_saldo_de_outro_ponto_de_apoio_nao_lastreia_o_item(
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade, nome="Ponto A")
     outro_ponto = criar_ponto_de_apoio(admin, comunidade, nome="Ponto B")
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, outro_ponto, "10")
     mestre = criar_persona(Papel.mestre)
@@ -500,7 +500,7 @@ def test_ativacao_reverifica_o_lastro(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "4")
     mestre = criar_persona(Papel.mestre)
@@ -536,7 +536,7 @@ def test_ativacao_sem_lastro_e_recusada(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     mestre = criar_persona(Papel.mestre)
     criar_vinculo_do_mestre(mestre, comunidade)
@@ -570,7 +570,7 @@ def test_item_pendente_de_homologacao_nao_ativa(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     apoiador = criar_persona(Papel.apoiador)
@@ -605,7 +605,7 @@ def test_tipo_sem_preco_vigente_nasce_inativo(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
     criar_vinculo_do_mestre(mestre, comunidade)
@@ -640,7 +640,7 @@ def test_mestre_altera_estoque_dentro_do_lastro(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
@@ -677,7 +677,7 @@ def test_estoque_acima_do_lastro_desativa_o_item(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
@@ -715,7 +715,7 @@ def test_mestre_retira_o_item_do_catalogo(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
@@ -745,7 +745,7 @@ def test_apoiador_nao_altera_item_ja_cadastrado(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
     item = cadastrar_item(
         sessao,
@@ -779,7 +779,7 @@ def test_catalogo_filtrado_pela_comunidade_do_guerreiro(
     outra_comunidade = criar_comunidade("Outra Comunidade")
     ponto = criar_ponto_de_apoio(admin, comunidade)
     ponto_de_outra = criar_ponto_de_apoio(admin, outra_comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto_de_outra, "10")
@@ -825,7 +825,7 @@ def test_inativos_so_para_admin_e_mestre_vinculado(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_item_de_catalogo_avulso(admin, tipo, comunidade, ponto, ativo=False)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
     mestre = criar_persona(Papel.mestre)
@@ -863,7 +863,7 @@ def test_saida_do_catalogo_pela_rota_nao_traz_moedas_nem_reais(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo, preco_em_pontos_extras=25)
     _cadastrar_lastro(criar_lancamento, admin, tipo, ponto, "10")
     mestre = criar_persona(Papel.mestre)
@@ -920,9 +920,9 @@ def test_apoiador_le_os_proprios_itens_em_qualquer_situacao(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo_com_preco = criar_tipo_de_recurso(admin, nome="Tipo com preço")
+    tipo_com_preco = criar_tipo_de_recurso(admin, nome="Tipo com preço", finalidade="recompensa")
     criar_preco_de_referencia(admin, tipo_com_preco)
-    tipo_sem_preco = criar_tipo_de_recurso(admin, nome="Tipo sem preço")
+    tipo_sem_preco = criar_tipo_de_recurso(admin, nome="Tipo sem preço", finalidade="recompensa")
     _cadastrar_lastro(criar_lancamento, admin, tipo_com_preco, ponto, "10")
     apoiador = criar_persona(Papel.apoiador)
     outro_apoiador = criar_persona(Papel.apoiador)
@@ -1063,7 +1063,7 @@ def test_item_sem_troca_traz_contagem_zero(
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
     item = cadastrar_item(
         sessao,
@@ -1102,7 +1102,7 @@ def test_item_com_tres_trocas_traz_a_contagem_agregada_sem_identificar_quem_troc
     admin = criar_persona(Papel.admin)
     comunidade = criar_comunidade()
     ponto = criar_ponto_de_apoio(admin, comunidade)
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
     apoiador = criar_persona(Papel.apoiador)
     item = cadastrar_item(
         sessao,
@@ -1154,7 +1154,7 @@ def test_mestre_le_o_catalogo_das_duas_comunidades(
     comunidade_a = criar_comunidade("Comunidade A")
     comunidade_b = criar_comunidade("Comunidade B")
     de_fora = criar_comunidade("Comunidade de Fora")
-    tipo = criar_tipo_de_recurso(admin)
+    tipo = criar_tipo_de_recurso(admin, finalidade="recompensa")
 
     item_a = criar_item_de_catalogo_avulso(
         admin, tipo, comunidade_a, criar_ponto_de_apoio(admin, comunidade_a), ativo=True
