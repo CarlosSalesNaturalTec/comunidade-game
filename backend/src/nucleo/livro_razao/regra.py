@@ -52,14 +52,19 @@ def lancar_debito(
     ponto_de_apoio_id,
     quantidade: Decimal,
     valor_em_moedas: Decimal,
-    operador: Persona,
+    operador: Persona | None = None,
     aula_id=None,
+    autoria: tuple[uuid.UUID, str] | None = None,
 ) -> Lancamento:
     """O lançamento de débito que a baixa de uma reserva gera, um por
     reserva consumida, no ponto de apoio da aula que a consumiu (`RF-07-09`,
     `RN-07-36`, design — Decisions 7). `aula_id` é anulável porque fatias
     futuras trarão débito sem aula — a baixa da troca do catálogo avulso e
-    a de recompensa entregue (`RF-07-16`, design — Decisions 3)."""
+    a de recompensa entregue (`RF-07-16`, design — Decisions 3). `autoria`
+    substitui o operador na baixa feita pelo sistema no fim da aula: o
+    autor da aula com o papel `sistema` (`RN-07-43`, change
+    `baixa-no-fim-da-aula`, design — decisão 2)."""
+    autor_id, papel_do_autor = autoria or (operador.id, operador.papel.value)
     lancamento = Lancamento(
         natureza=NaturezaDoLancamento.debito,
         tipo_de_recurso_id=tipo_de_recurso_id,
@@ -67,8 +72,8 @@ def lancar_debito(
         quantidade=quantidade,
         valor_em_moedas=valor_em_moedas,
         aula_id=aula_id,
-        autor_id=operador.id,
-        papel_do_autor=operador.papel.value,
+        autor_id=autor_id,
+        papel_do_autor=papel_do_autor,
     )
     sessao.add(lancamento)
     sessao.flush()

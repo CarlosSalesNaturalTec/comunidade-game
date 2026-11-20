@@ -374,3 +374,94 @@ def test_a_finalidade_nasce_recompensa_nos_tipos_nao_duraveis(banco_vazio, monke
     finally:
         motor.dispose()
         obter_configuracao.cache_clear()
+
+
+def test_a_aula_terminada_antes_da_baixa_automatica_tem_a_reserva_liberada(
+    banco_vazio, monkeypatch
+):
+    """`RF-07-56`: a aula já terminada, sem desfecho, tem a reserva liberada sem
+    débito e passa a realizada; a pendente vira realizada sem lastro; a aula
+    que ainda vem não muda (change `baixa-no-fim-da-aula`, design — decisão 7)."""
+    configuracao = _configuracao_do_alembic(banco_vazio, monkeypatch)
+    command.upgrade(configuracao, "d4f6a8c0e2b3")
+
+    autor, comunidade, ponto, tipo = (uuid.uuid4() for _ in range(4))
+    terminada, pendente, futura = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+    motor = sa.create_engine(banco_vazio)
+    try:
+        with motor.begin() as conexao:
+            conexao.execute(
+                sa.text("INSERT INTO persona (id, papel) VALUES (:autor, 'admin')"),
+                {"autor": autor},
+            )
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO comunidade_virtual (id, nome, localizacao, granularidade_maxima) "
+                    "VALUES (:id, 'Guerreira Zeferina', 'Bairro', 'bairro')"
+                ),
+                {"id": comunidade},
+            )
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO ponto_de_apoio (id, nome, comunidade_virtual_id, ativo, autor_id, "
+                    "papel_do_autor) VALUES (:id, 'Centro', :comunidade, true, :autor, 'admin')"
+                ),
+                {"id": ponto, "comunidade": comunidade, "autor": autor},
+            )
+            conexao.execute(
+                sa.text(
+                    "INSERT INTO tipo_de_recurso (id, nome, natureza, unidade, finalidade, "
+                    "autor_id, papel_do_autor) VALUES (:id, 'Kit', 'consumivel', 'kit', "
+                    "'recompensa', :autor, 'admin')"
+                ),
+                {"id": tipo, "autor": autor},
+            )
+            for aula, situacao, dias in (
+                (terminada, "confirmada", -10),
+                (pendente, "pendente_de_lastro", -5),
+                (futura, "confirmada", 5),
+            ):
+                conexao.execute(
+                    sa.text(
+                        "INSERT INTO aula (id, comunidade_virtual_id, ponto_de_apoio_id, "
+                        "inicio_em, fim_em, situacao, autor_id, papel_do_autor) VALUES "
+                        "(:id, :comunidade, :ponto, now() + make_interval(days => :dias), "
+                        "now() + make_interval(days => :dias, hours => 2), :situacao, "
+                        ":autor, 'admin')"
+                    ),
+                    {
+                        "id": aula,
+                        "comunidade": comunidade,
+                        "ponto": ponto,
+                        "dias": dias,
+                        "situacao": situacao,
+                        "autor": autor,
+                    },
+                )
+            for aula in (terminada, futura):
+                conexao.execute(
+                    sa.text(
+                        "INSERT INTO reserva (id, aula_id, tipo_de_recurso_id, ponto_de_apoio_id, "
+                        "quantidade, estado, autor_id, papel_do_autor) VALUES "
+                        "(gen_random_uuid(), :aula, :tipo, :ponto, 20, 'reservada', :autor, "
+                        "'admin')"
+                    ),
+                    {"aula": aula, "tipo": tipo, "ponto": ponto, "autor": autor},
+                )
+
+        command.upgrade(configuracao, "head")
+
+        with motor.connect() as conexao:
+            situacoes = dict(conexao.execute(sa.text("SELECT id, situacao FROM aula")).all())
+            estados = dict(conexao.execute(sa.text("SELECT aula_id, estado FROM reserva")).all())
+            debitos = conexao.execute(sa.text("SELECT count(*) FROM lancamento")).scalar_one()
+        assert situacoes == {
+            terminada: "realizada",
+            pendente: "realizada_sem_lastro",
+            futura: "confirmada",
+        }
+        assert estados == {terminada: "liberada", futura: "reservada"}
+        assert debitos == 0
+    finally:
+        motor.dispose()
+        obter_configuracao.cache_clear()

@@ -1,4 +1,6 @@
+import logging
 import uuid
+from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy import func
@@ -15,6 +17,8 @@ from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia
 from ..tempo import agora
 from .modelo import EstadoDaReserva, Reserva
+
+_registro = logging.getLogger(__name__)
 
 
 def quantidade_reservada(
@@ -137,46 +141,102 @@ def confirmar_aulas_pendentes(
     return confirmadas
 
 
-def _valorar_debito(sessao: Session, *, tipo: TipoDeRecurso, quantidade: Decimal) -> Decimal:
-    """A baixa é valorada pela vigência do valor de referência no dia do
-    lançamento da atividade, no mesmo mecanismo que já valora o crédito do
-    aporte (`RN-07-04`, aportes.regra._valorar_em_moedas)."""
-    referencia = consultar_valor_de_referencia(sessao, tipo=tipo, data=agora().date())
-    if referencia is None:
-        raise ErroDeValidacao(
-            mensagem="Nenhuma vigência do valor de referência cobre a data do débito.",
-            campo="tipo_de_recurso_id",
-        )
-    return (quantidade * referencia.valor_em_moedas).quantize(Decimal("0.01"))
+PAPEL_DO_SISTEMA = "sistema"
+
+_SITUACOES_SEM_DESFECHO = (
+    SituacaoDaAula.prevista,
+    SituacaoDaAula.confirmada,
+    SituacaoDaAula.pendente_de_lastro,
+)
 
 
-def consumir_reservas_da_aula(
-    sessao: Session, *, aula: Aula, operador: Persona
-) -> list[Lancamento]:
+class _AulaSemValoracao(Exception):
+    """Tipo reservado sem vigência do valor de referência no dia do fim da
+    aula: a aula fica para a próxima varredura (design — decisão 3)."""
+
+
+def consumir_reservas_da_aula(sessao: Session, *, aula: Aula) -> list[Lancamento]:
     """Converte cada reserva ainda reservada da aula em baixa: um débito por
-    reserva, no ponto de apoio da aula, e a reserva passa a **consumida**
-    (`RF-07-09`, `RN-07-36`, design — Decisions 7)."""
+    reserva, no ponto de apoio da aula, e a reserva passa a **consumida**.
+    É ato do **sistema** no fim do horário — o autor da aula com o papel
+    `sistema` —, valorado pela vigência do dia do fim da aula (`RF-07-09`,
+    `RN-07-36`, `RN-07-43`, design — decisões 2 e 3)."""
     reservas = (
         sessao.query(Reserva).filter_by(aula_id=aula.id, estado=EstadoDaReserva.reservada).all()
     )
+    dia_do_fim = aula.fim_em.date()
 
-    lancamentos = []
+    valores = []
     for reserva in reservas:
         tipo = sessao.get(TipoDeRecurso, reserva.tipo_de_recurso_id)
-        valor_em_moedas = _valorar_debito(sessao, tipo=tipo, quantidade=reserva.quantidade)
+        referencia = consultar_valor_de_referencia(sessao, tipo=tipo, data=dia_do_fim)
+        if referencia is None:
+            raise _AulaSemValoracao(tipo.nome)
+        valores.append((reserva.quantidade * referencia.valor_em_moedas).quantize(Decimal("0.01")))
+
+    lancamentos = []
+    for reserva, valor_em_moedas in zip(reservas, valores, strict=True):
         lancamento = lancar_debito(
             sessao,
             tipo_de_recurso_id=reserva.tipo_de_recurso_id,
             ponto_de_apoio_id=reserva.ponto_de_apoio_id,
             quantidade=reserva.quantidade,
             valor_em_moedas=valor_em_moedas,
-            operador=operador,
             aula_id=aula.id,
+            autoria=(aula.autor_id, PAPEL_DO_SISTEMA),
         )
         reserva.estado = EstadoDaReserva.consumida
         lancamentos.append(lancamento)
     sessao.flush()
     return lancamentos
+
+
+def encerrar_aulas_vencidas(sessao: Session, *, momento: datetime | None = None) -> int:
+    """A aula não tem fechamento: passado o `fim_em`, a confirmada (ou a
+    prevista) tem as reservas baixadas e passa a **realizada**, e a pendente
+    de lastro passa a **realizada sem lastro**, sem baixa. `SKIP LOCKED`
+    impede duas varreduras de pegar a mesma aula; a aula que não se pode
+    valorar fica para a próxima. Devolve quantas aulas encerrou (`RF-07-09`,
+    `RF-07-55`, `RF-01-91`, `RN-07-43`, design — decisão 1)."""
+    momento = momento or agora()
+    vencidas = (
+        sessao.query(Aula)
+        .filter(Aula.fim_em <= momento, Aula.situacao.in_(_SITUACOES_SEM_DESFECHO))
+        .order_by(Aula.fim_em.asc())
+        .with_for_update(skip_locked=True)
+        .all()
+    )
+
+    encerradas = 0
+    for aula in vencidas:
+        if aula.situacao == SituacaoDaAula.pendente_de_lastro:
+            aula.situacao = SituacaoDaAula.realizada_sem_lastro
+        else:
+            ponto_de_restauracao = sessao.begin_nested()
+            try:
+                consumir_reservas_da_aula(sessao, aula=aula)
+            except _AulaSemValoracao as exc:
+                ponto_de_restauracao.rollback()
+                _registro.warning(
+                    "Aula %s ficou para a próxima varredura: %s sem valor de referência "
+                    "vigente no dia do fim.",
+                    aula.id,
+                    exc,
+                )
+                continue
+            ponto_de_restauracao.commit()
+            aula.situacao = SituacaoDaAula.realizada
+        encerradas += 1
+    sessao.flush()
+    return encerradas
+
+
+def varrer_aulas_vencidas(sessao: Session) -> None:
+    """O disparo sob demanda: roda a varredura e a grava antes da operação
+    que depende da situação da aula, do saldo ou da necessidade (decisão do
+    fundador de 2026-11-20, design — decisão 4)."""
+    encerrar_aulas_vencidas(sessao)
+    sessao.commit()
 
 
 def liberar_reservas_da_aula(sessao: Session, *, aula: Aula) -> None:

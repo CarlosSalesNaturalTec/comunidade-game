@@ -166,11 +166,14 @@ def test_baixa_leva_a_reserva_a_consumida_e_deriuba_o_saldo(
     aula = criar_aula(admin, comunidade, ponto_de_apoio=ponto_de_apoio)
     reserva = criar_reserva(admin, aula, tipo, ponto_de_apoio, quantidade=Decimal("3.00"))
 
-    lancamentos = consumir_reservas_da_aula(sessao, aula=aula, operador=admin)
+    lancamentos = consumir_reservas_da_aula(sessao, aula=aula)
     sessao.commit()
 
     assert len(lancamentos) == 1
     assert lancamentos[0].quantidade == Decimal("3.00")
+    # A baixa é do sistema: o autor da aula com o papel `sistema` (`RN-07-43`).
+    assert lancamentos[0].autor_id == aula.autor_id
+    assert lancamentos[0].papel_do_autor == "sistema"
     sessao.refresh(reserva)
     assert reserva.estado == EstadoDaReserva.consumida
 

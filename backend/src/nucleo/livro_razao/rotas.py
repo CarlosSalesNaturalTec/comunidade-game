@@ -14,6 +14,7 @@ from ..paginacao import PaginaDeResultado, ParametrosDeListagem, contrato_de_lis
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
+from ..reservas.regra import varrer_aulas_vencidas
 from .modelo import Lancamento
 from .regra import lancar_ajuste, listar_lancamentos, saldos_por_ponto_de_apoio, transferir_saldo
 
@@ -139,6 +140,7 @@ def listar_saldos_do_ponto_de_apoio_rota(
 ) -> list[SaldoDoTipoDeRecursoSaida]:
     """Restrita ao Admin — a tela de transferência mostra o saldo disponível
     na origem antes de confirmar (`RF-07-19`)."""
+    varrer_aulas_vencidas(sessao_bd)
     operador = sessao_bd.get(Persona, contexto.persona_id)
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin consulta o saldo de um ponto de apoio.")

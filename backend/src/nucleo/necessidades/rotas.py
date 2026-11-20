@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..personas.modelo import Persona
+from ..reservas.regra import varrer_aulas_vencidas
 from ..tempo import DataHoraComFuso
 from .regra import (
     NecessidadeDeRecurso,
@@ -56,6 +57,7 @@ def listar_necessidades_publicas_rota(
     """Pública, sem credencial de persona e sob chave de aplicação, como
     toda leitura do prefixo `/vitrine` (`RF-07-27`, `RF-03-47`, `RF-01-02`,
     `RF-01-16`)."""
+    varrer_aulas_vencidas(sessao_bd)
     necessidades = consultar_necessidades_publicas(sessao_bd)
     return [_saida(necessidade) for necessidade in necessidades]
 
@@ -68,6 +70,7 @@ def listar_necessidades_do_mestre_rota(
     """Restrita ao Mestre em sessão, filtrada pela comunidade a que ele está
     vinculado — fora do prefixo `/vitrine`, que o núcleo reserva à leitura
     sem persona (`RF-07-27`, design — Decisions 5)."""
+    varrer_aulas_vencidas(sessao_bd)
     operador = sessao_bd.get(Persona, contexto.persona_id)
     necessidades = consultar_necessidades_do_mestre(sessao_bd, operador=operador)
     return [_saida(necessidade) for necessidade in necessidades]

@@ -23,7 +23,7 @@ from ..tempo import ComMomentoDoFato
 
 
 class SituacaoDaAula(enum.StrEnum):
-    """Os cinco valores do PRD-01 §8. `prevista` não tem transição que a
+    """Os seis valores do PRD-01 §8. `prevista` não tem transição que a
     produza: o agendamento sempre avalia o lastro na mesma operação, e toda
     aula nasce **confirmada** ou **pendente de lastro** (`RF-07-08`, design
     — Decisions 9)."""
@@ -32,6 +32,9 @@ class SituacaoDaAula(enum.StrEnum):
     pendente_de_lastro = "pendente_de_lastro"
     confirmada = "confirmada"
     realizada = "realizada"
+    # A pendente de lastro que chega ao fim do horário: não consumiu nada e
+    # sai das necessidades (`RF-07-55`, `RN-02-09`).
+    realizada_sem_lastro = "realizada_sem_lastro"
     cancelada = "cancelada"
 
 

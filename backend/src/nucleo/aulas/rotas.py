@@ -32,7 +32,7 @@ from ..personas.modelo import Nick, Papel, Persona
 from ..personas.regra import buscar_guerreiro_confirmavel_por
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
-from ..reservas.regra import disponivel_de
+from ..reservas.regra import disponivel_de, varrer_aulas_vencidas
 from ..resultados.regra import ResultadoDeclarado
 from ..resultados.regra import lancar_atividade_realizada as _lancar_atividade_realizada
 from ..tempo import DataHoraComFuso, agora
@@ -157,6 +157,7 @@ def agendar_aula_rota(
 ) -> AulaSaida:
     """Restrita ao Admin — agenda e dispara a reserva dos recursos
     declarados (`RF-07-08`, `RF-02-31`, `RF-01-16`)."""
+    varrer_aulas_vencidas(sessao_bd)
     operador = sessao_bd.get(Persona, contexto.persona_id)
     comunidade = sessao_bd.get(ComunidadeVirtual, entrada.comunidade_virtual_id)
     ponto_de_apoio = sessao_bd.get(PontoDeApoio, entrada.ponto_de_apoio_id)
@@ -254,6 +255,7 @@ def listar_agenda_rota(
     distante, e depois as terminadas, da mais recente à mais antiga. O momento
     que divide os dois grupos viaja no cursor (documento 09 §1, "Agenda sem
     canceladas e pelas próximas aulas")."""
+    varrer_aulas_vencidas(sessao_bd)
     operador = sessao_bd.get(Persona, contexto.persona_id)
     comunidade_id = _analisar_comunidade(parametros.filtros.get("comunidade"))
     incluir_canceladas = _analisar_incluir_canceladas(parametros.filtros.get("incluir_canceladas"))
@@ -348,6 +350,7 @@ def tentar_reservar_aula_pendente_rota(
     """Caminho explícito e idempotente da PRD-07 §9: tenta de novo a reserva
     de uma aula pendente de lastro; aula já confirmada devolve o estado
     corrente sem duplicar reserva (design — Decisions 6)."""
+    varrer_aulas_vencidas(sessao_bd)
     operador = sessao_bd.get(Persona, contexto.persona_id)
     aula = sessao_bd.get(Aula, id_da_aula)
     aula = tentar_reservar_aula_pendente(sessao_bd, operador=operador, aula=aula)
@@ -416,6 +419,7 @@ def cancelar_aula_rota(
 ) -> AulaSaida:
     """Admin ou Mestre da comunidade cancelam, sempre com motivo — libera as
     reservas da aula (`RF-01-72`, `RF-01-17`, `RF-02-95`)."""
+    varrer_aulas_vencidas(sessao_bd)
     operador = sessao_bd.get(Persona, contexto.persona_id)
     aula = sessao_bd.get(Aula, id_da_aula)
     aula = cancelar_aula(sessao_bd, operador=operador, aula=aula, motivo=entrada.motivo)

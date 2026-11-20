@@ -189,7 +189,7 @@ describe("Lançamentos (RF-02-34, RF-02-36, RF-02-37, RF-02-39)", () => {
     });
     const lancar = vi
       .spyOn(lancamentosApi, "lancarAtividadeRealizada")
-      .mockResolvedValue({ id: "aula-1", situacao: "realizada" });
+      .mockResolvedValue({ id: "aula-1", situacao: "confirmada" });
 
     render(<TelaDeLancamentos />);
     await screen.findByLabelText(/o que zeferina produziu/i);
@@ -216,7 +216,10 @@ describe("Lançamentos (RF-02-34, RF-02-36, RF-02-37, RF-02-39)", () => {
         "token-do-admin",
       ),
     );
-    expect(await screen.findByText(/aula passou a realizada/i)).toBeInTheDocument();
+    // A aula não tem fechamento: a tela só diz que os resultados foram
+    // gravados, sem falar em baixa (`RF-02-33`, `RF-02-35`, `RN-07-43`).
+    expect(await screen.findByText(/resultados gravados/i)).toBeInTheDocument();
+    expect(screen.queryByText(/baixa|passou a realizada/i)).not.toBeInTheDocument();
   });
 
   it("bloqueia o envio quando falta a produção de um participante, sem chamar o núcleo", async () => {

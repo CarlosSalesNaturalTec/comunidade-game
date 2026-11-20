@@ -13,7 +13,11 @@ from .modelo import PontoDeApoio
 
 PAPEIS_QUE_PODEM_SER_RESPONSAVEL = frozenset({Papel.admin, Papel.mestre, Papel.apoiador})
 
-_SITUACOES_QUE_NAO_BLOQUEIAM_DESATIVACAO = (SituacaoDaAula.realizada, SituacaoDaAula.cancelada)
+_SITUACOES_QUE_NAO_BLOQUEIAM_DESATIVACAO = (
+    SituacaoDaAula.realizada,
+    SituacaoDaAula.realizada_sem_lastro,
+    SituacaoDaAula.cancelada,
+)
 
 
 def cadastrar_ponto_de_apoio(

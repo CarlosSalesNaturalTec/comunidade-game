@@ -35,37 +35,6 @@ reservas que a baixa consome (documento 04 §1). (`RF-01-20`, `RF-07-09`, `RF-02
 - **WHEN** chega um Resultado sem a aula em que foi lançado
 - **THEN** o núcleo responde 422 indicando o campo em falta e nada é gravado
 
-### Requirement: O lançamento da atividade realizada é ato por aula e converte as reservas em baixa
-
-O núcleo SHALL expor o **lançamento da atividade realizada** como ato **por aula**, de
-**Admin**, que registra em uma operação os Resultados de todos os participantes daquela aula.
-Na mesma operação, o núcleo SHALL converter **cada reserva** da aula em **baixa**: a reserva
-passa a **consumida** e um **lançamento de débito** é gravado, com o tipo de recurso, a
-quantidade e o **ponto de apoio da aula**. Não há operação de baixa separada deste ato. A aula
-SHALL passar à situação **realizada**. (`RF-07-09`, `RF-02-35`, `RN-07-36`, `RN-07-01`,
-`RF-01-16`, `RF-01-03`, documento 04 §1, PRD-07 §5.3)
-
-#### Scenario: Lançamento gera um débito por reserva
-
-- **WHEN** um Admin lança a atividade realizada numa aula com duas reservas
-- **THEN** o núcleo grava dois lançamentos de débito, um por reserva, no ponto de apoio da aula,
-  e ambas as reservas passam a consumida
-
-#### Scenario: O débito derruba o saldo do ponto de apoio da aula
-
-- **WHEN** a atividade realizada é lançada numa aula que reservou 3 unidades de um tipo
-- **THEN** o saldo daquele tipo no ponto de apoio da aula cai em 3
-
-#### Scenario: Lançamento de aula sem reservas apenas registra os resultados
-
-- **WHEN** um Admin lança a atividade realizada numa aula que não declarou recurso algum
-- **THEN** o núcleo grava os Resultados, não gera débito algum e a aula passa a realizada
-
-#### Scenario: Mestre não lança a atividade da aula
-
-- **WHEN** um Mestre tenta lançar a atividade realizada de uma aula
-- **THEN** o núcleo responde 403 e nada é gravado
-
 ### Requirement: O desfecho do Resultado é lançado pela gestão, em três valores fechados
 
 O núcleo SHALL exigir, em todo Resultado, um **desfecho** entre exatamente três valores:
@@ -277,3 +246,34 @@ Resultado não se edita nem se remove, então sem a guarda o ponto dobraria em s
 
 - **WHEN** chega um lançamento para um Guerreiro(a) que já tem Resultado naquela atividade
 - **THEN** o núcleo responde 422 e nada é gravado, nem para os outros participantes da lista
+
+### Requirement: O lançamento dos resultados da aula grava os Resultados sem baixar reserva
+
+O núcleo SHALL expor o lançamento dos **resultados da aula** como ato **por aula**, de
+**Admin**, que registra em uma operação os Resultados dos participantes, cada um com a atividade
+a que pertence. O ato NEVER SHALL baixar reserva nem mudar a situação da aula: a baixa e a
+passagem a realizada são do sistema, no fim do horário. O ato SHALL ser aceito durante e depois
+da aula, e SHALL ser recusado com **422** só na aula **cancelada**; o Resultado repetido segue
+recusado pela regra que já o recusa. (`RF-02-33`, `RF-02-35`, `RN-07-43`, `RF-01-16`,
+`RF-01-03`)
+
+#### Scenario: O lançamento grava os resultados sem baixar nada
+
+- **WHEN** um Admin lança os resultados numa aula confirmada com duas reservas
+- **THEN** o núcleo grava os Resultados, nenhum débito é gravado, as reservas seguem reservadas
+  e a aula segue confirmada
+
+#### Scenario: O lançamento é aceito depois do fim da aula
+
+- **WHEN** um Admin lança os resultados de uma aula já realizada
+- **THEN** o núcleo grava os Resultados
+
+#### Scenario: Aula cancelada recusa o lançamento
+
+- **WHEN** chega o lançamento de resultados de uma aula cancelada
+- **THEN** o núcleo responde 422 e nada é gravado
+
+#### Scenario: Mestre não lança pela aula
+
+- **WHEN** um Mestre tenta lançar os resultados pela rota da aula
+- **THEN** o núcleo responde 403 e nada é gravado

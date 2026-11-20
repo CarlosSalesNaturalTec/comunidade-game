@@ -21,6 +21,7 @@ from nucleo.comunidades.regra import abrir_vinculo, comunidades_do_mestre
 from nucleo.erros import ErroDeValidacao
 from nucleo.patrimonio.regra import listar_acervo
 from nucleo.personas.modelo import Papel
+from nucleo.tempo import agora
 
 INICIO = datetime(2026, 8, 1, 10, 0, tzinfo=UTC)
 FIM = datetime(2026, 8, 1, 12, 0, tzinfo=UTC)
@@ -79,8 +80,9 @@ def test_aula_cancelada_nao_desfaz_o_vinculo(
         comunidade=comunidade,
         ponto_de_apoio=criar_ponto_de_apoio(admin, comunidade),
         mestres=[mestre],
-        inicio_em=INICIO,
-        fim_em=FIM,
+        # Aula que já terminou não se cancela (`RF-01-91`): esta ainda vem.
+        inicio_em=agora() + timedelta(days=1),
+        fim_em=agora() + timedelta(days=1, hours=2),
     )
     sessao.commit()
 
