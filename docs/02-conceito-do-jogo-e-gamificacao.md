@@ -615,13 +615,11 @@ passa a valer no ato da entrega.
 
 **Desbloqueio julgado é entrega.** Quando o desbloqueio da missão passa por julgamento, a
 aprovação do Mestre em "Desafios a julgar" já é a entrega da recompensa, com a baixa no mesmo
-ato e o recurso saindo do ponto de apoio da aula. Sem lastro, a aprovação vale — a missão
-seguinte abre — e a entrega fica na fila de entregas pendentes, que também atende o marco que
-não passa por julgamento.
-
-> **A definir:** de qual aula vem o ponto de apoio quando o julgamento acontece fora do
-> encontro, e se basta o Mestre autor da trilha, que é quem julga, ou se vale a regra de quem
-> confirma da tabela acima.
+ato, desde que quem julga seja também vinculado à comunidade do Guerreiro(a); se não for, a
+entrega cai na fila de entregas pendentes do Mestre vinculado. O recurso sai do ponto de apoio
+da aula em andamento ou, fora do encontro, da **aula imediatamente anterior** da comunidade.
+Sem lastro, a aprovação vale — a missão seguinte abre — e a entrega fica na fila de entregas
+pendentes, que também atende o marco que não passa por julgamento.
 
 **A missão é o marco de uso corrente.** Ao cadastrar uma missão, o Mestre declara se o
 desbloqueio dela libera recompensa — e é por aí que saem **as camisas, os livros e os kits do
