@@ -186,8 +186,8 @@ remotas** e o uso cotidiano fora do encontro.
 
 **Encontro cancelado.** O encontro agendado é cancelado por um **Admin** ou por um **Mestre
 vinculado à comunidade** dele, com motivo registrado. O cancelamento devolve ao saldo os
-recursos que o encontro havia reservado (documento 04). Encontro já lançado como realizado não
-se cancela.
+recursos que o encontro havia reservado (documento 04). Encontro cujo horário já terminou está
+realizado e não se cancela.
 
 ### Momentos do encontro
 
