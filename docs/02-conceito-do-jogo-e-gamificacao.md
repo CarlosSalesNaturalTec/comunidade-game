@@ -615,10 +615,12 @@ passa a valer no ato da entrega.
 
 **Desbloqueio julgado é entrega.** Quando o desbloqueio da missão passa por julgamento, a
 aprovação do Mestre em "Desafios a julgar" já é a entrega da recompensa, com a baixa no mesmo
-ato; a fila de entregas pendentes fica para o marco que não passa por julgamento.
+ato e o recurso saindo do ponto de apoio da aula. Sem lastro, a aprovação vale — a missão
+seguinte abre — e a entrega fica na fila de entregas pendentes, que também atende o marco que
+não passa por julgamento.
 
-> **A definir:** na aprovação, de que ponto de apoio o recurso sai, o que acontece se faltar
-> lastro e se basta o Mestre autor da trilha, que é quem julga, ou se vale a regra de quem
+> **A definir:** de qual aula vem o ponto de apoio quando o julgamento acontece fora do
+> encontro, e se basta o Mestre autor da trilha, que é quem julga, ou se vale a regra de quem
 > confirma da tabela acima.
 
 **A missão é o marco de uso corrente.** Ao cadastrar uma missão, o Mestre declara se o
