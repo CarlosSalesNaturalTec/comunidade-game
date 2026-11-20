@@ -182,8 +182,8 @@ Guerreiras que percorrem as suas trilhas.
 
 ### 5.5 Conduzir as minhas turmas
 
-1. O Mestre abre **Minhas atividades** e vê apenas as suas turmas e as atividades que propôs,
-   separadas pelo formato: as **presenciais** do encontro e as **on-line** entre encontros.
+1. O Mestre abre **Minhas atividades** e vê apenas as suas turmas e as atividades on-line que
+   propôs; as **presenciais** do encontro e os **presentes** aparecem ao abrir a aula.
 2. Lança a atividade realizada com data, participantes e equipes. Na atividade em equipe, lança
    a equipe inteira de uma vez, preservando o papel de cada integrante.
 3. Atribui o resultado de cada um: **realizada**, **com mérito** ou **mérito extra por auxílio
@@ -350,13 +350,14 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-48`  | Toda escrita do Mestre entra na trilha de auditoria com autor, papel, data e hora                                                                                                                      | essencial  |
 | `RF-09-49`  | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                                                                                                                               | essencial  |
 | `RF-09-50`  | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                                                                                                                                | desejável  |
-| `RF-09-73`  | Minhas atividades separa as presenciais do encontro das on-line entre encontros, trazendo a aula que cada presencial declarou                                                                          | essencial  |
+| `RF-09-73`  | Minhas turmas lista as atividades on-line entre encontros; as presenciais do encontro aparecem só dentro da aula, para lançamento                                                                      | essencial  |
 | `RF-09-74`  | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante                                                                                                                       | essencial  |
 | `RF-09-75`  | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre: na App 09 a fila é da **comunidade**; na App 01, a do **encontro** — só quem tem presença registrada naquela aula    | essencial  |
 | `RF-09-76`  | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão: na App 09 ele **escolhe** o ponto de apoio; no encontro, o recurso sai do **ponto de apoio da aula**                 | essencial  |
 | `RF-09-113` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro, no aparelho do encontro (PRD-04 `RF-04-84`), e não nesta aplicação | essencial  |
 | `RF-09-143` | Mestre abre a ficha de cada Guerreiro(a) ativo das comunidades do seu vínculo vigente, por nick e avatar                                                                                               | essencial  |
 | `RF-09-144` | A ficha exibe o histórico de pontuação — data, origem, valor, trilha ou poder e motivo da conduta — e os saldos regular e extra                                                                        | essencial  |
+| `RF-09-145` | Na aula, o Mestre vê os presentes — presença não anulada, por nick e avatar, com hora e modo de comprovação                                                                                            | essencial  |
 
 ### 6.7 Validações, filas e propostas
 
@@ -603,6 +604,7 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | GET    | `/v1/minhas-turmas`                                       | Mestre       | Turmas e atividades do próprio Mestre                                                                                  |
 | POST   | `/v1/atividades/{id}/lancamentos`                         | Mestre       | Lança a atividade que propôs, com participantes e resultados                                                           |
 | POST   | `/v1/aulas/{id}/presencas`                                | Mestre       | Registra e ajusta presença do próprio encontro                                                                         |
+| GET    | `/v1/aulas/{id}/presencas`                                | Mestre       | Presentes da aula das suas comunidades, por nick e avatar, com hora e modo                                             |
 | POST   | `/v1/criacoes-originais/{id}/validacao`                   | Mestre       | Valida ou devolve a criação, creditando autoria e badge                                                                |
 | POST   | `/v1/desafios-extras/{id}/validacao`                      | Mestre       | Validação pedagógica, com parecer ou motivo da recusa                                                                  |
 | GET    | `/v1/desafios-extras/a-validar`                           | Mestre       | Fila do que há para validar, das próprias trilhas                                                                      |
@@ -795,6 +797,13 @@ documento 09). Saem `RF-09-85` a `RF-09-89`, `RF-09-91`, `RF-09-95`, `RN-09-33`,
 a entidade `SugestaoDeEstrutura` e a rota `POST /v1/missoes/{id}/estrutura`; o `RF-09-116`
 passa a abrir a cadência sugerida no próprio campo.
 
+### Decisões de 2026-11-20
+
+Decisão do fundador de 2026-11-20, em `/opsx:propose` (linha "Presentes da aula em Minhas
+turmas" do documento 09): a aula cancelada deixa de vir do núcleo em `GET /v1/minhas-turmas`;
+a seção de atividades presenciais sai de Minhas turmas (`RF-09-73` reescrito); e a aula
+lista os presentes (`RF-09-145`).
+
 ## 14. Pendências que permanecem
 
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
@@ -874,3 +883,4 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-141` e `RN-09-62`                           | 11 §§2.2, 5 (customização do kit recebido)                                 |
 | `RF-09-142`                                        | 15 §6.1 (a missão inteira recolhe na etapa)                                |
 | `RF-09-143` e `RF-09-144`                          | 11 §5 (histórico de pontuação do Guerreiro(a))                             |
+| `RF-09-145`                                        | 03 §11 (os presentes da aula)                                              |

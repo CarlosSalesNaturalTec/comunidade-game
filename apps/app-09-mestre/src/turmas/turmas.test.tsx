@@ -3,7 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { AtividadeDoMestre, AulaDaTurma, MinhasTurmas, OcorrenciaDeConduta } from "./api";
+import type {
+  AtividadeDoMestre,
+  AulaDaTurma,
+  MinhasTurmas,
+  OcorrenciaDeConduta,
+  PresencaDaAula,
+} from "./api";
 import * as turmasApi from "./api";
 import { TelaDeMinhasTurmas } from "./TelaDeMinhasTurmas";
 
@@ -95,7 +101,7 @@ afterEach(() => {
 });
 
 describe("lista das turmas do Mestre (RF-09-42, RF-09-73)", () => {
-  it("lista as aulas e as atividades presenciais e on-line separadas", async () => {
+  it("lista as aulas e as atividades on-line, sem seção de presenciais", async () => {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
       turmas({
@@ -108,26 +114,28 @@ describe("lista das turmas do Mestre (RF-09-42, RF-09-73)", () => {
 
     render(<TelaDeMinhasTurmas />);
 
-    expect(await screen.findByText("Oficina")).toBeInTheDocument();
-    expect(screen.getByText("Fórum")).toBeInTheDocument();
+    expect(await screen.findByText("Fórum")).toBeInTheDocument();
+    expect(screen.queryByText("Oficina")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /atividades presenciais/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it("aula cancelada não aparece na lista; a confirmada sim", async () => {
+  it("a atividade presencial segue oferecida para lançamento na tela da aula", async () => {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
       turmas({
-        itens: [
-          aula({ id: "aula-confirmada", situacao: "confirmada" }),
-          aula({ id: "aula-cancelada", situacao: "cancelada" }),
-        ],
+        atividades_presenciais: [atividade({ id: "presencial-1", titulo: "Oficina" })],
       }),
     );
+    vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([]);
 
     render(<TelaDeMinhasTurmas />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: /presença e ocorrência/i }));
 
-    expect(await screen.findByText("Confirmada")).toBeInTheDocument();
-    expect(screen.queryByText("Cancelada")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: /presença e ocorrência/i })).toHaveLength(1);
+    const lista = screen.getByRole("list", { name: /atividades para lançamento/i });
+    expect(lista).toHaveTextContent("Oficina");
   });
 
   it("turma sem aula nem atividade mostra o estado vazio", async () => {
@@ -138,8 +146,8 @@ describe("lista das turmas do Mestre (RF-09-42, RF-09-73)", () => {
 
     render(<TelaDeMinhasTurmas />);
 
+    // Só aulas canceladas chegam como lista vazia: o núcleo já não as devolve.
     expect(await screen.findByText(/nenhuma aula agendada/i)).toBeInTheDocument();
-    expect(screen.getByText(/nenhuma atividade presencial sua/i)).toBeInTheDocument();
     expect(screen.getByText(/nenhuma atividade on-line sua/i)).toBeInTheDocument();
   });
 });
@@ -207,7 +215,7 @@ describe("caminho para o painel do dia (RF-09-50)", () => {
     expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
   });
 
-  it("aula cancelada dentro da janela não aparece nem oferece o caminho", async () => {
+  it("aula cancelada dentro da janela não oferece o caminho", async () => {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(
       turmas({ itens: [aula({ ...janelaEmAndamento(), situacao: "cancelada" })] }),
@@ -215,9 +223,7 @@ describe("caminho para o painel do dia (RF-09-50)", () => {
 
     render(<TelaDeMinhasTurmas />);
 
-    expect(
-      await screen.findByText(/nenhuma aula agendada nas suas comunidades/i),
-    ).toBeInTheDocument();
+    await screen.findByRole("button", { name: /presença e ocorrência/i });
     expect(screen.queryByRole("link", { name: /painel do dia/i })).not.toBeInTheDocument();
   });
 });
@@ -226,6 +232,7 @@ describe("lançamento da atividade (RF-09-43, RF-09-44, RF-09-74)", () => {
   async function abrirTelaDeLancamento() {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(turmas());
+    vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([]);
 
     render(<TelaDeMinhasTurmas />);
     const usuario = userEvent.setup();
@@ -282,6 +289,7 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
   async function abrirTelaDaAula() {
     configurarSessao();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(turmas());
+    vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([]);
 
     render(<TelaDeMinhasTurmas />);
     const usuario = userEvent.setup();
@@ -377,5 +385,99 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
     await usuario.click(screen.getByRole("button", { name: /^lançar ocorrência$/i }));
 
     expect(await screen.findByText(/teto da aula foi alcançado/i)).toBeInTheDocument();
+  });
+});
+
+describe("presentes nesta aula (RF-09-145, RN-09-18)", () => {
+  function presenca(sobrescreve: Partial<PresencaDaAula> = {}): PresencaDaAula {
+    return {
+      id: "presenca-1",
+      guerreiro_id: "guerreiro-1",
+      nick: "Zeferina",
+      avatar: null,
+      momento_do_fato: "2026-08-01T10:05:00-03:00",
+      modo: "reconhecimento",
+      ...sobrescreve,
+    };
+  }
+
+  async function abrir() {
+    configurarSessao();
+    vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(turmas());
+    render(<TelaDeMinhasTurmas />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: /presença e ocorrência/i }));
+    return usuario;
+  }
+
+  it("lista cada presente por avatar desenhado e nick, com hora e modo", async () => {
+    const listar = vi
+      .spyOn(turmasApi, "listarPresencasDaAula")
+      .mockResolvedValue([
+        presenca(),
+        presenca({ id: "presenca-2", nick: "Dandara", modo: "confirmacao" }),
+      ]);
+
+    await abrir();
+
+    const lista = await screen.findByRole("list", { name: /^presentes$/i });
+    expect(listar).toHaveBeenCalledWith("aula-1", "token-do-mestre");
+    expect(lista).toHaveTextContent("Zeferina");
+    expect(lista).toHaveTextContent("Reconhecimento");
+    expect(lista).toHaveTextContent("Dandara");
+    expect(lista).toHaveTextContent("Confirmação");
+    expect(lista.querySelectorAll("svg")).toHaveLength(2);
+    expect(lista.querySelector("img")).toBeNull();
+  });
+
+  it("aula sem presença diz que a lista está vazia", async () => {
+    vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([]);
+
+    await abrir();
+
+    expect(
+      await screen.findByText(/nenhuma presença registrada nesta aula/i),
+    ).toBeInTheDocument();
+  });
+
+  it("a falha da leitura não trava os formulários", async () => {
+    vi.spyOn(turmasApi, "listarPresencasDaAula").mockRejectedValue(new Error("rede"));
+
+    await abrir();
+
+    expect(
+      await screen.findByText(/não foi possível carregar os presentes/i),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^confirmar presença$/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /^lançar ocorrência$/i })).toBeEnabled();
+  });
+
+  it("a presença confirmada recarrega a lista dos presentes", async () => {
+    const listar = vi
+      .spyOn(turmasApi, "listarPresencasDaAula")
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([presenca({ modo: "confirmacao" })]);
+    vi.spyOn(turmasApi, "confirmarPresenca").mockResolvedValue({
+      id: "presenca-1",
+      aula_id: "aula-1",
+      guerreiro_id: "guerreiro-1",
+      modo: "confirmacao",
+      confirmador_id: "mestre-1",
+      momento_do_fato: "2026-08-01T10:05:00-03:00",
+    });
+    const usuario = await abrir();
+    await screen.findByText(/nenhuma presença registrada nesta aula/i);
+
+    const identificadores = screen.getAllByLabelText(/identificador do guerreiro/i);
+    await usuario.type(identificadores[0], "guerreiro-1");
+    await usuario.type(
+      screen.getByLabelText(/momento em que esteve presente/i),
+      "2026-08-01T10:05",
+    );
+    await usuario.click(screen.getByRole("button", { name: /^confirmar presença$/i }));
+
+    const lista = await screen.findByRole("list", { name: /^presentes$/i });
+    expect(lista).toHaveTextContent("Zeferina");
+    expect(listar).toHaveBeenCalledTimes(2);
   });
 });

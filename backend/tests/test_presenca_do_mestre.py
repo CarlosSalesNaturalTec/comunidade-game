@@ -849,3 +849,187 @@ def test_presenca_anterior_a_regra_nao_estorna(
 
     assert _anular(cliente, aula, antiga.id, headers).status_code == 201
     assert _contas_de_extra(sessao, guerreiro) == (10, 10)
+
+
+# Fatia 36 do PRD-09 — a cancelada fora de Minhas turmas e os presentes da
+# aula (`RF-09-42`, `RF-09-145`, `RN-09-08`, `RN-09-18`).
+
+
+def _cancelar(sessao, aula):
+    from nucleo.aulas.modelo import SituacaoDaAula
+
+    aula.situacao = SituacaoDaAula.cancelada
+    sessao.commit()
+
+
+def test_aula_cancelada_nao_e_devolvida_em_minhas_turmas(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_do_mestre,
+    sessao,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    comunidade = criar_comunidade()
+    criar_vinculo_do_mestre(mestre, comunidade)
+    vigente = criar_aula(mestre, comunidade)
+    cancelada = criar_aula(mestre, comunidade)
+    _cancelar(sessao, cancelada)
+
+    resposta = cliente.get(
+        "/v1/minhas-turmas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 200
+    assert [item["id"] for item in resposta.json()["itens"]] == [str(vigente.id)]
+
+
+def test_pagina_de_minhas_turmas_nao_e_ocupada_por_cancelada(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_do_mestre,
+    sessao,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    comunidade = criar_comunidade()
+    criar_vinculo_do_mestre(mestre, comunidade)
+    base = datetime(2026, 12, 1, 9, 0, tzinfo=UTC)
+    aulas = [
+        criar_aula(
+            mestre,
+            comunidade,
+            inicio_em=base + timedelta(days=dia),
+            fim_em=base + timedelta(days=dia, hours=2),
+        )
+        for dia in range(5)
+    ]
+    _cancelar(sessao, aulas[0])
+    _cancelar(sessao, aulas[2])
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    primeira = cliente.get("/v1/minhas-turmas?tamanho=2", headers=headers).json()
+    assert [i["id"] for i in primeira["itens"]] == [str(aulas[1].id), str(aulas[3].id)]
+    assert primeira["proximo_cursor"] is not None
+
+    segunda = cliente.get(
+        f"/v1/minhas-turmas?tamanho=2&cursor={primeira['proximo_cursor']}", headers=headers
+    ).json()
+    assert [i["id"] for i in segunda["itens"]] == [str(aulas[4].id)]
+    assert segunda["proximo_cursor"] is None
+
+
+def test_mestre_le_os_presentes_da_sua_aula(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_do_mestre,
+    criar_nick,
+    sessao,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    comunidade = criar_comunidade()
+    criar_vinculo_do_mestre(mestre, comunidade)
+    aula = criar_aula(mestre, comunidade)
+    primeiro = criar_persona(Papel.guerreiro, comunidade=comunidade, avatar='{"pele": 1}')
+    segundo = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    criar_nick(primeiro, "Zeferina")
+    criar_nick(segundo, "Dandara")
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    _registrar(cliente, aula, segundo, headers, momento=MOMENTO_DO_FATO + timedelta(minutes=5))
+    _registrar(cliente, aula, primeiro, headers)
+
+    resposta = cliente.get(f"/v1/aulas/{aula.id}/presencas", headers=headers)
+
+    assert resposta.status_code == 200
+    itens = resposta.json()["itens"]
+    assert [(i["nick"], i["guerreiro_id"]) for i in itens] == [
+        ("Zeferina", str(primeiro.id)),
+        ("Dandara", str(segundo.id)),
+    ]
+    assert itens[0]["avatar"] == '{"pele": 1}'
+    assert itens[0]["modo"] == "confirmacao"
+    assert datetime.fromisoformat(itens[0]["momento_do_fato"]) == MOMENTO_DO_FATO
+    assert set(itens[0]) == {"id", "guerreiro_id", "nick", "avatar", "momento_do_fato", "modo"}
+
+
+def test_presenca_anulada_some_e_aula_sem_presenca_da_lista_vazia(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    aula = criar_aula(admin, comunidade)
+    vazia = criar_aula(admin, comunidade)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    registrada = _registrar(cliente, aula, guerreiro, headers)
+    _anular(cliente, aula, registrada.json()["id"], headers)
+
+    assert cliente.get(f"/v1/aulas/{aula.id}/presencas", headers=headers).json()["itens"] == []
+    resposta = cliente.get(f"/v1/aulas/{vazia.id}/presencas", headers=headers)
+    assert resposta.status_code == 200
+    assert resposta.json()["itens"] == []
+
+
+def test_aula_de_outra_comunidade_responde_como_inexistente(
+    cliente,
+    criar_chave,
+    criar_persona,
+    criar_sessao_de_teste,
+    criar_comunidade,
+    criar_aula,
+    criar_vinculo_do_mestre,
+):
+    chave, _ = criar_chave()
+    mestre = criar_persona(Papel.mestre)
+    token, _ = criar_sessao_de_teste(mestre)
+    criar_vinculo_do_mestre(mestre, criar_comunidade())
+    outra = criar_comunidade()
+    aula_de_fora = criar_aula(criar_persona(Papel.admin), outra)
+    headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+
+    de_fora = cliente.get(f"/v1/aulas/{aula_de_fora.id}/presencas", headers=headers)
+    inexistente = cliente.get(f"/v1/aulas/{uuid.uuid4()}/presencas", headers=headers)
+
+    assert de_fora.status_code == inexistente.status_code == 404
+    assert de_fora.json() == inexistente.json()
+
+
+def test_papel_sem_a_operacao_e_recusado_nas_presencas_da_aula(
+    cliente, criar_chave, criar_persona, criar_sessao_de_teste, criar_comunidade, criar_aula
+):
+    chave, _ = criar_chave()
+    comunidade = criar_comunidade()
+    guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    token, _ = criar_sessao_de_teste(guerreiro)
+    aula = criar_aula(criar_persona(Papel.admin), comunidade)
+
+    resposta = cliente.get(
+        f"/v1/aulas/{aula.id}/presencas",
+        headers={"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"},
+    )
+
+    assert resposta.status_code == 403

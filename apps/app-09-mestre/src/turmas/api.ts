@@ -113,6 +113,32 @@ export function confirmarPresenca(
   });
 }
 
+export interface PresencaDaAula {
+  id: string;
+  guerreiro_id: string;
+  nick: string | null;
+  avatar: string | null;
+  momento_do_fato: string;
+  modo: string;
+}
+
+interface PresencasDaAula {
+  itens: PresencaDaAula[];
+  proximo_cursor: string | null;
+}
+
+// Os presentes da aula — só as presenças não anuladas, por nick e avatar,
+// nunca imagem real (`RF-09-145`, `RN-09-18`).
+export async function listarPresencasDaAula(
+  idDaAula: string,
+  token: string,
+): Promise<PresencaDaAula[]> {
+  const pagina = await chamarNucleo<PresencasDaAula>(`/v1/aulas/${idDaAula}/presencas`, {
+    token,
+  });
+  return pagina.itens;
+}
+
 export interface OcorrenciaDeConduta {
   id: string;
   guerreiro_id: string;
