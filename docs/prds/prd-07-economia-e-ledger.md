@@ -411,12 +411,13 @@ próprio (PRD-09): ele é o da aula em andamento ou da imediatamente anterior da
 | GET    | `/meus-aportes/ressarciveis`                   | Mestre ou Admin | Situação dos aportes que absorveu                                      |
 
 Erros previstos: aula que declara tipo de finalidade recompensa, ou recompensa que declara tipo
-de consumo do encontro (422); agendamento sem saldo (422, com a lista do que falta);
-homologação pelo próprio provedor (403); aporte de tipo inexistente (422, com a rota de
-cadastro do tipo); tentativa de editar lançamento (405); ressarcimento sem comprovante anexado
-(422); desativação de ponto de apoio com aula futura (422, com quantas aulas o prendem) ou com
-saldo remanescente (422, com os tipos que ainda têm saldo); transferência com origem igual ao
-destino, quantidade maior que o saldo da origem ou destino inativo (422).
+de consumo do encontro (422); homologação pelo próprio provedor (403); aporte de tipo
+inexistente (422, com a rota de cadastro do tipo); tentativa de editar lançamento (405);
+ressarcimento sem comprovante anexado (422); desativação de ponto de apoio com aula futura
+(422, com quantas aulas o prendem) ou com saldo remanescente (422, com os tipos que ainda têm
+saldo); transferência com origem igual ao destino, quantidade maior que o saldo da origem ou
+destino inativo (422). Agendamento sem saldo não é erro: a aula nasce pendente de lastro, e a
+resposta diz o que falta.
 
 ## 10. Requisitos não funcionais
 
@@ -455,8 +456,8 @@ destino, quantidade maior que o saldo da origem ou destino inativo (422).
   1,50 moeda, e o Poder Sustentador do provedor sobe exatamente isso.
 - Alteração do valor de referência de um tipo **não** altera o valor em moedas de aportes já
   registrados.
-- Agendamento de aula que consome recurso sem saldo no seu ponto de apoio é recusado, e a
-  resposta diz o que falta.
+- Agendamento de aula que consome recurso sem saldo no seu ponto de apoio é aceito com a aula
+  **pendente de lastro**, e a resposta diz o que falta.
 - Aporte por absorção registrado durante a aula credita e reserva na mesma operação, e a aula
   passa a ter lastro.
 - Cancelamento de aula devolve ao saldo exatamente a quantidade reservada.
