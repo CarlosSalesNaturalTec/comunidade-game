@@ -42,9 +42,9 @@ interface SelecaoDeLancamento {
 }
 
 // A área Minhas turmas: as aulas das comunidades do Mestre e as atividades
-// de que ele é autor, separadas pelo formato — presencial do encontro e
-// on-line entre encontros. Nenhum Guerreiro(a) aparece por imagem real
-// (`RF-09-42`, `RF-09-73`, `RN-09-08`, `RN-09-18`).
+// on-line de que ele é autor. As presenciais não têm seção própria: aparecem
+// dentro da aula, no atalho de lançamento. Nenhum Guerreiro(a) aparece por
+// imagem real (`RF-09-42`, `RF-09-73`, `RN-09-08`, `RN-09-18`).
 export function TelaDeMinhasTurmas() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [aulas, definirAulas] = useState<AulaDaTurma[] | null>(null);
@@ -62,9 +62,9 @@ export function TelaDeMinhasTurmas() {
     if (!sessao) return;
     try {
       const turmas = await listarMinhasTurmas(sessao.token);
-      // Aula cancelada não tem encontro, presença nem ocorrência a lançar:
-      // não entra na lista (`RF-09-42`, decisão do fundador, 2026-11-16).
-      definirAulas(turmas.itens.filter((aula) => aula.situacao !== "cancelada"));
+      // A aula cancelada já não vem do núcleo (`RF-09-42`, decisão do
+      // fundador, 2026-11-20).
+      definirAulas(turmas.itens);
       definirAtividadesPresenciais(turmas.atividades_presenciais);
       definirAtividadesOnLine(turmas.atividades_on_line);
     } catch (erroCapturado) {
@@ -134,23 +134,6 @@ export function TelaDeMinhasTurmas() {
                     Painel do dia
                   </a>
                 )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section aria-label="Atividades presenciais">
-        <h2>Atividades presenciais</h2>
-        <p>Abra uma aula acima para lançar o resultado ou a ocorrência de uma delas.</p>
-        {atividadesPresenciais.length === 0 && (
-          <EstadoDaLista>Nenhuma atividade presencial sua.</EstadoDaLista>
-        )}
-        {atividadesPresenciais.length > 0 && (
-          <ul className="lista-de-turmas" aria-label="Atividades presenciais">
-            {atividadesPresenciais.map((atividade) => (
-              <li key={atividade.id} className="lista-de-turmas__item">
-                <span>{atividade.titulo}</span>
               </li>
             ))}
           </ul>

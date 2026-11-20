@@ -1,10 +1,18 @@
 import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
-import { Aviso, Botao, Campo, CampoDeDataHora } from "comum/react";
-import { type FormEvent, useState } from "react";
+import { Avatar } from "comum/avatar";
+import { Aviso, Botao, Campo, CampoDeDataHora, EstadoDaLista } from "comum/react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
-import type { AtividadeDoMestre, AulaDaTurma } from "./api";
-import { confirmarPresenca, lancarOcorrenciaDeConduta } from "./api";
+import type { AtividadeDoMestre, AulaDaTurma, PresencaDaAula } from "./api";
+import { confirmarPresenca, lancarOcorrenciaDeConduta, listarPresencasDaAula } from "./api";
+
+const ROTULO_DO_MODO: Record<string, string> = {
+  reconhecimento: "Reconhecimento",
+  confirmacao: "Confirmação",
+};
+
+const FORMATADOR_DA_HORA = new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" });
 
 interface Props {
   aula: AulaDaTurma;
@@ -16,7 +24,8 @@ interface Props {
 // A confirmação de presença que o App 01 não capturou e o lançamento da
 // ocorrência de conduta — as duas escritas do encontro que o Mestre alcança
 // nesta aula, junto com o atalho para lançar o resultado de uma atividade
-// presencial dele (`RF-09-43`, `RF-09-45`, `RF-09-46`).
+// presencial dele (`RF-09-43`, `RF-09-45`, `RF-09-46`). Abre com os presentes
+// da aula, por nick e avatar (`RF-09-145`, `RN-09-18`).
 export function TelaDaAula({
   aula,
   atividadesPresenciais,
@@ -24,6 +33,30 @@ export function TelaDaAula({
   aoAbrirLancamento,
 }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
+
+  const [presentes, definirPresentes] = useState<PresencaDaAula[] | null>(null);
+  const [erroDosPresentes, definirErroDosPresentes] = useState<string | null>(null);
+
+  const carregarPresentes = useCallback(async () => {
+    if (!sessao) return;
+    try {
+      definirPresentes(await listarPresencasDaAula(aula.id, sessao.token));
+      definirErroDosPresentes(null);
+    } catch (erroCapturado) {
+      if (ehRecusaDeSessao(erroCapturado)) {
+        tratarRecusaDeSessao();
+        return;
+      }
+      // A falha fica só nesta seção: os formulários seguem disponíveis.
+      definirErroDosPresentes(
+        "Não foi possível carregar os presentes desta aula. Tente novamente em instantes.",
+      );
+    }
+  }, [aula.id, sessao, tratarRecusaDeSessao]);
+
+  useEffect(() => {
+    carregarPresentes();
+  }, [carregarPresentes]);
 
   const [guerreiroDaPresenca, definirGuerreiroDaPresenca] = useState("");
   const [momentoDaPresenca, definirMomentoDaPresenca] = useState("");
@@ -51,6 +84,7 @@ export function TelaDaAula({
       definirPresencaConfirmada(true);
       definirGuerreiroDaPresenca("");
       definirMomentoDaPresenca("");
+      carregarPresentes();
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -122,6 +156,35 @@ export function TelaDaAula({
           Voltar
         </Botao>
       </header>
+
+      <section aria-label="Presentes nesta aula">
+        <h2>Presentes nesta aula</h2>
+        {erroDosPresentes && <Aviso tipo="erro">{erroDosPresentes}</Aviso>}
+        {presentes === null && !erroDosPresentes && (
+          <EstadoDaLista>Carregando os presentes…</EstadoDaLista>
+        )}
+        {presentes !== null && presentes.length === 0 && (
+          <EstadoDaLista>Nenhuma presença registrada nesta aula.</EstadoDaLista>
+        )}
+        {presentes !== null && presentes.length > 0 && (
+          <ul className="lista-de-turmas" aria-label="Presentes">
+            {presentes.map((presenca) => (
+              <li key={presenca.id} className="lista-de-turmas__item">
+                <div className="lista-de-turmas__linha">
+                  <span>
+                    <Avatar avatar={presenca.avatar} tamanho={32} />{" "}
+                    {presenca.nick ?? presenca.guerreiro_id}
+                  </span>
+                  <span>
+                    {FORMATADOR_DA_HORA.format(new Date(presenca.momento_do_fato))} ·{" "}
+                    {ROTULO_DO_MODO[presenca.modo] ?? presenca.modo}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section aria-label="Atividades presenciais desta aula">
         <h2>Lançar resultado de uma atividade</h2>

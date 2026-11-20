@@ -12,7 +12,7 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..chaves.conferencia import ContextoDaChave, exigir_chave_de_aplicacao
 from ..comunidades.modelo import ComunidadeVirtual
-from ..comunidades.regra import escopo_de_comunidade_da_leitura
+from ..comunidades.regra import comunidades_do_mestre, escopo_de_comunidade_da_leitura
 from ..erros import (
     ConfirmacaoDeGuerreiroRecusada,
     ErroDeValidacao,
@@ -28,7 +28,7 @@ from ..paginacao import (
     decodificar_cursor,
 )
 from ..permissoes import Operacao, exigir_permissao
-from ..personas.modelo import Papel, Persona
+from ..personas.modelo import Nick, Papel, Persona
 from ..personas.regra import buscar_guerreiro_confirmavel_por
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
@@ -609,6 +609,61 @@ def ler_minha_presenca_rota(
     )
 
 
+class PresencaDaAulaSaida(BaseModel):
+    """Quem está presente na aula, só por nick e avatar — nenhuma imagem real
+    nem descritor facial (`RF-09-145`, `RN-09-18`)."""
+
+    id: uuid.UUID
+    guerreiro_id: uuid.UUID
+    nick: str | None
+    avatar: str | None
+    momento_do_fato: DataHoraComFuso
+    modo: str
+
+
+@roteador.get("/aulas/{id_da_aula}/presencas")
+def listar_presencas_da_aula_rota(
+    id_da_aula: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.suas_turmas, "le"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> PaginaDeResultado[PresencaDaAulaSaida]:
+    """`RF-09-145`: as presenças **não anuladas** da aula, por momento do
+    fato. O Mestre só lê aula das comunidades dele; a de fora responde como a
+    inexistente, para não revelar o que há fora do escopo (`RN-09-08`). Sem
+    paginação, como as equipes da aula: o encontro é do tamanho da sala
+    (design — decisões 2 a 4)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    aula = sessao_bd.get(Aula, id_da_aula)
+    if aula is None or (
+        operador.papel != Papel.admin
+        and aula.comunidade_virtual_id not in comunidades_do_mestre(sessao_bd, mestre=operador)
+    ):
+        raise NaoEncontrado(mensagem="Aula não encontrada.")
+
+    linhas = (
+        sessao_bd.query(Presenca, Nick.valor, Persona.avatar)
+        .join(Persona, Persona.id == Presenca.guerreiro_id)
+        .outerjoin(Nick, Nick.persona_id == Presenca.guerreiro_id)
+        .filter(Presenca.aula_id == aula.id, Presenca.anulada_em.is_(None))
+        .order_by(Presenca.momento_do_fato, Presenca.id)
+        .all()
+    )
+    return PaginaDeResultado(
+        itens=[
+            PresencaDaAulaSaida(
+                id=presenca.id,
+                guerreiro_id=presenca.guerreiro_id,
+                nick=nick,
+                avatar=avatar,
+                momento_do_fato=presenca.momento_do_fato,
+                modo=presenca.modo.value,
+            )
+            for presenca, nick, avatar in linhas
+        ],
+        proximo_cursor=None,
+    )
+
+
 class AtividadeDoMestreSaida(BaseModel):
     id: uuid.UUID
     missao_id: uuid.UUID
@@ -657,7 +712,13 @@ def listar_minhas_turmas_rota(
     if not alvos:
         return MinhasTurmasSaida(itens=[], proximo_cursor=None)
 
-    consulta = sessao_bd.query(Aula).filter(Aula.comunidade_virtual_id.in_(alvos))
+    # A cancelada sai na consulta, antes do cursor e do `limit`, para que a
+    # página nunca saia curta por ela (`RF-09-42`, decisão do fundador,
+    # 2026-11-20, design — decisão 1).
+    consulta = sessao_bd.query(Aula).filter(
+        Aula.comunidade_virtual_id.in_(alvos),
+        Aula.situacao != SituacaoDaAula.cancelada,
+    )
     if parametros.cursor:
         posicao = decodificar_cursor(parametros.cursor)
         try:
