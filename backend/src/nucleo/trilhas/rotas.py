@@ -30,6 +30,7 @@ from ..ods.regra import cobertura_por_trilha
 from ..ods.rotas import EtiquetaOdsSaida, saida_da_etiqueta
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
+from ..recompensas_de_marco.regra import entregar_na_aprovacao
 from ..recursos.modelo import TipoDeRecurso
 from ..tempo import agora
 from .modelo import (
@@ -73,6 +74,7 @@ from .regra import (
     ler_arquivo_da_comprovacao,
     ler_imagem_da_pergunta,
     listar_desbloqueios_praticos_pendentes,
+    missoes_desbloqueadas_pelo_guerreiro,
     mover_missao,
     obter_proxima_missao,
     perguntas_do_desbloqueio,
@@ -1061,6 +1063,9 @@ class JulgamentoDoPraticoSaida(BaseModel):
     publicavel: bool
     motivo: str | None = None
     julgado_em: str | None = None
+    # As recompensas que a aprovação entregou no mesmo ato; vazia fora do
+    # próprio julgamento (`RF-09-146`).
+    recompensas_entregues: list[uuid.UUID] = Field(default_factory=list)
 
 
 def _saida_do_julgamento(
@@ -1642,6 +1647,18 @@ def julgar_desafio_pratico_rota(
     desbloqueio = _obter_desbloqueio_do_guerreiro(
         sessao_bd, id_da_missao=id_da_missao, guerreiro_id=id_do_guerreiro
     )
+    # O percurso antes do julgamento separa o marco que este julgamento
+    # alcança dos que já estavam alcançados (`RF-09-146`, design — decisão 4).
+    trilha_id = (
+        sessao_bd.get(Missao, desbloqueio.missao_id).trilha_id if desbloqueio is not None else None
+    )
+    desbloqueadas_antes = (
+        missoes_desbloqueadas_pelo_guerreiro(
+            sessao_bd, guerreiro_id=id_do_guerreiro, trilha_id=trilha_id
+        )
+        if trilha_id is not None
+        else set()
+    )
     julgado = julgar_desafio_pratico(
         sessao_bd,
         operador=operador,
@@ -1650,9 +1667,19 @@ def julgar_desafio_pratico_rota(
         publicavel=entrada.publicavel,
         motivo=entrada.motivo,
     )
+    entregues = []
+    if julgado.cumpriu:
+        entregues = entregar_na_aprovacao(
+            sessao_bd,
+            operador=operador,
+            guerreiro=sessao_bd.get(Persona, id_do_guerreiro),
+            trilha_id=trilha_id,
+            desbloqueadas_antes=desbloqueadas_antes,
+        )
     sessao_bd.commit()
     saida = _saida_do_julgamento(julgado)
     assert saida is not None  # acabou de ser julgada
+    saida.recompensas_entregues = [entrega.recompensa_de_marco_id for entrega in entregues]
     return saida
 
 

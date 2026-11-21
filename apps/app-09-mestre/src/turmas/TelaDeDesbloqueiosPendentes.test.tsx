@@ -225,6 +225,23 @@ describe("os dois vereditos e o motivo (RF-09-133, RF-09-134, RN-09-52, RN-09-53
     expect(screen.queryByText("Guerreira Ana")).not.toBeInTheDocument();
   });
 
+  it("a aprovação que entregou a recompensa avisa", async () => {
+    // A aprovação já é a entrega quando há lastro (`RF-09-146`).
+    configurarSessao();
+    vi.spyOn(trilhasApi, "listarDesbloqueiosPendentes").mockResolvedValue([pendente()]);
+    vi.spyOn(trilhasApi, "julgarDesafioPratico").mockResolvedValue({
+      ...JULGADO,
+      recompensas_entregues: ["recompensa-1"],
+    });
+
+    render(<TelaDeDesbloqueiosPendentes />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByLabelText(/pode ir à vitrine/i));
+    await usuario.click(screen.getByRole("button", { name: /^julgar$/i }));
+
+    expect(await screen.findByText(/recompensa entregue/i)).toBeInTheDocument();
+  });
+
   it("publicável fica indisponível no que o Mestre marca como não cumprido", async () => {
     configurarSessao();
     vi.spyOn(trilhasApi, "listarDesbloqueiosPendentes").mockResolvedValue([pendente()]);

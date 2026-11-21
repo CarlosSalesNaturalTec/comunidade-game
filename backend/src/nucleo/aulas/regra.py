@@ -231,6 +231,27 @@ def cancelar_aula(
     return aula
 
 
+def aula_de_referencia_da_comunidade(
+    sessao: Session, *, comunidade_id: uuid.UUID, momento: datetime | None = None
+) -> Aula | None:
+    """A **aula imediatamente anterior** da comunidade: a de início mais
+    recente até o momento, não cancelada — o que inclui a aula em andamento.
+    É dela o ponto de apoio de onde sai a recompensa de marco fora do
+    encontro (`RF-09-76`, `RF-07-13`, change
+    `entrega-pelo-disponivel-e-pela-aprovacao`, design — decisão 2)."""
+    momento = momento or agora()
+    return (
+        sessao.query(Aula)
+        .filter(
+            Aula.comunidade_virtual_id == comunidade_id,
+            Aula.inicio_em <= momento,
+            Aula.situacao != SituacaoDaAula.cancelada,
+        )
+        .order_by(Aula.inicio_em.desc())
+        .first()
+    )
+
+
 def aulas_vigentes(sessao: Session) -> list[Aula]:
     """Todas as aulas cujo intervalo contém o momento corrente e cuja situação
     não seja cancelada — havendo mais de uma comunidade vigente ao mesmo

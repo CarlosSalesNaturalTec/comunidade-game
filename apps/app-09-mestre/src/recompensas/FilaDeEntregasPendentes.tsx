@@ -3,35 +3,30 @@ import { useSessao } from "comum/autenticacao";
 import { Avatar } from "comum/avatar";
 import { Aviso, Botao, EstadoDaLista } from "comum/react";
 import { useCallback, useEffect, useState } from "react";
-import type { PontoDeApoioDaLista, TipoDeRecurso } from "../recursos/api";
-import { listarMeusPontosDeApoio, listarTiposDeRecurso } from "../recursos/api";
+import type { TipoDeRecurso } from "../recursos/api";
+import { listarTiposDeRecurso } from "../recursos/api";
 import { listarEntregasPendentes, type PendenciaDeEntrega, registrarEntrega } from "./api";
 
 // A fila do Mestre em Minhas turmas: quem desbloqueou marco com recompensa
 // declarada na comunidade dele e ainda não recebeu — nunca por autoria da
-// trilha (`RF-09-75`, `RF-09-76`, `RN-09-18`).
+// trilha. O ponto de apoio não se escolhe: o núcleo tira o recurso da aula
+// imediatamente anterior da comunidade (`RF-09-75`, `RF-09-76`, `RN-09-18`).
 export function FilaDeEntregasPendentes() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const [pendencias, definirPendencias] = useState<PendenciaDeEntrega[] | null>(null);
   const [tiposDeRecurso, definirTiposDeRecurso] = useState<TipoDeRecurso[]>([]);
-  const [pontosDeApoio, definirPontosDeApoio] = useState<PontoDeApoioDaLista[]>([]);
-  const [pontoEscolhidoPorPendencia, definirPontoEscolhidoPorPendencia] = useState<
-    Record<string, string>
-  >({});
   const [erro, definirErro] = useState<string | null>(null);
   const [confirmando, definirConfirmando] = useState<string | null>(null);
 
   const carregar = useCallback(async () => {
     if (!sessao) return;
     try {
-      const [listaDePendencias, tipos, pontos] = await Promise.all([
+      const [listaDePendencias, tipos] = await Promise.all([
         listarEntregasPendentes(sessao.token),
         listarTiposDeRecurso(sessao.token),
-        listarMeusPontosDeApoio(sessao.token),
       ]);
       definirPendencias(listaDePendencias);
       definirTiposDeRecurso(tipos);
-      definirPontosDeApoio(pontos);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
@@ -56,18 +51,13 @@ export function FilaDeEntregasPendentes() {
   async function confirmar(pendencia: PendenciaDeEntrega) {
     if (!sessao) return;
     const chave = chaveDaPendencia(pendencia);
-    const pontoDeApoioId = pontoEscolhidoPorPendencia[chave];
-    if (!pontoDeApoioId) {
-      definirErro("Escolha o ponto de apoio de onde a recompensa vai sair.");
-      return;
-    }
 
     definirErro(null);
     definirConfirmando(chave);
     try {
       await registrarEntrega(
         pendencia.recompensa_de_marco_id,
-        { guerreiro_id: pendencia.guerreiro_id, ponto_de_apoio_id: pontoDeApoioId },
+        { guerreiro_id: pendencia.guerreiro_id },
         sessao.token,
       );
       definirPendencias(
@@ -79,7 +69,8 @@ export function FilaDeEntregasPendentes() {
         return;
       }
       // A entrega recusada pelo núcleo já vem em linguagem simples — falta
-      // de lastro, recompensa já entregue ou marco não alcançado (`RN-09-18`).
+      // de lastro, comunidade sem aula anterior, recompensa já entregue ou
+      // marco não alcançado (`RN-09-18`, `RF-09-76`).
       if (erroCapturado instanceof ErroDaApi) {
         definirErro(erroCapturado.message);
         return;
@@ -115,27 +106,6 @@ export function FilaDeEntregasPendentes() {
                   {pendencia.quantidade}{" "}
                   {tipoPorId.get(pendencia.tipo_de_recurso_id)?.nome ?? "recurso"}
                 </p>
-
-                <div className="cg-campo">
-                  <label htmlFor={`ponto-de-apoio-${chave}`}>Ponto de apoio</label>
-                  <select
-                    id={`ponto-de-apoio-${chave}`}
-                    value={pontoEscolhidoPorPendencia[chave] ?? ""}
-                    onChange={(evento) =>
-                      definirPontoEscolhidoPorPendencia((atual) => ({
-                        ...atual,
-                        [chave]: evento.target.value,
-                      }))
-                    }
-                  >
-                    <option value="">Selecione</option>
-                    {pontosDeApoio.map((ponto) => (
-                      <option key={ponto.id} value={ponto.id}>
-                        {ponto.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
 
                 <Botao
                   onClick={() => confirmar(pendencia)}

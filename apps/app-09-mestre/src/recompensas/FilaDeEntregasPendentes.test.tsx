@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { PontoDeApoioDaLista, TipoDeRecurso } from "../recursos/api";
+import type { TipoDeRecurso } from "../recursos/api";
 import * as recursosApi from "../recursos/api";
 import type { PendenciaDeEntrega } from "./api";
 import * as recompensasApi from "./api";
@@ -75,10 +75,6 @@ function tipoDeRecurso(): TipoDeRecurso {
   };
 }
 
-function pontoDeApoio(): PontoDeApoioDaLista {
-  return { id: "ponto-1", nome: "Sede da comunidade", comunidade_virtual_id: "comunidade-1" };
-}
-
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -88,7 +84,6 @@ describe("Fila de entregas pendentes", () => {
     configurarSessao();
     vi.spyOn(recompensasApi, "listarEntregasPendentes").mockResolvedValue([pendencia()]);
     vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([tipoDeRecurso()]);
-    vi.spyOn(recursosApi, "listarMeusPontosDeApoio").mockResolvedValue([pontoDeApoio()]);
 
     render(<FilaDeEntregasPendentes />);
 
@@ -109,7 +104,6 @@ describe("Fila de entregas pendentes", () => {
       pendencia({ guerreiro_avatar: avatarEmTexto }),
     ]);
     vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([tipoDeRecurso()]);
-    vi.spyOn(recursosApi, "listarMeusPontosDeApoio").mockResolvedValue([pontoDeApoio()]);
 
     const { container } = render(<FilaDeEntregasPendentes />);
 
@@ -122,7 +116,6 @@ describe("Fila de entregas pendentes", () => {
     configurarSessao();
     vi.spyOn(recompensasApi, "listarEntregasPendentes").mockResolvedValue([pendencia()]);
     vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([tipoDeRecurso()]);
-    vi.spyOn(recursosApi, "listarMeusPontosDeApoio").mockResolvedValue([pontoDeApoio()]);
     vi.spyOn(recompensasApi, "registrarEntrega").mockResolvedValue({
       id: "entrega-1",
       recompensa_de_marco_id: "recompensa-1",
@@ -141,13 +134,12 @@ describe("Fila de entregas pendentes", () => {
     const usuario = userEvent.setup();
 
     await screen.findByText("Guerreira10", { exact: false });
-    await usuario.selectOptions(screen.getByLabelText(/ponto de apoio/i), "ponto-1");
     await usuario.click(screen.getByRole("button", { name: /confirmar entrega/i }));
 
     await waitFor(() =>
       expect(recompensasApi.registrarEntrega).toHaveBeenCalledWith(
         "recompensa-1",
-        { guerreiro_id: "guerreiro-1", ponto_de_apoio_id: "ponto-1" },
+        { guerreiro_id: "guerreiro-1" },
         "token-do-mestre",
       ),
     );
@@ -156,11 +148,24 @@ describe("Fila de entregas pendentes", () => {
     );
   });
 
+  it("a confirmação não pede o ponto de apoio", async () => {
+    // O núcleo tira o recurso da aula imediatamente anterior da comunidade
+    // (`RF-09-76`, `RF-07-13`).
+    configurarSessao();
+    vi.spyOn(recompensasApi, "listarEntregasPendentes").mockResolvedValue([pendencia()]);
+    vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([tipoDeRecurso()]);
+
+    render(<FilaDeEntregasPendentes />);
+
+    await screen.findByText("Guerreira10", { exact: false });
+    expect(screen.queryByLabelText(/ponto de apoio/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirmar entrega/i })).toBeInTheDocument();
+  });
+
   it("a recusa da entrega é traduzida em linguagem simples", async () => {
     configurarSessao();
     vi.spyOn(recompensasApi, "listarEntregasPendentes").mockResolvedValue([pendencia()]);
     vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([tipoDeRecurso()]);
-    vi.spyOn(recursosApi, "listarMeusPontosDeApoio").mockResolvedValue([pontoDeApoio()]);
     vi.spyOn(recompensasApi, "registrarEntrega").mockRejectedValue(
       new ErroDaApi(422, {
         codigo: "erro_de_validacao",
@@ -172,7 +177,6 @@ describe("Fila de entregas pendentes", () => {
     const usuario = userEvent.setup();
 
     await screen.findByText("Guerreira10", { exact: false });
-    await usuario.selectOptions(screen.getByLabelText(/ponto de apoio/i), "ponto-1");
     await usuario.click(screen.getByRole("button", { name: /confirmar entrega/i }));
 
     expect(await screen.findByText(/lastro insuficiente/i)).toBeInTheDocument();

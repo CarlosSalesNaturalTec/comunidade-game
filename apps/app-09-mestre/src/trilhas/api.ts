@@ -597,6 +597,10 @@ export interface JulgamentoDoPratico {
   publicavel: boolean;
   motivo: string | null;
   julgado_em: string | null;
+  // As recompensas que a aprovação entregou no mesmo ato; vazia quando nada
+  // foi entregue — falta de lastro ou quem julga sem vínculo com a comunidade
+  // (`RF-09-146`, `RN-09-63`). Opcional porque a leitura do percurso a omite.
+  recompensas_entregues?: string[];
 }
 
 // Cumprido, a missão seguinte abre para aquele Guerreiro(a) e os 5 pontos são

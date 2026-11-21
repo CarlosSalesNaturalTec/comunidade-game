@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
 from ..aulas.modelo import Aula
@@ -11,7 +11,6 @@ from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..personas.modelo import Papel, Persona
-from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
 from ..tempo import DataHoraComFuso
 from ..trilhas.modelo import Missao, Trilha
@@ -133,24 +132,16 @@ def _saida_da_entrega(sessao: Session, entrega: EntregaDeRecompensa) -> EntregaD
 
 
 class RegistrarEntregaEntrada(BaseModel):
-    """`ponto_de_apoio_id` e `aula_id` são **mutuamente exclusivos**: a App 09
-    escolhe o ponto de apoio, como sempre, e a App 01 declara a aula do
-    encontro, de onde o ponto de apoio sai. Vir os dois, ou nenhum, é 422
-    (`RF-09-76`, documento 02 §8.1, design — decisão 2)."""
+    """A App 01 declara a aula do encontro, de onde o ponto de apoio sai; sem
+    ela, o núcleo tira o recurso da aula imediatamente anterior da
+    comunidade. O ponto de apoio não se escolhe: `extra="forbid"` recusa com
+    422 a entrada que o traga (`RF-09-76`, change
+    `entrega-pelo-disponivel-e-pela-aprovacao`, design — decisão 3)."""
 
     model_config = ConfigDict(extra="forbid")
 
     guerreiro_id: uuid.UUID
-    ponto_de_apoio_id: uuid.UUID | None = None
     aula_id: uuid.UUID | None = None
-
-    @model_validator(mode="after")
-    def _exigir_uma_origem(self) -> "RegistrarEntregaEntrada":
-        if (self.ponto_de_apoio_id is None) == (self.aula_id is None):
-            raise ValueError(
-                "Declare o ponto de apoio ou a aula do encontro, nunca os dois e nunca nenhum."
-            )
-        return self
 
 
 @roteador.post("/recompensas-de-marco/{id_da_recompensa}/entregas", status_code=201)
@@ -168,11 +159,6 @@ def registrar_entrega_rota(
     operador = sessao_bd.get(Persona, contexto.persona_id)
     recompensa = sessao_bd.get(RecompensaDeMarco, id_da_recompensa)
     guerreiro = sessao_bd.get(Persona, entrada.guerreiro_id)
-    ponto_de_apoio = (
-        sessao_bd.get(PontoDeApoio, entrada.ponto_de_apoio_id)
-        if entrada.ponto_de_apoio_id is not None
-        else None
-    )
     aula = None
     if entrada.aula_id is not None:
         aula = sessao_bd.get(Aula, entrada.aula_id)
@@ -185,7 +171,6 @@ def registrar_entrega_rota(
         operador=operador,
         recompensa=recompensa,
         guerreiro=guerreiro,
-        ponto_de_apoio=ponto_de_apoio,
         aula=aula,
     )
     sessao_bd.commit()

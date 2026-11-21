@@ -1,3 +1,4 @@
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 import pytest
@@ -32,11 +33,22 @@ def cenario(
     criar_trilha,
     criar_missao,
     criar_recompensa_de_marco,
+    criar_aula,
 ):
     def _montar(*, quantidade=Decimal("1"), lastro=Decimal("10")):
         admin = criar_persona(Papel.admin)
         comunidade = criar_comunidade()
         ponto_de_apoio = criar_ponto_de_apoio(admin, comunidade)
+        # A aula de ontem é a imediatamente anterior: fora do encontro o
+        # recurso sai do ponto de apoio dela (`RF-09-76`).
+        ontem = datetime.now(UTC) - timedelta(days=1)
+        criar_aula(
+            admin,
+            comunidade,
+            ponto_de_apoio=ponto_de_apoio,
+            inicio_em=ontem - timedelta(hours=2),
+            fim_em=ontem,
+        )
         tipo = criar_tipo_de_recurso(admin, natureza=NaturezaDoRecurso.consumivel)
         criar_valor_de_referencia(admin, tipo, valor_em_moedas=Decimal("1.00"))
         criar_lancamento(
@@ -92,7 +104,6 @@ def test_entrega_confirmada_sai_da_fila(sessao, cenario):
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
@@ -151,7 +162,6 @@ def test_entregue_a_um_a_pendencia_dos_outros_segue_na_fila(sessao, cenario, cri
         operador=c["mestre"],
         recompensa=c["recompensa"],
         guerreiro=c["guerreiro"],
-        ponto_de_apoio=c["ponto_de_apoio"],
     )
     sessao.commit()
 
