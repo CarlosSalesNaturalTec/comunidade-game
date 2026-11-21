@@ -1,8 +1,13 @@
 import { Cabecalho, EstadoDaLista, Moldura } from "comum/react";
 import { useEffect, useState } from "react";
-import { listarNecessidadesEmAberto, type NecessidadeDeRecurso } from "./api";
+import {
+  chaveDaNecessidade,
+  listarNecessidadesEmAberto,
+  type NecessidadeDeRecurso,
+} from "./api";
 
-function formatarDataDaAula(isoDeInicio: string, isoDeFim: string): string {
+function formatarDataDaAula(isoDeInicio: string | null, isoDeFim: string | null): string {
+  if (isoDeInicio === null || isoDeFim === null) return "";
   const inicio = new Date(isoDeInicio);
   const fim = new Date(isoDeFim);
   if (Number.isNaN(inicio.getTime()) || Number.isNaN(fim.getTime())) return isoDeInicio;
@@ -21,7 +26,8 @@ function formatarDataDaAula(isoDeInicio: string, isoDeFim: string): string {
 
 // As necessidades em aberto, com a atividade — o recurso, a data e o
 // horário da aula, o ponto de apoio —, a comunidade e o que falta em
-// moedas, como o núcleo as publica: sem somar, reordenar nem recalcular
+// moedas — na da recompensa de marco, a trilha no lugar da aula
+// (`RF-07-54`) —, como o núcleo as publica: sem somar, reordenar nem recalcular
 // (`RF-14-24`, `RN-14-09`).
 export function TelaDeNecessidadesEmAberto() {
   const [necessidades, definirNecessidades] = useState<NecessidadeDeRecurso[] | null>(null);
@@ -42,11 +48,13 @@ export function TelaDeNecessidadesEmAberto() {
         <EstadoDaLista>Não há necessidade em aberto no momento.</EstadoDaLista>
       )}
       {necessidades?.map((necessidade) => (
-        <article key={`${necessidade.aula_id}-${necessidade.tipo_de_recurso_id}`}>
+        <article key={chaveDaNecessidade(necessidade)}>
           <p>
             {necessidade.tipo_de_recurso_nome} —{" "}
-            {formatarDataDaAula(necessidade.inicio_em, necessidade.fim_em)} —{" "}
-            {necessidade.ponto_de_apoio_nome}
+            {necessidade.especie === "aula"
+              ? formatarDataDaAula(necessidade.inicio_em, necessidade.fim_em)
+              : `Recompensa de marco da trilha ${necessidade.trilha_nome}`}{" "}
+            — {necessidade.ponto_de_apoio_nome}
           </p>
           <p>{necessidade.comunidade_virtual_nome}</p>
           <p>

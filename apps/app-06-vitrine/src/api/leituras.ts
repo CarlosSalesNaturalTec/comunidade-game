@@ -359,8 +359,13 @@ export function lerConteudoInstitucional(): Promise<SecaoInstitucionalPublica[]>
  * tipo de recurso não tem vigência de referência na data da leitura: a vitrine
  * mostra a falta e **nenhum valor arbitrado** (`RN-03-18`). Nenhum campo traz
  * reais, e nenhum identifica Guerreiro(a), responsável ou provedor. */
+// As duas espécies: a da aula traz aula e horário; a da recompensa de marco,
+// a trilha, sem aula nem horário (`RF-03-47`, `RF-07-54`).
 export interface NecessidadePublica {
-  aula_id: string;
+  especie: "aula" | "recompensa_de_marco";
+  aula_id: string | null;
+  trilha_id: string | null;
+  trilha_nome: string | null;
   tipo_de_recurso_id: string;
   tipo_de_recurso_nome: string;
   quantidade_faltante: string;
@@ -369,8 +374,8 @@ export interface NecessidadePublica {
   comunidade_virtual_nome: string;
   ponto_de_apoio_id: string;
   ponto_de_apoio_nome: string;
-  inicio_em: string;
-  fim_em: string;
+  inicio_em: string | null;
+  fim_em: string | null;
 }
 
 export function listarNecessidades(): Promise<NecessidadePublica[]> {

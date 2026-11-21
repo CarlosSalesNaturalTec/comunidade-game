@@ -160,15 +160,27 @@ export function excluirTipoDeRecurso(id: string, token: string): Promise<void> {
   return chamarNucleo<void>(`/v1/tipos-de-recurso/${id}`, { metodo: "DELETE", token });
 }
 
+// As duas espécies: a da aula traz aula e horário; a da recompensa de marco,
+// a trilha, sem aula nem horário (`RF-02-58`, `RF-07-54`).
 export interface NecessidadeDeRecurso {
-  aula_id: string;
+  especie: "aula" | "recompensa_de_marco";
+  aula_id: string | null;
+  trilha_id: string | null;
+  trilha_nome: string | null;
   tipo_de_recurso_id: string;
   quantidade_faltante: string;
   valor_em_moedas: string | null;
   comunidade_virtual_id: string;
   ponto_de_apoio_id: string;
-  inicio_em: string;
-  fim_em: string;
+  inicio_em: string | null;
+  fim_em: string | null;
+}
+
+// A identidade da necessidade: aula + tipo, ou comunidade + trilha + tipo.
+export function chaveDaNecessidade(necessidade: NecessidadeDeRecurso): string {
+  return necessidade.especie === "aula"
+    ? `${necessidade.aula_id}::${necessidade.tipo_de_recurso_id}`
+    : `${necessidade.comunidade_virtual_id}::${necessidade.trilha_id}::${necessidade.tipo_de_recurso_id}`;
 }
 
 // A App 03 lê a mesma rota pública que a vitrine, sob a chave da aplicação

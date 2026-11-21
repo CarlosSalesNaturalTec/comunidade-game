@@ -1,5 +1,5 @@
 import { Botao, EstadoDaLista } from "comum/react";
-import type { NecessidadeDeRecurso } from "./api";
+import { chaveDaNecessidade, type NecessidadeDeRecurso } from "./api";
 
 interface Props {
   necessidades: NecessidadeDeRecurso[] | null;
@@ -8,13 +8,15 @@ interface Props {
   aoAbsorver: (necessidade: NecessidadeDeRecurso) => void;
 }
 
-function formatarHorario(valorComFuso: string): string {
+function formatarHorario(valorComFuso: string | null): string {
+  if (valorComFuso === null) return "";
   const data = new Date(valorComFuso);
   if (Number.isNaN(data.getTime())) return valorComFuso;
   return data.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
 
-// A falta de cada aula, derivada do núcleo — nunca soma, reordena por saldo
+// A falta de cada aula e de cada recompensa de marco — esta com a trilha no
+// lugar do horário (`RF-09-56`, `RF-07-54`) —, derivada do núcleo — nunca soma, reordena por saldo
 // nem recalcula (`RF-09-56`, `RN-09-12`). Necessidade de tipo sem valor de
 // referência vigente continua aparecendo, sem valor nem nome arbitrado.
 export function ListaDeNecessidades({
@@ -34,10 +36,7 @@ export function ListaDeNecessidades({
   return (
     <ul className="lista-de-necessidades" aria-label="Necessidades de recurso em aberto">
       {necessidades.map((necessidade) => (
-        <li
-          key={`${necessidade.aula_id}-${necessidade.tipo_de_recurso_id}`}
-          className="lista-de-necessidades__item"
-        >
+        <li key={chaveDaNecessidade(necessidade)} className="lista-de-necessidades__item">
           <span className="lista-de-necessidades__tipo">
             {nomeDoTipoDeRecurso(necessidade.tipo_de_recurso_id)}
           </span>
@@ -52,9 +51,15 @@ export function ListaDeNecessidades({
           <span className="lista-de-necessidades__ponto-de-apoio">
             {nomeDoPontoDeApoio(necessidade.ponto_de_apoio_id)}
           </span>
-          <span className="lista-de-necessidades__horario">
-            {formatarHorario(necessidade.inicio_em)} – {formatarHorario(necessidade.fim_em)}
-          </span>
+          {necessidade.especie === "aula" ? (
+            <span className="lista-de-necessidades__horario">
+              {formatarHorario(necessidade.inicio_em)} – {formatarHorario(necessidade.fim_em)}
+            </span>
+          ) : (
+            <span className="lista-de-necessidades__trilha">
+              Recompensa de marco · Trilha {necessidade.trilha_nome}
+            </span>
+          )}
           <Botao variante="secundaria" onClick={() => aoAbsorver(necessidade)}>
             Absorver
           </Botao>

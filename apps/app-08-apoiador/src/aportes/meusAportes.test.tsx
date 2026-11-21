@@ -102,7 +102,10 @@ describe("Necessidades em aberto", () => {
   });
 
   const NECESSIDADE_BASE: NecessidadeDeRecurso = {
+    especie: "aula",
     aula_id: "aula-1",
+    trilha_id: null,
+    trilha_nome: null,
     tipo_de_recurso_id: "tipo-1",
     tipo_de_recurso_nome: "Lanche",
     quantidade_faltante: "3.00",
@@ -139,6 +142,31 @@ describe("Necessidades em aberto", () => {
     );
 
     expect(await screen.findByText(/sem valor de referência ainda/i)).toBeInTheDocument();
+  });
+
+  it("a necessidade da recompensa aparece com a trilha (RF-14-24)", async () => {
+    const testeDeUsuario = await entrarComoApoiador();
+    vi.spyOn(aportesApi, "listarNecessidadesEmAberto").mockResolvedValue([
+      {
+        ...NECESSIDADE_BASE,
+        especie: "recompensa_de_marco",
+        aula_id: null,
+        trilha_id: "trilha-1",
+        trilha_nome: "Robótica",
+        inicio_em: null,
+        fim_em: null,
+      },
+    ]);
+
+    await testeDeUsuario.click(
+      screen.getByRole("button", { name: /necessidades em aberto/i }),
+    );
+
+    expect(
+      await screen.findByText(/recompensa de marco da trilha robótica/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/sede central/i)).toBeInTheDocument();
+    expect(screen.getByText(/7.50 moedas/i)).toBeInTheDocument();
   });
 
   it("sem necessidade em aberto a tela diz", async () => {

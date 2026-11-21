@@ -8,12 +8,14 @@ from sqlalchemy.orm import Session
 
 from ..aportes.modelo import Aporte, AporteDeclarado
 from ..aulas.modelo import Aula
+from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import DespublicacaoDeMissaoConcluidaRecusada, ErroDeValidacao, PermissaoNegada
-from ..necessidades.regra import derivar_necessidades
+from ..necessidades.regra import chave_da_necessidade, derivar_necessidades
 from ..personas.modelo import Papel, Persona
 from ..recursos.modelo import TipoDeRecurso
 from ..selos_do_apoiador.modelo import FamiliaDeSelo, SeloDoApoiador
 from ..tempo import agora
+from ..trilhas.modelo import Trilha
 from .modelo import MissaoDoApoiador, NivelDeNecessidade, SituacaoDaMissao
 
 _SELO_DE_MUTIRAO = "Mutirão"
@@ -25,6 +27,8 @@ def publicar_missao(
     operador: Persona,
     aula: Aula | None,
     tipo: TipoDeRecurso | None,
+    comunidade: ComunidadeVirtual | None = None,
+    trilha: Trilha | None = None,
     nivel_de_necessidade: NivelDeNecessidade | None,
     titulo: str | None,
     o_que_se_pede: str | None,
@@ -36,12 +40,19 @@ def publicar_missao(
     """Só Admin publica, a partir de uma necessidade de recurso em aberto —
     o par aula + tipo de recurso precisa estar entre as necessidades
     derivadas no momento do ato (`RF-02-102`, `RF-02-103`, `RN-02-31`,
-    `RN-14-31`, design — Decisions 1)."""
+    `RN-14-31`, design — Decisions 1). Na necessidade da recompensa de
+    marco, `comunidade` + `trilha` + tipo tomam o lugar do par (`RF-07-54`,
+    change `necessidade-da-recompensa-de-marco`, design — decisão 7)."""
     if operador.papel != Papel.admin:
         raise PermissaoNegada(mensagem="Só o Admin publica missão do Apoiador.")
-    if aula is None or tipo is None:
+    pela_aula = aula is not None
+    pela_trilha = comunidade is not None and trilha is not None
+    if tipo is None or pela_aula == pela_trilha:
         raise ErroDeValidacao(
-            mensagem="Missão exige a aula e o tipo de recurso da necessidade de origem.",
+            mensagem=(
+                "Missão exige o tipo de recurso e a aula, ou a comunidade e a trilha, da "
+                "necessidade de origem."
+            ),
             campo="aula_id",
         )
     if nivel_de_necessidade is None:
@@ -63,18 +74,22 @@ def publicar_missao(
     if selo_familia is None:
         raise ErroDeValidacao(mensagem="Missão exige a família do selo.", campo="selo_familia")
 
-    pares_com_necessidade = {
-        (necessidade.aula_id, necessidade.tipo_de_recurso_id)
-        for necessidade in derivar_necessidades(sessao)
-    }
-    if (aula.id, tipo.id) not in pares_com_necessidade:
+    chave = chave_da_necessidade(
+        tipo_de_recurso_id=tipo.id,
+        aula_id=aula.id if pela_aula else None,
+        comunidade_virtual_id=comunidade.id if pela_trilha else None,
+        trilha_id=trilha.id if pela_trilha else None,
+    )
+    if chave not in {necessidade.chave for necessidade in derivar_necessidades(sessao)}:
         raise ErroDeValidacao(
-            mensagem="Não há necessidade de recurso publicada para esta aula e tipo de recurso.",
-            campo="aula_id",
+            mensagem="Não há necessidade de recurso publicada para esta escolha.",
+            campo="aula_id" if pela_aula else "trilha_id",
         )
 
     missao = MissaoDoApoiador(
-        aula_id=aula.id,
+        aula_id=aula.id if pela_aula else None,
+        comunidade_virtual_id=comunidade.id if pela_trilha else None,
+        trilha_id=trilha.id if pela_trilha else None,
         tipo_de_recurso_id=tipo.id,
         nivel_de_necessidade=nivel_de_necessidade,
         titulo=titulo,
@@ -147,10 +162,7 @@ def derivar_missoes(sessao: Session) -> list[MissaoDerivada]:
         return []
 
     coberto_por_missao = _coberto_por_missao(sessao, missao_ids=[missao.id for missao in missoes])
-    pares_com_necessidade = {
-        (necessidade.aula_id, necessidade.tipo_de_recurso_id)
-        for necessidade in derivar_necessidades(sessao)
-    }
+    chaves_com_necessidade = {necessidade.chave for necessidade in derivar_necessidades(sessao)}
     hoje = agora().date()
 
     derivadas = []
@@ -164,8 +176,13 @@ def derivar_missoes(sessao: Session) -> list[MissaoDerivada]:
                 coberto=coberto,
                 falta=falta,
                 vencida=vencida,
-                tem_necessidade_por_tras=(missao.aula_id, missao.tipo_de_recurso_id)
-                in pares_com_necessidade,
+                tem_necessidade_por_tras=chave_da_necessidade(
+                    tipo_de_recurso_id=missao.tipo_de_recurso_id,
+                    aula_id=missao.aula_id,
+                    comunidade_virtual_id=missao.comunidade_virtual_id,
+                    trilha_id=missao.trilha_id,
+                )
+                in chaves_com_necessidade,
             )
         )
     return derivadas

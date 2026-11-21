@@ -1,15 +1,28 @@
 import { chamarNucleo } from "comum/api";
 import type { PerfilDeApoiador } from "../compartilhado/escada";
 
+// As duas espécies: a da aula traz aula e data; a da recompensa de marco, a
+// trilha (`RF-14-02`, `RF-07-54`).
 export interface NecessidadeDeRecurso {
-  aula_id: string;
+  especie: "aula" | "recompensa_de_marco";
+  aula_id: string | null;
+  trilha_id: string | null;
+  trilha_nome: string | null;
   tipo_de_recurso_id: string;
   quantidade_faltante: string;
   valor_em_moedas: string | null;
   comunidade_virtual_id: string;
   ponto_de_apoio_id: string;
-  inicio_em: string;
-  fim_em: string;
+  inicio_em: string | null;
+  fim_em: string | null;
+}
+
+// A identidade da necessidade: aula + tipo, ou comunidade + trilha + tipo
+// (`RF-07-54`).
+export function chaveDaNecessidade(necessidade: NecessidadeDeRecurso): string {
+  return necessidade.especie === "aula"
+    ? `${necessidade.aula_id}-${necessidade.tipo_de_recurso_id}`
+    : `${necessidade.comunidade_virtual_id}-${necessidade.trilha_id}-${necessidade.tipo_de_recurso_id}`;
 }
 
 export interface MissaoDoApoiador {

@@ -28,7 +28,10 @@ const HORARIO_ESPERADO = `Aula de ${FORMATADOR_DE_HORARIO.format(
 
 function necessidade(parcial: Partial<NecessidadePublica> = {}): NecessidadePublica {
   return {
+    especie: "aula",
     aula_id: "aula-1",
+    trilha_id: null,
+    trilha_nome: null,
     tipo_de_recurso_id: "tipo-1",
     tipo_de_recurso_nome: "Lanche",
     quantidade_faltante: "10",
@@ -111,6 +114,32 @@ describe("as necessidades de recurso em aberto", () => {
         HORARIO_ESPERADO,
       ]);
     }
+  });
+
+  it("a necessidade da recompensa sai com a trilha no lugar da aula (RF-03-47, RF-07-54)", async () => {
+    comLeituras([
+      necessidade({
+        especie: "recompensa_de_marco",
+        aula_id: null,
+        trilha_id: "trilha-1",
+        trilha_nome: "Robótica",
+        inicio_em: null,
+        fim_em: null,
+      }),
+    ]);
+    window.history.pushState(null, "", "/quero-participar");
+    render(<App />);
+
+    const item = within(await lista()).getByRole("listitem");
+    const linhas = Array.from(item.querySelectorAll("p")).map((linha) => linha.textContent);
+    expect(linhas).toEqual([
+      "Falta: 10",
+      "20.00 moedas",
+      "Guerreira Zeferina",
+      "Escola Municipal Zeferina",
+      "Recompensa de marco da trilha Robótica",
+    ]);
+    expect(item.textContent ?? "").not.toMatch(/R\$|reais|Aula de/i);
   });
 
   it("tipo sem vigência aparece sem valor em moedas, e a vitrine não arbitra nenhum (RN-03-18)", async () => {

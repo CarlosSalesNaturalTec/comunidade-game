@@ -48,15 +48,27 @@ export function listarTiposDeRecurso(token: string): Promise<TipoDeRecurso[]> {
   return chamarNucleo<TipoDeRecurso[]>("/v1/tipos-de-recurso", { token });
 }
 
+// As duas espécies: a da aula traz aula e horário; a da recompensa de marco,
+// a trilha, sem aula nem horário (`RF-09-56`, `RF-07-54`).
 export interface NecessidadeDeRecurso {
-  aula_id: string;
+  especie: "aula" | "recompensa_de_marco";
+  aula_id: string | null;
+  trilha_id: string | null;
+  trilha_nome: string | null;
   tipo_de_recurso_id: string;
   quantidade_faltante: string;
   valor_em_moedas: string | null;
   comunidade_virtual_id: string;
   ponto_de_apoio_id: string;
-  inicio_em: string;
-  fim_em: string;
+  inicio_em: string | null;
+  fim_em: string | null;
+}
+
+// A identidade da necessidade: aula + tipo, ou comunidade + trilha + tipo.
+export function chaveDaNecessidade(necessidade: NecessidadeDeRecurso): string {
+  return necessidade.especie === "aula"
+    ? `${necessidade.aula_id}-${necessidade.tipo_de_recurso_id}`
+    : `${necessidade.comunidade_virtual_id}-${necessidade.trilha_id}-${necessidade.tipo_de_recurso_id}`;
 }
 
 // A falta das aulas da comunidade do Mestre, já recortada pelo núcleo — a
@@ -83,6 +95,8 @@ export interface AbsorverNecessidadeEntrada {
   pontoDeApoioId: string;
   dataDoAporte: string;
   aulaId?: string;
+  comunidadeVirtualId?: string;
+  trilhaId?: string;
   valorDeOrigem?: string;
   comprovante?: File;
 }
@@ -101,6 +115,10 @@ export function absorverNecessidade(
   formulario.set("ponto_de_apoio_id", entrada.pontoDeApoioId);
   formulario.set("data_do_aporte", entrada.dataDoAporte);
   if (entrada.aulaId) formulario.set("aula_id", entrada.aulaId);
+  if (entrada.comunidadeVirtualId) {
+    formulario.set("comunidade_virtual_id", entrada.comunidadeVirtualId);
+  }
+  if (entrada.trilhaId) formulario.set("trilha_id", entrada.trilhaId);
   if (entrada.valorDeOrigem) formulario.set("valor_de_origem", entrada.valorDeOrigem);
   if (entrada.comprovante) formulario.set("comprovante", entrada.comprovante);
 

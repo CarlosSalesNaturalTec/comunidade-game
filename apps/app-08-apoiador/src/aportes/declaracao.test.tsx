@@ -21,7 +21,10 @@ function arquivoDeComprovante(nome = "comprovante.pdf", tipo = "application/pdf"
 }
 
 const NECESSIDADE_BASE: NecessidadeDeRecurso = {
+  especie: "aula",
   aula_id: "aula-1",
+  trilha_id: null,
+  trilha_nome: null,
   tipo_de_recurso_id: "tipo-1",
   tipo_de_recurso_nome: "Lanche",
   quantidade_faltante: "3.00",
@@ -99,7 +102,7 @@ describe("declaração do aporte", () => {
     await testeDeUsuario.click(screen.getByLabelText(/uma necessidade publicada/i));
     await testeDeUsuario.selectOptions(
       await screen.findByLabelText(/^necessidade$/i),
-      "aula-1",
+      "aula-1-tipo-1",
     );
     await testeDeUsuario.upload(
       screen.getByLabelText(/comprovante da transferência/i),
@@ -110,6 +113,46 @@ describe("declaração do aporte", () => {
     expect(await screen.findByText(/registrada na fila da gestão/i)).toBeInTheDocument();
     expect(chamada).toHaveBeenCalledWith(
       expect.objectContaining({ origem_da_escolha: "necessidade", aula_id: "aula-1" }),
+      "token-do-apoiador",
+    );
+  });
+
+  it("declara pela necessidade da recompensa, enviando comunidade e trilha (RF-14-25)", async () => {
+    vi.spyOn(aportesApi, "listarNecessidadesEmAberto").mockResolvedValue([
+      {
+        ...NECESSIDADE_BASE,
+        especie: "recompensa_de_marco",
+        aula_id: null,
+        trilha_id: "trilha-1",
+        trilha_nome: "Robótica",
+        inicio_em: null,
+        fim_em: null,
+      },
+    ]);
+    const testeDeUsuario = await entrarComoApoiador();
+    const chamada = vi
+      .spyOn(aportesApi, "declararAporte")
+      .mockResolvedValue({} as AporteDeclarado);
+
+    await testeDeUsuario.click(screen.getByLabelText(/uma necessidade publicada/i));
+    const seletor = (await screen.findByLabelText(/^necessidade$/i)) as HTMLSelectElement;
+    expect(seletor.options[1]?.textContent).toMatch(/trilha robótica/i);
+    await testeDeUsuario.selectOptions(seletor, "comunidade-1-trilha-1-tipo-1");
+    await testeDeUsuario.upload(
+      screen.getByLabelText(/comprovante da transferência/i),
+      arquivoDeComprovante(),
+    );
+    await testeDeUsuario.click(screen.getByRole("button", { name: /^enviar declaração$/i }));
+
+    expect(await screen.findByText(/registrada na fila da gestão/i)).toBeInTheDocument();
+    expect(chamada).toHaveBeenCalledWith(
+      expect.objectContaining({
+        origem_da_escolha: "necessidade",
+        aula_id: undefined,
+        comunidade_virtual_id: "comunidade-1",
+        trilha_id: "trilha-1",
+        tipo_de_recurso_id: "tipo-1",
+      }),
       "token-do-apoiador",
     );
   });
@@ -159,6 +202,8 @@ describe("situação das declarações", () => {
     valor_declarado: "50.00",
     origem_da_escolha: "valor_livre",
     aula_id: null,
+    comunidade_virtual_id: null,
+    trilha_id: null,
     tipo_de_recurso_id: null,
     missao_do_apoiador_id: null,
     situacao: "pendente",

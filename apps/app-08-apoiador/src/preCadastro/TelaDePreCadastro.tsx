@@ -9,6 +9,7 @@ import {
 } from "../compartilhado/escada";
 import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import {
+  chaveDaNecessidade,
   listarMissoesAbertas,
   listarNecessidadesEmAberto,
   type MissaoDoApoiador,
@@ -25,11 +26,24 @@ interface Props {
   aoIrParaEntrada: () => void;
 }
 
-function formatarDataDaAula(isoDeInicio: string): string {
+function formatarDataDaAula(isoDeInicio: string | null): string {
+  if (isoDeInicio === null) return "";
   const data = new Date(isoDeInicio);
   return Number.isNaN(data.getTime())
     ? isoDeInicio
     : data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+// A necessidade pela data da aula, ou pela trilha na da recompensa de marco
+// (`RF-14-02`, `RF-07-54`).
+function descreverNecessidade(necessidade: NecessidadeDeRecurso): string {
+  return necessidade.especie === "aula"
+    ? `aula de ${formatarDataDaAula(necessidade.inicio_em)}`
+    : `recompensa de marco da trilha ${necessidade.trilha_nome}`;
+}
+
+function maiuscula(texto: string): string {
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
 function tempoDeEsperaEmLinguagemSimples(segundos: number): string {
@@ -75,7 +89,7 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
   const escada = ESCADA_POR_PERFIL[perfil];
   const missaoSelecionada = missoes.find((m) => m.id === missaoSelecionadaId);
   const necessidadeSelecionada = necessidades.find(
-    (n) => n.aula_id === necessidadeSelecionadaId,
+    (n) => chaveDaNecessidade(n) === necessidadeSelecionadaId,
   );
   const valorLivreEmReais = Number(valorLivreTexto.replace(",", "."));
   const valorLivreValido = valorLivreTexto.trim() !== "" && !Number.isNaN(valorLivreEmReais);
@@ -94,7 +108,7 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
         necessidadeSelecionada.valor_em_moedas ??
         String(necessidadeSelecionada.quantidade_faltante);
       return (
-        `Necessidade da aula de ${formatarDataDaAula(necessidadeSelecionada.inicio_em)}, ` +
+        `Necessidade da ${descreverNecessidade(necessidadeSelecionada)}, ` +
         `${necessidadeSelecionada.quantidade_faltante} unidades — equivalente a ${moedas} moedas.`
       );
     }
@@ -292,8 +306,11 @@ export function TelaDePreCadastro({ aoIrParaEntrada }: Props) {
             >
               <option value="">Selecione…</option>
               {necessidades.map((necessidade) => (
-                <option key={necessidade.aula_id} value={necessidade.aula_id}>
-                  Aula de {formatarDataDaAula(necessidade.inicio_em)} —{" "}
+                <option
+                  key={chaveDaNecessidade(necessidade)}
+                  value={chaveDaNecessidade(necessidade)}
+                >
+                  {maiuscula(descreverNecessidade(necessidade))} —{" "}
                   {necessidade.quantidade_faltante} unidades
                   {necessidade.valor_em_moedas
                     ? ` — ${necessidade.valor_em_moedas} moedas`

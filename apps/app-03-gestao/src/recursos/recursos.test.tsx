@@ -238,6 +238,9 @@ describe("registro de aporte", () => {
 
 describe("lista de necessidades", () => {
   const NECESSIDADE = {
+    especie: "aula" as const,
+    trilha_id: null,
+    trilha_nome: null,
     aula_id: "aula-1",
     tipo_de_recurso_id: TIPO_SEM_COMPROVANTE.id,
     quantidade_faltante: "5",
@@ -250,6 +253,32 @@ describe("lista de necessidades", () => {
 
   const identidade = (id: string) => id;
   const semUnidade = () => undefined;
+
+  it("a necessidade da recompensa traz a trilha na coluna da aula (RF-02-58, RF-07-54)", () => {
+    render(
+      <ListaDeNecessidades
+        necessidades={[
+          {
+            ...NECESSIDADE,
+            especie: "recompensa_de_marco",
+            aula_id: null,
+            trilha_id: "trilha-1",
+            trilha_nome: "Robótica",
+            inicio_em: null,
+            fim_em: null,
+          },
+        ]}
+        nomeDoTipoDeRecurso={() => TIPO_SEM_COMPROVANTE.nome}
+        unidadeDoTipoDeRecurso={() => TIPO_SEM_COMPROVANTE.unidade}
+        nomeDaComunidade={() => COMUNIDADE.nome}
+        nomeDoPontoDeApoio={() => PONTO_DE_APOIO.nome}
+      />,
+    );
+
+    expect(screen.getByText("Recompensa de marco · Trilha Robótica")).toBeInTheDocument();
+    expect(screen.getByText(COMUNIDADE.nome)).toBeInTheDocument();
+    expect(screen.getByText(PONTO_DE_APOIO.nome)).toBeInTheDocument();
+  });
 
   it("a necessidade aparece numa linha da tabela, cada campo na sua coluna", () => {
     render(
@@ -352,6 +381,9 @@ describe("área Recursos", () => {
     vi.spyOn(recursosApi, "listarNecessidades")
       .mockResolvedValueOnce([
         {
+          especie: "aula" as const,
+          trilha_id: null,
+          trilha_nome: null,
           aula_id: "aula-1",
           tipo_de_recurso_id: TIPO_SEM_COMPROVANTE.id,
           quantidade_faltante: "5",
@@ -421,6 +453,9 @@ describe("área Recursos", () => {
     vi.spyOn(recursosApi, "listarNecessidades")
       .mockResolvedValueOnce([
         {
+          especie: "aula" as const,
+          trilha_id: null,
+          trilha_nome: null,
           aula_id: "aula-1",
           tipo_de_recurso_id: TIPO_SEM_COMPROVANTE.id,
           quantidade_faltante: "5",
@@ -433,6 +468,9 @@ describe("área Recursos", () => {
       ])
       .mockResolvedValueOnce([
         {
+          especie: "aula" as const,
+          trilha_id: null,
+          trilha_nome: null,
           aula_id: "aula-1",
           tipo_de_recurso_id: TIPO_SEM_COMPROVANTE.id,
           quantidade_faltante: "3",

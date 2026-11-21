@@ -125,6 +125,49 @@ describe("porta pública de pré-cadastro", () => {
     expect(screen.queryByRole("button", { name: /^sair$/i })).not.toBeInTheDocument();
   });
 
+  it("a necessidade da recompensa é descrita pela trilha, com o equivalente em moedas (RF-14-02)", async () => {
+    vi.spyOn(preCadastroApi, "listarNecessidadesEmAberto").mockResolvedValue([
+      {
+        especie: "recompensa_de_marco",
+        aula_id: null,
+        trilha_id: "trilha-1",
+        trilha_nome: "Robótica",
+        tipo_de_recurso_id: "tipo-1",
+        quantidade_faltante: "6",
+        valor_em_moedas: "12.00",
+        comunidade_virtual_id: "comunidade-1",
+        ponto_de_apoio_id: "ponto-1",
+        inicio_em: null,
+        fim_em: null,
+      },
+    ]);
+    const registrar = vi
+      .spyOn(preCadastroApi, "registrarPreCadastroDeApoiador")
+      .mockResolvedValue({ id: "solicitacao-1", prazo: "2026-09-08T00:00:00Z" });
+    render(<App />);
+    await screen.findByRole("heading", { name: /comunidade game — área do apoiador/i });
+    const testeDeUsuario = userEvent.setup();
+
+    await preencherIdentificacao(testeDeUsuario);
+    await testeDeUsuario.click(screen.getByLabelText(/uma necessidade publicada/i));
+    const seletor = (await screen.findByLabelText(/^necessidade$/i)) as HTMLSelectElement;
+    expect(seletor.options[1]?.textContent).toMatch(/recompensa de marco da trilha robótica/i);
+    await testeDeUsuario.selectOptions(seletor, "comunidade-1-trilha-1-tipo-1");
+    await testeDeUsuario.upload(
+      screen.getByLabelText(/comprovante da transferência/i),
+      arquivoDeComprovante(),
+    );
+    await testeDeUsuario.click(screen.getByRole("button", { name: /enviar pré-cadastro/i }));
+
+    expect(registrar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        aporte_declarado: expect.stringMatching(
+          /recompensa de marco da trilha Robótica.*equivalente a 12\.00 moedas/,
+        ),
+      }),
+    );
+  });
+
   it("429 do freio mostra o tempo de espera sem CAPTCHA e sem perder o preenchido", async () => {
     vi.spyOn(preCadastroApi, "registrarPreCadastroDeApoiador").mockRejectedValue(
       new ErroDaApi(

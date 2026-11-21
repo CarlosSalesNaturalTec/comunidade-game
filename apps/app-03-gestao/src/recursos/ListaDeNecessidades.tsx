@@ -1,5 +1,5 @@
 import { type ColunaDaTabela, EstadoDaLista, Tabela } from "comum/react";
-import type { NecessidadeDeRecurso } from "./api";
+import { chaveDaNecessidade, type NecessidadeDeRecurso } from "./api";
 import { formatarMoedas, formatarQuantidade } from "./formatacao";
 
 interface Props {
@@ -12,7 +12,8 @@ interface Props {
 
 const TITULO = "Necessidades em aberto";
 
-function formatarHorario(valorComFuso: string): string {
+function formatarHorario(valorComFuso: string | null): string {
+  if (valorComFuso === null) return "";
   const data = new Date(valorComFuso);
   if (Number.isNaN(data.getTime())) return valorComFuso;
   return data.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
@@ -20,7 +21,8 @@ function formatarHorario(valorComFuso: string): string {
 
 // A lista vem do núcleo já derivada — nunca soma, ordena por saldo nem
 // recalcula a falta; cada campo na sua coluna, sem coluna recolhida
-// (`RF-02-58`, `RN-02-19`, design — decisões 1 e 2).
+// (`RF-02-58`, `RN-02-19`, design — decisões 1 e 2). A da recompensa de
+// marco traz a trilha na coluna da aula (`RF-07-54`).
 export function ListaDeNecessidades({
   necessidades,
   nomeDoTipoDeRecurso,
@@ -51,7 +53,9 @@ export function ListaDeNecessidades({
       chave: "aula",
       rotulo: "Aula",
       renderizar: (item) =>
-        `${formatarHorario(item.inicio_em)} – ${formatarHorario(item.fim_em)}`,
+        item.especie === "aula"
+          ? `${formatarHorario(item.inicio_em)} – ${formatarHorario(item.fim_em)}`
+          : `Recompensa de marco · Trilha ${item.trilha_nome}`,
     },
     {
       chave: "comunidade",
@@ -91,11 +95,7 @@ export function ListaDeNecessidades({
   return (
     <section aria-label="Necessidades de recurso em aberto">
       <h2>{TITULO}</h2>
-      <Tabela
-        colunas={colunas}
-        linhas={necessidades}
-        chaveDaLinha={(item) => `${item.aula_id}-${item.tipo_de_recurso_id}`}
-      />
+      <Tabela colunas={colunas} linhas={necessidades} chaveDaLinha={chaveDaNecessidade} />
     </section>
   );
 }
