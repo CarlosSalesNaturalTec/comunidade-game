@@ -24,8 +24,13 @@ export function listarMeusAportes(token: string): Promise<MeusAportesSaida> {
   return chamarNucleo<MeusAportesSaida>("/v1/meus-aportes", { token });
 }
 
+// As duas espécies: a da aula traz aula e horário; a da recompensa de marco,
+// a trilha, sem aula nem horário (`RF-14-24`, `RF-07-54`).
 export interface NecessidadeDeRecurso {
-  aula_id: string;
+  especie: "aula" | "recompensa_de_marco";
+  aula_id: string | null;
+  trilha_id: string | null;
+  trilha_nome: string | null;
   tipo_de_recurso_id: string;
   tipo_de_recurso_nome: string;
   quantidade_faltante: string;
@@ -34,8 +39,16 @@ export interface NecessidadeDeRecurso {
   comunidade_virtual_nome: string;
   ponto_de_apoio_id: string;
   ponto_de_apoio_nome: string;
-  inicio_em: string;
-  fim_em: string;
+  inicio_em: string | null;
+  fim_em: string | null;
+}
+
+// A identidade da necessidade: aula + tipo, ou comunidade + trilha + tipo
+// (`RF-07-54`).
+export function chaveDaNecessidade(necessidade: NecessidadeDeRecurso): string {
+  return necessidade.especie === "aula"
+    ? `${necessidade.aula_id}-${necessidade.tipo_de_recurso_id}`
+    : `${necessidade.comunidade_virtual_id}-${necessidade.trilha_id}-${necessidade.tipo_de_recurso_id}`;
 }
 
 // As necessidades em aberto de todas as comunidades, pública e sem token —
@@ -56,6 +69,8 @@ export interface AporteDeclarado {
   valor_declarado: string;
   origem_da_escolha: OrigemDaEscolhaDoAporte;
   aula_id: string | null;
+  comunidade_virtual_id: string | null;
+  trilha_id: string | null;
   tipo_de_recurso_id: string | null;
   missao_do_apoiador_id: string | null;
   situacao: SituacaoDaDeclaracao;
@@ -67,6 +82,8 @@ export interface DeclararAporteEntrada {
   valor_declarado: number;
   origem_da_escolha: OrigemDaEscolhaDoAporte;
   aula_id?: string;
+  comunidade_virtual_id?: string;
+  trilha_id?: string;
   tipo_de_recurso_id?: string;
   missao_do_apoiador_id?: string;
   comprovante: File;
@@ -85,6 +102,9 @@ export function declararAporte(
   formulario.set("forma", "financeira");
   formulario.set("origem_da_escolha", entrada.origem_da_escolha);
   if (entrada.aula_id) formulario.set("aula_id", entrada.aula_id);
+  if (entrada.comunidade_virtual_id)
+    formulario.set("comunidade_virtual_id", entrada.comunidade_virtual_id);
+  if (entrada.trilha_id) formulario.set("trilha_id", entrada.trilha_id);
   if (entrada.tipo_de_recurso_id)
     formulario.set("tipo_de_recurso_id", entrada.tipo_de_recurso_id);
   if (entrada.missao_do_apoiador_id)

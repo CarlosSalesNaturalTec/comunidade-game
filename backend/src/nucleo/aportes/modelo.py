@@ -70,7 +70,10 @@ class Aporte(Base, ComAutoria):
 
     `destinacao` separa o que vira lastro do que não vira (`RF-07-23`,
     `RN-07-38`). `aula_id` só existe na forma absorção, quando o aporte
-    declara qual necessidade publicada atende (`RF-07-28`).
+    declara qual necessidade publicada atende (`RF-07-28`). Na necessidade
+    da recompensa de marco, a absorção declara `comunidade_virtual_id` e
+    `trilha_id` no lugar da aula — uma das duas, nunca ambas (`RF-07-54`,
+    change `necessidade-da-recompensa-de-marco`, design — decisões 3, 5).
 
     `aporte_declarado_id` é único: a mesma declaração da App 08 não credita
     duas vezes, no mesmo desenho de `solicitacao_de_participacao_id`
@@ -122,6 +125,12 @@ class Aporte(Base, ComAutoria):
         server_default=DestinacaoDoAporte.lastro.value,
     )
     aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
+    comunidade_virtual_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("comunidade_virtual.id"), nullable=True
+    )
+    trilha_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("trilha.id"), nullable=True
+    )
     aporte_declarado_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("aporte_declarado.id"), unique=True, nullable=True
     )
@@ -137,7 +146,9 @@ class AporteDeclarado(Base, ComAutoria):
     `aula_id` e `tipo_de_recurso_id` só existem na origem `necessidade`: o
     par que identifica a necessidade escolhida, sem vínculo — ela é
     derivada e pode deixar de existir até a homologação (design —
-    Decisions 3). `motivo_da_recusa`, `resolvido_por_id` e `resolvido_em`
+    Decisions 3). Na necessidade da recompensa de marco, a declaração guarda
+    `comunidade_virtual_id` + `trilha_id` no lugar da aula (`RF-14-25`,
+    `RF-07-54`). `motivo_da_recusa`, `resolvido_por_id` e `resolvido_em`
     só existem depois do desfecho, homologação ou recusa.
 
     `missao_do_apoiador_id` só existe na origem `missao` (`RF-14-63`,
@@ -153,6 +164,12 @@ class AporteDeclarado(Base, ComAutoria):
         Enum(OrigemDaEscolhaDoAporte, native_enum=False, length=16), nullable=False
     )
     aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
+    comunidade_virtual_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("comunidade_virtual.id"), nullable=True
+    )
+    trilha_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("trilha.id"), nullable=True
+    )
     tipo_de_recurso_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("tipo_de_recurso.id"), nullable=True
     )

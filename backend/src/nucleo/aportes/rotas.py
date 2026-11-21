@@ -12,6 +12,7 @@ from ..armazenamento.porta import PortaDeArmazenamento
 from ..aulas.modelo import Aula
 from ..autenticacao import ContextoDaSessao, exigir_persona
 from ..banco import obter_sessao
+from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import ErroDeValidacao, NaoEncontrado
 from ..fila.modelo import SolicitacaoDeParticipacao
 from ..livro_razao.modelo import DestinacaoDoAporte
@@ -19,6 +20,7 @@ from ..missoes_do_apoiador.modelo import MissaoDoApoiador
 from ..personas.modelo import Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
 from ..recursos.modelo import TipoDeRecurso
+from ..trilhas.modelo import Trilha
 from .modelo import Aporte, AporteDeclarado, FormaDeAporte, OrigemDaEscolhaDoAporte
 from .regra import (
     declarar_aporte,
@@ -28,6 +30,27 @@ from .regra import (
 )
 
 roteador = APIRouter()
+
+
+def carregar_comunidade_e_trilha(
+    sessao_bd: Session,
+    *,
+    comunidade_virtual_id: uuid.UUID | None,
+    trilha_id: uuid.UUID | None,
+) -> tuple[ComunidadeVirtual | None, Trilha | None]:
+    """A comunidade e a trilha que apontam a necessidade da recompensa de
+    marco, com 422 para identificador que não existe (`RF-07-54`)."""
+    comunidade = (
+        sessao_bd.get(ComunidadeVirtual, comunidade_virtual_id)
+        if comunidade_virtual_id is not None
+        else None
+    )
+    if comunidade_virtual_id is not None and comunidade is None:
+        raise ErroDeValidacao(mensagem="Comunidade não encontrada.", campo="comunidade_virtual_id")
+    trilha = sessao_bd.get(Trilha, trilha_id) if trilha_id is not None else None
+    if trilha_id is not None and trilha is None:
+        raise ErroDeValidacao(mensagem="Trilha não encontrada.", campo="trilha_id")
+    return comunidade, trilha
 
 
 class AporteSaida(BaseModel):
@@ -43,6 +66,8 @@ class AporteSaida(BaseModel):
     situacao_de_ressarcimento: str
     destinacao: str
     aula_id: uuid.UUID | None
+    comunidade_virtual_id: uuid.UUID | None
+    trilha_id: uuid.UUID | None
     lancamento_id: uuid.UUID
     data_do_aporte: date
 
@@ -61,6 +86,8 @@ def _saida(aporte: Aporte) -> AporteSaida:
         situacao_de_ressarcimento=aporte.situacao_de_ressarcimento.value,
         destinacao=aporte.destinacao.value,
         aula_id=aporte.aula_id,
+        comunidade_virtual_id=aporte.comunidade_virtual_id,
+        trilha_id=aporte.trilha_id,
         lancamento_id=aporte.lancamento_id,
         data_do_aporte=aporte.data_do_aporte,
     )
@@ -138,6 +165,8 @@ def registrar_aporte_por_absorcao_rota(
     ponto_de_apoio_id: Annotated[uuid.UUID, Form()],
     data_do_aporte: Annotated[date, Form()],
     aula_id: Annotated[uuid.UUID | None, Form()] = None,
+    comunidade_virtual_id: Annotated[uuid.UUID | None, Form()] = None,
+    trilha_id: Annotated[uuid.UUID | None, Form()] = None,
     valor_de_origem: Annotated[Decimal | None, Form()] = None,
     periodo_apurado: Annotated[date | None, Form()] = None,
     comprovante: Annotated[UploadFile | None, File()] = None,
@@ -145,13 +174,17 @@ def registrar_aporte_por_absorcao_rota(
     """Restrita a Mestre ou Admin, sempre em nome de quem registra — a
     absorção credita no ato, sem homologação (`RF-07-06`, `RN-07-35`,
     PRD-07 §9). `aula_id`, quando declarada, é a necessidade publicada que
-    a absorção assume (`RF-07-28`)."""
+    a absorção assume (`RF-07-28`); `comunidade_virtual_id` e `trilha_id`,
+    a necessidade da recompensa de marco (`RF-07-54`, `RF-09-57`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     tipo = sessao_bd.get(TipoDeRecurso, tipo_de_recurso_id)
     ponto_de_apoio = sessao_bd.get(PontoDeApoio, ponto_de_apoio_id)
     aula = sessao_bd.get(Aula, aula_id) if aula_id is not None else None
     if aula_id is not None and aula is None:
         raise ErroDeValidacao(mensagem="Aula não encontrada.", campo="aula_id")
+    comunidade, trilha = carregar_comunidade_e_trilha(
+        sessao_bd, comunidade_virtual_id=comunidade_virtual_id, trilha_id=trilha_id
+    )
     conteudo = comprovante.file.read() if comprovante is not None else None
 
     aporte = registrar_aporte_por_absorcao(
@@ -162,6 +195,8 @@ def registrar_aporte_por_absorcao_rota(
         ponto_de_apoio=ponto_de_apoio,
         data_do_aporte=data_do_aporte,
         aula=aula,
+        comunidade=comunidade,
+        trilha=trilha,
         valor_de_origem=valor_de_origem,
         periodo_apurado=periodo_apurado,
         comprovante_conteudo=conteudo,
@@ -183,6 +218,8 @@ class AporteDeclaradoSaida(BaseModel):
     valor_declarado: Decimal
     origem_da_escolha: str
     aula_id: uuid.UUID | None
+    comunidade_virtual_id: uuid.UUID | None
+    trilha_id: uuid.UUID | None
     tipo_de_recurso_id: uuid.UUID | None
     missao_do_apoiador_id: uuid.UUID | None
     situacao: str
@@ -196,6 +233,8 @@ def _saida_da_declaracao(declaracao: AporteDeclarado) -> AporteDeclaradoSaida:
         valor_declarado=declaracao.valor_declarado,
         origem_da_escolha=declaracao.origem_da_escolha.value,
         aula_id=declaracao.aula_id,
+        comunidade_virtual_id=declaracao.comunidade_virtual_id,
+        trilha_id=declaracao.trilha_id,
         tipo_de_recurso_id=declaracao.tipo_de_recurso_id,
         missao_do_apoiador_id=declaracao.missao_do_apoiador_id,
         situacao=declaracao.situacao.value,
@@ -213,6 +252,8 @@ def declarar_aporte_rota(
     forma: Annotated[FormaDeAporte, Form()],
     origem_da_escolha: Annotated[OrigemDaEscolhaDoAporte, Form()],
     aula_id: Annotated[uuid.UUID | None, Form()] = None,
+    comunidade_virtual_id: Annotated[uuid.UUID | None, Form()] = None,
+    trilha_id: Annotated[uuid.UUID | None, Form()] = None,
     tipo_de_recurso_id: Annotated[uuid.UUID | None, Form()] = None,
     missao_do_apoiador_id: Annotated[uuid.UUID | None, Form()] = None,
     comprovante: Annotated[UploadFile | None, File()] = None,
@@ -222,11 +263,15 @@ def declarar_aporte_rota(
     dinheiro — material, serviço e divulgação são recusados com 422 e a
     orientação de procurar a gestão (`RN-14-05` a `RN-14-07`, `RF-14-28`).
     `missao_do_apoiador_id`, na origem `missao`, aponta a missão escolhida
-    (`RF-14-63`)."""
+    (`RF-14-63`). `comunidade_virtual_id` e `trilha_id`, na origem
+    `necessidade`, apontam a da recompensa de marco (`RF-07-54`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     aula = sessao_bd.get(Aula, aula_id) if aula_id is not None else None
     if aula_id is not None and aula is None:
         raise ErroDeValidacao(mensagem="Aula não encontrada.", campo="aula_id")
+    comunidade, trilha = carregar_comunidade_e_trilha(
+        sessao_bd, comunidade_virtual_id=comunidade_virtual_id, trilha_id=trilha_id
+    )
     tipo = (
         sessao_bd.get(TipoDeRecurso, tipo_de_recurso_id) if tipo_de_recurso_id is not None else None
     )
@@ -248,6 +293,8 @@ def declarar_aporte_rota(
         forma=forma,
         origem_da_escolha=origem_da_escolha,
         aula=aula,
+        comunidade=comunidade,
+        trilha=trilha,
         tipo=tipo,
         missao=missao,
         comprovante_conteudo=conteudo,

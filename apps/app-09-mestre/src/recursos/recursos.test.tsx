@@ -80,7 +80,10 @@ const TIPO_OFICINA: TipoDeRecurso = {
 
 function necessidade(sobrescreve: Partial<NecessidadeDeRecurso> = {}): NecessidadeDeRecurso {
   return {
+    especie: "aula",
     aula_id: "aula-1",
+    trilha_id: null,
+    trilha_nome: null,
     tipo_de_recurso_id: TIPO_LANCHE.id,
     quantidade_faltante: "10",
     valor_em_moedas: "20.00",
@@ -331,5 +334,66 @@ describe("O Mestre assume a necessidade como absorção em um ato de confirmaç�
     const recusa = await screen.findByRole("alert");
     expect(recusa).toHaveTextContent(/não tem vigência que cubra a data/i);
     expect(recusa.textContent).not.toMatch(/erro_de_validacao/i);
+  });
+});
+
+function necessidadeDaRecompensa(): NecessidadeDeRecurso {
+  return necessidade({
+    especie: "recompensa_de_marco",
+    aula_id: null,
+    trilha_id: "trilha-1",
+    trilha_nome: "Robótica",
+    inicio_em: null,
+    fim_em: null,
+  });
+}
+
+describe("A App 09 apresenta a necessidade da recompensa com a trilha (RF-09-56, RF-07-54)", () => {
+  it("mostra a trilha no lugar do horário da aula", async () => {
+    configurarSessao();
+    configurarLeituraBase();
+    vi.spyOn(recursosApi, "listarMinhasNecessidades").mockResolvedValue([
+      necessidadeDaRecompensa(),
+    ]);
+
+    render(<TelaDeRecursos />);
+
+    const item = await screen.findByText("Lanche");
+    const linha = item.closest("li") as HTMLElement;
+    expect(within(linha).getByText(/trilha robótica/i)).toBeInTheDocument();
+    expect(within(linha).getByText("Ponto Central")).toBeInTheDocument();
+    expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+  });
+});
+
+describe("O Mestre absorve a necessidade da recompensa no mesmo ato (RF-09-57, RF-07-28)", () => {
+  it("envia a comunidade, a trilha, o tipo e o ponto de apoio, sem aula", async () => {
+    configurarSessao();
+    configurarLeituraBase();
+    vi.spyOn(recursosApi, "listarMinhasNecessidades")
+      .mockResolvedValueOnce([necessidadeDaRecompensa()])
+      .mockResolvedValueOnce([]);
+    vi.spyOn(recursosApi, "absorverNecessidade").mockResolvedValue(aporte({ aula_id: null }));
+
+    render(<TelaDeRecursos />);
+    const usuario = userEvent.setup();
+
+    await screen.findByText("Lanche");
+    await usuario.click(screen.getByRole("button", { name: /^absorver$/i }));
+    await usuario.type(screen.getByLabelText(/valor de origem/i), "20");
+    await usuario.click(screen.getByRole("button", { name: /confirmar absorção/i }));
+
+    await waitFor(() =>
+      expect(recursosApi.absorverNecessidade).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tipoDeRecursoId: TIPO_LANCHE.id,
+          pontoDeApoioId: PONTO_DE_APOIO.id,
+          comunidadeVirtualId: "comunidade-1",
+          trilhaId: "trilha-1",
+          aulaId: undefined,
+        }),
+        "token-do-mestre",
+      ),
+    );
   });
 });

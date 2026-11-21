@@ -10,10 +10,12 @@ from sqlalchemy.orm import Session
 from ..aulas.modelo import Aula
 from ..autenticacao import ContextoDaSessao, exigir_persona, persona_opcional
 from ..banco import obter_sessao
+from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import NaoEncontrado
 from ..personas.modelo import Papel, Persona
 from ..recursos.modelo import TipoDeRecurso
 from ..selos_do_apoiador.modelo import FamiliaDeSelo
+from ..trilhas.modelo import Trilha
 from .modelo import MissaoDoApoiador, NivelDeNecessidade, SituacaoDaMissao
 from .regra import (
     MissaoDerivada,
@@ -81,7 +83,11 @@ def _saida_admin(derivada: MissaoDerivada) -> MissaoDoApoiadorSaidaAdmin:
 class PublicarMissaoDoApoiadorEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    aula_id: uuid.UUID
+    # A aula, na necessidade da aula; a comunidade e a trilha, na da
+    # recompensa de marco (`RF-02-102`, `RF-07-54`).
+    aula_id: uuid.UUID | None = None
+    comunidade_virtual_id: uuid.UUID | None = None
+    trilha_id: uuid.UUID | None = None
     tipo_de_recurso_id: uuid.UUID
     nivel_de_necessidade: NivelDeNecessidade
     titulo: str = Field(min_length=1)
@@ -101,13 +107,21 @@ def publicar_missao_do_apoiador_rota(
     """Restrita ao Admin, a partir de uma necessidade de recurso em aberto
     (`RF-02-102`, `RF-02-103`, `RN-02-31`, `RN-14-31`)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
-    aula = sessao_bd.get(Aula, entrada.aula_id)
+    aula = sessao_bd.get(Aula, entrada.aula_id) if entrada.aula_id is not None else None
+    comunidade = (
+        sessao_bd.get(ComunidadeVirtual, entrada.comunidade_virtual_id)
+        if entrada.comunidade_virtual_id is not None
+        else None
+    )
+    trilha = sessao_bd.get(Trilha, entrada.trilha_id) if entrada.trilha_id is not None else None
     tipo = sessao_bd.get(TipoDeRecurso, entrada.tipo_de_recurso_id)
 
     missao = publicar_missao(
         sessao_bd,
         operador=operador,
         aula=aula,
+        comunidade=comunidade,
+        trilha=trilha,
         tipo=tipo,
         nivel_de_necessidade=entrada.nivel_de_necessidade,
         titulo=entrada.titulo,

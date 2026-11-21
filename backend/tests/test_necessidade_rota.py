@@ -83,6 +83,9 @@ def test_nenhuma_rota_devolve_reais_nem_pessoa(
         "ponto_de_apoio_nome",
         "inicio_em",
         "fim_em",
+        "especie",
+        "trilha_id",
+        "trilha_nome",
     }
 
     resposta_publica = cliente.get("/v1/vitrine/necessidades", headers={"X-Chave-Aplicacao": chave})

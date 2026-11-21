@@ -2,7 +2,9 @@ import { Aviso, EstadoDaLista } from "comum/react";
 import type { NecessidadePublica } from "../api/leituras";
 import { useNecessidades } from "./useNecessidades";
 
-// As necessidades de recurso em aberto das atividades sem lastro (`RF-03-47`).
+// As necessidades de recurso em aberto das atividades sem lastro e das
+// recompensas de marco — estas com a trilha no lugar da aula (`RF-03-47`,
+// `RF-07-54`).
 // Lista, e não tabela: sete campos por necessidade não cabem em tabela no
 // celular, e a vitrine é Mobile First (design — decisão 6).
 //
@@ -16,14 +18,17 @@ const FORMATADOR_DE_HORARIO = new Intl.DateTimeFormat("pt-BR", {
   timeStyle: "short",
 });
 
-function horario(valorComFuso: string): string {
+function horario(valorComFuso: string | null): string {
+  if (valorComFuso === null) return "";
   const data = new Date(valorComFuso);
   if (Number.isNaN(data.getTime())) return valorComFuso;
   return FORMATADOR_DE_HORARIO.format(data);
 }
 
 function chaveDaNecessidade(necessidade: NecessidadePublica): string {
-  return `${necessidade.aula_id}|${necessidade.tipo_de_recurso_id}`;
+  return necessidade.especie === "aula"
+    ? `${necessidade.aula_id}|${necessidade.tipo_de_recurso_id}`
+    : `${necessidade.comunidade_virtual_id}|${necessidade.trilha_id}|${necessidade.tipo_de_recurso_id}`;
 }
 
 export function ListaDeNecessidades() {
@@ -58,9 +63,13 @@ export function ListaDeNecessidades() {
           </p>
           <p>{necessidade.comunidade_virtual_nome}</p>
           <p>{necessidade.ponto_de_apoio_nome}</p>
-          <p>
-            Aula de {horario(necessidade.inicio_em)} a {horario(necessidade.fim_em)}
-          </p>
+          {necessidade.especie === "aula" ? (
+            <p>
+              Aula de {horario(necessidade.inicio_em)} a {horario(necessidade.fim_em)}
+            </p>
+          ) : (
+            <p>Recompensa de marco da trilha {necessidade.trilha_nome}</p>
+          )}
         </li>
       ))}
     </ul>

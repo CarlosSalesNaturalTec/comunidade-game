@@ -91,7 +91,8 @@ export function TelaDeRecursos() {
       definirUltimoAporte(aporte);
       definirAulasConfirmadas([]);
       definirMostrarFormularioDeAporte(false);
-      const antes = necessidades ?? [];
+      // Só a necessidade da aula confirma aula; a da recompensa não tem aula.
+      const antes = (necessidades ?? []).filter((item) => item.especie === "aula");
       // Releitura, nunca estado local: a aula que a falta fechava é
       // derivada relendo o núcleo, não marcada como confirmada por conta
       // própria (`RF-02-67`, design — decisão 6).
@@ -99,7 +100,9 @@ export function TelaDeRecursos() {
       if (!depois || !sessao) return;
       definirNecessidades(depois);
 
-      const idsDepois = new Set(depois.map((item) => item.aula_id));
+      const idsDepois = new Set(
+        depois.filter((item) => item.especie === "aula").map((item) => item.aula_id),
+      );
       const resolvidas = antes.filter((item) => !idsDepois.has(item.aula_id));
       if (resolvidas.length === 0) return;
 

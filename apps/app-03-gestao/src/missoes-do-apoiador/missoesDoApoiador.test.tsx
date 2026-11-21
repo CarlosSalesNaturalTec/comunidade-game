@@ -36,6 +36,9 @@ const TIPO = {
 };
 
 const NECESSIDADE = {
+  especie: "aula" as const,
+  trilha_id: null,
+  trilha_nome: null,
   aula_id: "aula-1",
   tipo_de_recurso_id: TIPO.id,
   quantidade_faltante: "5",
@@ -95,6 +98,56 @@ afterEach(() => {
 });
 
 describe("publicação de missão", () => {
+  it("publica a partir da necessidade da recompensa, enviando comunidade e trilha (RF-02-102)", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    const publicarEspiado = vi
+      .spyOn(missoesApi, "publicarMissao")
+      .mockResolvedValue(MISSAO_ABERTA);
+    const daRecompensa = {
+      ...NECESSIDADE,
+      especie: "recompensa_de_marco" as const,
+      aula_id: null,
+      trilha_id: "trilha-1",
+      trilha_nome: "Robótica",
+      inicio_em: null,
+      fim_em: null,
+    };
+
+    render(
+      <PublicacaoDeMissao
+        necessidades={[daRecompensa]}
+        nomeDoTipoDeRecurso={() => TIPO.nome}
+        onPublicada={vi.fn()}
+      />,
+    );
+    const usuario = userEvent.setup();
+
+    const seletor = screen.getByLabelText(/necessidade de origem/i) as HTMLSelectElement;
+    expect(seletor.options[1]?.textContent).toMatch(/trilha robótica/i);
+    await usuario.selectOptions(
+      seletor,
+      `${daRecompensa.comunidade_virtual_id}::trilha-1::${daRecompensa.tipo_de_recurso_id}`,
+    );
+    await usuario.type(screen.getByLabelText(/^título$/i), "Kits da turma");
+    await usuario.type(screen.getByLabelText(/o que se pede/i), "Kits em MDF");
+    await usuario.type(screen.getByLabelText(/valor da missão/i), "100");
+    await usuario.type(screen.getByLabelText(/prazo/i), "2026-12-01");
+    await usuario.type(screen.getByLabelText(/selo que rende/i), "Kit garantido");
+
+    await usuario.click(screen.getByRole("button", { name: /publicar missão/i }));
+
+    await waitFor(() => expect(publicarEspiado).toHaveBeenCalledTimes(1));
+    expect(publicarEspiado).toHaveBeenCalledWith(
+      expect.objectContaining({
+        aulaId: undefined,
+        comunidadeVirtualId: daRecompensa.comunidade_virtual_id,
+        trilhaId: "trilha-1",
+        tipoDeRecursoId: daRecompensa.tipo_de_recurso_id,
+      }),
+      SESSAO_DE_ADMIN.token,
+    );
+  });
+
   it("publica a partir de uma necessidade em aberto", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
     const publicarEspiado = vi

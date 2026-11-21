@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..aulas.modelo import Aula, RecursoDeclaradoDaAula
+from ..aulas.regra import aula_de_referencia_da_comunidade
+from ..comunidades.modelo import ComunidadeVirtual
 from ..erros import (
     DeclaracaoDeAporteJaResolvida,
     ErroDeValidacao,
@@ -19,10 +21,12 @@ from ..missoes_do_apoiador.modelo import MissaoDoApoiador, SituacaoDaMissao
 from ..missoes_do_apoiador.regra import concluir_se_fechou
 from ..personas.modelo import Papel, Persona
 from ..pontos_de_apoio.modelo import PontoDeApoio
+from ..recompensas_de_marco.modelo import RecompensaDeMarco
 from ..recursos.modelo import NaturezaDoRecurso, TipoDeRecurso
 from ..recursos.regra import consultar_valor_de_referencia, exigir_tipo_de_recurso_ativo
 from ..reservas.regra import confirmar_aulas_pendentes
 from ..tempo import agora
+from ..trilhas.modelo import Trilha
 from .modelo import (
     Aporte,
     AporteDeclarado,
@@ -90,6 +94,56 @@ def _processar_comprovante(
     return referencia, nome_original, tipo_mime, len(conteudo)
 
 
+def _validar_necessidade_da_recompensa(
+    sessao: Session,
+    *,
+    forma: FormaDeAporte,
+    aula: Aula | None,
+    comunidade: ComunidadeVirtual | None,
+    trilha: Trilha | None,
+    tipo: TipoDeRecurso,
+    ponto_de_apoio: PontoDeApoio,
+) -> None:
+    """A absorção que atende a necessidade da recompensa de marco declara
+    comunidade e trilha, nunca junto da aula; o ponto de apoio é o da aula
+    imediatamente anterior da comunidade, e a trilha declara recompensa
+    daquele tipo (`RF-07-28`, `RF-07-54`, `RF-09-57`, change
+    `necessidade-da-recompensa-de-marco`, design — decisão 6)."""
+    if forma != FormaDeAporte.absorcao:
+        raise ErroDeValidacao(
+            mensagem="Só o aporte por absorção declara a comunidade e a trilha que atende.",
+            campo="trilha_id",
+        )
+    if aula is not None:
+        raise ErroDeValidacao(
+            mensagem="A absorção declara a aula ou a comunidade e a trilha, nunca as duas.",
+            campo="aula_id",
+        )
+    if comunidade is None or trilha is None:
+        raise ErroDeValidacao(
+            mensagem="A necessidade da recompensa exige a comunidade e a trilha.",
+            campo="trilha_id" if trilha is None else "comunidade_virtual_id",
+        )
+    recompensa = (
+        sessao.query(RecompensaDeMarco.id)
+        .filter_by(trilha_id=trilha.id, tipo_de_recurso_id=tipo.id)
+        .first()
+    )
+    if recompensa is None:
+        raise ErroDeValidacao(
+            mensagem="A trilha declarada não tem recompensa de marco deste tipo de recurso.",
+            campo="trilha_id",
+        )
+    referencia = aula_de_referencia_da_comunidade(sessao, comunidade_id=comunidade.id)
+    if referencia is None or referencia.ponto_de_apoio_id != ponto_de_apoio.id:
+        raise ErroDeValidacao(
+            mensagem=(
+                "O ponto de apoio não confere com o da aula imediatamente anterior da comunidade."
+            ),
+            campo="ponto_de_apoio_id",
+        )
+
+
 def _registrar_aporte_base(
     sessao: Session,
     *,
@@ -106,6 +160,8 @@ def _registrar_aporte_base(
     admin_homologador_id: uuid.UUID | None,
     destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
     aula: Aula | None = None,
+    comunidade: ComunidadeVirtual | None = None,
+    trilha: Trilha | None = None,
     solicitacao_de_participacao_id: uuid.UUID | None = None,
     valor_de_origem: Decimal | None = None,
     periodo_apurado: date | None = None,
@@ -129,6 +185,16 @@ def _registrar_aporte_base(
     if forma == FormaDeAporte.absorcao and destinacao == DestinacaoDoAporte.ressarcimento:
         raise ErroDeValidacao(
             mensagem="Aporte por absorção não se destina a ressarcimento.", campo="destinacao"
+        )
+    if comunidade is not None or trilha is not None:
+        _validar_necessidade_da_recompensa(
+            sessao,
+            forma=forma,
+            aula=aula,
+            comunidade=comunidade,
+            trilha=trilha,
+            tipo=tipo,
+            ponto_de_apoio=ponto_de_apoio,
         )
     if aula is not None:
         if forma != FormaDeAporte.absorcao:
@@ -202,6 +268,8 @@ def _registrar_aporte_base(
         admin_homologador_id=admin_homologador_id,
         destinacao=destinacao,
         aula_id=aula.id if aula is not None else None,
+        comunidade_virtual_id=comunidade.id if comunidade is not None else None,
+        trilha_id=trilha.id if trilha is not None else None,
         lancamento_id=lancamento.id,
         data_do_aporte=data_do_aporte,
         autor_id=operador.id,
@@ -334,6 +402,8 @@ def registrar_aporte_por_absorcao(
     ponto_de_apoio: PontoDeApoio | None,
     data_do_aporte: date | None,
     aula: Aula | None = None,
+    comunidade: ComunidadeVirtual | None = None,
+    trilha: Trilha | None = None,
     destinacao: DestinacaoDoAporte = DestinacaoDoAporte.lastro,
     valor_de_origem: Decimal | None = None,
     periodo_apurado: date | None = None,
@@ -351,12 +421,14 @@ def registrar_aporte_por_absorcao(
     exigido nas demais naturezas — houve desembolso — e fica vazio no
     serviço, cujo valor é o em moedas que a tabela já fornece (`RN-07-24`).
     `aula` é a necessidade publicada que a absorção assume, do PRD-07 §8
-    (`RF-07-28`)."""
+    (`RF-07-28`); na necessidade da recompensa de marco, `comunidade` e
+    `trilha` tomam o lugar dela (`RF-07-54`)."""
     if operador.papel not in (Papel.mestre, Papel.admin):
         raise PermissaoNegada(mensagem="Só Mestre ou Admin registram aporte por absorção.")
-    # Sem aula, o tipo é escolha nova; com aula, segue a necessidade já
-    # publicada e é aceito mesmo desativado (`RF-07-52`, design — decisão 6).
-    if aula is None:
+    # Sem necessidade declarada, o tipo é escolha nova; com aula ou trilha,
+    # segue a necessidade já publicada e é aceito mesmo desativado
+    # (`RF-07-52`, design — decisão 6).
+    if aula is None and trilha is None:
         exigir_tipo_de_recurso_ativo(tipo)
 
     eh_servico = tipo is not None and tipo.natureza == NaturezaDoRecurso.servico
@@ -391,6 +463,8 @@ def registrar_aporte_por_absorcao(
         admin_homologador_id=None,
         destinacao=destinacao,
         aula=aula,
+        comunidade=comunidade,
+        trilha=trilha,
         valor_de_origem=valor_de_origem,
         periodo_apurado=periodo_apurado,
         comprovante_conteudo=comprovante_conteudo,
@@ -448,6 +522,8 @@ def declarar_aporte(
     forma: FormaDeAporte | None,
     origem_da_escolha: OrigemDaEscolhaDoAporte | None,
     aula: Aula | None = None,
+    comunidade: ComunidadeVirtual | None = None,
+    trilha: Trilha | None = None,
     tipo: TipoDeRecurso | None = None,
     missao: MissaoDoApoiador | None = None,
     comprovante_conteudo: bytes | None = None,
@@ -480,10 +556,24 @@ def declarar_aporte(
         raise ErroDeValidacao(
             mensagem="Declaração exige a origem da escolha.", campo="origem_da_escolha"
         )
-    if origem_da_escolha == OrigemDaEscolhaDoAporte.necessidade and (aula is None or tipo is None):
+    if origem_da_escolha == OrigemDaEscolhaDoAporte.necessidade:
+        # A aula, na necessidade da aula; a comunidade e a trilha, na da
+        # recompensa de marco — uma das duas, nunca as duas (`RF-14-25`,
+        # `RF-07-54`).
+        pela_aula = aula is not None
+        pela_trilha = comunidade is not None and trilha is not None
+        if tipo is None or pela_aula == pela_trilha:
+            raise ErroDeValidacao(
+                mensagem=(
+                    "Declaração por necessidade exige o tipo de recurso e a aula, ou a "
+                    "comunidade e a trilha, escolhidas."
+                ),
+                campo="aula_id",
+            )
+    elif comunidade is not None or trilha is not None:
         raise ErroDeValidacao(
-            mensagem="Declaração por necessidade exige a aula e o tipo de recurso escolhidos.",
-            campo="aula_id",
+            mensagem="Só a declaração por necessidade aponta comunidade e trilha.",
+            campo="trilha_id",
         )
     if origem_da_escolha == OrigemDaEscolhaDoAporte.missao:
         _validar_missao_para_declaracao(sessao, missao)
@@ -500,6 +590,8 @@ def declarar_aporte(
         valor_declarado=valor_declarado,
         origem_da_escolha=origem_da_escolha,
         aula_id=aula.id if aula is not None else None,
+        comunidade_virtual_id=comunidade.id if comunidade is not None else None,
+        trilha_id=trilha.id if trilha is not None else None,
         tipo_de_recurso_id=tipo.id if tipo is not None else None,
         missao_do_apoiador_id=missao.id if missao is not None else None,
         comprovante_referencia=referencia,

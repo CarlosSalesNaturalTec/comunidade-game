@@ -12,6 +12,7 @@ from ..personas.modelo import Persona
 from ..reservas.regra import varrer_aulas_vencidas
 from ..tempo import DataHoraComFuso
 from .regra import (
+    EspecieDaNecessidade,
     NecessidadeDeRecurso,
     consultar_necessidades_do_mestre,
     consultar_necessidades_publicas,
@@ -21,7 +22,13 @@ roteador = APIRouter()
 
 
 class NecessidadeDeRecursoSaida(BaseModel):
-    aula_id: uuid.UUID
+    """As duas espécies na mesma saída: a da aula traz aula e horário; a da
+    recompensa de marco, a trilha (`RF-07-27`, `RF-07-54`, `RF-03-47`)."""
+
+    especie: EspecieDaNecessidade
+    aula_id: uuid.UUID | None
+    trilha_id: uuid.UUID | None
+    trilha_nome: str | None
     tipo_de_recurso_id: uuid.UUID
     tipo_de_recurso_nome: str
     quantidade_faltante: Decimal
@@ -30,13 +37,16 @@ class NecessidadeDeRecursoSaida(BaseModel):
     comunidade_virtual_nome: str
     ponto_de_apoio_id: uuid.UUID
     ponto_de_apoio_nome: str
-    inicio_em: DataHoraComFuso
-    fim_em: DataHoraComFuso
+    inicio_em: DataHoraComFuso | None
+    fim_em: DataHoraComFuso | None
 
 
 def _saida(necessidade: NecessidadeDeRecurso) -> NecessidadeDeRecursoSaida:
     return NecessidadeDeRecursoSaida(
+        especie=necessidade.especie,
         aula_id=necessidade.aula_id,
+        trilha_id=necessidade.trilha_id,
+        trilha_nome=necessidade.trilha_nome,
         tipo_de_recurso_id=necessidade.tipo_de_recurso_id,
         tipo_de_recurso_nome=necessidade.tipo_de_recurso_nome,
         quantidade_faltante=necessidade.quantidade_faltante,

@@ -2,7 +2,7 @@ import { ErroDaApi, ehRecusaDeSessao } from "comum/api";
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, Campo } from "comum/react";
 import { type FormEvent, useId, useState } from "react";
-import type { NecessidadeDeRecurso } from "../recursos/api";
+import { chaveDaNecessidade, type NecessidadeDeRecurso } from "../recursos/api";
 import {
   type FamiliaDeSelo,
   type MissaoDoApoiador,
@@ -70,7 +70,7 @@ export function PublicacaoDeMissao({ necessidades, nomeDoTipoDeRecurso, onPublic
     definirErroDeRecusa(null);
 
     const necessidade = necessidades.find(
-      (item) => `${item.aula_id}::${item.tipo_de_recurso_id}` === necessidadeChave,
+      (item) => chaveDaNecessidade(item) === necessidadeChave,
     );
     if (!necessidade) {
       definirErroDeCampo({ campo: "aula_id", mensagem: "Escolha a necessidade de origem." });
@@ -105,7 +105,12 @@ export function PublicacaoDeMissao({ necessidades, nomeDoTipoDeRecurso, onPublic
     try {
       const missao = await publicarMissao(
         {
-          aulaId: necessidade.aula_id,
+          aulaId: necessidade.aula_id ?? undefined,
+          comunidadeVirtualId:
+            necessidade.especie === "recompensa_de_marco"
+              ? necessidade.comunidade_virtual_id
+              : undefined,
+          trilhaId: necessidade.trilha_id ?? undefined,
           tipoDeRecursoId: necessidade.tipo_de_recurso_id,
           nivelDeNecessidade,
           titulo,
@@ -152,11 +157,14 @@ export function PublicacaoDeMissao({ necessidades, nomeDoTipoDeRecurso, onPublic
           <option value="">Escolha a necessidade</option>
           {necessidades.map((necessidade) => (
             <option
-              key={`${necessidade.aula_id}::${necessidade.tipo_de_recurso_id}`}
-              value={`${necessidade.aula_id}::${necessidade.tipo_de_recurso_id}`}
+              key={chaveDaNecessidade(necessidade)}
+              value={chaveDaNecessidade(necessidade)}
             >
-              {nomeDoTipoDeRecurso(necessidade.tipo_de_recurso_id)} — falta{" "}
-              {necessidade.quantidade_faltante}
+              {nomeDoTipoDeRecurso(necessidade.tipo_de_recurso_id)}
+              {necessidade.especie === "recompensa_de_marco"
+                ? ` — trilha ${necessidade.trilha_nome}`
+                : ""}{" "}
+              — falta {necessidade.quantidade_faltante}
             </option>
           ))}
         </select>

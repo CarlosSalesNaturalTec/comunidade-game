@@ -1810,3 +1810,16 @@ PRD-03 §5.5, decisões do fundador de 2026-10-11 e 2026-11-10)
 - **WHEN** o visitante aciona a chamada "Quero apoiar", em qualquer tela que a traga
 - **THEN** a porta abre no mesmo endereço público de antes, e nenhum endereço anterior fica
   sem resposta
+
+### Requirement: A vitrine publica a necessidade da recompensa com a trilha
+
+A App 06 SHALL publicar também a necessidade da **recompensa de marco**, com tipo de recurso,
+quantidade que falta, valor em moedas, comunidade, ponto de apoio e a **trilha** no lugar da
+data e do horário da aula, sem reais e sem pessoa, como a da aula. (`RF-03-47`, `RF-07-54`,
+`RN-03-18`)
+
+#### Scenario: A necessidade da recompensa sai com a trilha
+
+- **WHEN** a vitrine publica uma necessidade de recompensa
+- **THEN** a linha traz tipo de recurso, quantidade que falta, valor em moedas, comunidade,
+  ponto de apoio e a trilha, sem data nem horário de aula

@@ -8,17 +8,31 @@ import {
   type PerfilDeApoiador,
 } from "../compartilhado/escada";
 import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
-import { declararAporte, listarNecessidadesEmAberto, type NecessidadeDeRecurso } from "./api";
+import {
+  chaveDaNecessidade,
+  declararAporte,
+  listarNecessidadesEmAberto,
+  type NecessidadeDeRecurso,
+} from "./api";
 
 const FORMATOS_ACEITOS = "PDF, JPG ou PNG";
 
 type FormaDeAporte = "necessidade" | "sugerido" | "livre" | "sem_dinheiro";
 
-function formatarDataDaAula(isoDeInicio: string): string {
+function formatarDataDaAula(isoDeInicio: string | null): string {
+  if (isoDeInicio === null) return "";
   const data = new Date(isoDeInicio);
   return Number.isNaN(data.getTime())
     ? isoDeInicio
     : data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+// Como a necessidade aparece no seletor: pela data da aula, ou pela trilha na
+// da recompensa de marco (`RF-14-25`, `RF-07-54`).
+function descreverNecessidade(necessidade: NecessidadeDeRecurso): string {
+  return necessidade.especie === "aula"
+    ? `aula de ${formatarDataDaAula(necessidade.inicio_em)}`
+    : `recompensa de marco da trilha ${necessidade.trilha_nome}`;
 }
 
 // A declaração do aporte pelo Apoiador em sessão: os três caminhos —
@@ -49,7 +63,7 @@ export function TelaDeDeclaracaoDeAporte() {
 
   const escada = ESCADA_POR_PERFIL[perfil];
   const necessidadeSelecionada = necessidades.find(
-    (n) => n.aula_id === necessidadeSelecionadaId,
+    (n) => chaveDaNecessidade(n) === necessidadeSelecionadaId,
   );
   const valorLivreEmReais = Number(valorLivreTexto.replace(",", "."));
   const valorLivreValido = valorLivreTexto.trim() !== "" && !Number.isNaN(valorLivreEmReais);
@@ -71,6 +85,8 @@ export function TelaDeDeclaracaoDeAporte() {
 
     let valorDeclarado: number;
     let aulaId: string | undefined;
+    let comunidadeVirtualId: string | undefined;
+    let trilhaId: string | undefined;
     let tipoDeRecursoId: string | undefined;
     if (formaDeAporte === "necessidade") {
       if (!necessidadeSelecionada) {
@@ -80,7 +96,11 @@ export function TelaDeDeclaracaoDeAporte() {
       valorDeclarado = Number(
         necessidadeSelecionada.valor_em_moedas ?? necessidadeSelecionada.quantidade_faltante,
       );
-      aulaId = necessidadeSelecionada.aula_id;
+      aulaId = necessidadeSelecionada.aula_id ?? undefined;
+      if (necessidadeSelecionada.especie === "recompensa_de_marco") {
+        comunidadeVirtualId = necessidadeSelecionada.comunidade_virtual_id;
+        trilhaId = necessidadeSelecionada.trilha_id ?? undefined;
+      }
       tipoDeRecursoId = necessidadeSelecionada.tipo_de_recurso_id;
     } else if (formaDeAporte === "sugerido") {
       valorDeclarado = escada[degrauSelecionado];
@@ -104,6 +124,8 @@ export function TelaDeDeclaracaoDeAporte() {
                 ? "valor_sugerido"
                 : "valor_livre",
           aula_id: aulaId,
+          comunidade_virtual_id: comunidadeVirtualId,
+          trilha_id: trilhaId,
           tipo_de_recurso_id: tipoDeRecursoId,
           comprovante,
         },
@@ -211,11 +233,10 @@ export function TelaDeDeclaracaoDeAporte() {
               <option value="">Selecione…</option>
               {necessidades.map((necessidade) => (
                 <option
-                  key={`${necessidade.aula_id}-${necessidade.tipo_de_recurso_id}`}
-                  value={necessidade.aula_id}
+                  key={chaveDaNecessidade(necessidade)}
+                  value={chaveDaNecessidade(necessidade)}
                 >
-                  {necessidade.tipo_de_recurso_nome} — aula de{" "}
-                  {formatarDataDaAula(necessidade.inicio_em)}
+                  {necessidade.tipo_de_recurso_nome} — {descreverNecessidade(necessidade)}
                   {necessidade.valor_em_moedas
                     ? ` — ${necessidade.valor_em_moedas} moedas`
                     : ""}

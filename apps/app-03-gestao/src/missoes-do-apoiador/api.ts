@@ -19,8 +19,12 @@ export interface MissaoDoApoiador {
   vencida: boolean;
 }
 
+// A aula, na necessidade da aula; a comunidade e a trilha, na da recompensa
+// de marco (`RF-02-102`, `RF-07-54`).
 export interface PublicarMissaoEntrada {
-  aulaId: string;
+  aulaId?: string;
+  comunidadeVirtualId?: string;
+  trilhaId?: string;
   tipoDeRecursoId: string;
   nivelDeNecessidade: NivelDeNecessidade;
   titulo: string;
@@ -41,6 +45,8 @@ export function publicarMissao(
     metodo: "POST",
     corpo: {
       aula_id: entrada.aulaId,
+      comunidade_virtual_id: entrada.comunidadeVirtualId,
+      trilha_id: entrada.trilhaId,
       tipo_de_recurso_id: entrada.tipoDeRecursoId,
       nivel_de_necessidade: entrada.nivelDeNecessidade,
       titulo: entrada.titulo,

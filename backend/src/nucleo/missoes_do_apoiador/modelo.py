@@ -3,7 +3,7 @@ import uuid
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import Date, Enum, ForeignKey, Numeric, String, Uuid
+from sqlalchemy import CheckConstraint, Date, Enum, ForeignKey, Numeric, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
@@ -38,7 +38,11 @@ class MissaoDoApoiador(Base, ComAutoria):
     necessidade de origem, o mesmo par que `AporteDeclarado` já guarda, sem
     chave estrangeira para uma necessidade que não existe como registro —
     ela é derivada e pode deixar de estar entre as necessidades depois da
-    publicação, sem nada a corrigir (design — Decisions 1, 3).
+    publicação, sem nada a corrigir (design — Decisions 1, 3). Na
+    necessidade da recompensa de marco, aponta `comunidade_virtual_id` +
+    `trilha_id` + `tipo_de_recurso_id` no lugar da aula — uma das duas
+    chaves, garantia do `CheckConstraint` (`RF-02-102`, `RF-07-54`, change
+    `necessidade-da-recompensa-de-marco`, design — decisões 3, 5).
 
     `quantidade` é sempre em moedas: o quanto falta é derivado dos aportes
     homologados que apontam esta missão, nunca gravado (`RF-14-61`, design —
@@ -48,7 +52,13 @@ class MissaoDoApoiador(Base, ComAutoria):
     __tablename__ = "missao_do_apoiador"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    aula_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=False)
+    aula_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=True)
+    comunidade_virtual_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("comunidade_virtual.id"), nullable=True
+    )
+    trilha_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("trilha.id"), nullable=True
+    )
     tipo_de_recurso_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("tipo_de_recurso.id"), nullable=False
     )
@@ -67,4 +77,12 @@ class MissaoDoApoiador(Base, ComAutoria):
         Enum(SituacaoDaMissao, native_enum=False, length=16),
         nullable=False,
         default=SituacaoDaMissao.aberta,
+    )
+
+    __table_args__ = (
+        CheckConstraint(
+            "(aula_id IS NOT NULL AND comunidade_virtual_id IS NULL AND trilha_id IS NULL) OR "
+            "(aula_id IS NULL AND comunidade_virtual_id IS NOT NULL AND trilha_id IS NOT NULL)",
+            name="ck_missao_do_apoiador_aula_ou_trilha",
+        ),
     )

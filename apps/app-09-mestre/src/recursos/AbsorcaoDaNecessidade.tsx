@@ -27,7 +27,7 @@ function hoje(): string {
 }
 
 // O ato de confirmação a partir da própria necessidade — tipo, ponto de
-// apoio e aula herdados, sem formulário livre (`RF-09-57`, `RF-09-58`,
+// apoio e aula (ou comunidade e trilha, na recompensa de marco) herdados, sem formulário livre (`RF-09-57`, `RF-09-58`,
 // `RN-09-13`, design — decisão 3). Nenhum campo de provedor, homologação ou
 // destinação: a absorção não os escolhe.
 export function AbsorcaoDaNecessidade({
@@ -95,7 +95,12 @@ export function AbsorcaoDaNecessidade({
           quantidade,
           pontoDeApoioId: necessidade.ponto_de_apoio_id,
           dataDoAporte: hoje(),
-          aulaId: necessidade.aula_id,
+          aulaId: necessidade.aula_id ?? undefined,
+          comunidadeVirtualId:
+            necessidade.especie === "recompensa_de_marco"
+              ? necessidade.comunidade_virtual_id
+              : undefined,
+          trilhaId: necessidade.trilha_id ?? undefined,
           valorDeOrigem: exigeValorDeOrigem ? valorDeOrigem : undefined,
           comprovante,
         },
