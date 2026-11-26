@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ErroDaApi } from "comum/api";
 import type { SessaoAberta } from "comum/autenticacao";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as responsaveisApi from "../responsaveis/api";
 import type {
   AtividadeDoMestre,
   AulaDaTurma,
@@ -99,6 +100,24 @@ function turmas(sobrescreve: Partial<MinhasTurmas> = {}): MinhasTurmas {
 afterEach(() => {
   vi.restoreAllMocks();
 });
+
+// Os Guerreiros e Guerreiras das comunidades do Mestre, em duas páginas, para
+// a tela da aula converter o nick digitado no id (`RF-09-45`, `RF-09-46`).
+function configurarGuerreiros() {
+  return vi
+    .spyOn(responsaveisApi, "listarGuerreirosVinculaveis")
+    .mockImplementation(async (_token, cursor) =>
+      cursor === "pagina-2"
+        ? {
+            itens: [{ id: "guerreiro-2", nick: "Dandara", avatar: "a2" }],
+            proximo_cursor: null,
+          }
+        : {
+            itens: [{ id: "guerreiro-1", nick: "Zeferina", avatar: "a1" }],
+            proximo_cursor: "pagina-2",
+          },
+    );
+}
 
 describe("lista das turmas do Mestre (RF-09-42, RF-09-73)", () => {
   it("lista as aulas e as atividades on-line, sem seção de presenciais", async () => {
@@ -300,6 +319,7 @@ describe("lançamento da atividade (RF-09-43, RF-09-44, RF-09-74)", () => {
 describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
   async function abrirTelaDaAula() {
     configurarSessao();
+    configurarGuerreiros();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(turmas());
     vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([]);
 
@@ -332,14 +352,15 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
       momento_do_fato: "2026-08-01T10:00:00-03:00",
     });
 
-    const identificadores = screen.getAllByLabelText(/identificador do guerreiro/i);
-    await usuario.type(identificadores[0], "guerreiro-1");
+    const nicks = screen.getAllByLabelText(/nick do guerreiro/i);
+    await usuario.type(nicks[0], "  dandara ");
     const campoDeData = screen.getByLabelText(/momento em que esteve presente/i);
     await usuario.type(campoDeData, "2026-08-01T10:00");
 
     await usuario.click(screen.getByRole("button", { name: /^confirmar presença$/i }));
 
     await waitFor(() => expect(confirmarEspiado).toHaveBeenCalled());
+    expect(confirmarEspiado.mock.calls[0][1]).toBe("guerreiro-2");
     expect(await screen.findByText(/presença confirmada/i)).toBeInTheDocument();
   });
 
@@ -347,6 +368,8 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
     const usuario = await abrirTelaDaAula();
     const lancarEspiado = vi.spyOn(turmasApi, "lancarOcorrenciaDeConduta");
 
+    const nicks = screen.getAllByLabelText(/nick do guerreiro/i);
+    await usuario.type(nicks[nicks.length - 1], "Zeferina");
     await usuario.click(screen.getByRole("button", { name: /^lançar ocorrência$/i }));
 
     expect(await screen.findByText(/motivo é obrigatório/i)).toBeInTheDocument();
@@ -369,8 +392,8 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
       .mockResolvedValue(ocorrencia);
 
     await usuario.selectOptions(screen.getByLabelText(/^atividade$/i), "atividade-1");
-    const identificadores = screen.getAllByLabelText(/identificador do guerreiro/i);
-    await usuario.type(identificadores[identificadores.length - 1], "guerreiro-1");
+    const identificadores = screen.getAllByLabelText(/nick do guerreiro/i);
+    await usuario.type(identificadores[identificadores.length - 1], "ZEFERINA");
     await usuario.type(screen.getByLabelText(/^motivo$/i), "Desrespeitou um colega.");
 
     await usuario.click(screen.getByRole("button", { name: /^lançar ocorrência$/i }));
@@ -382,6 +405,37 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
     expect(await screen.findByText(/ocorrência registrada/i)).toBeInTheDocument();
   });
 
+  it("o Guerreiro(a) é informado pelo nick, sem campo de identificador", async () => {
+    await abrirTelaDaAula();
+
+    expect(screen.getAllByLabelText(/nick do guerreiro/i)).toHaveLength(2);
+    expect(screen.queryByLabelText(/identificador do guerreiro/i)).toBeNull();
+  });
+
+  it("nick não encontrado é recusado na tela, sem chamar o núcleo", async () => {
+    const usuario = await abrirTelaDaAula();
+    const confirmarEspiado = vi.spyOn(turmasApi, "confirmarPresenca");
+
+    await usuario.type(screen.getAllByLabelText(/nick do guerreiro/i)[0], "Joaninha");
+    await usuario.click(screen.getByRole("button", { name: /^confirmar presença$/i }));
+
+    expect(await screen.findByText(/não encontramos o nick "joaninha"/i)).toBeInTheDocument();
+    expect(confirmarEspiado).not.toHaveBeenCalled();
+  });
+
+  it("enviar sem o nick é impedido nos dois formulários", async () => {
+    const usuario = await abrirTelaDaAula();
+    const confirmarEspiado = vi.spyOn(turmasApi, "confirmarPresenca");
+    const lancarEspiado = vi.spyOn(turmasApi, "lancarOcorrenciaDeConduta");
+
+    await usuario.click(screen.getByRole("button", { name: /^confirmar presença$/i }));
+    await usuario.click(screen.getByRole("button", { name: /^lançar ocorrência$/i }));
+
+    expect(await screen.findAllByText(/informe o nick do guerreiro/i)).toHaveLength(2);
+    expect(confirmarEspiado).not.toHaveBeenCalled();
+    expect(lancarEspiado).not.toHaveBeenCalled();
+  });
+
   it("o teto da aula é explicado em linguagem simples (RN-09-16)", async () => {
     const usuario = await abrirTelaDaAula();
     vi.spyOn(turmasApi, "lancarOcorrenciaDeConduta").mockRejectedValue(
@@ -391,8 +445,8 @@ describe("presença e ocorrência de conduta (RF-09-45, RF-09-46)", () => {
       }),
     );
 
-    const identificadores = screen.getAllByLabelText(/identificador do guerreiro/i);
-    await usuario.type(identificadores[identificadores.length - 1], "guerreiro-1");
+    const identificadores = screen.getAllByLabelText(/nick do guerreiro/i);
+    await usuario.type(identificadores[identificadores.length - 1], "ZEFERINA");
     await usuario.type(screen.getByLabelText(/^motivo$/i), "Desrespeitou um colega.");
     await usuario.click(screen.getByRole("button", { name: /^lançar ocorrência$/i }));
 
@@ -415,6 +469,7 @@ describe("presentes nesta aula (RF-09-145, RN-09-18)", () => {
 
   async function abrir() {
     configurarSessao();
+    configurarGuerreiros();
     vi.spyOn(turmasApi, "listarMinhasTurmas").mockResolvedValue(turmas());
     render(<TelaDeMinhasTurmas />);
     const usuario = userEvent.setup();
@@ -480,8 +535,8 @@ describe("presentes nesta aula (RF-09-145, RN-09-18)", () => {
     const usuario = await abrir();
     await screen.findByText(/nenhuma presença registrada nesta aula/i);
 
-    const identificadores = screen.getAllByLabelText(/identificador do guerreiro/i);
-    await usuario.type(identificadores[0], "guerreiro-1");
+    const identificadores = screen.getAllByLabelText(/nick do guerreiro/i);
+    await usuario.type(identificadores[0], "Zeferina");
     await usuario.type(
       screen.getByLabelText(/momento em que esteve presente/i),
       "2026-08-01T10:05",
