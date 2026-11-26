@@ -526,6 +526,12 @@ suprindo o que não foi capturado — a presença confirmada SHALL passar a apar
 presentes —, e **lançar a ocorrência de conduta** escolhendo a atividade e escrevendo o motivo
 em texto livre.
 
+Nos dois formulários, o Mestre SHALL informar o Guerreiro(a) **digitando o nick**, sem
+distinção de maiúsculas e minúsculas, entre os Guerreiros e Guerreiras ativos das comunidades
+dele; NEVER SHALL ser pedido identificador técnico. Nick vazio ou não encontrado SHALL ser
+recusado na tela, em linguagem simples, sem envio ao núcleo (`RF-09-45`, `RF-09-46`,
+`RN-09-18`).
+
 A tela da ocorrência NEVER SHALL pedir o **valor** do débito — ele é fixo na tabela do
 documento 11 §5 — nem item de catálogo do Código de Conduta. Ela SHALL deixar claro que o
 lançamento vale **no ato**, sem revisão de outro Admin (`RN-09-09`), e SHALL apresentar em
@@ -550,8 +556,25 @@ linguagem simples a recusa por teto da aula alcançado. (`RF-09-45`, `RF-09-46`,
 
 #### Scenario: O Mestre confirma a presença que faltou
 
-- **WHEN** o Mestre confirma a presença de um Guerreiro(a) da turma dele
+- **WHEN** o Mestre digita o nick de um Guerreiro(a) da turma dele e confirma a presença
 - **THEN** a aplicação registra a presença por confirmação e a mostra na lista do encontro
+
+#### Scenario: O Guerreiro(a) é informado pelo nick digitado
+
+- **WHEN** o Mestre digita o nick do Guerreiro(a), com quaisquer maiúsculas, na presença ou na
+  ocorrência
+- **THEN** a aplicação envia o registro daquele Guerreiro(a), sem pedir identificador técnico
+
+#### Scenario: Nick não encontrado é recusado na tela
+
+- **WHEN** o Mestre digita um nick que não corresponde a nenhum Guerreiro(a) das comunidades
+  dele
+- **THEN** a aplicação diz que não encontrou esse nick e nada é enviado ao núcleo
+
+#### Scenario: Enviar sem o nick é impedido
+
+- **WHEN** o Mestre tenta confirmar a presença ou lançar a ocorrência sem digitar o nick
+- **THEN** a aplicação impede o envio e diz que é preciso informar o nick do Guerreiro(a)
 
 #### Scenario: O Mestre lança a ocorrência sem arbitrar valor
 

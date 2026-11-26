@@ -4,6 +4,7 @@ import { Avatar } from "comum/avatar";
 import { Aviso, Botao, Campo, CampoDeDataHora, EstadoDaLista } from "comum/react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
+import { listarGuerreirosVinculaveis } from "../responsaveis/api";
 import type { AtividadeDoMestre, AulaDaTurma, PresencaDaAula } from "./api";
 import { confirmarPresenca, lancarOcorrenciaDeConduta, listarPresencasDaAula } from "./api";
 
@@ -13,6 +14,14 @@ const ROTULO_DO_MODO: Record<string, string> = {
 };
 
 const FORMATADOR_DA_HORA = new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" });
+
+// O nick é único sem distinção de maiúsculas no núcleo, então a forma
+// normalizada identifica um só Guerreiro(a).
+function normalizarNick(nick: string): string {
+  return nick.trim().toLocaleLowerCase("pt-BR");
+}
+
+type ResolucaoDoNick = { id: string } | { erro: string };
 
 interface Props {
   aula: AulaDaTurma;
@@ -58,6 +67,57 @@ export function TelaDaAula({
     carregarPresentes();
   }, [carregarPresentes]);
 
+  // Nick normalizado → id, dos Guerreiros e Guerreiras ativos das comunidades
+  // do Mestre: ele digita o nick, e só o id encontrado vai ao núcleo
+  // (`RF-09-45`, `RF-09-46`, `RN-09-18`). `null` enquanto carrega ou se falhou.
+  const [idsPorNick, definirIdsPorNick] = useState<Map<string, string> | null>(null);
+
+  useEffect(() => {
+    if (!sessao) return;
+    let cancelado = false;
+    (async () => {
+      const mapa = new Map<string, string>();
+      try {
+        let cursor: string | null = null;
+        do {
+          const pagina = await listarGuerreirosVinculaveis(sessao.token, cursor);
+          for (const guerreiro of pagina.itens) {
+            mapa.set(normalizarNick(guerreiro.nick), guerreiro.id);
+          }
+          cursor = pagina.proximo_cursor;
+        } while (cursor);
+        if (!cancelado) definirIdsPorNick(mapa);
+      } catch (erroCapturado) {
+        if (cancelado) return;
+        if (ehRecusaDeSessao(erroCapturado)) {
+          tratarRecusaDeSessao();
+          return;
+        }
+        definirIdsPorNick(null);
+      }
+    })();
+    return () => {
+      cancelado = true;
+    };
+  }, [sessao, tratarRecusaDeSessao]);
+
+  function resolverNick(nick: string): ResolucaoDoNick {
+    const normalizado = normalizarNick(nick);
+    if (!normalizado) return { erro: "Informe o nick do Guerreiro(a)." };
+    if (idsPorNick === null) {
+      return {
+        erro: "Não foi possível conferir o nick agora. Tente novamente em instantes.",
+      };
+    }
+    const id = idsPorNick.get(normalizado);
+    if (!id) {
+      return {
+        erro: `Não encontramos o nick "${nick.trim()}" nas suas comunidades. Confira a grafia.`,
+      };
+    }
+    return { id };
+  }
+
   const [guerreiroDaPresenca, definirGuerreiroDaPresenca] = useState("");
   const [momentoDaPresenca, definirMomentoDaPresenca] = useState("");
   const [erroDaPresenca, definirErroDaPresenca] = useState<string | null>(null);
@@ -76,11 +136,17 @@ export function TelaDaAula({
     evento.preventDefault();
     definirErroDaPresenca(null);
     definirPresencaConfirmada(false);
+
+    const resolucao = resolverNick(guerreiroDaPresenca);
+    if ("erro" in resolucao) {
+      definirErroDaPresenca(resolucao.erro);
+      return;
+    }
     if (!sessao) return;
 
     definirEnviandoPresenca(true);
     try {
-      await confirmarPresenca(aula.id, guerreiroDaPresenca, momentoDaPresenca, sessao.token);
+      await confirmarPresenca(aula.id, resolucao.id, momentoDaPresenca, sessao.token);
       definirPresencaConfirmada(true);
       definirGuerreiroDaPresenca("");
       definirMomentoDaPresenca("");
@@ -107,6 +173,11 @@ export function TelaDaAula({
     definirErroDaOcorrencia(null);
     definirOcorrenciaLancada(false);
 
+    const resolucao = resolverNick(guerreiroDaOcorrencia);
+    if ("erro" in resolucao) {
+      definirErroDaOcorrencia(resolucao.erro);
+      return;
+    }
     if (!motivo.trim()) {
       definirErroDaOcorrencia("O motivo é obrigatório.");
       return;
@@ -116,7 +187,7 @@ export function TelaDaAula({
     definirEnviandoOcorrencia(true);
     try {
       await lancarOcorrenciaDeConduta(
-        guerreiroDaOcorrencia,
+        resolucao.id,
         aula.id,
         atividadeDaOcorrencia,
         motivo,
@@ -208,7 +279,7 @@ export function TelaDaAula({
         {presencaConfirmada && <Aviso tipo="sucesso">Presença confirmada.</Aviso>}
         <form onSubmit={aoConfirmarPresenca} aria-label="Confirmar presença">
           <Campo
-            rotulo="Identificador do Guerreiro(a)"
+            rotulo="Nick do Guerreiro(a)"
             valor={guerreiroDaPresenca}
             aoAlterar={definirGuerreiroDaPresenca}
           />
@@ -249,7 +320,7 @@ export function TelaDaAula({
             </select>
           </div>
           <Campo
-            rotulo="Identificador do Guerreiro(a)"
+            rotulo="Nick do Guerreiro(a)"
             valor={guerreiroDaOcorrencia}
             aoAlterar={definirGuerreiroDaOcorrencia}
           />
