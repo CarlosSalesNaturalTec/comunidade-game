@@ -15,13 +15,14 @@ a presença que o App 01 não capturou não se confirma, e a ocorrência não se
 
 ## What Changes
 
-- O campo de texto "Identificador do Guerreiro(a)" sai dos dois formulários da tela da aula e
-  dá lugar a um **seletor por nick**, alimentado por `GET /v1/guerreiros/vinculaveis` — rota já
-  autorizada ao Mestre, que devolve só nick e avatar dos Guerreiros e Guerreiras ativos das
-  comunidades dele (`RF-09-62`, `RN-09-18`).
-- No formulário de presença, quem **já está na lista de presentes** desta aula não aparece no
-  seletor.
-- Enviar sem escolher o Guerreiro(a) é impedido na tela, com mensagem em linguagem simples.
+- O campo "Identificador do Guerreiro(a)" dos dois formulários da tela da aula passa a
+  **"Nick do Guerreiro(a)"**: o Mestre digita o nick, e a tela o converte no `id` antes de
+  enviar, consultando `GET /v1/guerreiros/vinculaveis` — rota já autorizada ao Mestre, que
+  devolve só nick e avatar dos Guerreiros e Guerreiras ativos das comunidades dele
+  (`RF-09-62`, `RN-09-18`). O nick é único sem distinção de maiúsculas, então a conversão não
+  é ambígua.
+- Nick vazio, ou que não corresponde a nenhum Guerreiro(a) das comunidades do Mestre, é
+  recusado na tela com mensagem em linguagem simples — nada vai ao núcleo.
 - Só a App 09: nenhuma rota, entidade ou migração nova no núcleo.
 
 ## Capabilities
@@ -33,8 +34,8 @@ Nenhuma.
 ### Modified Capabilities
 
 - `area-do-mestre`: o requisito "O Mestre confirma a presença e lança a ocorrência de
-  conduta" passa a dizer que o Guerreiro(a) é escolhido pelo nick, nunca digitado como
-  identificador.
+  conduta" passa a dizer que o Guerreiro(a) é informado pelo nick digitado, nunca pelo
+  identificador técnico.
 
 ## Impact
 

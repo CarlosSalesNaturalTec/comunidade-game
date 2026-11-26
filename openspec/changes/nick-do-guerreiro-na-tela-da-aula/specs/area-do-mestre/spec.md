@@ -16,11 +16,11 @@ suprindo o que não foi capturado — a presença confirmada SHALL passar a apar
 presentes —, e **lançar a ocorrência de conduta** escolhendo a atividade e escrevendo o motivo
 em texto livre.
 
-Nos dois formulários, o Guerreiro(a) SHALL ser **escolhido pelo nick** numa lista dos
-Guerreiros e Guerreiras ativos das comunidades do Mestre; NEVER SHALL ser pedido ao Mestre que
-digite identificador técnico. No formulário de presença, quem já consta da lista de presentes
-desta aula NEVER SHALL ser oferecido. Enviar sem escolher o Guerreiro(a) SHALL ser impedido
-com mensagem em linguagem simples (`RF-09-45`, `RF-09-46`, `RN-09-18`).
+Nos dois formulários, o Mestre SHALL informar o Guerreiro(a) **digitando o nick**, sem
+distinção de maiúsculas e minúsculas, entre os Guerreiros e Guerreiras ativos das comunidades
+dele; NEVER SHALL ser pedido identificador técnico. Nick vazio ou não encontrado SHALL ser
+recusado na tela, em linguagem simples, sem envio ao núcleo (`RF-09-45`, `RF-09-46`,
+`RN-09-18`).
 
 A tela da ocorrência NEVER SHALL pedir o **valor** do débito — ele é fixo na tabela do
 documento 11 §5 — nem item de catálogo do Código de Conduta. Ela SHALL deixar claro que o
@@ -46,25 +46,25 @@ linguagem simples a recusa por teto da aula alcançado. (`RF-09-45`, `RF-09-46`,
 
 #### Scenario: O Mestre confirma a presença que faltou
 
-- **WHEN** o Mestre escolhe pelo nick um Guerreiro(a) da turma dele e confirma a presença
+- **WHEN** o Mestre digita o nick de um Guerreiro(a) da turma dele e confirma a presença
 - **THEN** a aplicação registra a presença por confirmação e a mostra na lista do encontro
 
-#### Scenario: O Guerreiro(a) é escolhido pelo nick, nunca digitado
+#### Scenario: O Guerreiro(a) é informado pelo nick digitado
 
-- **WHEN** o Mestre abre os formulários de presença e de ocorrência
-- **THEN** cada um oferece a lista dos Guerreiros e Guerreiras pelo nick, sem campo de
-  identificador para digitar
+- **WHEN** o Mestre digita o nick do Guerreiro(a), com quaisquer maiúsculas, na presença ou na
+  ocorrência
+- **THEN** a aplicação envia o registro daquele Guerreiro(a), sem pedir identificador técnico
 
-#### Scenario: Quem já está presente não é oferecido de novo
+#### Scenario: Nick não encontrado é recusado na tela
 
-- **WHEN** o Mestre abre o formulário de presença de uma aula com presentes registrados
-- **THEN** o seletor da presença não oferece quem já consta da lista de presentes
+- **WHEN** o Mestre digita um nick que não corresponde a nenhum Guerreiro(a) das comunidades
+  dele
+- **THEN** a aplicação diz que não encontrou esse nick e nada é enviado ao núcleo
 
-#### Scenario: Enviar sem escolher o Guerreiro(a) é impedido
+#### Scenario: Enviar sem o nick é impedido
 
-- **WHEN** o Mestre tenta confirmar a presença ou lançar a ocorrência sem escolher o
-  Guerreiro(a)
-- **THEN** a aplicação impede o envio e diz que é preciso escolher o Guerreiro(a)
+- **WHEN** o Mestre tenta confirmar a presença ou lançar a ocorrência sem digitar o nick
+- **THEN** a aplicação impede o envio e diz que é preciso informar o nick do Guerreiro(a)
 
 #### Scenario: O Mestre lança a ocorrência sem arbitrar valor
 
