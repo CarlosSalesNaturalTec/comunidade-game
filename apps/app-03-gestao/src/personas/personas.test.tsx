@@ -304,7 +304,7 @@ describe("cadastro do Guerreiro(a)", () => {
     expect(mensagem.textContent?.toLowerCase()).not.toContain("apoiador");
   });
 
-  it("a gestão não vê a imagem do Guerreiro(a) — só nick e avatar", () => {
+  it("a gestão não vê a imagem do Guerreiro(a) — nem coluna de avatar ou início do vínculo", () => {
     render(
       <ListaDeGuerreiros
         guerreiros={[GUERREIRO]}
@@ -316,11 +316,16 @@ describe("cadastro do Guerreiro(a)", () => {
 
     expect(screen.getByText("ZeferinaGuerreira")).toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: /avatar/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: /início do vínculo/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/desde/i)).not.toBeInTheDocument();
   });
 });
 
 describe("o vínculo de comunidade na lista de Guerreiros e Guerreiras", () => {
-  it("apresenta a comunidade herdada da aula e a data de início do vínculo", () => {
+  it("apresenta nick, nome e a comunidade herdada da aula", () => {
     render(
       <ListaDeGuerreiros
         guerreiros={[GUERREIRO]}
@@ -330,8 +335,10 @@ describe("o vínculo de comunidade na lista de Guerreiros e Guerreiras", () => {
       />,
     );
 
-    expect(screen.getByRole("cell", { name: /comunidade/i })).toBeInTheDocument();
-    expect(screen.getByText(/desde/i)).toBeInTheDocument();
+    const linha = screen.getByRole("row", { name: /ZeferinaGuerreira/ });
+    expect(within(linha).getByRole("rowheader")).toHaveTextContent("ZeferinaGuerreira");
+    expect(within(linha).getByRole("cell", { name: "Zeferina" })).toBeInTheDocument();
+    expect(within(linha).getByRole("cell", { name: /comunidade/i })).toBeInTheDocument();
   });
 
   it("Guerreiro(a) sem vínculo vigente é informado, não acusado", () => {
