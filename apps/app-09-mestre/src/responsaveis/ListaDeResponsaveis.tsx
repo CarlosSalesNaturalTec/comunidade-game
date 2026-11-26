@@ -8,11 +8,16 @@ interface Props {
 }
 
 const SEM_NICK = "Guerreiro(a) sem nick";
+const SEM_NOME = "sem nome";
 
+// Nick, nome e grau de parentesco de cada vinculado: o nick sozinho nem
+// sempre diz quem é a criança (decisão do fundador, 2026-11-26). A ausência
+// de um ou de outro é dita, e o vinculado nunca some da linha.
 function textoDosVinculados(responsavel: ResponsavelDaLista): string {
   return responsavel.vinculados
     .map(
-      (vinculado) => `${vinculado.nick.trim() || SEM_NICK} (${vinculado.grau_de_parentesco})`,
+      (vinculado) =>
+        `${vinculado.nick.trim() || SEM_NICK} — ${vinculado.nome.trim() || SEM_NOME} (${vinculado.grau_de_parentesco})`,
     )
     .join(" · ");
 }

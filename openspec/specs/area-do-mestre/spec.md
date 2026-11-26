@@ -2073,9 +2073,11 @@ diferentes SHALL ser recusado na própria tela, antes do envio. (`RF-09-121`, `R
 
 A App 09 SHALL abrir a área **Responsáveis** apresentando os responsáveis que o núcleo serve
 ao Mestre em sessão, cada um com o **nome** e com os Guerreiros e Guerreiras vinculados por
-**nick** e **grau de parentesco**. A aplicação NEVER SHALL recortar a lista por conta própria:
-o alcance do Mestre — as comunidades em que atua somadas aos responsáveis que ele próprio
-cadastrou — é do núcleo. (`RF-09-122`, `RF-09-62`)
+**nick**, **nome** e **grau de parentesco**. Vinculado sem nick ou sem nome SHALL ter a
+ausência sinalizada, sem sumir da linha. A aplicação NEVER SHALL recortar a lista por conta
+própria: o alcance do Mestre — as comunidades em que atua somadas aos responsáveis que ele
+próprio cadastrou — é do núcleo. (`RF-09-122`, `RF-09-62`, decisão de exibição do fundador de
+2026-11-26)
 
 Responsável **sem vínculo** SHALL aparecer sinalizado como tal. É o cadastro interrompido no
 encontro, e é o caso que mais alcança o Mestre, que cadastra presencialmente. (`RF-09-122`)
@@ -2087,15 +2089,15 @@ sem exigir novo cadastro; o teto de três SHALL continuar explicado quando o nú
 (`RF-09-122`, `RF-09-62`, `RF-09-63`, `RN-09-15`)
 
 A lista NEVER SHALL apresentar credencial, senha, usuário de acesso ou contato do responsável,
-nem imagem real, nome civil ou nascimento do Guerreiro(a). A área SHALL exibir o aviso de
-coleta que toda tela de dado pessoal da App 09 já exibe. (`RF-09-122`, `RN-09-18`, invariante
-12 do documento 99 §6)
+nem imagem real, nascimento ou contato do Guerreiro(a). A área SHALL exibir o aviso de coleta
+que toda tela de dado pessoal da App 09 já exibe. (`RF-09-122`, `RN-09-18`, invariante 12 do
+documento 99 §6)
 
 #### Scenario: A área abre na lista dos responsáveis que o Mestre alcança
 
 - **WHEN** o Mestre abre a área Responsáveis
 - **THEN** vê os responsáveis que o núcleo lhe serve, cada um com o nome e os vinculados por
-  nick e grau de parentesco, e não é levado direto ao cadastro
+  nick, nome e grau de parentesco, e não é levado direto ao cadastro
 
 #### Scenario: Cadastro interrompido no encontro aparece sinalizado
 
@@ -2128,7 +2130,7 @@ coleta que toda tela de dado pessoal da App 09 já exibe. (`RF-09-122`, `RN-09-1
 
 - **WHEN** o Mestre lê a lista
 - **THEN** nenhuma linha traz credencial, senha, usuário ou contato do responsável, nem imagem
-  real, nome civil ou nascimento de Guerreiro(a)
+  real, nascimento ou contato de Guerreiro(a)
 
 ### Requirement: O bloco Conteúdo identifica cada conteúdo que lista
 

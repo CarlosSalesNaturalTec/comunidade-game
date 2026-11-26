@@ -193,12 +193,12 @@ def responsaveis_visiveis(
 
 def vinculados_por_responsavel(
     sessao: Session, responsaveis: list[Persona]
-) -> dict[uuid.UUID, list[tuple[VinculoResponsavel, str]]]:
+) -> dict[uuid.UUID, list[tuple[VinculoResponsavel, str, str]]]:
     """Os vinculados vigentes de uma página inteira de responsáveis, em duas
-    consultas em lote — os vínculos e os nicks —, nunca uma por responsável
-    (`RF-02-111`, design — decisão 5). O nick ausente sai como texto vazio,
-    e quem apresenta decide o que dizer, como as demais leituras do núcleo
-    já fazem."""
+    consultas em lote — os vínculos, e o nick e o nome dos Guerreiros e
+    Guerreiras —, nunca uma por responsável (`RF-02-111`, `RF-09-122`).
+    Nick ou nome ausente sai como texto vazio, e quem apresenta decide o que
+    dizer, como as demais leituras do núcleo já fazem."""
     if not responsaveis:
         return {}
 
@@ -209,22 +209,21 @@ def vinculados_por_responsavel(
         .all()
     )
 
-    nicks: dict[uuid.UUID, str] = {}
+    identificacao: dict[uuid.UUID, tuple[str, str]] = {}
     if vinculos:
-        nicks = {
-            nick.persona_id: nick.valor
-            for nick in sessao.query(Nick).filter(
-                Nick.persona_id.in_({vinculo.guerreiro_id for vinculo in vinculos})
-            )
+        identificacao = {
+            persona_id: (nick or "", nome or "")
+            for persona_id, nome, nick in sessao.query(Persona.id, Persona.nome, Nick.valor)
+            .outerjoin(Nick, Nick.persona_id == Persona.id)
+            .filter(Persona.id.in_({vinculo.guerreiro_id for vinculo in vinculos}))
         }
 
-    por_responsavel: dict[uuid.UUID, list[tuple[VinculoResponsavel, str]]] = {
+    por_responsavel: dict[uuid.UUID, list[tuple[VinculoResponsavel, str, str]]] = {
         responsavel.id: [] for responsavel in responsaveis
     }
     for vinculo in vinculos:
-        por_responsavel[vinculo.responsavel_id].append(
-            (vinculo, nicks.get(vinculo.guerreiro_id, ""))
-        )
+        nick, nome = identificacao.get(vinculo.guerreiro_id, ("", ""))
+        por_responsavel[vinculo.responsavel_id].append((vinculo, nick, nome))
     return por_responsavel
 
 

@@ -305,7 +305,12 @@ describe("área de responsáveis do Mestre", () => {
     id: "resp-1",
     nome: "Dona Maria",
     vinculados: [
-      { guerreiro_id: GUERREIRO.id, nick: GUERREIRO.nick, grau_de_parentesco: "mãe" },
+      {
+        guerreiro_id: GUERREIRO.id,
+        nick: GUERREIRO.nick,
+        nome: "Ana Teste",
+        grau_de_parentesco: "mãe",
+      },
     ],
   };
 
@@ -331,7 +336,21 @@ describe("área de responsáveis do Mestre", () => {
     expect(await screen.findByText("Dona Maria")).toBeInTheDocument();
     expect(screen.queryByLabelText(/nome do responsável/i)).not.toBeInTheDocument();
     const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
-    expect(within(tabela).getByText(/guerreira-teste \(mãe\)/)).toBeInTheDocument();
+    expect(
+      within(tabela).getByText(/guerreira-teste — Ana Teste \(mãe\)/),
+    ).toBeInTheDocument();
+  });
+
+  it("sinaliza o vinculado sem nome gravado, sem tirá-lo da linha", async () => {
+    configurarArea([
+      { ...COM_VINCULO, vinculados: [{ ...COM_VINCULO.vinculados[0], nome: "" }] },
+    ]);
+
+    render(<TelaDeResponsaveis />);
+
+    await screen.findByText("Dona Maria");
+    const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
+    expect(within(tabela).getByText(/guerreira-teste — sem nome \(mãe\)/)).toBeInTheDocument();
   });
 
   it("sinaliza o cadastro interrompido, sem Guerreiro(a) vinculado", async () => {
@@ -431,7 +450,12 @@ describe("área de responsáveis do Mestre", () => {
         id: "resp-4",
         nome: "Dona Maria",
         vinculados: [
-          { guerreiro_id: GUERREIRO.id, nick: "NickSemNomeCivil", grau_de_parentesco: "mãe" },
+          {
+            guerreiro_id: GUERREIRO.id,
+            nick: "NickSemNomeCivil",
+            nome: "Ana Teste",
+            grau_de_parentesco: "mãe",
+          },
         ],
       },
     ]);

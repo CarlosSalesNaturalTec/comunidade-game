@@ -879,6 +879,7 @@ describe("lista de responsáveis na gestão", () => {
       {
         guerreiro_id: GUERREIRO.id,
         nick: GUERREIRO.nick,
+        nome: GUERREIRO.nome,
         grau_de_parentesco: "mãe",
       },
     ],
@@ -909,7 +910,26 @@ describe("lista de responsáveis na gestão", () => {
 
     expect(await screen.findByText("Dona Maria")).toBeInTheDocument();
     const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
-    expect(within(tabela).getByText(/ZeferinaGuerreira \(mãe\)/)).toBeInTheDocument();
+    expect(
+      within(tabela).getByText(/ZeferinaGuerreira — Zeferina \(mãe\)/),
+    ).toBeInTheDocument();
+  });
+
+  it("sinaliza o vinculado sem nome gravado, sem tirá-lo da linha", async () => {
+    configurarLista([
+      {
+        ...COM_VINCULO,
+        vinculados: [{ ...COM_VINCULO.vinculados[0], nome: "" }],
+      },
+    ]);
+
+    render(<TelaDeResponsaveis />);
+
+    await screen.findByText("Dona Maria");
+    const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
+    expect(
+      within(tabela).getByText(/ZeferinaGuerreira — sem nome \(mãe\)/),
+    ).toBeInTheDocument();
   });
 
   it("sinaliza o cadastro interrompido, sem Guerreiro(a) vinculado", async () => {
@@ -942,9 +962,8 @@ describe("lista de responsáveis na gestão", () => {
   });
 
   it("não expõe credencial nem dado civil da criança", async () => {
-    // Nick escolhido para não conter o nome civil: o do fixture padrão é
-    // "ZeferinaGuerreira", que traz "Zeferina" dentro, e a asserção passaria
-    // por acidente.
+    // O nome do vinculado sai desde 2026-11-26; credencial e nascimento,
+    // nunca.
     configurarLista([
       {
         id: "resp-3",
@@ -953,6 +972,7 @@ describe("lista de responsáveis na gestão", () => {
           {
             guerreiro_id: GUERREIRO.id,
             nick: "NickSemNomeCivil",
+            nome: GUERREIRO.nome,
             grau_de_parentesco: "mãe",
           },
         ],
@@ -964,7 +984,6 @@ describe("lista de responsáveis na gestão", () => {
 
     const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
     expect(tabela.textContent).not.toMatch(/senha|usuário|credencial/i);
-    expect(tabela.textContent).not.toContain(GUERREIRO.nome);
     expect(tabela.textContent).not.toContain(GUERREIRO.nascimento);
   });
 
