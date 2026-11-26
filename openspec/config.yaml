@@ -54,9 +54,11 @@ context: |
     válida a API não responde. Escrita e gestão exigem também a credencial da persona. A
     chave é por aplicação E por ambiente — três ambientes no Ciclo 01 (desenvolvimento em
     contêiner local, homologação e produção no Cloud Run), o que dá 24 chaves semeadas na
-    implantação. Todo teste vai para a homologação, só com dado sintético; o merge em `main`
-    publica nela, e produção só recebe versão por disparo manual. Notificação a pessoa real
-    NEVER sai da homologação: a change que criar a primeira a suprime ali.
+    implantação. Todo teste vai para a homologação; dado de criança, responsável e
+    portfólio ali é só sintético (território, trilhas e catálogo podem vir de produção). O
+    merge em `main` publica nela, e produção só recebe versão por disparo manual.
+    Notificação a pessoa real NEVER sai da homologação: a change que criar a primeira a
+    suprime ali.
   - Frontends independentes, em endereços próprios; a vitrine ocupa a raiz de
     `comunidadegame.org`.
   - Autenticação por persona: Guerreiro(a) por nick e imagem; Mestre, Apoiador e Admin por

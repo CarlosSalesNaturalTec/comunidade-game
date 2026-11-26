@@ -105,13 +105,14 @@
     missão vão para o **Cloud Storage**. Tudo na região **`southamerica-east1`** (São Paulo).
     São **três ambientes**: **desenvolvimento**, em contêiner local com banco próprio;
     **homologação**, no Cloud Run, onde todo teste acontece — nunca em produção —, com **base
-    própria na mesma instância do Cloud SQL**, bucket e chaves próprios, **só dados
-    sintéticos** e nenhuma notificação a pessoa real; e **produção**, no Cloud Run, que recebe
-    a **mesma imagem** validada em homologação. O merge em `main` publica na homologação; a
-    produção só recebe a versão escolhida por **disparo manual**. Contêiner e banco são
-    portáteis — outra comunidade replica a plataforma fora do Google Cloud. O custo entra no
-    livro-razão como recurso de _cloud_, **aportado por absorção pelo Admin e Mestre
-    fundador** neste ciclo.
+    própria na mesma instância do Cloud SQL**, bucket e chaves próprios, **dado de criança,
+    de responsável e de portfólio só sintético** — território, trilhas, catálogo e acervo
+    podem vir de produção, com o contato dos adultos mascarado — e nenhuma notificação a
+    pessoa real; e **produção**, no Cloud Run, que recebe a **mesma imagem** validada em
+    homologação. O merge em `main` publica na homologação; a produção só recebe a versão
+    escolhida por **disparo manual**. Contêiner e banco são portáteis — outra comunidade
+    replica a plataforma fora do Google Cloud. O custo entra no livro-razão como recurso de
+    _cloud_, **aportado por absorção pelo Admin e Mestre fundador** neste ciclo.
     Em produção o Cloud Run roda **sem escala horizontal** no Ciclo 01 — no máximo um contêiner
     de cada vez —, porque o freio das rotas públicas conta em memória (§8) e cada contêiner a
     mais multiplicaria o limite. Não confundir com o princípio 10: lá "instância única" é uma

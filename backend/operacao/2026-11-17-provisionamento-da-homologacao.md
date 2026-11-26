@@ -11,8 +11,9 @@ INSTANCIA=nucleo-db
 SA=nucleo-runtime-homologacao@$PROJETO.iam.gserviceaccount.com
 ```
 
-> **Vedado:** restaurar _backup_ ou copiar qualquer dado de produção na base de homologação.
-> A homologação guarda só dado sintético, criado testando nas aplicações.
+> **Vedado:** restaurar _backup_ de produção na base de homologação. Dado de criança, de
+> responsável e de portfólio ali é só sintético; o conteúdo que pode vir de produção segue
+> `2026-11-26-copia-do-conteudo-para-homologacao.md`.
 
 ## 1. Base e usuário na mesma instância
 
