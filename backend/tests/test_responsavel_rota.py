@@ -230,7 +230,7 @@ def _listar(cliente, chave, token, parametros=""):
 
 
 def test_admin_lista_os_responsaveis_com_os_vinculados(
-    cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
+    cliente, sessao, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
 ):
     chave, _ = criar_chave()
     admin = criar_persona(Papel.admin)
@@ -238,6 +238,8 @@ def test_admin_lista_os_responsaveis_com_os_vinculados(
     cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
 
     guerreiro = criar_persona(Papel.guerreiro)
+    guerreiro.nome = "Zeferina da Silva"
+    sessao.commit()
     criar_nick(guerreiro, "ZeferinaGuerreira")
     criado = cliente.post("/v1/responsaveis", json={"nome": "Dona Maria"}, headers=cabecalhos)
     responsavel_id = criado.json()["id"]
@@ -257,6 +259,7 @@ def test_admin_lista_os_responsaveis_com_os_vinculados(
         {
             "guerreiro_id": str(guerreiro.id),
             "nick": "ZeferinaGuerreira",
+            "nome": "Zeferina da Silva",
             "grau_de_parentesco": "mãe",
         }
     ]
@@ -264,6 +267,7 @@ def test_admin_lista_os_responsaveis_com_os_vinculados(
 
 def test_mestre_lista_os_responsaveis_da_sua_comunidade(
     cliente,
+    sessao,
     criar_chave,
     criar_persona,
     criar_comunidade,
@@ -277,6 +281,8 @@ def test_mestre_lista_os_responsaveis_da_sua_comunidade(
     mestre = criar_persona(Papel.mestre, criada_por=admin)
     criar_vinculo_do_mestre(mestre, comunidade)
     guerreiro = criar_persona(Papel.guerreiro, comunidade=comunidade)
+    guerreiro.nome = "Ana Teste"
+    sessao.commit()
     criar_nick(guerreiro, "guerreira-teste")
 
     token_do_admin, _ = criar_sessao_de_teste(admin)
@@ -297,10 +303,15 @@ def test_mestre_lista_os_responsaveis_da_sua_comunidade(
     assert resposta.status_code == 200
     itens = resposta.json()["itens"]
     assert [item["nome"] for item in itens] == ["Pai"]
-    assert itens[0]["vinculados"][0]["nick"] == "guerreira-teste"
+    vinculado = itens[0]["vinculados"][0]
+    assert (vinculado["nick"], vinculado["nome"], vinculado["grau_de_parentesco"]) == (
+        "guerreira-teste",
+        "Ana Teste",
+        "pai",
+    )
 
 
-def test_a_resposta_nao_traz_credencial_nem_contato_nem_dado_civil_da_crianca(
+def test_a_resposta_nao_traz_credencial_nem_contato_nem_imagem_ou_nascimento_da_crianca(
     cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
 ):
     chave, _ = criar_chave()
@@ -326,7 +337,9 @@ def test_a_resposta_nao_traz_credencial_nem_contato_nem_dado_civil_da_crianca(
     item = _listar(cliente, chave, token).json()["itens"][0]
 
     assert set(item) == {"id", "nome", "vinculados"}
-    assert set(item["vinculados"][0]) == {"guerreiro_id", "nick", "grau_de_parentesco"}
+    # O nome do vinculado sai desde 2026-11-26; imagem, nascimento e contato
+    # nunca (`RN-09-18`).
+    assert set(item["vinculados"][0]) == {"guerreiro_id", "nick", "nome", "grau_de_parentesco"}
     assert "dona.maria" not in json.dumps(item, ensure_ascii=False)
 
 
@@ -343,6 +356,27 @@ def test_responsavel_sem_vinculo_aparece_com_a_lista_vazia(
 
     assert [item["nome"] for item in itens] == ["Sozinho"]
     assert itens[0]["vinculados"] == []
+
+
+def test_guerreiro_sem_nome_gravado_continua_na_lista_com_o_nome_vazio(
+    cliente, criar_chave, criar_persona, criar_nick, criar_sessao_de_teste
+):
+    chave, _ = criar_chave()
+    admin = criar_persona(Papel.admin)
+    token, _ = criar_sessao_de_teste(admin)
+    cabecalhos = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
+    guerreiro = criar_persona(Papel.guerreiro)
+    criar_nick(guerreiro, "SemNome")
+    criado = cliente.post("/v1/responsaveis", json={"nome": "Tia"}, headers=cabecalhos)
+    cliente.post(
+        f"/v1/responsaveis/{criado.json()['id']}/vinculos",
+        json={"guerreiro_id": str(guerreiro.id), "grau_de_parentesco": "tia"},
+        headers=cabecalhos,
+    )
+
+    vinculado = _listar(cliente, chave, token).json()["itens"][0]["vinculados"][0]
+
+    assert (vinculado["nick"], vinculado["nome"]) == ("SemNome", "")
 
 
 def test_a_listagem_devolve_cursor(cliente, criar_chave, criar_persona, criar_sessao_de_teste):

@@ -94,6 +94,7 @@ export function criarCredencialProvisoria(
 export interface VinculadoDoResponsavel {
   guerreiro_id: string;
   nick: string;
+  nome: string;
   grau_de_parentesco: string;
 }
 
@@ -112,8 +113,9 @@ interface ListaDeResponsaveis {
 // vigente a Guerreiro(a) das comunidades em que ele atua, somados aos que
 // ele próprio cadastrou — estes últimos ainda que sem vínculo algum, que é
 // o cadastro interrompido no encontro. A tela não filtra nada por conta
-// própria. Nome, nick e grau de parentesco: nunca credencial, usuário ou
-// contato (`RF-09-122`, `RN-09-18`).
+// própria. Nome do responsável e, de cada vinculado, nick, nome e grau de
+// parentesco: nunca credencial, usuário ou contato, nem imagem real,
+// nascimento ou contato da criança (`RF-09-122`, `RN-09-18`).
 export function listarResponsaveis(token: string): Promise<ListaDeResponsaveis> {
   return chamarNucleo<ListaDeResponsaveis>("/v1/responsaveis", { token });
 }

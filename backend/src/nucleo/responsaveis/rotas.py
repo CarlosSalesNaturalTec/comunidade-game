@@ -143,6 +143,7 @@ def listar_responsaveis_do_guerreiro_rota(
 class VinculadoDoResponsavelSaida(BaseModel):
     guerreiro_id: uuid.UUID
     nick: str
+    nome: str
     grau_de_parentesco: str
 
 
@@ -167,9 +168,10 @@ def listar_responsaveis_rota(
     próprio cadastrou, e o recorte é da regra (`RF-02-111`, `RF-09-122`,
     decisão do fundador, 2026-09-26).
 
-    Nome, nick e grau de parentesco: nunca credencial, senha, usuário ou
-    contato do responsável, nem imagem real, nome civil ou nascimento do
-    Guerreiro(a) (`RN-09-18`, invariante 12 do documento 99 §6)."""
+    Nome do responsável e, de cada vinculado, nick, nome e grau de
+    parentesco (decisão do fundador, 2026-11-26): nunca credencial, senha,
+    usuário ou contato do responsável, nem imagem real, nascimento ou
+    contato do Guerreiro(a) (`RN-09-18`, invariante 12 do documento 99 §6)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     responsaveis, proximo_cursor = responsaveis_visiveis(
         sessao_bd, operador=operador, parametros=parametros
@@ -184,9 +186,10 @@ def listar_responsaveis_rota(
                     VinculadoDoResponsavelSaida(
                         guerreiro_id=vinculo.guerreiro_id,
                         nick=nick,
+                        nome=nome,
                         grau_de_parentesco=vinculo.grau_de_parentesco,
                     )
-                    for vinculo, nick in vinculados.get(responsavel.id, [])
+                    for vinculo, nick, nome in vinculados.get(responsavel.id, [])
                 ],
             )
             for responsavel in responsaveis

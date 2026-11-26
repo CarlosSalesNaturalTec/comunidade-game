@@ -2530,9 +2530,10 @@ oferecer renomear a equipe nem trocar o papel de alguém. (`RF-02-08`, `RF-02-09
 
 A App 03 SHALL apresentar, na sub-área **Responsáveis**, os responsáveis já cadastrados que o
 núcleo lhe serve, cada um com o **nome** e com os Guerreiros e Guerreiras vinculados por
-**nick** e **grau de parentesco**. Responsável **sem vínculo** SHALL aparecer na lista,
-sinalizado como tal — é o cadastro interrompido, e é o que a lista existe para revelar.
-(`RF-02-111`)
+**nick**, **nome** e **grau de parentesco**. Responsável **sem vínculo** SHALL aparecer na
+lista, sinalizado como tal — é o cadastro interrompido, e é o que a lista existe para revelar.
+Vinculado sem nick ou sem nome SHALL ter a ausência sinalizada, sem sumir da linha.
+(`RF-02-111`, decisão de exibição do fundador de 2026-11-26)
 
 A aplicação SHALL oferecer, a partir de um responsável da lista, **vincular outro
 Guerreiro(a)** a ele, declarando o grau de parentesco, sem exigir novo cadastro. O teto de
@@ -2540,14 +2541,15 @@ três responsáveis por Guerreiro(a) SHALL continuar a ser explicado quando o n�
 (`RF-02-111`, `RF-02-06`, `RN-02-08`, invariante 3 do documento 99 §6)
 
 A lista NEVER SHALL apresentar credencial, senha, usuário de acesso ou contato do responsável,
-nem imagem real, nome civil ou nascimento do Guerreiro(a). A tela SHALL exibir o aviso de
-coleta que toda tela de dado pessoal da gestão já exibe. (`RF-02-111`, `RF-02-64`, `RN-02-23`)
+nem imagem real, nascimento ou contato do Guerreiro(a). A tela SHALL exibir o aviso de coleta
+que toda tela de dado pessoal da gestão já exibe. (`RF-02-111`, `RF-02-64`, `RN-02-22`,
+`RN-02-23`)
 
 #### Scenario: A sub-área Responsáveis apresenta quem já está cadastrado
 
 - **WHEN** o Admin abre a sub-área Responsáveis
-- **THEN** vê os responsáveis cadastrados, cada um com o nome e com os vinculados por nick e
-  grau de parentesco
+- **THEN** vê os responsáveis cadastrados, cada um com o nome e com os vinculados por nick,
+  nome e grau de parentesco
 
 #### Scenario: Cadastro interrompido aparece sinalizado
 
@@ -2576,7 +2578,7 @@ coleta que toda tela de dado pessoal da gestão já exibe. (`RF-02-111`, `RF-02-
 
 - **WHEN** o Admin lê a lista
 - **THEN** nenhuma linha traz credencial, senha, usuário ou contato do responsável, nem
-  imagem real, nome civil ou nascimento de Guerreiro(a)
+  imagem real, nascimento ou contato de Guerreiro(a)
 
 ### Requirement: O Admin edita o conteúdo institucional da vitrine pela gestão
 

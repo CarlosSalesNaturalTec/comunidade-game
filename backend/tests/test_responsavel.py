@@ -498,7 +498,7 @@ def test_vinculado_traz_o_nick_e_o_vinculo_encerrado_fica_de_fora(
     responsaveis, _ = responsaveis_visiveis(sessao, operador=admin, parametros=_pagina())
     vinculados = vinculados_por_responsavel(sessao, responsaveis)
 
-    assert [(v.grau_de_parentesco, nick) for v, nick in vinculados[responsavel.id]] == [
+    assert [(v.grau_de_parentesco, nick) for v, nick, _ in vinculados[responsavel.id]] == [
         ("mãe", "ZeferinaGuerreira")
     ]
 
@@ -534,7 +534,7 @@ def test_a_pagina_dos_vinculados_nao_consulta_um_por_responsavel(sessao, criar_p
 
     assert len(responsaveis) == 4
     assert sum(len(itens) for itens in vinculados.values()) == 4
-    # Duas consultas em lote — os vínculos e os nicks —, nunca uma por
+    # Duas consultas em lote — os vínculos, e o nick e o nome —, nunca uma por
     # responsável (design — decisão 5).
     assert len(consultas) == 2
 
