@@ -10,15 +10,10 @@ interface Props {
   onAbrirFicha: (guerreiro: GuerreiroDaLista) => void;
 }
 
-function formatarData(valorComFuso: string): string {
-  const data = new Date(valorComFuso);
-  if (Number.isNaN(data.getTime())) return valorComFuso;
-  return data.toLocaleDateString("pt-BR");
-}
-
-// Tabela densa do temperamento Operação (documento 15 §6). Nunca exibe
-// imagem real — só nick e avatar, a representação pública do Guerreiro(a)
-// (`RN-02-22`, invariante 12 do documento 99 §6). A comunidade do vínculo
+// Tabela densa do temperamento Operação (documento 15 §6). Mostra nick e
+// nome e nunca exibe imagem real (`RN-02-22`); a App 03 é só do Admin, não
+// superfície pública, onde o Guerreiro(a) segue por avatar e nick
+// (invariante 12 do documento 99 §6). A comunidade do vínculo
 // vigente é leitura, sem caminho de troca — não há transferência no Ciclo
 // 01 (`RF-02-15`, `RN-02-06`).
 export function ListaDeGuerreiros({ guerreiros, comunidades, onEditar, onAbrirFicha }: Props) {
@@ -42,10 +37,9 @@ export function ListaDeGuerreiros({ guerreiros, comunidades, onEditar, onAbrirFi
       renderizar: (guerreiro) => guerreiro.nick,
     },
     {
-      chave: "avatar",
-      rotulo: "Avatar",
-      recolhida: true,
-      renderizar: () => "Avatar definido",
+      chave: "nome",
+      rotulo: "Nome",
+      renderizar: (guerreiro) => guerreiro.nome,
     },
     {
       chave: "comunidade",
@@ -59,15 +53,6 @@ export function ListaDeGuerreiros({ guerreiros, comunidades, onEditar, onAbrirFi
         );
         return comunidade ? comunidade.nome : "Comunidade";
       },
-    },
-    {
-      chave: "vinculo",
-      rotulo: "Início do vínculo",
-      recolhida: true,
-      renderizar: (guerreiro) =>
-        comVinculo(guerreiro) && guerreiro.vinculo_iniciado_em
-          ? `Desde ${formatarData(guerreiro.vinculo_iniciado_em)}`
-          : "—",
     },
     {
       chave: "acoes",
