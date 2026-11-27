@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Index, String, Uuid, and_, func, text
+from sqlalchemy import JSON, DateTime, ForeignKey, Index, String, Uuid, and_, func, text
 from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship
 
 from ..banco import Base
@@ -27,6 +27,15 @@ class ComunidadeVirtual(Base):
     )
     criada_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    # O contorno copiado do OSM pelo Admin: geometria GeoJSON gravada e lida
+    # inteira, sem consulta espacial no Ciclo 01 — por isso JSON, e não
+    # PostGIS (`RF-08-33`, PRD-08 §8, design — Decisão 1). Os três nascem
+    # nulos e andam juntos: quem grava um grava os três.
+    contorno: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    contorno_origem_osm: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    contorno_copiado_em: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
     )
 
 

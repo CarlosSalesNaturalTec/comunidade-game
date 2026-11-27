@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from ..armazenamento.porta import PortaDeArmazenamento
 from ..chaves.segredo import calcular_resumo, gerar_segredo
+from ..comunidades.contorno import ContornoSaida, saida_do_contorno
 from ..comunidades.modelo import ComunidadeVirtual
 from ..comunidades.regra import contar_guerreiros_vinculados, resolver_vinculo_na_data
 from ..erros import (
@@ -1843,6 +1844,9 @@ class ComunidadeDaListaSaida(BaseModel):
     registros_validos: int | None
     continuidade: float | None
     guerreiros_vinculados: int
+    # O contorno delimita a comunidade e não é indicador: sai também abaixo
+    # do piso de coletores (`RF-08-34`, `RN-08-28`).
+    contorno: ContornoSaida | None
 
 
 def _contar_coletores_distintos_da_comunidade(
@@ -1954,6 +1958,7 @@ def paginar_comunidades_publicas(
                 registros_validos=registros_validos,
                 continuidade=continuidade,
                 guerreiros_vinculados=contar_guerreiros_vinculados(sessao, comunidade.id),
+                contorno=saida_do_contorno(comunidade),
             )
         )
     return PaginaDeResultado(itens=itens, proximo_cursor=proximo_cursor)
