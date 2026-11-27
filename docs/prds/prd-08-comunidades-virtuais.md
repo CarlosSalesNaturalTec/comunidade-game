@@ -2,15 +2,15 @@
 
 ## 1. Identificação
 
-| Campo            | Valor                                                |
-| ---------------- | ---------------------------------------------------- |
-| PRD              | PRD-08                                               |
-| Aplicação        | — (domínio consumido pelas Apps 02, 03, 05, 06 e 09) |
-| Onda             | 1                                                    |
-| Situação         | implementado                                         |
-| Versão e data    | v8 — 2026-08-17                                      |
-| Depende de       | —                                                    |
-| Documentos-fonte | 02 §1, 02 §2, 03 §12, 11 §4, 11 §5, 11 §7, 11 §8.3   |
+| Campo            | Valor                                                  |
+| ---------------- | ------------------------------------------------------ |
+| PRD              | PRD-08                                                 |
+| Aplicação        | — (domínio consumido pelas Apps 02, 03, 05, 06 e 09)   |
+| Onda             | 1                                                      |
+| Situação         | aprovado                                               |
+| Versão e data    | v9 — 2026-11-27                                        |
+| Depende de       | —                                                      |
+| Documentos-fonte | 02 §1, 02 §2, 03 §§8, 12, 11 §4, 11 §5, 11 §7, 11 §8.3 |
 
 ## 2. Contexto e objetivo
 
@@ -32,6 +32,8 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 ### 3.1 Dentro do escopo
 
 - Cadastro da Comunidade Virtual por Admin, nascendo vazia.
+- **Contorno** da comunidade no mapa, cadastrado por Admin e copiado do OpenStreetMap (OSM), com
+  o crédito e a licença ODbL do OSM.
 - Vínculo obrigatório do Guerreiro(a) a exatamente uma comunidade, herdado da **aula agendada**
   em que ele se cadastra, com histórico de transferências no modelo.
 - Hierarquia de locais da comunidade: comunidade → bairro → rua → condomínio → bloco → quadra,
@@ -57,8 +59,11 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 
 - Importação de fontes públicas de dados (INMET, prefeitura) — integração que não cabe no
   primeiro ciclo.
-- Georreferenciamento por coordenada de GPS — a granularidade do Ciclo 01 é a hierarquia de
-  locais declarada, não o ponto no mapa.
+- Georreferenciamento do registro por coordenada de GPS — a granularidade do Ciclo 01 é a
+  hierarquia de locais declarada, não o ponto no mapa. O contorno é da comunidade, nunca do
+  registro.
+- Leitura automática do OSM e envio de edição ao OSM — no Ciclo 01 o contorno é copiado à mão
+  pelo Admin, e a transposição do mapa físico ao OSM é ato do Mestre fora da plataforma.
 - Interface das telas de coleta — pertence ao PRD-05 (App 05).
 - Escolha do banco de séries temporais — decisão de arquitetura do PRD-01.
 - Rota de entrega do conjunto abaixo do bairro — no Ciclo 01 a entrega corre **fora da
@@ -81,9 +86,11 @@ resultado no painel público da comunidade — que começa vazio e ganha corpo a
 
 1. Admin cria a Comunidade Virtual com nome, localização e granularidade máxima permitida.
 2. A comunidade nasce **vazia**: sem locais, sem séries, sem Guerreiros e Guerreiras.
-3. Admin cadastra os locais do território, na hierarquia — é a lista que o Guerreiro(a) escolhe
+3. Admin cadastra o **contorno**, copiado do OSM, com o elemento de origem — é ele que o mapa
+   da vitrine desenha.
+4. Admin cadastra os locais do território, na hierarquia — é a lista que o Guerreiro(a) escolhe
    depois.
-4. Admin agenda, na App 03, a aula daquela comunidade — é ela que dá ao App 01 a comunidade
+5. Admin agenda, na App 03, a aula daquela comunidade — é ela que dá ao App 01 a comunidade
    do novo cadastro, e **sem aula agendada o App 01 não opera**.
 
 ### 5.2 Mestre cria o desafio de coleta
@@ -169,6 +176,8 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 | `RF-08-30` | Rota pública lista as comunidades com os quatro indicadores do documento 02 §1                                                 | essencial  |
 | `RF-08-31` | Comunidade abaixo do piso de coletores sai na lista sem os quatro indicadores                                                  | essencial  |
 | `RF-08-32` | Admin altera todos os campos do tipo de coleta, desativa e reativa; o registro já gravado não muda                             | essencial  |
+| `RF-08-33` | Admin cadastra e substitui o contorno da comunidade — polígono copiado do OSM, com o elemento de origem                        | essencial  |
+| `RF-08-34` | Lista pública e leitura pública da comunidade devolvem o contorno e o crédito do OSM; sem contorno cadastrado, saem sem ele    | essencial  |
 | `RF-08-20` | Painel reflete visualmente o crescimento da comunidade conforme o documento 11 §8.3                                            | desejável  |
 | `RF-08-21` | Sistema aceita foto ou vídeo como o próprio registro, quando o tipo de coleta assim o define                                   | essencial  |
 | `RF-08-22` | Guerreiro(a) solicita a inclusão de local ausente, e a solicitação entra na fila de aprovação                                  | essencial  |
@@ -212,6 +221,8 @@ distintas da hora do envio: o Guerreiro(a) pode registrar agora uma medição qu
 | `RN-08-28` | A comunidade é o topo da hierarquia: abaixo do piso ela permanece na lista, e o que se omite é o indicador, nunca a comunidade               | 7          | 02 §1    |
 | `RN-08-29` | Os quatro indicadores se calculam como o documento 02 §1 define; enquanto o ciclo corre, o de séries ativas se apura no instante da consulta | —          | 02 §1    |
 | `RN-08-30` | Só se exclui tipo de coleta que nenhum desafio escolheu; o usado é recusado e se desativa                                                    | —          | 02 §1    |
+| `RN-08-31` | O contorno copiado do OSM segue a licença ODbL, com crédito, e fica fora do conjunto CC BY-SA da exportação                                  | —          | 03 §12.3 |
+| `RN-08-32` | O contorno delimita a comunidade e não carrega local abaixo dela, série nem registro                                                         | 7          | 02 §1    |
 
 ## 8. Modelo de dados
 
@@ -229,7 +240,7 @@ TipoDeColeta      1 ──── N DesafioDeColeta
 
 | Entidade             | Atributos essenciais                                                                                                                                          |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ComunidadeVirtual`  | nome, localização, granularidade máxima, admin criador, data de criação                                                                                       |
+| `ComunidadeVirtual`  | nome, localização, granularidade máxima, contorno (polígono GeoJSON), elemento de origem no OSM, data da cópia, admin criador, data de criação                |
 | `Local`              | comunidade, nível (comunidade, bairro, rua, condomínio, bloco, quadra), rótulo, local pai                                                                     |
 | `VinculoJogador`     | Guerreiro(a), comunidade, data de início, data de fim, admin responsável pela transferência                                                                   |
 | `TipoDeColeta`       | nome, forma de registro (número, foto ou vídeo), unidade de medida, faixa esperada (mínimo e máximo)                                                          |
@@ -263,6 +274,7 @@ todas elas, como define o PRD-01; escrita é autenticada.
 | GET    | `/comunidades/{id}/exportacao`                | pública         | Exportação agregada e anonimizada por período             |
 | GET    | `/comunidades/{id}/ods`                       | pública         | Cobertura de ODS das séries da comunidade, por ciclo      |
 | POST   | `/comunidades/{id}/locais`                    | Admin           | Cadastra local na hierarquia da comunidade                |
+| PUT    | `/comunidades/{id}/contorno`                  | Admin           | Cadastra ou substitui o contorno copiado do OSM           |
 | POST   | `/solicitacoes-de-local`                      | Guerreiro(a)    | Solicita a inclusão de local ausente                      |
 | GET    | `/solicitacoes-de-local/abertas`              | Mestre ou Admin | Solicitações em aberto que alimentam o alerta             |
 | POST   | `/solicitacoes-de-local/{id}/avaliacao`       | Mestre ou Admin | Aprova, criando o local, ou recusa com motivo             |
@@ -329,6 +341,8 @@ false`); invalidação por Mestre que não é autor do desafio (403).
 Critérios de aceite, um por requisito essencial, verificáveis por quem não escreveu o PRD:
 
 - Comunidade recém-criada aparece na API sem nenhum local, série ou Guerreiro(a).
+- Contorno gravado pelo Admin sai na lista e na leitura pública da comunidade, com o crédito do
+  OSM; a exportação do conjunto não o inclui sob CC BY-SA.
 - Guerreiro(a) cadastrado no onboarding aparece vinculado à comunidade da aula em que entrou,
   sem tê-la informado.
 - Registro válido credita ao Poder do Território exatamente o valor do documento 11 §5; o
@@ -378,6 +392,7 @@ no conjunto de indicadores de impacto.
 | Cálculo dos quatro indicadores, com continuidade e séries ativas definidas                    | 02 §1      | Cálculo dos quatro indicadores              |
 | Catálogo de tipos de coleta cadastrado por Admin; Mestre escolhe, não cria                    | 02 §1      | Já decididos                                |
 | Granularidade exigida livre no desafio; teto conferido na abertura da série                   | 02 §1      | Já decididos                                |
+| Contorno da comunidade cadastrado por Admin, copiado do OSM, sob ODbL                         | 02 §1      | Contorno da Comunidade Virtual              |
 
 ## 14. Pendências que permanecem
 
@@ -413,3 +428,5 @@ origem do registro.
 | `RF-08-32`, `RN-08-30`  | 02 §1 e 09 §1 (edição e exclusão do catálogo de tipos de coleta)              |
 | `RN-08-23`              | 03 §1.1 (credencial do sensor)                                                |
 | `RN-08-25`              | 02 §1 (granularidade exigida do desafio)                                      |
+| `RF-08-33`, `RF-08-34`  | 02 §1 (contorno da comunidade) e 03 §8 (mapa da vitrine)                      |
+| `RN-08-31`, `RN-08-32`  | 03 §12.3 (licença do contorno) e 02 §1 (agregação da saída)                   |

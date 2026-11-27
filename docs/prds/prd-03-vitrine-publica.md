@@ -8,7 +8,7 @@
 | Aplicação        | App 06 — Vitrine pública                              |
 | Onda             | 4                                                     |
 | Situação         | aprovado                                              |
-| Versão e data    | v5 — 2026-11-20                                       |
+| Versão e data    | v6 — 2026-11-27                                       |
 | Depende de       | PRD-01, PRD-13                                        |
 | Documentos-fonte | 02 §§1, 4, 03 §§8, 12, 04 §§1, 2, 4, 11 §§8.1–8.3, 15 |
 
@@ -49,6 +49,9 @@ hora — o sentido do fluxo é sempre esse.
   autorizada.
 - **Painel público da Comunidade Virtual** — séries históricas do território, agregadas até o
   bairro, com a representação visual que cresce conforme a comunidade é preenchida.
+- **Mapa das Comunidades Virtuais** — na listagem, o contorno de cada comunidade, abrindo o
+  painel dela; no painel, o contorno da própria comunidade em destaque. O fundo é um recorte do
+  OpenStreetMap (OSM) servido pela própria plataforma.
 - **Metodologia legível** de cada série: o que se mede, cadência declarada, período coberto,
   origem da medição, número de registros válidos.
 - **Painel de cobertura da Agenda 2030** por comunidade e por ciclo, com destaque para a meta
@@ -97,6 +100,8 @@ hora — o sentido do fluxo é sempre esse.
 - **Publicidade e patrocínio**: não existem no Ciclo 01 — o tema é estudo para ciclo futuro
   (documento 09). Rastreamento do visitante não existe em ciclo nenhum.
 - **Dado abaixo do bairro**: rua, condomínio, bloco e quadra só saem na entrega aprovada.
+- **Ponto de coleta no mapa** e **leitura automática do OSM**: o mapa desenha só o contorno
+  cadastrado na plataforma; ler o OSM direto fica para ciclo futuro.
 
 ## 4. Personas e permissões
 
@@ -297,6 +302,10 @@ eles.
 | `RF-03-24` | Nenhuma etiqueta ODS aparece vinculada a um Guerreiro(a)                                        | essencial  |
 | `RF-03-25` | Aplicação oferece os três recortes de leitura, com sociedade civil como padrão                  | essencial  |
 | `RF-03-26` | Troca de recorte é navegação: não cria área restrita, cadastro nem coleta de dado               | essencial  |
+| `RF-03-89` | Listagem de Comunidades Virtuais exibe mapa com o contorno e o nome de cada comunidade          | essencial  |
+| `RF-03-90` | Contorno no mapa da listagem abre o painel daquela comunidade                                   | essencial  |
+| `RF-03-91` | Painel da comunidade exibe o mapa com o contorno dela em destaque                               | essencial  |
+| `RF-03-92` | Mapa exibe o crédito "© colaboradores do OpenStreetMap" e a licença ODbL                       | essencial  |
 
 ### 6.3 Formulários públicos
 
@@ -401,6 +410,9 @@ eles.
 | `RN-03-29` | A Área do Apoiador Desenvolvedor é seção da vitrine, não uma nona aplicação                                                                             | 1                      | 03 §8       |
 | `RN-03-32` | Solicitação de chave não emite chave nem cria cadastro: quem emite é Admin, na App 03                                                                   | 3                      | 03 §8       |
 | `RN-03-33` | A vitrine consome a API com a chave da aplicação, e o visitante segue anônimo                                                                           | —                      | 03 §§1, 1.1 |
+| `RN-03-44` | O mapa desenha só o contorno da comunidade: nunca ponto de coleta, local abaixo dela ou coletor                                                         | 7                      | 03 §8       |
+| `RN-03-45` | O fundo do mapa é servido pela própria plataforma; nenhuma requisição sai para servidor de mapas de terceiros                                           | —                      | 03 §8       |
+| `RN-03-46` | O mapa complementa a representação visual genérica da comunidade e não a substitui                                                                      | —                      | 11 §8.3     |
 
 ## 8. Modelo de dados
 
@@ -475,6 +487,9 @@ bytes alcança a produção dele. As duas rotas de bytes recusam em **404 em tod
 item inexistente, sem aprovação do Mestre ou de quem não tem autorização vigente —, para não
 virarem oráculo sobre quais crianças têm divulgação autorizada.
 
+O mapa não tem rota própria: o contorno vem em `/v1/comunidades` e na leitura da comunidade
+(PRD-08), e o fundo é arquivo estático servido pela plataforma, sem chave e sem API.
+
 A cobertura de ODS de uma comunidade sai pela rota agregada, filtrada pela comunidade: não há
 rota por comunidade, e o ciclo é o rótulo corrente declarado na implantação (decisão do
 fundador, 2026-09-28).
@@ -493,6 +508,8 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
   comunidade não podem travar a página nem consumir dados desnecessariamente.
 - **Cacheável e tolerante a pico** — dia de culminância e de batalha concentram acesso, e a
   vitrine é a superfície onde isso aparece.
+- **O mapa não pesa na abertura**: o fundo só carrega quando o mapa aparece na tela, e a
+  página segue legível sem ele em rede lenta.
 - **Sem rastreador de terceiros**, inclusive de métricas: se houver medição de audiência, ela é
   agregada e sem identificador de visitante.
 - **Acessibilidade digital** no piso do documento 15 — **WCAG 2.2 AA**: contraste, alvos de
@@ -529,6 +546,9 @@ usar o formulário de solicitação de dados); tentativa de escrita em qualquer 
 ## 12. Critérios de aceite e métricas
 
 - A vitrine abre inteira sem login, e nenhuma tela oferece cadastro ou área restrita.
+- A listagem de Comunidades Virtuais mostra no mapa o contorno de cada comunidade com contorno
+  cadastrado, e clicar nele abre o painel; a auditoria da página não encontra requisição a
+  servidor de mapas de terceiros, e o mapa não traz nenhum ponto de coleta.
 - A Área do Apoiador Desenvolvedor traz os links da documentação, da documentação da API e do
   repositório, e o formulário de chave — sem assistente.
 - O envio do formulário de chave **não devolve chave nenhuma** — devolve protocolo e prazo.
@@ -635,9 +655,17 @@ documento 09; PRD-07 v12): a recompensa de marco também gera necessidade, por c
 ponto de apoio, tipo e trilha, e a vitrine a publica ao lado da de aula, com a trilha no lugar
 da data (`RF-03-47`).
 
+### Decisões de 2026-11-27
+
+Decisão do fundador de 2026-11-27, elicitada em `/opsx:explore` (linhas "Contorno da Comunidade
+Virtual" e "Mapa das comunidades na vitrine" do documento 09): o mapa das Comunidades Virtuais
+entra no Ciclo 01, na listagem e no painel, com o contorno copiado do OSM pelo Admin (PRD-08)
+e o fundo hospedado pela plataforma (`RF-03-89` a `RF-03-92`, `RN-03-44` a `RN-03-46`).
+
 ## 14. Pendências que permanecem
 
-Nenhuma.
+- **Atualização do recorte do OSM** que serve de fundo ao mapa: de quanto em quanto tempo
+  (documento 09 §1). Não trava a fatia — o recorte nasce com a entrega.
 
 O **título da criação original** saiu da lista: o título passou a existir — curto e declarado
 pelo Mestre no desafio prático, e o nome da trilha na criação da culminância —, e o `RF-03-08`
@@ -680,3 +708,4 @@ IA apontando para ela.
 | `RF-03-73` a `RF-03-77`                          | 03 §§1, 8 (chave, prazos e recusa sem chave)                              |
 | `RF-03-84` a `RF-03-87`, `RN-03-41` a `RN-03-43` | 11 §§2.2, 5, 8.2 (o acervo, os dois vereditos, a linha e a carta) e 02 §4 |
 | `RF-03-88`                                       | 02 §4 (terceira fonte do acervo) e 11 §5                                  |
+| `RF-03-89` a `RF-03-92`, `RN-03-44` a `RN-03-46` | 03 §8 (mapa das comunidades) e 11 §8.3 (complementa o visual genérico)    |

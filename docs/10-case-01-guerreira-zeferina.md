@@ -13,13 +13,13 @@ presencial** (oficinas do Robô Educa desde 2018).
 O Case 01 é o ponto em que a ideação encontra a realidade: a primeira comunidade em que a
 plataforma será implantada e medida.
 
-|                          |                                                            |
-| ------------------------ | ---------------------------------------------------------- |
-| **Comunidade**           | Guerreira Zeferina                                         |
-| **Localização**          | Salvador — Bahia — Brasil                                  |
-| **Ciclo 01**             | **Agosto a dezembro de 2026**                              |
-| **Escopo do ciclo**      | Implantação do **MVP** da plataforma + trilhas 1 e 2       |
-| **Situação em jul/2026** | Ideação concluída; hipóteses formuladas; ciclo por iniciar |
+|                          |                                                                  |
+| ------------------------ | ---------------------------------------------------------------- |
+| **Comunidade**           | Guerreira Zeferina                                               |
+| **Localização**          | Salvador — Bahia — Brasil                                        |
+| **Ciclo 01**             | **Agosto a dezembro de 2026**                                    |
+| **Escopo do ciclo**      | Implantação do **MVP** da plataforma + trilhas 1 e 2 e Mapa Vivo |
+| **Situação em jul/2026** | Ideação concluída; hipóteses formuladas; ciclo por iniciar       |
 
 ## 2. Por que Guerreira Zeferina
 
@@ -95,6 +95,8 @@ possível dizer, sem reescrever a história, se cada uma se confirmou.
   definida — é o que faz a comunidade digital ganhar corpo dentro do Ciclo 01.
 - **Implementação das trilhas 1 e 2** — Robô Educa e Batalha de Laser, com os encontros
   presenciais em **dinâmica assíncrona**.
+- **Trilha Mapa Vivo** — mapa físico da comunidade feito pelos Guerreiros e Guerreiras,
+  transposto ao OSM pelo Mestre, e coleta de temperatura (documento 02 §3).
 
 ### 4.2 Construção dos artefatos digitais
 
@@ -125,6 +127,21 @@ porta, também por absorção. É o Ciclo 01 que produz a primeira medida real d
 > **Nota de escopo:** a operação vai de **agosto a novembro**; o ciclo se estende a
 > **dezembro**, reservado à culminância, à conferência de inventário e à avaliação das
 > hipóteses.
+
+### 4.4 Material de campo da Mapa Vivo
+
+O retrato do OSM em **27/11/2026** é o "antes" da trilha: a comunidade está desenhada como área
+(relação 12582832), com **61 itens** dentro dela — 10 prédios, quiosques, quadras, praças,
+pontos de lixo e de reciclagem — e **nenhuma árvore**. Quase tudo foi desenhado em abril de 2021
+e não mudou desde então.
+
+| Arquivo                                                                                        | Para que serve                                             |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| [Mapa de campo (PDF, A3)](materiais/ciclo-01-guerreira-zeferina/mapa-vivo-mapa-de-campo.pdf)   | Os 61 itens com código e grade de 40 m, e folha de desenho |
+| [Planilha de campo](materiais/ciclo-01-guerreira-zeferina/mapa-vivo-planilha-de-campo.xlsx)    | Conferência dos itens, novos itens e pontos de temperatura |
+| [Retrato do OSM (GeoJSON)](materiais/ciclo-01-guerreira-zeferina/osm-antes-2026-11-27.geojson) | O "antes" com geometria, base da comparação final          |
+
+Dados © colaboradores do OpenStreetMap, licença ODbL.
 
 ## 5. O acervo Include e os kits MDF neste MVP
 
@@ -184,8 +201,8 @@ Ao fim de dezembro de 2026, o ciclo responde:
    desafios de desbloqueio das missões diz sobre o que a turma aprendeu, trilha a trilha.
 5. **Entrega técnica** — quais aplicações chegaram a rodar em condição real de aula, com rede
    instável e aparelhos modestos.
-6. **Território** — quantos registros alimentaram a Comunidade Virtual e o que eles já permitem
-   dizer sobre o lugar.
+6. **Território** — quantos registros alimentaram a Comunidade Virtual, o que eles já permitem
+   dizer sobre o lugar e, na Mapa Vivo, o antes e depois do mapa no OSM.
 7. **Protagonismo** — quantas criações originais foram apresentadas na culminância e quantas
    sugestões de melhoria os Guerreiros e Guerreiras registraram.
 

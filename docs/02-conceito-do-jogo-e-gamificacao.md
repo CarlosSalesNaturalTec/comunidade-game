@@ -189,9 +189,12 @@ realidade**.
 > Uma Comunidade Virtual **existe na medida em que são registrados dados reais** do território.
 
 **Quem cria.** A criação é **exclusiva dos Admins**. A comunidade nasce como território vazio —
-nome, localização e granularidade, sem nenhum dado — e é **preenchida pelos Guerreiros e
-Guerreiras**. Não há autocadastro de comunidades, pela mesma razão que não há autocadastro de
-Mestres: a unidade territorial é estrutura da plataforma, não conteúdo gerado por usuário.
+nome, localização, granularidade e **contorno**, sem nenhum dado — e é **preenchida pelos
+Guerreiros e Guerreiras**. O contorno é a linha que delimita a comunidade no mapa: o Admin o
+cadastra **copiado do OpenStreetMap (OSM)**, e por isso ele leva o crédito e a licença ODbL do
+OSM (documento 03). Não há autocadastro de comunidades, pela mesma razão que não há
+autocadastro de Mestres: a unidade territorial é estrutura da plataforma, não conteúdo gerado
+por usuário.
 
 **Todo Guerreiro(a) pertence a uma comunidade.** O vínculo é **obrigatório** e atribuído
 automaticamente no cadastro, **pela comunidade da aula em que a pessoa está entrando** — o
@@ -411,6 +414,22 @@ construindo → apresentação ou batalha presencial → pontuação e visibilid
 As duas contam com **material de apoio impresso** do acervo Include, doado pelo
 Goethe-Institut (inventário, posse e guarda no documento 05).
 
+### Mapa Vivo — a trilha do território no Ciclo 01
+
+| Trilha        | Poder               | Autoria                     | Do que se trata                                                                                                        |
+| ------------- | ------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Mapa Vivo** | Poder do Território | Mestre formado em Geografia | Mapear a própria comunidade — edificações, arborização, equipamentos — e medir a temperatura em pontos escolhidos dela |
+
+- **No Ciclo 01, o Guerreiro(a) faz só o mapa físico**, em papel, em campo. Quem leva o
+  levantamento ao **OpenStreetMap** é o **Mestre**, pela conta dele ou da instituição, fora da
+  plataforma: o Guerreiro(a) não tem conta no OSM.
+- **A plataforma guarda a evidência**, não o mapa: a foto do mapa físico e o link do
+  _changeset_ do OSM entram como evidência da missão.
+- **A temperatura é o desafio de coleta** da trilha (§1) e não vai ao OSM.
+- **A trilha fecha com o antes e depois**: o retrato do OSM levantado na abertura comparado com
+  o que a turma acrescentou, identificado pela hashtag dos _changesets_.
+- A **leitura automática do OSM** pela plataforma fica para ciclo futuro.
+
 ### Demais trilhas previstas
 
 | Trilha                                      | Poder             | Conteúdo                                                                                                                                       | Quando       |
@@ -421,7 +440,7 @@ Goethe-Institut (inventário, posse e guarda no documento 05).
 
 > **Definição vigente:** essas trilhas — e os conteúdos de PNED/BNCC e Soft Skills — serão
 > definidas e implementadas em **ciclo futuro**. Não integram o escopo do Ciclo 01, cujas
-> trilhas em operação são apenas Robô Educa e Batalha de Laser. Isso também adia as decisões
+> trilhas em operação são apenas Robô Educa, Batalha de Laser e Mapa Vivo. Isso também adia as decisões
 > técnicas que dependiam delas, como a stack de análise de movimentos. **Rima e Capoeira têm
 > validação prévia de campo**: participaram, com o Robô Educa, do projeto **Inova Comunidade**
 > (2024, Guerreira Zeferina) — a retomada parte de experiência já testada.

@@ -8,7 +8,7 @@
 | Aplicação        | App 03 — Gestão administrativa                       |
 | Onda             | 2                                                    |
 | Situação         | aprovado                                             |
-| Versão e data    | v13 — 2026-11-20                                     |
+| Versão e data    | v14 — 2026-11-27                                     |
 | Depende de       | PRD-01                                               |
 | Documentos-fonte | 03 §§5, 8, 11, 12, 04 §§1–3, 05 §§2–5, 02 §§1, 4, 15 |
 
@@ -245,6 +245,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RF-02-15`  | Admin confere o vínculo do Guerreiro(a) à comunidade herdada da aula                                                                                          | essencial  |
 | `RF-02-16`  | Admin cadastra locais do território na hierarquia da comunidade                                                                                               | essencial  |
 | `RF-02-17`  | Admin consulta os desafios de coleta de trilha publicada, com cadência, vigência e séries ativas                                                              | desejável  |
+| `RF-02-122` | Admin cadastra e substitui o contorno da Comunidade Virtual — polígono GeoJSON copiado do OSM e o elemento de origem                                          | essencial  |
 | `RF-02-116` | Admin abre, da lista de Guerreiros e Guerreiras, a ficha de cada um com o histórico de pontuação e os saldos regular e extra                                  | essencial  |
 | `RF-02-117` | Admin altera nome, e-mail, WhatsApp e artefatos de Mestre e Apoiador; nick, papel e termos não                                                                | essencial  |
 | `RF-02-118` | Admin exclui Mestre ou Apoiador nunca usado; o usado é recusado e aponta a desativação                                                                        | essencial  |
@@ -655,6 +656,7 @@ contar, e dá à gestão a distribuição etária que **H4** observa.
 | Aportes na ficha do adulto, com reais só ao Admin (`RF-02-120`, `RN-02-36`)                                                                                  | 04 §1              | Aportes na ficha do adulto                                     |
 | Aula declara só consumo do encontro e não tem fechamento; catálogo com finalidade (`RF-02-31`, `RF-02-33`, `RF-02-35`, `RF-02-107`, `RF-02-113`, `RN-02-09`) | 04 §1              | Consumo do encontro e recompensa de marco                      |
 | Necessidades da gestão incluem as da recompensa de marco (`RF-02-58`)                                                                                        | 04 §1              | Consumo do encontro e recompensa de marco                      |
+| Contorno da comunidade cadastrado pelo Admin, copiado do OSM (`RF-02-122`)                                                                                   | 02 §1, 03 §12.3    | Contorno da Comunidade Virtual                                 |
 
 A **trilha de auditoria das ações de Admin**, questão que o documento 08 listava para este PRD,
 foi definida no PRD-01 — a App 03 apenas a consulta.
@@ -688,6 +690,7 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-01` a `RF-02-10`   | 02 §§1, 5 e 03 §5 (cadastros e governança de personas)                |
 | `RF-02-99` e `RF-02-100`  | 02 §1 e 11 §5 (encerramento do ciclo e seus dois efeitos)             |
 | `RF-02-11` a `RF-02-17`   | 02 §1, 03 §5 e PRD-08 (comunidade, default e território)              |
+| `RF-02-122`               | 02 §1 e PRD-08 `RF-08-33` (contorno da comunidade)                    |
 | `RF-02-18` a `RF-02-20`   | 02 §1 e 03 §§5, 8 (solicitação de participação)                       |
 | `RF-02-77` a `RF-02-79`   | 03 §12.3 (entrega de dados aprovada por Admin)                        |
 | `RF-02-93`                | 03 §12.3 (critério de aprovação da entrega)                           |
