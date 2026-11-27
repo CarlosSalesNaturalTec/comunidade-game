@@ -664,8 +664,9 @@ Mestre SHALL ser recusada com **422** na escalação. (`RF-02-30`, PRD-02 §8)
 ### Requirement: O Mestre lê as presenças registradas na aula
 
 O núcleo SHALL servir ao Mestre em sessão as **presenças não anuladas** de uma aula das
-comunidades dele, cada uma com o **nick** e o **avatar** do Guerreiro(a), o **momento do fato**
-e o **modo de comprovação** — reconhecimento ou confirmação. A saída NEVER SHALL trazer imagem
+comunidades dele, cada uma com o **nick**, o **nome** e o **avatar** do Guerreiro(a), o
+**momento do fato** e o **modo de comprovação** — reconhecimento ou confirmação. O nome vem
+nulo quando o Guerreiro(a) não o tem cadastrado. A saída NEVER SHALL trazer imagem
 real nem descritor facial do Guerreiro(a) (`RN-09-18`), e a presença anulada NEVER SHALL
 aparecer. Aula sem presença SHALL devolver lista vazia, nunca erro.
 
@@ -677,7 +678,7 @@ receber **403**. (`RF-09-145`, `RF-09-42`, `RF-09-45`, `RN-09-08`, `RN-09-18`)
 #### Scenario: O Mestre lê os presentes da sua aula
 
 - **WHEN** o Mestre em sessão lê as presenças de uma aula da comunidade dele
-- **THEN** o núcleo devolve cada presença com nick, avatar, momento do fato e modo
+- **THEN** o núcleo devolve cada presença com nick, nome, avatar, momento do fato e modo
 
 #### Scenario: Presença anulada não aparece
 

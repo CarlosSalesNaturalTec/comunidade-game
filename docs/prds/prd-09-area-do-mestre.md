@@ -8,7 +8,7 @@
 | Aplicação        | App 09 — Área do Mestre                                                |
 | Onda             | 3                                                                      |
 | Situação         | aprovado                                                               |
-| Versão e data    | v8 — 2026-11-20                                                        |
+| Versão e data    | v9 — 2026-11-27                                                        |
 | Depende de       | PRD-01                                                                 |
 | Documentos-fonte | 02 §§1–4, 03 §§1, 11, 04 §1, 05 §§3, 5, 6, 06, 07, 11 §§2, 4, 5, 7, 15 |
 
@@ -360,7 +360,7 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-113` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro, no aparelho do encontro (PRD-04 `RF-04-84`), e não nesta aplicação                  | essencial  |
 | `RF-09-143` | Mestre abre a ficha de cada Guerreiro(a) ativo das comunidades do seu vínculo vigente, por nick e avatar                                                                                                                | essencial  |
 | `RF-09-144` | A ficha exibe o histórico de pontuação — data, origem, valor, trilha ou poder e motivo da conduta — e os saldos regular e extra                                                                                         | essencial  |
-| `RF-09-145` | Na aula, o Mestre vê os presentes — presença não anulada, por nick e avatar, com hora e modo de comprovação                                                                                                             | essencial  |
+| `RF-09-145` | Na aula, o Mestre vê os presentes — presença não anulada, por nick, nome e avatar, com hora e modo de comprovação                                                                                                       | essencial  |
 
 ### 6.7 Validações, filas e propostas
 
@@ -812,6 +812,9 @@ Decisão do fundador de 2026-11-20, em `/opsx:propose` (linha "Presentes da aula
 turmas" do documento 09): a aula cancelada deixa de vir do núcleo em `GET /v1/minhas-turmas`;
 a seção de atividades presenciais sai de Minhas turmas (`RF-09-73` reescrito); e a aula
 lista os presentes (`RF-09-145`).
+
+Decisão do fundador de 2026-11-27, em `/opsx:propose` (mesma linha do documento 09): cada
+presente da aula aparece também pelo nome, ao lado do nick e do avatar (`RF-09-145`).
 
 Decisão do fundador de 2026-11-20 (linha "Consumo do encontro e recompensa de marco" do
 documento 09; PRD-07 v12): a recompensa declarada exige tipo de finalidade recompensa

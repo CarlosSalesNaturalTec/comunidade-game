@@ -516,7 +516,7 @@ Recusa do núcleo SHALL ser apresentada em **linguagem simples, sem jargão de T
 
 A App 09 SHALL apresentar, na tela da aula aberta pelo botão **Presença e ocorrência**, a lista
 dos **presentes nesta aula** — os Guerreiros e Guerreiras com presença registrada e não
-anulada, cada um por **nick e avatar desenhado**, com a **hora** e o **modo** da comprovação
+anulada, cada um por **avatar desenhado, nick e nome**, com a **hora** e o **modo** da comprovação
 (reconhecimento ou confirmação). Aula sem presença SHALL apresentar mensagem de lista vazia; a
 falha da leitura SHALL ser dita em linguagem simples sem impedir os formulários da tela
 (`RF-09-145`, `RN-09-18`).
@@ -541,7 +541,13 @@ linguagem simples a recusa por teto da aula alcançado. (`RF-09-45`, `RF-09-46`,
 #### Scenario: A tela da aula lista os presentes
 
 - **WHEN** o Mestre abre Presença e ocorrência de uma aula com presenças registradas
-- **THEN** a aplicação lista cada presente por nick e avatar desenhado, com a hora e o modo
+- **THEN** a aplicação lista cada presente por avatar desenhado, nick e nome, com a hora e o
+  modo
+
+#### Scenario: Presente sem nome cadastrado
+
+- **WHEN** um dos presentes não tem nome cadastrado
+- **THEN** a aplicação o lista pelo avatar e pelo nick, com a marca "sem nome" no lugar do nome
 
 #### Scenario: Aula sem presença diz que a lista está vazia
 

@@ -13,6 +13,10 @@ const ROTULO_DO_MODO: Record<string, string> = {
   confirmacao: "Confirmação",
 };
 
+// O nick nem sempre diz quem é a criança: o nome vai ao lado dele, e a marca
+// diz ao Mestre quando o cadastro não o tem (`RF-09-145`).
+const SEM_NOME = "sem nome";
+
 const FORMATADOR_DA_HORA = new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" });
 
 // O nick é único sem distinção de maiúsculas no núcleo, então a forma
@@ -244,7 +248,8 @@ export function TelaDaAula({
                 <div className="lista-de-turmas__linha">
                   <span>
                     <Avatar avatar={presenca.avatar} tamanho={32} />{" "}
-                    {presenca.nick ?? presenca.guerreiro_id}
+                    {presenca.nick ?? presenca.guerreiro_id} —{" "}
+                    {presenca.nome?.trim() || SEM_NOME}
                   </span>
                   <span>
                     {FORMATADOR_DA_HORA.format(new Date(presenca.momento_do_fato))} ·{" "}

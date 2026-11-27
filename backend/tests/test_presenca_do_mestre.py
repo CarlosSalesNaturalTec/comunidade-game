@@ -951,6 +951,8 @@ def test_mestre_le_os_presentes_da_sua_aula(
     segundo = criar_persona(Papel.guerreiro, comunidade=comunidade)
     criar_nick(primeiro, "Zeferina")
     criar_nick(segundo, "Dandara")
+    primeiro.nome = "Zeferina da Silva"
+    sessao.commit()
     headers = {"X-Chave-Aplicacao": chave, "Authorization": f"Bearer {token}"}
     _registrar(cliente, aula, segundo, headers, momento=MOMENTO_DO_FATO + timedelta(minutes=5))
     _registrar(cliente, aula, primeiro, headers)
@@ -959,14 +961,22 @@ def test_mestre_le_os_presentes_da_sua_aula(
 
     assert resposta.status_code == 200
     itens = resposta.json()["itens"]
-    assert [(i["nick"], i["guerreiro_id"]) for i in itens] == [
-        ("Zeferina", str(primeiro.id)),
-        ("Dandara", str(segundo.id)),
+    assert [(i["nick"], i["nome"], i["guerreiro_id"]) for i in itens] == [
+        ("Zeferina", "Zeferina da Silva", str(primeiro.id)),
+        ("Dandara", None, str(segundo.id)),
     ]
     assert itens[0]["avatar"] == '{"pele": 1}'
     assert itens[0]["modo"] == "confirmacao"
     assert datetime.fromisoformat(itens[0]["momento_do_fato"]) == MOMENTO_DO_FATO
-    assert set(itens[0]) == {"id", "guerreiro_id", "nick", "avatar", "momento_do_fato", "modo"}
+    assert set(itens[0]) == {
+        "id",
+        "guerreiro_id",
+        "nick",
+        "nome",
+        "avatar",
+        "momento_do_fato",
+        "modo",
+    }
 
 
 def test_presenca_anulada_some_e_aula_sem_presenca_da_lista_vazia(

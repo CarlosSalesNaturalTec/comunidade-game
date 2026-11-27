@@ -614,12 +614,14 @@ def ler_minha_presenca_rota(
 
 
 class PresencaDaAulaSaida(BaseModel):
-    """Quem está presente na aula, só por nick e avatar — nenhuma imagem real
-    nem descritor facial (`RF-09-145`, `RN-09-18`)."""
+    """Quem está presente na aula, por nick, nome e avatar — nenhuma imagem
+    real nem descritor facial (`RF-09-145`, `RN-09-18`). O nome vem nulo quando
+    o Guerreiro(a) não o tem cadastrado."""
 
     id: uuid.UUID
     guerreiro_id: uuid.UUID
     nick: str | None
+    nome: str | None
     avatar: str | None
     momento_do_fato: DataHoraComFuso
     modo: str
@@ -645,7 +647,7 @@ def listar_presencas_da_aula_rota(
         raise NaoEncontrado(mensagem="Aula não encontrada.")
 
     linhas = (
-        sessao_bd.query(Presenca, Nick.valor, Persona.avatar)
+        sessao_bd.query(Presenca, Nick.valor, Persona.nome, Persona.avatar)
         .join(Persona, Persona.id == Presenca.guerreiro_id)
         .outerjoin(Nick, Nick.persona_id == Presenca.guerreiro_id)
         .filter(Presenca.aula_id == aula.id, Presenca.anulada_em.is_(None))
@@ -658,11 +660,12 @@ def listar_presencas_da_aula_rota(
                 id=presenca.id,
                 guerreiro_id=presenca.guerreiro_id,
                 nick=nick,
+                nome=nome,
                 avatar=avatar,
                 momento_do_fato=presenca.momento_do_fato,
                 modo=presenca.modo.value,
             )
-            for presenca, nick, avatar in linhas
+            for presenca, nick, nome, avatar in linhas
         ],
         proximo_cursor=None,
     )
