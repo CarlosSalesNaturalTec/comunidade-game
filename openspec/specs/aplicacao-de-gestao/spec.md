@@ -918,6 +918,11 @@ nome: é sobre esse nome que se apoia o consentimento que autoriza a captura da 
 criança, e o núcleo o exige de toda aplicação que cadastra responsável. (`RF-02-06`,
 `responsavel-e-vinculo`)
 
+O cadastro SHALL oferecer o **e-mail** do responsável como campo **opcional**, declarando que é
+o e-mail da conta Google com que ele entrará na App 07. A recusa do e-mail já usado por outra
+pessoa SHALL ser dita em linguagem simples, no campo. (`RF-02-06`, `RF-01-92`, decisão do
+fundador de 2026-11-27)
+
 Cada vínculo já criado que a aplicação apresenta SHALL identificar o **Guerreiro(a) pelo
 nick**, ao lado do grau de parentesco. O parentesco sozinho NEVER SHALL bastar: ele se
 repete entre irmãos, e o Admin precisa conferir a quem cada vínculo se refere para saber se
@@ -934,6 +939,17 @@ apresentado de modo que a linha continue distinguível. (`RF-02-06`)
 - **WHEN** o Admin informa o nome do responsável e confirma o cadastro
 - **THEN** o responsável passa a existir com o nome declarado, e o cadastro segue para o
   vínculo
+
+#### Scenario: O responsável é cadastrado com o e-mail da conta Google
+
+- **WHEN** o Admin informa nome e e-mail do responsável e confirma o cadastro
+- **THEN** o responsável passa a existir com o e-mail, e pode entrar na App 07 pela conta
+  Google desse e-mail
+
+#### Scenario: E-mail já usado é explicado no campo
+
+- **WHEN** o Admin cadastra um responsável com e-mail que já é de outra pessoa
+- **THEN** a aplicação explica, no campo do e-mail, que ele já é usado por outro cadastro
 
 #### Scenario: Cadastro sem nome não chega ao núcleo
 
@@ -2540,8 +2556,10 @@ Guerreiro(a)** a ele, declarando o grau de parentesco, sem exigir novo cadastro.
 três responsáveis por Guerreiro(a) SHALL continuar a ser explicado quando o núcleo o recusar.
 (`RF-02-111`, `RF-02-06`, `RN-02-08`, invariante 3 do documento 99 §6)
 
-A lista NEVER SHALL apresentar credencial, senha, usuário de acesso ou contato do responsável,
-nem imagem real, nascimento ou contato do Guerreiro(a). A tela SHALL exibir o aviso de coleta
+Cada linha SHALL apresentar o **acesso** do responsável: o e-mail do login social e o usuário
+da credencial de usuário e senha, quando existem, e a indicação de **sem acesso** quando nenhum
+dos dois existe. A lista NEVER SHALL apresentar senha, nem imagem real, nascimento ou contato
+do Guerreiro(a). (`RF-02-111`, `RF-01-92`, decisão do fundador de 2026-11-27) A tela SHALL exibir o aviso de coleta
 que toda tela de dado pessoal da gestão já exibe. (`RF-02-111`, `RF-02-64`, `RN-02-22`,
 `RN-02-23`)
 
@@ -2574,11 +2592,20 @@ que toda tela de dado pessoal da gestão já exibe. (`RF-02-111`, `RF-02-64`, `R
 - **WHEN** nenhum responsável foi cadastrado ainda
 - **THEN** a tela diz que não há cadastro e continua oferecendo cadastrar um
 
+#### Scenario: A linha mostra como o responsável entra
+
+- **WHEN** o Admin lê a lista e um responsável tem e-mail e usuário de acesso
+- **THEN** a linha dele apresenta o e-mail e o usuário
+
+#### Scenario: Responsável sem acesso é sinalizado
+
+- **WHEN** um responsável não tem e-mail nem usuário de acesso
+- **THEN** a linha dele o marca como sem acesso
+
 #### Scenario: A lista não expõe credencial nem dado civil da criança
 
 - **WHEN** o Admin lê a lista
-- **THEN** nenhuma linha traz credencial, senha, usuário ou contato do responsável, nem
-  imagem real, nascimento ou contato de Guerreiro(a)
+- **THEN** nenhuma linha traz senha, nem imagem real, nascimento ou contato de Guerreiro(a)
 
 ### Requirement: O Admin edita o conteúdo institucional da vitrine pela gestão
 
@@ -3022,3 +3049,32 @@ trilha e tipo no lugar da aula. (`RF-02-102`, `RF-02-103`, `RF-07-54`)
 
 - **WHEN** o Admin escolhe uma necessidade de recompensa e preenche os campos da missão
 - **THEN** a aplicação envia comunidade, trilha e tipo, e a missão é publicada
+
+### Requirement: O Admin edita a ficha do responsável
+
+A App 03 SHALL oferecer ao Admin, a partir de um responsável da lista, **editar a ficha**:
+**nome** e **e-mail**, apresentados com o valor vigente. Esvaziar o e-mail SHALL ser declarado
+como retirada do acesso pela conta Google, sem tocar a credencial de usuário e senha. As
+recusas do núcleo SHALL ser ditas em linguagem simples, no campo. Ao salvar, a lista volta
+atualizada. (`RF-02-121`, `RF-01-92`)
+
+#### Scenario: O Admin corrige o nome do responsável
+
+- **WHEN** o Admin abre a ficha de um responsável, altera o nome e salva
+- **THEN** a lista volta com o nome novo, e os vinculados seguem os mesmos
+
+#### Scenario: O Admin dá o acesso pela conta Google
+
+- **WHEN** o Admin grava o e-mail de um responsável que não tinha
+- **THEN** a lista volta mostrando o e-mail na coluna de acesso dele
+
+#### Scenario: A retirada do e-mail é declarada antes de salvar
+
+- **WHEN** o Admin esvazia o e-mail na ficha
+- **THEN** a tela declara que o responsável deixará de entrar pela conta Google, e ao salvar o
+  e-mail some da coluna de acesso
+
+#### Scenario: Nome em branco não chega ao núcleo
+
+- **WHEN** o Admin esvazia o nome e tenta salvar
+- **THEN** a aplicação pede o nome e não envia a alteração

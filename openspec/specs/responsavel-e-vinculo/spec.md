@@ -24,6 +24,12 @@ acesso ou a digitalização do termo — o acesso à App 07 e o arquivo do docum
 atos da gestão, depois do encontro. (`RF-04-60`, PRD-04 §§3.2, 11, PRD-13 §11, documento 09 —
 decisão do fundador, 2026-08-24)
 
+O cadastro SHALL aceitar o **e-mail** do responsável como campo **opcional**. Informado, o
+núcleo SHALL criar, na mesma transação, a credencial de **login social** identificada por esse
+e-mail, para que o responsável entre na App 07 pela conta Google. E-mail que já identifica a
+credencial social ativa de outra persona SHALL ser recusado com **422**, e nada é criado.
+(`RF-01-92`, `RF-01-13`, documento 03 §1.1, decisão do fundador de 2026-11-27)
+
 #### Scenario: Mestre cadastra responsável
 
 - **WHEN** um Mestre cadastra a persona de um responsável com o nome dela
@@ -36,9 +42,20 @@ decisão do fundador, 2026-08-24)
 
 #### Scenario: O cadastro não cria acesso
 
-- **WHEN** um responsável é cadastrado no encontro
+- **WHEN** um responsável é cadastrado no encontro só com o nome
 - **THEN** nenhuma credencial de acesso nasce com ele, e a entrada na App 07 continua dependendo
   de ato da gestão
+
+#### Scenario: O cadastro com e-mail abre o login social
+
+- **WHEN** um Admin ou um Mestre cadastra um responsável com nome e e-mail
+- **THEN** o núcleo grava o e-mail e cria a credencial de login social com ele, e o responsável
+  passa a abrir sessão pela conta Google desse e-mail
+
+#### Scenario: E-mail de outra pessoa é recusado no cadastro
+
+- **WHEN** o e-mail informado já identifica a credencial social ativa de outra persona
+- **THEN** o núcleo responde 422 indicando o campo, e nenhuma persona nem credencial é criada
 
 #### Scenario: Responsável recém-cadastrado não alcança ninguém
 
@@ -258,10 +275,12 @@ vinculados vazia: é o cadastro interrompido, e é para retomá-lo que a leitura
 **encerrado** NEVER SHALL aparecer entre os vinculados. Guerreiro(a) sem nome gravado SHALL
 vir com o nome vazio, e o vinculado nunca some da lista por isso.
 
-A resposta SHALL trazer apenas o que identifica o responsável e os vinculados dele — nome do
-responsável e, de cada vinculado, nick, nome e grau de parentesco — e NEVER SHALL trazer
-credencial, senha, usuário de acesso nem contato do responsável, nem imagem real, nascimento ou
-contato do Guerreiro(a). A leitura SHALL usar a **mesma operação de vínculo** que a matriz de
+A resposta SHALL trazer apenas o que identifica o responsável, o **acesso** dele e os
+vinculados — nome do responsável; o **e-mail** da credencial de login social ativa e o
+**usuário** da credencial de usuário e senha ativa, cada um vazio quando não existe; e, de cada
+vinculado, nick, nome e grau de parentesco. NEVER SHALL trazer senha, hash, troca pendente nem
+credencial desativada, nem imagem real, nascimento ou contato do Guerreiro(a). (`RF-01-92`,
+decisão do fundador de 2026-11-27) A leitura SHALL usar a **mesma operação de vínculo** que a matriz de
 permissões já concede aos dois papéis, sem `Operacao` nova, e persona de qualquer outro papel
 SHALL receber **403**. (`RF-02-111`, `RF-09-122`, `RF-01-13`, `RN-01-20`, `RN-09-18`,
 invariante 12 do documento 99 §6, decisões do fundador de 2026-09-26 e de 2026-11-26)
@@ -307,9 +326,20 @@ invariante 12 do documento 99 §6, decisões do fundador de 2026-09-26 e de 2026
 
 #### Scenario: A resposta não traz credencial nem contato
 
-- **WHEN** um Admin ou um Mestre lê a lista
-- **THEN** cada responsável traz nome e vinculados, e nenhum traz credencial, senha, usuário
-  ou contato
+- **WHEN** um Admin ou um Mestre lê a lista e um responsável tem login social e credencial de
+  usuário e senha ativos
+- **THEN** ele vem com o e-mail e o usuário, e nenhum responsável traz senha, hash ou a marca
+  de troca pendente
+
+#### Scenario: Responsável sem acesso vem com os dois campos vazios
+
+- **WHEN** um responsável não tem credencial ativa alguma
+- **THEN** ele aparece na lista com o e-mail e o usuário vazios
+
+#### Scenario: Credencial desativada não aparece
+
+- **WHEN** o login social de um responsável foi desativado pela retirada do e-mail
+- **THEN** a lista traz o e-mail dele vazio
 
 #### Scenario: A lista não expõe dado pessoal da criança
 
@@ -321,3 +351,49 @@ invariante 12 do documento 99 §6, decisões do fundador de 2026-09-26 e de 2026
 
 - **WHEN** um responsável, um Apoiador ou um Guerreiro(a) chama a rota
 - **THEN** o núcleo responde 403 e nada é devolvido
+
+### Requirement: O Admin altera a ficha do responsável
+
+O núcleo SHALL permitir, **só ao Admin**, alterar o **nome** e o **e-mail** de um responsável.
+Campo ausente mantém; nome em branco é recusado com 422. Gravar e-mail onde não havia SHALL criar
+a credencial de login social; trocá-lo SHALL trocar o identificador dela; retirá-lo SHALL
+desativá-la. E-mail de credencial social ativa de outra persona SHALL ser recusado com 422.
+Outro papel, Mestre incluído, SHALL receber 403. (`RF-01-92`, `RF-02-121`)
+
+#### Scenario: Admin corrige o nome
+
+- **WHEN** um Admin altera o nome de um responsável
+- **THEN** o núcleo grava o nome novo, e vínculos e credenciais seguem como estavam
+
+#### Scenario: Admin dá o acesso pelo Google a quem não tinha
+
+- **WHEN** um Admin grava o e-mail de um responsável cadastrado sem e-mail
+- **THEN** nasce a credencial de login social com esse e-mail, e o responsável passa a entrar
+  pela conta Google dele
+
+#### Scenario: Admin troca o e-mail
+
+- **WHEN** um Admin troca o e-mail de um responsável por um endereço livre
+- **THEN** o login social passa a reconhecer o endereço novo e deixa de reconhecer o antigo
+
+#### Scenario: Admin retira o e-mail
+
+- **WHEN** um Admin retira o e-mail de um responsável
+- **THEN** a credencial de login social dele é desativada, e a credencial de usuário e senha,
+  se houver, continua valendo
+
+#### Scenario: E-mail de outra pessoa é recusado na edição
+
+- **WHEN** o e-mail informado já identifica a credencial social ativa de outra persona
+- **THEN** o núcleo responde 422 indicando o campo, e a ficha continua como estava
+
+#### Scenario: O Mestre não altera a ficha
+
+- **WHEN** um Mestre, ou qualquer papel que não seja Admin, tenta alterar a ficha de um
+  responsável
+- **THEN** o núcleo responde 403 e nada muda
+
+#### Scenario: Persona que não é responsável não é alcançada
+
+- **WHEN** um Admin chama a alteração com o identificador de persona de outro papel
+- **THEN** o núcleo responde 404 e nada muda
