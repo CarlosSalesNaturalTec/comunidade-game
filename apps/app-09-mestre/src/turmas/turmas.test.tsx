@@ -460,6 +460,7 @@ describe("presentes nesta aula (RF-09-145, RN-09-18)", () => {
       id: "presenca-1",
       guerreiro_id: "guerreiro-1",
       nick: "Zeferina",
+      nome: "Zeferina da Silva",
       avatar: null,
       momento_do_fato: "2026-08-01T10:05:00-03:00",
       modo: "reconhecimento",
@@ -477,24 +478,38 @@ describe("presentes nesta aula (RF-09-145, RN-09-18)", () => {
     return usuario;
   }
 
-  it("lista cada presente por avatar desenhado e nick, com hora e modo", async () => {
-    const listar = vi
-      .spyOn(turmasApi, "listarPresencasDaAula")
-      .mockResolvedValue([
-        presenca(),
-        presenca({ id: "presenca-2", nick: "Dandara", modo: "confirmacao" }),
-      ]);
+  it("lista cada presente por avatar desenhado, nick e nome, com hora e modo", async () => {
+    const listar = vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([
+      presenca(),
+      presenca({
+        id: "presenca-2",
+        nick: "Dandara",
+        nome: "Dandara dos Palmares",
+        modo: "confirmacao",
+      }),
+    ]);
 
     await abrir();
 
     const lista = await screen.findByRole("list", { name: /^presentes$/i });
     expect(listar).toHaveBeenCalledWith("aula-1", "token-do-mestre");
-    expect(lista).toHaveTextContent("Zeferina");
+    expect(lista).toHaveTextContent("Zeferina — Zeferina da Silva");
     expect(lista).toHaveTextContent("Reconhecimento");
-    expect(lista).toHaveTextContent("Dandara");
+    expect(lista).toHaveTextContent("Dandara — Dandara dos Palmares");
     expect(lista).toHaveTextContent("Confirmação");
     expect(lista.querySelectorAll("svg")).toHaveLength(2);
     expect(lista.querySelector("img")).toBeNull();
+  });
+
+  it("presente sem nome cadastrado aparece com a marca sem nome", async () => {
+    vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([
+      presenca({ nome: null }),
+    ]);
+
+    await abrir();
+
+    const lista = await screen.findByRole("list", { name: /^presentes$/i });
+    expect(lista).toHaveTextContent("Zeferina — sem nome");
   });
 
   it("aula sem presença diz que a lista está vazia", async () => {

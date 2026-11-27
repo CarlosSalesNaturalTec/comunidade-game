@@ -117,6 +117,7 @@ export interface PresencaDaAula {
   id: string;
   guerreiro_id: string;
   nick: string | null;
+  nome: string | null;
   avatar: string | null;
   momento_do_fato: string;
   modo: string;
