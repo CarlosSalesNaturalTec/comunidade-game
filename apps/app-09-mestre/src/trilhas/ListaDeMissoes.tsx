@@ -410,6 +410,8 @@ export function ListaDeMissoes({
           <PreVisualizacaoDaMissao
             missao={missao}
             autorNome={nickDoMestre}
+            recompensas={recompensasDeMarco.filter((r) => r.missao_id === missao.id)}
+            tiposDeRecurso={tiposDeRecurso}
             onFechar={() => definirMissaoEmPreVisualizacao(null)}
           />
         ) : (

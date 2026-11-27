@@ -1,5 +1,7 @@
 import { useSessao } from "comum/autenticacao";
 import { Aviso, Botao, MidiaDoNucleo } from "comum/react";
+import type { RecompensaDeMarco } from "../recompensas/api";
+import type { TipoDeRecurso } from "../recursos/api";
 import {
   lerImagemDaPergunta,
   type MissaoDaTrilha,
@@ -10,6 +12,10 @@ import { ConteudoExibido } from "./ConteudoExibido";
 interface Props {
   missao: MissaoDaTrilha;
   autorNome: string | null;
+  // As recompensas de marco já filtradas por esta missão, e o catálogo que
+  // dá nome ao tipo de recurso delas (`RF-09-84`).
+  recompensas?: RecompensaDeMarco[];
+  tiposDeRecurso?: TipoDeRecurso[];
   onFechar: () => void;
 }
 
@@ -27,12 +33,32 @@ const CREDITO_SEM_NICK = "Mestre autor";
 // (`RF-09-04`), e a pré-visualização nunca grava nem publica nada
 // (`RF-09-25`). Ela espelha aquela tela em vez de partilhar componente com
 // ela — as duas podem divergir, e é a suíte que segura (design — decisão 4).
-export function PreVisualizacaoDaMissao({ missao, autorNome, onFechar }: Props) {
+// Nomes distintos, na ordem em que foram declarados: a recompensa aparece só
+// pelo recurso, sem a quantidade (decisão do fundador de 2026-11-27). Tipo
+// fora do catálogo cai no mesmo texto de reserva do bloco de recompensa.
+function nomesDasRecompensas(
+  recompensas: RecompensaDeMarco[],
+  tiposDeRecurso: TipoDeRecurso[],
+): string[] {
+  const nomeDoTipo = new Map(tiposDeRecurso.map((tipo) => [tipo.id, tipo.nome]));
+  const nomes = recompensas.map((r) => nomeDoTipo.get(r.tipo_de_recurso_id) ?? "Recurso");
+  return [...new Set(nomes)];
+}
+
+export function PreVisualizacaoDaMissao({
+  missao,
+  autorNome,
+  recompensas = [],
+  tiposDeRecurso = [],
+  onFechar,
+}: Props) {
   const { sessao } = useSessao();
   const token = sessao?.token ?? null;
   const conteudos = [...(missao.conteudos ?? [])].sort((a, b) => a.ordem - b.ordem);
   const bibliografia = missao.bibliografia ?? [];
   const perguntas = missao.perguntas_do_desbloqueio ?? [];
+  const nomesDaRecompensa = nomesDasRecompensas(recompensas, tiposDeRecurso);
+  const pratico = missao.tipo_do_desafio_de_desbloqueio === "pratico";
 
   return (
     <section aria-label={`Pré-visualização de ${missao.titulo}`} className="cg-moldura">
@@ -134,6 +160,42 @@ export function PreVisualizacaoDaMissao({ missao, autorNome, onFechar }: Props) 
           ))}
         </ol>
       )}
+
+      {/* O que o autor declarou para o desbloqueio e o Guerreiro(a) não lê na
+          missão: fica à parte para a ficha seguir fiel à App 05 (`RF-09-25`,
+          design — decisão 1). */}
+      <section aria-label="O que só você vê" className="cg-moldura">
+        <h3>O que só você vê</h3>
+        <p>O Guerreiro(a) não vê isto na missão.</p>
+
+        <h4>Recompensa pelo desbloqueio</h4>
+        {nomesDaRecompensa.length === 0 ? (
+          <p>Nenhuma recompensa pelo desbloqueio declarada ainda.</p>
+        ) : (
+          <ul aria-label="Recompensa pelo desbloqueio">
+            {nomesDaRecompensa.map((nome) => (
+              <li key={nome}>{nome}</li>
+            ))}
+          </ul>
+        )}
+
+        {/* Prático declarado antes de 2026-11-04 vem sem os dois e segue
+            valendo (`RN-09-50`). */}
+        {pratico && missao.desafio_pratico_titulo_curto && (
+          <p>Título na vitrine: {missao.desafio_pratico_titulo_curto}</p>
+        )}
+        {pratico && missao.desafio_pratico_kit_apresentado && (
+          <p>Kit apresentado: {missao.desafio_pratico_kit_apresentado.tipo_de_recurso_nome}</p>
+        )}
+
+        {missao.tipo_do_desafio_de_desbloqueio === "quiz" && (
+          <p>
+            {missao.e_sondagem
+              ? "Aqui não tem passar nem reprovar: a trilha abre assim que o Guerreiro(a) responde."
+              : "Passa quem acerta ao menos 60% das perguntas."}
+          </p>
+        )}
+      </section>
 
       <Botao onClick={onFechar}>Fechar pré-visualização</Botao>
     </section>

@@ -4870,3 +4870,101 @@ describe("kit apresentado no prático (RF-09-141)", () => {
     expect(await screen.findByText(/apresentando o kit kit de robótica/i)).toBeInTheDocument();
   });
 });
+
+// ---------------------------------------------------------------------------
+// O que o autor declarou para o desbloqueio, na pré-visualização (`RF-09-25`,
+// `RF-09-84`, `RF-09-131`, `RF-09-141`, `RN-05-45`, `RN-05-46`).
+// ---------------------------------------------------------------------------
+
+async function abrirPreVisualizacao(
+  missaoDaVez: MissaoDaTrilha,
+  recompensas: recompensasApi.RecompensaDeMarco[] = [],
+) {
+  configurarSessao();
+  vi.spyOn(trilhasApi, "listarMinhasTrilhas").mockResolvedValue([
+    trilha({ missoes: [missaoDaVez] }),
+  ]);
+  vi.spyOn(poderesApi, "listarPoderes").mockResolvedValue({ itens: [], proximo_cursor: null });
+  vi.spyOn(recursosApi, "listarTiposDeRecurso").mockResolvedValue([KIT_DE_ROBOTICA]);
+  vi.spyOn(recompensasApi, "listarRecompensasDeMarco").mockResolvedValue(recompensas);
+
+  render(<TelaDeAutoria />);
+  const usuario = await abrirMissao();
+  await usuario.click(await screen.findByRole("button", { name: /pré-visualizar missão/i }));
+  return screen.findByRole("region", { name: /o que só você vê/i });
+}
+
+describe("pré-visualização: o que só o autor vê do desbloqueio (RF-09-25)", () => {
+  it("a recompensa aparece pelo nome do recurso, sem quantidade e sem repetir (RF-09-84)", async () => {
+    const trecho = await abrirPreVisualizacao(missaoComPratico(), [
+      { ...RECOMPENSA_DO_KIT, quantidade: "3" },
+      { ...RECOMPENSA_DO_KIT, id: "recompensa-kit-2", quantidade: "2" },
+    ]);
+
+    const lista = await within(trecho).findByRole("list", {
+      name: /recompensa pelo desbloqueio/i,
+    });
+    const itens = within(lista).getAllByRole("listitem");
+    expect(itens).toHaveLength(1);
+    expect(itens[0]).toHaveTextContent(/^Kit de robótica$/);
+    expect(trecho).not.toHaveTextContent(/\b3\b/);
+  });
+
+  it("sem recompensa, diz que nenhuma foi declarada (RF-09-84)", async () => {
+    const trecho = await abrirPreVisualizacao(missao());
+
+    expect(
+      within(trecho).getByText(/nenhuma recompensa pelo desbloqueio declarada ainda/i),
+    ).toBeInTheDocument();
+  });
+
+  it("o prático traz o título curto e o kit apresentado (RF-09-131, RF-09-141)", async () => {
+    const trecho = await abrirPreVisualizacao(
+      missaoComPratico({ desafio_pratico_kit_apresentado: KIT_DECLARADO }),
+      [RECOMPENSA_DO_KIT],
+    );
+
+    expect(within(trecho).getByText("Título na vitrine: Robô de sucata")).toBeInTheDocument();
+    expect(within(trecho).getByText("Kit apresentado: Kit de robótica")).toBeInTheDocument();
+  });
+
+  it("prático antigo, sem título nem kit, não mostra nenhum dos dois (RN-09-50)", async () => {
+    const trecho = await abrirPreVisualizacao(
+      missaoComPratico({
+        desafio_pratico_titulo_curto: null,
+        desafio_pratico_kit_apresentado: null,
+      }),
+    );
+
+    expect(within(trecho).queryByText(/título na vitrine/i)).not.toBeInTheDocument();
+    expect(within(trecho).queryByText(/kit apresentado/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: /pré-visualização de primeira missão/i }),
+    ).toHaveTextContent("Monte o robô e mostre ao Mestre.");
+  });
+
+  it("o quiz traz o corte de 60% (RN-05-45)", async () => {
+    const trecho = await abrirPreVisualizacao(
+      missao({ tipo_do_desafio_de_desbloqueio: "quiz", perguntas_do_desbloqueio: [] }),
+    );
+
+    expect(
+      within(trecho).getByText("Passa quem acerta ao menos 60% das perguntas."),
+    ).toBeInTheDocument();
+  });
+
+  it("a sondagem não tem corte: abre ao ser respondida (RN-05-46)", async () => {
+    const trecho = await abrirPreVisualizacao(
+      missao({
+        e_sondagem: true,
+        tipo_do_desafio_de_desbloqueio: "quiz",
+        perguntas_do_desbloqueio: [],
+      }),
+    );
+
+    expect(
+      within(trecho).getByText(/a trilha abre assim que o guerreiro\(a\) responde/i),
+    ).toBeInTheDocument();
+    expect(within(trecho).queryByText(/60%/)).not.toBeInTheDocument();
+  });
+});
