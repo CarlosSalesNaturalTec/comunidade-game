@@ -6,7 +6,6 @@ import { URL_DA_APP_03 } from "../api/configuracao";
 import { FilaDeEntregasPendentes } from "../recompensas/FilaDeEntregasPendentes";
 import { type AtividadeDoMestre, type AulaDaTurma, listarMinhasTurmas } from "./api";
 import { TelaDaAula } from "./TelaDaAula";
-import { TelaDeLancamento } from "./TelaDeLancamento";
 
 const ROTULO_DA_SITUACAO: Record<string, string> = {
   prevista: "Prevista",
@@ -38,14 +37,9 @@ function aulaEmAndamento(aula: AulaDaTurma): boolean {
   );
 }
 
-interface SelecaoDeLancamento {
-  aula: AulaDaTurma;
-  atividade: AtividadeDoMestre;
-}
-
 // A área Minhas turmas: as aulas das comunidades do Mestre e as atividades
 // on-line de que ele é autor. As presenciais não têm seção própria: aparecem
-// dentro da aula, no atalho de lançamento. Nenhum Guerreiro(a) aparece por
+// dentro da aula, no lançamento do resultado. Nenhum Guerreiro(a) aparece por
 // imagem real (`RF-09-42`, `RF-09-73`, `RN-09-08`, `RN-09-18`).
 export function TelaDeMinhasTurmas() {
   const { sessao, tratarRecusaDeSessao } = useSessao();
@@ -56,9 +50,6 @@ export function TelaDeMinhasTurmas() {
   const [atividadesOnLine, definirAtividadesOnLine] = useState<AtividadeDoMestre[]>([]);
   const [erro, definirErro] = useState<string | null>(null);
   const [aulaAberta, definirAulaAberta] = useState<AulaDaTurma | null>(null);
-  const [lancamentoAberto, definirLancamentoAberto] = useState<SelecaoDeLancamento | null>(
-    null,
-  );
 
   const carregar = useCallback(async () => {
     if (!sessao) return;
@@ -82,25 +73,12 @@ export function TelaDeMinhasTurmas() {
     carregar();
   }, [carregar]);
 
-  if (lancamentoAberto) {
-    return (
-      <TelaDeLancamento
-        aula={lancamentoAberto.aula}
-        atividade={lancamentoAberto.atividade}
-        aoVoltar={() => definirLancamentoAberto(null)}
-      />
-    );
-  }
-
   if (aulaAberta) {
     return (
       <TelaDaAula
         aula={aulaAberta}
         atividadesPresenciais={atividadesPresenciais}
         aoVoltar={() => definirAulaAberta(null)}
-        aoAbrirLancamento={(atividade) =>
-          definirLancamentoAberto({ aula: aulaAberta, atividade })
-        }
       />
     );
   }

@@ -271,6 +271,10 @@ Regras transversais:
 - **Resultado lançado pela gestão**: realizada / realizada com mérito / mérito extra por
   auxílio aos colegas. O lançamento é **por Guerreiro(a) ou por equipe**; na equipe, o desfecho
   e a produção são dela e valem **igualmente a cada Guerreiro(a) integrante presente**.
+- **A produção do Resultado é o comprovante**, obrigatório, numa das seis formas — texto,
+  imagem, áudio, vídeo, arquivo ou link. Na missão com desafio prático ainda não cumprido, o
+  Mestre o julga no mesmo lançamento, declarando-o em nome do Guerreiro(a) quando ele não o
+  declarou.
 
 ## 5. Motor de pontuação
 

@@ -75,6 +75,6 @@ por equipe na App 09; o lançamento por aula do Admin.
   fica sem referência, como já acontece na criação original abandonada.
 - **Aviso à criança:** a decisão de 2026-11-03 avisa o Guerreiro(a), na tela do desafio, de que
   a mídia fica guardada e pode ir à vitrine; a declaração feita pelo Mestre não passa por essa
-  tela. A App 09 mostra o aviso de coleta ao Mestre — **pergunta aberta ao fundador** antes do
-  apply: isso basta, ou a publicação da declaração feita pelo Mestre fica vedada?
+  tela. **Decisão do fundador de 2026-11-27:** o aviso de coleta ao Mestre, na App 09, basta —
+  a declaração feita pelo Mestre pode ser marcada publicável.
 - **`RF-09-74` revisto:** a tela deixa de lançar a equipe de uma vez; a API mantém a lista.

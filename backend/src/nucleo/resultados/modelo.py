@@ -1,11 +1,12 @@
 import enum
 import uuid
 
-from sqlalchemy import Enum, ForeignKey, Text, UniqueConstraint, Uuid
+from sqlalchemy import Enum, ForeignKey, Integer, String, Text, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..autoria import ComAutoria
 from ..banco import Base
+from ..criacoes_originais.modelo import TipoDeProducaoDaCriacaoOriginal
 from ..tempo import ComMomentoDoFato
 
 
@@ -31,6 +32,13 @@ class Resultado(Base, ComAutoria, ComMomentoDoFato):
     envios simultâneos dobrariam o ponto sem conserto. Unicidade total, não
     parcial — diferente da presença, o Resultado não tem anulação
     (`RN-02-33`, design — decisão 4).
+
+    O que foi produzido é o **comprovante** do Resultado, numa das seis formas
+    (`RF-09-149`, `RN-09-64`, documento 11 §2.2): `producao` guarda o texto ou o
+    endereço, e imagem, áudio, vídeo e arquivo guardam só a referência ao
+    armazenamento, como a comprovação do prático — os bytes nunca entram na
+    tabela (change `lancamento-com-comprovante-e-julgamento-do-pratico`, design
+    — decisão 1).
     """
 
     __tablename__ = "resultado"
@@ -41,7 +49,17 @@ class Resultado(Base, ComAutoria, ComMomentoDoFato):
         Uuid, ForeignKey("atividade.id"), nullable=False
     )
     aula_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("aula.id"), nullable=False)
-    producao: Mapped[str] = mapped_column(Text, nullable=False)
+    producao: Mapped[str | None] = mapped_column(Text, nullable=True)
+    comprovante_tipo: Mapped[TipoDeProducaoDaCriacaoOriginal] = mapped_column(
+        Enum(TipoDeProducaoDaCriacaoOriginal, native_enum=False, length=32),
+        nullable=False,
+        default=TipoDeProducaoDaCriacaoOriginal.texto,
+    )
+    comprovante_referencia: Mapped[str | None] = mapped_column(
+        String(512), nullable=True, unique=True
+    )
+    comprovante_tamanho: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    comprovante_tipo_do_arquivo: Mapped[str | None] = mapped_column(String(255), nullable=True)
     desfecho: Mapped[DesfechoDoResultado] = mapped_column(
         Enum(DesfechoDoResultado, native_enum=False, length=32), nullable=False
     )

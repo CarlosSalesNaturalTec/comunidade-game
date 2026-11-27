@@ -85,7 +85,7 @@ persona. Valem a **mesma lista fechada de tipos** e os **mesmos tetos** da cria�
 ### Requirement: O lançamento traz o julgamento do prático da missão quando ele não foi cumprido
 
 Quando a missão da atividade tem desafio **prático** que o Guerreiro(a) ainda **não cumpriu**,
-o lançamento dele SHALL trazer o **julgamento** — cumpriu, publicável e motivo —, sob pena de
+o lançamento dele **pelo ato por atividade** SHALL trazer o **julgamento** — cumpriu, publicável e motivo —, sob pena de
 **422**. Julgamento onde não há o que julgar — quiz, sem desafio, avulsa ou prático cumprido —
 SHALL ser recusado com **422**. Resultado e julgamento SHALL ser gravados **na mesma
 transação**. (`RF-09-150`, `RN-09-65`, `RF-09-133`)
