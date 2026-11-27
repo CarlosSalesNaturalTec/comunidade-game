@@ -779,6 +779,14 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
 - **Painel público da Comunidade Virtual** — dados do território em **série histórica**, em
   **visão macro**, agregados **até o bairro** e anonimizados (documento 02), abertos à consulta
   da comunidade e de instituições.
+- **Mapa das Comunidades Virtuais** — na listagem, o contorno de cada comunidade; no painel, o
+  da própria comunidade em destaque (documento 02 §1). O fundo de ruas e quadras é um **recorte
+  do OSM hospedado no Google Cloud da plataforma**, sem requisição a servidor de mapas de
+  terceiros, com o crédito "© colaboradores do OpenStreetMap". O mapa **nunca** mostra ponto
+  de coleta.
+
+  > **A definir:** de quanto em quanto tempo o recorte do OSM é atualizado.
+
 - **Portfólio de criações originais** — as criações dos Guerreiros e Guerreiras autorizados,
   com o nick do autor (ou dos autores, em equipe).
 - **Sem favoritos e sem qualquer preferência guardada** — nem no servidor, nem no aparelho do
@@ -1182,7 +1190,8 @@ mesma autorização única do responsável, sem termo à parte por divulgação.
   **GeoJSON** para a geometria e um **dicionário de dados** que descreve cada campo, a
   unidade, a cadência e a origem. Formatos abertos, legíveis em planilha e em SIG.
 - O conjunto é licenciado em **CC BY-SA**, a mesma licença do conteúdo educacional: quem usa
-  credita a comunidade que produziu o dado, e o derivado herda a licença.
+  credita a comunidade que produziu o dado, e o derivado herda a licença. O **contorno** da
+  comunidade, copiado do OSM, fica fora dele: sai sob a licença **ODbL**, com o crédito do OSM.
 - O Admin **aprova** o pedido com solicitante identificado, finalidade declarada compatível
   com pesquisa ou política pública e compromisso de não tentar reidentificar ninguém. A
   **recusa** é registrada com motivo, nessas mesmas três frentes.

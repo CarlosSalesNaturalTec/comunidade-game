@@ -88,6 +88,8 @@ doc 15**.
 | Periodicidade das auditorias por amostragem                                | 03 §11 (corpus e trilhas) e 02 §1 (coleta) | 03 §5, 08, 09                  |
 | Regra "toda trilha coleta dados reais"                                     | 02 §3                                      | 06, 07, 08, 10, 11             |
 | Poder do Território                                                        | 02 §2                                      | 08, 11                         |
+| Trilha Mapa Vivo e o OSM no Ciclo 01                                       | 02 §3                                      | 10                             |
+| Contorno da comunidade e mapa da vitrine                                   | 02 §1 (contorno) e 03 §8 (mapa e fundo)    | 03 §12.3, 11 §§8.1, 8.3        |
 | Governança de personas (só Guerreiro(a) tem autocadastro)                  | 02 §1                                      | 01, 05, 08                     |
 | Cadastro do responsável e vínculo com os Guerreiros e Guerreiras           | 02 §1                                      | 03 §§1.1, 5, 9, 11, 08, 09     |
 | Autenticação por persona (nick e imagem; Apps 04 e 06 sem login)           | 03 §1.1                                    | 02, 08, 09                     |
@@ -204,6 +206,7 @@ PRDs sem aplicação dedicada: **PRD-01** (Backend API), **PRD-07** (ledger), **
 | Identidade da persona no cadastro           | 02 §1 + 03 §12            | PRD-01, 02, 09, 14                 |
 | Desafios de desbloqueio                     | 02 §2 + 11 §2.2           | PRD-01, 09, 05, 04, 03             |
 | Desafio de coleta (série temporal)          | 02 §1                     | PRD-01, 08, 05, 06                 |
+| Contorno e mapa das comunidades             | 02 §1 + 03 §8             | PRD-08, 02, 03                     |
 | Desafios extras (abertos e direcionados)    | 04 §3                     | PRD-01, 02, 07, 09                 |
 | Encontros presenciais (dinâmica assíncrona) | 05 §4                     | PRD-02, 04                         |
 | Quiz ao Vivo                                | 05 §5                     | PRD-02, 04, 09                     |
@@ -435,6 +438,11 @@ O PRD-09 passou a aplicar também o documento 04: o custo de _cloud_ do upload e
 por fatura, e não por medição no ato. O ato de **encerrar o ciclo** é do PRD-02, não do
 PRD-09 — quem encerra é Admin, na gestão —, embora as duas consequências dele alcancem a
 ocorrência de conduta lançada pelo Mestre.
+
+O **mapa das Comunidades Virtuais** atravessa três PRDs, no mesmo desenho de dependência de
+entidade: o contorno e a rota que o grava são do PRD-08 (`RF-08-33`, `RF-08-34`), a tela em
+que o Admin o cadastra é do PRD-02 (`RF-02-122`) e o mapa que o desenha é do PRD-03
+(`RF-03-89` a `RF-03-92`). As duas telas entram depois de o núcleo gravar o contorno.
 
 A correspondência entre as oito aplicações e os PRDs está na §4; a ordem de elaboração e o
 motivo de cada onda estão no documento 08.

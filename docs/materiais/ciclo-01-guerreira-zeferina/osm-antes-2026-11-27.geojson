@@ -1,0 +1,1980 @@
+{
+  "type": "FeatureCollection",
+  "name": "Mapa Vivo — retrato do OSM em 2026-11-27 (antes)",
+  "attribution": "© colaboradores do OpenStreetMap, licença ODbL — https://www.openstreetmap.org/copyright",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "LIMITE",
+        "tipo": "Limite da comunidade",
+        "osm": "relation/12582832",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "name": "Comunidade Guerreira Zeferina",
+          "landuse": "residential"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4792831, -12.860668],
+            [-38.4792131, -12.8613227],
+            [-38.4791112, -12.8618021],
+            [-38.4790672, -12.8618781],
+            [-38.4789812, -12.862221],
+            [-38.4789752, -12.8623107],
+            [-38.4789533, -12.8623867],
+            [-38.4790472, -12.8624159],
+            [-38.4788333, -12.8630336],
+            [-38.4791288, -12.8631002],
+            [-38.4793985, -12.863161],
+            [-38.4794729, -12.8631778],
+            [-38.4795149, -12.8629849],
+            [-38.4797288, -12.8623126],
+            [-38.4798227, -12.8620301],
+            [-38.4798655, -12.8618142],
+            [-38.4799222, -12.8615329],
+            [-38.4799909, -12.8611629],
+            [-38.4800517, -12.8608411],
+            [-38.480118, -12.8605171],
+            [-38.4801125, -12.8605062],
+            [-38.4799287, -12.8605062],
+            [-38.4792831, -12.860668]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "AC",
+        "tipo": "Academia ao ar livre",
+        "quadricula": "C5",
+        "sobre": null,
+        "osm": "way/930822875",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "leisure": "fitness_station",
+          "sport": "fitness"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4796928, -12.8615643],
+            [-38.4796859, -12.8616134],
+            [-38.4796166, -12.8616042],
+            [-38.4796146, -12.8616182],
+            [-38.4795596, -12.8616109],
+            [-38.4795632, -12.8615853],
+            [-38.4795502, -12.8615836],
+            [-38.4795554, -12.8615459],
+            [-38.4796928, -12.8615643]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "AV",
+        "tipo": "Área verde (gramado)",
+        "quadricula": "C1",
+        "sobre": null,
+        "osm": "relation/12582833",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "landuse": "village_green",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4801125, -12.8605062],
+            [-38.4799287, -12.8605062],
+            [-38.4792831, -12.860668],
+            [-38.4792634, -12.8604286],
+            [-38.4792482, -12.8602997],
+            [-38.4791939, -12.8599428],
+            [-38.4794685, -12.8598337],
+            [-38.4795617, -12.8598056],
+            [-38.4796685, -12.8597941],
+            [-38.4797956, -12.8598156],
+            [-38.4798787, -12.8598469],
+            [-38.4799804, -12.859923],
+            [-38.4800329, -12.8599874],
+            [-38.4801125, -12.8605062]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B01",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "C3",
+        "sobre": null,
+        "osm": "relation/12582845",
+        "osm_versao": 2,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4799318, -12.860786],
+            [-38.4796035, -12.8607874],
+            [-38.4796029, -12.8608317],
+            [-38.4795217, -12.8608305],
+            [-38.4795229, -12.8607518],
+            [-38.4795957, -12.8607529],
+            [-38.4795961, -12.860686],
+            [-38.4799311, -12.8606837],
+            [-38.4799318, -12.860786]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B02",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "C3",
+        "sobre": null,
+        "osm": "relation/12582844",
+        "osm_versao": 2,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4798974, -12.8609624],
+            [-38.4795767, -12.8609748],
+            [-38.4795726, -12.8608725],
+            [-38.4799073, -12.8608596],
+            [-38.4799093, -12.8609082],
+            [-38.4799686, -12.8609081],
+            [-38.4799688, -12.8609989],
+            [-38.4798974, -12.860999],
+            [-38.4798974, -12.8609624]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B03",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "C3",
+        "sobre": null,
+        "osm": "relation/12582843",
+        "osm_versao": 2,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4795869, -12.8610537],
+            [-38.4799132, -12.8610705],
+            [-38.4799076, -12.8611727],
+            [-38.4795731, -12.8611555],
+            [-38.4795766, -12.8610909],
+            [-38.47951, -12.8610893],
+            [-38.4795122, -12.8610053],
+            [-38.4795881, -12.8610071],
+            [-38.4795869, -12.8610537]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B04",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "C4",
+        "sobre": null,
+        "osm": "relation/12582842",
+        "osm_versao": 2,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4795903, -12.8612388],
+            [-38.4799213, -12.8612889],
+            [-38.4799052, -12.8613901],
+            [-38.4795742, -12.8613399],
+            [-38.4795903, -12.8612388]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B05",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "C4",
+        "sobre": null,
+        "osm": "relation/12582841",
+        "osm_versao": 2,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4795549, -12.8614109],
+            [-38.479878, -12.8614598],
+            [-38.4798619, -12.861561],
+            [-38.4795309, -12.8615108],
+            [-38.4795416, -12.8614441],
+            [-38.4794693, -12.8614362],
+            [-38.4794785, -12.8613559],
+            [-38.4795602, -12.8613648],
+            [-38.4795549, -12.8614109]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B06",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "C6",
+        "sobre": null,
+        "osm": "relation/12582840",
+        "osm_versao": 2,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.479866, -12.8616111],
+            [-38.4797125, -12.8622179],
+            [-38.4796193, -12.8621955],
+            [-38.4797729, -12.8615888],
+            [-38.479866, -12.8616111]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B07",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "D6",
+        "sobre": null,
+        "osm": "relation/12582850",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4793472, -12.8621932],
+            [-38.4793277, -12.8622501],
+            [-38.4796455, -12.8623535],
+            [-38.4796787, -12.8622564],
+            [-38.4793637, -12.8621536],
+            [-38.4793789, -12.8621134],
+            [-38.4793065, -12.8620873],
+            [-38.479276, -12.8621675],
+            [-38.4793472, -12.8621932]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B08",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "D7",
+        "sobre": null,
+        "osm": "relation/12582847",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4793308, -12.8623221],
+            [-38.4796485, -12.8624256],
+            [-38.4796151, -12.8625228],
+            [-38.4793195, -12.8624263],
+            [-38.4792961, -12.8624183],
+            [-38.4793308, -12.8623221]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B09",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "D8",
+        "sobre": null,
+        "osm": "relation/12582834",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794987, -12.8626321],
+            [-38.4795182, -12.8625753],
+            [-38.4792005, -12.8624718],
+            [-38.4791672, -12.8625689],
+            [-38.4794629, -12.8626652],
+            [-38.4794487, -12.8627067],
+            [-38.4795129, -12.8627276],
+            [-38.4795409, -12.8626459],
+            [-38.4794987, -12.8626321]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "B10",
+        "tipo": "Prédio de apartamentos",
+        "quadricula": "D8",
+        "sobre": null,
+        "osm": "relation/12582837",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "apartments",
+          "building:flats": "8",
+          "building:levels": "4",
+          "height": "12",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4792289, -12.8626863],
+            [-38.4792329, -12.8626746],
+            [-38.4795506, -12.862778],
+            [-38.4795174, -12.8628751],
+            [-38.4791996, -12.8627717],
+            [-38.4792135, -12.8627312],
+            [-38.4791422, -12.8627054],
+            [-38.4791736, -12.8626228],
+            [-38.479235, -12.862645],
+            [-38.4792205, -12.8626832],
+            [-38.4792289, -12.8626863]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "C01",
+        "tipo": "Quadra esportiva",
+        "quadricula": "C5",
+        "sobre": null,
+        "osm": "way/930822790",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "leisure": "pitch"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4796953, -12.8616509],
+            [-38.4795886, -12.862079],
+            [-38.4793349, -12.8620189],
+            [-38.4794417, -12.8615908],
+            [-38.4796953, -12.8616509]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "C02",
+        "tipo": "Quadra esportiva",
+        "quadricula": "C6",
+        "sobre": null,
+        "osm": "way/930822791",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "leisure": "pitch"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4795787, -12.8621008],
+            [-38.4795661, -12.8621578],
+            [-38.4794481, -12.8621329],
+            [-38.4794607, -12.862076],
+            [-38.4795787, -12.8621008]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CB",
+        "tipo": "Cobertura",
+        "quadricula": "B2",
+        "sobre": null,
+        "osm": "way/930823554",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "roof"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4800371, -12.8605144],
+            [-38.4800395, -12.8605818],
+            [-38.48005, -12.8605815],
+            [-38.4800542, -12.8606974],
+            [-38.4799736, -12.8607002],
+            [-38.4799709, -12.8606257],
+            [-38.4798677, -12.8606292],
+            [-38.4798654, -12.8605644],
+            [-38.4799398, -12.8605618],
+            [-38.4799382, -12.8605178],
+            [-38.4800371, -12.8605144]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX01",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "C2",
+        "sobre": "B01",
+        "osm": "way/930823553",
+        "osm_versao": 2,
+        "osm_data": "2021-04-21",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4797403, -12.8607078],
+            [-38.4797413, -12.8607811],
+            [-38.4797051, -12.8607816],
+            [-38.479704, -12.8607082],
+            [-38.4797403, -12.8607078]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX02",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "C3",
+        "sobre": "B02",
+        "osm": "way/930823552",
+        "osm_versao": 2,
+        "osm_data": "2021-04-21",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4798243, -12.8608811],
+            [-38.4798251, -12.8609566],
+            [-38.4797886, -12.860957],
+            [-38.4797878, -12.8608815],
+            [-38.4798243, -12.8608811]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX03",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "C3",
+        "sobre": "B03",
+        "osm": "way/930823551",
+        "osm_versao": 2,
+        "osm_data": "2021-04-21",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4797252, -12.8610753],
+            [-38.4797255, -12.8611527],
+            [-38.4796884, -12.8611528],
+            [-38.4796882, -12.8610754],
+            [-38.4797252, -12.8610753]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX04",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "C4",
+        "sobre": "B04",
+        "osm": "way/930823550",
+        "osm_versao": 2,
+        "osm_data": "2021-04-21",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4797316, -12.8612696],
+            [-38.4797215, -12.8613447],
+            [-38.4796851, -12.8613401],
+            [-38.4796953, -12.861265],
+            [-38.4797316, -12.8612696]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX05",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "C4",
+        "sobre": "B05",
+        "osm": "way/930823549",
+        "osm_versao": 2,
+        "osm_data": "2021-04-21",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4796839, -12.8614442],
+            [-38.4796743, -12.8615178],
+            [-38.4796382, -12.8615133],
+            [-38.4796478, -12.8614397],
+            [-38.4796839, -12.8614442]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX06",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "C6",
+        "sobre": "B06",
+        "osm": "way/930823548",
+        "osm_versao": 2,
+        "osm_data": "2021-04-21",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4797859, -12.8618895],
+            [-38.479775, -12.861935],
+            [-38.4796994, -12.8619178],
+            [-38.4797103, -12.8618723],
+            [-38.4797859, -12.8618895]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX07",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "D7",
+        "sobre": "B07",
+        "osm": "relation/12582852",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794685, -12.8622801],
+            [-38.4794794, -12.8622481],
+            [-38.479484, -12.8622344],
+            [-38.4794894, -12.8622186],
+            [-38.4794944, -12.8622039],
+            [-38.4794505, -12.8621896],
+            [-38.4794454, -12.8622043],
+            [-38.4794401, -12.8622199],
+            [-38.4794355, -12.8622333],
+            [-38.4794244, -12.8622657],
+            [-38.4794685, -12.8622801]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX08",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "D7",
+        "sobre": "B08",
+        "osm": "relation/12582848",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "man_made": "water_tower",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794176, -12.8623662],
+            [-38.4794065, -12.8623986],
+            [-38.4794019, -12.862412],
+            [-38.4793916, -12.8624424],
+            [-38.4794355, -12.8624566],
+            [-38.479446, -12.8624262],
+            [-38.4794507, -12.8624125],
+            [-38.4794618, -12.8623806],
+            [-38.4794176, -12.8623662]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX09",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "D8",
+        "sobre": "B09",
+        "osm": "relation/12582836",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4793775, -12.8625452],
+            [-38.4793666, -12.8625773],
+            [-38.4793619, -12.8625909],
+            [-38.4793565, -12.8626067],
+            [-38.4793515, -12.8626214],
+            [-38.4793954, -12.8626358],
+            [-38.4794005, -12.862621],
+            [-38.4794058, -12.8626054],
+            [-38.4794104, -12.862592],
+            [-38.4794215, -12.8625596],
+            [-38.4793775, -12.8625452]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "CX10",
+        "tipo": "Caixa d'água no telhado",
+        "quadricula": "D8",
+        "sobre": "B10",
+        "osm": "relation/12582839",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "man_made": "water_tower",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4793639, -12.862733],
+            [-38.4793529, -12.862765],
+            [-38.4793482, -12.8627787],
+            [-38.4793427, -12.8627945],
+            [-38.4793377, -12.8628091],
+            [-38.4792937, -12.8627949],
+            [-38.4792988, -12.8627801],
+            [-38.4793041, -12.8627645],
+            [-38.4793087, -12.8627511],
+            [-38.4793198, -12.8627187],
+            [-38.4793639, -12.862733]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "E",
+        "tipo": "Escola (terreno)",
+        "quadricula": "D9",
+        "sobre": null,
+        "osm": "relation/12582831",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "school",
+          "name": "Escola Municipal Guerreira Zeferina",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4791288, -12.8631002],
+            [-38.4792134, -12.8628408],
+            [-38.4794606, -12.8629261],
+            [-38.4793906, -12.8631181],
+            [-38.4794059, -12.8631224],
+            [-38.4793985, -12.863161],
+            [-38.4791288, -12.8631002]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "EP",
+        "tipo": "Prédio da escola",
+        "quadricula": "D9",
+        "sobre": null,
+        "osm": "relation/12582846",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "school",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794442, -12.8629453],
+            [-38.4793843, -12.8631171],
+            [-38.4794036, -12.8631234],
+            [-38.4793942, -12.8631502],
+            [-38.4792228, -12.8630935],
+            [-38.4792457, -12.8630277],
+            [-38.4792273, -12.8630216],
+            [-38.4792736, -12.8628887],
+            [-38.4794442, -12.8629453]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "L01",
+        "tipo": "Ponto de descarte de lixo",
+        "quadricula": "D3",
+        "sobre": null,
+        "osm": "node/8630489337",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "waste_disposal"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4793661, -12.8610224]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "L02",
+        "tipo": "Ponto de descarte de lixo",
+        "quadricula": "D4",
+        "sobre": null,
+        "osm": "node/8630489335",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "waste_disposal"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4793436, -12.8612494]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "L03",
+        "tipo": "Ponto de descarte de lixo",
+        "quadricula": "D5",
+        "sobre": null,
+        "osm": "node/8630489333",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "waste_disposal"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4793011, -12.8615558]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "L04",
+        "tipo": "Ponto de descarte de lixo",
+        "quadricula": "D6",
+        "sobre": null,
+        "osm": "node/8630489332",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "waste_disposal"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4791856, -12.8620051]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "P01",
+        "tipo": "Estacionamento",
+        "quadricula": "D3",
+        "sobre": null,
+        "osm": "way/930824003",
+        "osm_versao": 2,
+        "osm_data": "2021-04-21",
+        "tags": {
+          "amenity": "parking"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794282, -12.8610164],
+            [-38.4794075, -12.8612194],
+            [-38.4794551, -12.8611992],
+            [-38.4794667, -12.8610359],
+            [-38.4794282, -12.8610164]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "P02",
+        "tipo": "Estacionamento",
+        "quadricula": "D4",
+        "sobre": null,
+        "osm": "way/930824004",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "parking"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794029, -12.8612561],
+            [-38.4794436, -12.8612861],
+            [-38.4794136, -12.8615131],
+            [-38.4793622, -12.8615266],
+            [-38.4794029, -12.8612561]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "P03",
+        "tipo": "Estacionamento",
+        "quadricula": "D5",
+        "sobre": null,
+        "osm": "way/930824005",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "parking"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4793506, -12.8615925],
+            [-38.4793906, -12.8616247],
+            [-38.4792984, -12.8619746],
+            [-38.4792484, -12.8619806],
+            [-38.4793506, -12.8615925]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "P04",
+        "tipo": "Estacionamento",
+        "quadricula": "D6",
+        "sobre": null,
+        "osm": "way/930824006",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "parking"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.47923, -12.8620457],
+            [-38.4792599, -12.8620787],
+            [-38.4791746, -12.8623364],
+            [-38.4791247, -12.8623394],
+            [-38.47923, -12.8620457]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "P05",
+        "tipo": "Estacionamento",
+        "quadricula": "E7",
+        "sobre": null,
+        "osm": "way/930824007",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "parking"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4791068, -12.8623847],
+            [-38.4791511, -12.862426],
+            [-38.4790654, -12.8626776],
+            [-38.4790114, -12.862686],
+            [-38.4791068, -12.8623847]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "P06",
+        "tipo": "Estacionamento",
+        "quadricula": "E8",
+        "sobre": null,
+        "osm": "way/930824008",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "parking"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4789989, -12.8627283],
+            [-38.4790326, -12.8627715],
+            [-38.478944, -12.863024],
+            [-38.4788988, -12.8630259],
+            [-38.4789989, -12.8627283]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "PQ",
+        "tipo": "Parquinho",
+        "quadricula": "C4",
+        "sobre": null,
+        "osm": "way/930822865",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "leisure": "playground",
+          "surface": "sand"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4795424, -12.8611908],
+            [-38.4795392, -12.8612678],
+            [-38.4795297, -12.8612674],
+            [-38.4795271, -12.8613282],
+            [-38.479459, -12.8613254],
+            [-38.4794622, -12.8612501],
+            [-38.4794748, -12.8612506],
+            [-38.4794774, -12.8611882],
+            [-38.4795424, -12.8611908]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "PR01",
+        "tipo": "Praça",
+        "quadricula": "D7",
+        "sobre": null,
+        "osm": "way/930822937",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "place": "square"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4792879, -12.8622512],
+            [-38.4792572, -12.8623378],
+            [-38.4792055, -12.8623204],
+            [-38.4792362, -12.8622338],
+            [-38.4792879, -12.8622512]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "PR02",
+        "tipo": "Praça",
+        "quadricula": "E8",
+        "sobre": null,
+        "osm": "way/930822939",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "place": "square"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4790939, -12.8627814],
+            [-38.4790753, -12.8628371],
+            [-38.479034, -12.862824],
+            [-38.4790526, -12.8627682],
+            [-38.4790939, -12.8627814]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "Q01",
+        "tipo": "Quiosque",
+        "quadricula": "D3",
+        "sobre": null,
+        "osm": "way/930822872",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "yes",
+          "name": "Quiosque 04",
+          "shop": "kiosk"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.479494, -12.8607505],
+            [-38.4794942, -12.8608028],
+            [-38.4794384, -12.860803],
+            [-38.4794382, -12.8607507],
+            [-38.479494, -12.8607505]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "Q02",
+        "tipo": "Quiosque",
+        "quadricula": "D2",
+        "sobre": null,
+        "osm": "way/930822871",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "yes",
+          "name": "Quiosque 05",
+          "shop": "kiosk"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794877, -12.8606806],
+            [-38.4794879, -12.8607329],
+            [-38.4794321, -12.8607331],
+            [-38.4794319, -12.8606808],
+            [-38.4794877, -12.8606806]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "Q03",
+        "tipo": "Quiosque",
+        "quadricula": "D5",
+        "sobre": null,
+        "osm": "way/930822873",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "yes",
+          "name": "Quiosque 03",
+          "shop": "kiosk"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4794252, -12.8615394],
+            [-38.4794254, -12.8615917],
+            [-38.4793696, -12.861592],
+            [-38.4793694, -12.8615396],
+            [-38.4794252, -12.8615394]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "Q04",
+        "tipo": "Quiosque",
+        "quadricula": "D6",
+        "sobre": null,
+        "osm": "way/930822874",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "yes",
+          "name": "Quiosque 02",
+          "shop": "kiosk"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.479317, -12.862006],
+            [-38.4793028, -12.8620565],
+            [-38.479249, -12.8620422],
+            [-38.4792631, -12.8619917],
+            [-38.479317, -12.862006]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "Q05",
+        "tipo": "Quiosque",
+        "quadricula": "E9",
+        "sobre": null,
+        "osm": "way/930822938",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "building": "yes",
+          "name": "Quiosque 01",
+          "shop": "kiosk"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4790893, -12.8629676],
+            [-38.4790664, -12.8630636],
+            [-38.4790228, -12.8630537],
+            [-38.4790457, -12.8629577],
+            [-38.4790893, -12.8629676]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "R01",
+        "tipo": "Contêiner de reciclagem",
+        "quadricula": "D3",
+        "sobre": null,
+        "osm": "node/8630489338",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "recycling",
+          "recycling_type": "container"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4793697, -12.8610058]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "R02",
+        "tipo": "Contêiner de reciclagem",
+        "quadricula": "D4",
+        "sobre": null,
+        "osm": "node/8630489336",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "recycling",
+          "recycling_type": "container"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4793473, -12.8612327]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "R03",
+        "tipo": "Contêiner de reciclagem",
+        "quadricula": "D5",
+        "sobre": null,
+        "osm": "node/8630489334",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "recycling",
+          "recycling_type": "container"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4793047, -12.8615391]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "R04",
+        "tipo": "Contêiner de reciclagem",
+        "quadricula": "D6",
+        "sobre": null,
+        "osm": "node/8630489331",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "amenity": "recycling",
+          "recycling_type": "container"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4791893, -12.8619885]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "RT",
+        "tipo": "Ponto de retorno",
+        "quadricula": "D3",
+        "sobre": null,
+        "osm": "node/3944641126",
+        "osm_versao": 4,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "highway": "turning_loop"
+        }
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.4794288, -12.8609062]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S01",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "C5",
+        "sobre": "B06",
+        "osm": "way/930822852",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4798522, -12.8616388],
+            [-38.4797934, -12.8618828],
+            [-38.4797622, -12.8618757],
+            [-38.4798209, -12.8616316],
+            [-38.4798522, -12.8616388]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S02",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "C5",
+        "sobre": "B06",
+        "osm": "way/930822851",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4798007, -12.8616272],
+            [-38.4797419, -12.8618713],
+            [-38.4797107, -12.8618641],
+            [-38.4797694, -12.8616201],
+            [-38.4798007, -12.8616272]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S03",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "C6",
+        "sobre": "B06",
+        "osm": "way/930822849",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4797763, -12.8619408],
+            [-38.4797175, -12.8621849],
+            [-38.4796863, -12.8621777],
+            [-38.479745, -12.8619337],
+            [-38.4797763, -12.8619408]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S04",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "C6",
+        "sobre": "B06",
+        "osm": "way/930822850",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4797248, -12.8619293],
+            [-38.4796661, -12.8621733],
+            [-38.4796348, -12.8621662],
+            [-38.4796935, -12.8619221],
+            [-38.4797248, -12.8619293]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S05",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "C7",
+        "sobre": "B07",
+        "osm": "relation/12582851",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [-38.4796199, -12.862312],
+              [-38.4796145, -12.8623278],
+              [-38.4794685, -12.8622801],
+              [-38.4794794, -12.8622481],
+              [-38.4796097, -12.8622919],
+              [-38.4796046, -12.8623069],
+              [-38.4796199, -12.862312]
+            ]
+          ],
+          [
+            [
+              [-38.4794355, -12.8622333],
+              [-38.4794244, -12.8622657],
+              [-38.4793703, -12.8622481],
+              [-38.4793761, -12.8622312],
+              [-38.4793924, -12.8622366],
+              [-38.4793979, -12.8622207],
+              [-38.4794355, -12.8622333]
+            ]
+          ],
+          [
+            [
+              [-38.4794024, -12.8622075],
+              [-38.4794401, -12.8622199],
+              [-38.4794454, -12.8622043],
+              [-38.4794505, -12.8621896],
+              [-38.4793965, -12.8621719],
+              [-38.4793917, -12.8621861],
+              [-38.4794079, -12.8621914],
+              [-38.4794024, -12.8622075]
+            ]
+          ],
+          [
+            [
+              [-38.4796146, -12.8622775],
+              [-38.4796204, -12.8622605],
+              [-38.4796359, -12.8622656],
+              [-38.4796406, -12.8622517],
+              [-38.4794944, -12.8622039],
+              [-38.4794894, -12.8622186],
+              [-38.479484, -12.8622344],
+              [-38.4796146, -12.8622775]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S06",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "D7",
+        "sobre": "B08",
+        "osm": "relation/12582849",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [-38.4796024, -12.8624439],
+              [-38.4796078, -12.862428],
+              [-38.4794618, -12.8623806],
+              [-38.4794507, -12.8624125],
+              [-38.4795819, -12.8624539],
+              [-38.479587, -12.862439],
+              [-38.4796024, -12.8624439]
+            ]
+          ],
+          [
+            [
+              [-38.479446, -12.8624262],
+              [-38.4795769, -12.8624683],
+              [-38.4795711, -12.8624853],
+              [-38.4795865, -12.8624903],
+              [-38.4795818, -12.8625042],
+              [-38.4794355, -12.8624566],
+              [-38.479446, -12.8624262]
+            ]
+          ],
+          [
+            [
+              [-38.4794019, -12.862412],
+              [-38.4793916, -12.8624424],
+              [-38.4793375, -12.8624248],
+              [-38.4793424, -12.8624107],
+              [-38.4793586, -12.862416],
+              [-38.4793642, -12.8623999],
+              [-38.4794019, -12.862412]
+            ]
+          ],
+          [
+            [
+              [-38.4793742, -12.8623708],
+              [-38.4793578, -12.8623655],
+              [-38.4793636, -12.8623487],
+              [-38.4794176, -12.8623662],
+              [-38.4794065, -12.8623986],
+              [-38.4793687, -12.8623867],
+              [-38.4793742, -12.8623708]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S07",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "D8",
+        "sobre": "B09",
+        "osm": "relation/12582835",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [-38.479226, -12.8625134],
+              [-38.4792315, -12.8624975],
+              [-38.4793775, -12.8625452],
+              [-38.4793666, -12.8625773],
+              [-38.4792362, -12.8625334],
+              [-38.4792414, -12.8625185],
+              [-38.479226, -12.8625134]
+            ]
+          ],
+          [
+            [
+              [-38.4794104, -12.862592],
+              [-38.4794215, -12.8625596],
+              [-38.4794756, -12.8625773],
+              [-38.4794698, -12.8625941],
+              [-38.4794535, -12.8625887],
+              [-38.479448, -12.8626047],
+              [-38.4794104, -12.862592]
+            ]
+          ],
+          [
+            [
+              [-38.4794435, -12.8626179],
+              [-38.4794058, -12.8626054],
+              [-38.4794005, -12.862621],
+              [-38.4793954, -12.8626358],
+              [-38.4794494, -12.8626534],
+              [-38.4794543, -12.8626393],
+              [-38.479438, -12.862634],
+              [-38.4794435, -12.8626179]
+            ]
+          ],
+          [
+            [
+              [-38.4792313, -12.8625479],
+              [-38.4792255, -12.8625648],
+              [-38.47921, -12.8625598],
+              [-38.4792053, -12.8625736],
+              [-38.4793515, -12.8626214],
+              [-38.4793565, -12.8626067],
+              [-38.4793619, -12.8625909],
+              [-38.4792313, -12.8625479]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S08",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "D8",
+        "sobre": "B10",
+        "osm": "relation/12582838",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant",
+          "type": "multipolygon"
+        }
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [-38.4795046, -12.8627963],
+              [-38.47951, -12.8627804],
+              [-38.4793639, -12.862733],
+              [-38.4793529, -12.862765],
+              [-38.4794841, -12.8628063],
+              [-38.4794892, -12.8627914],
+              [-38.4795046, -12.8627963]
+            ]
+          ],
+          [
+            [
+              [-38.4793087, -12.8627511],
+              [-38.4793198, -12.8627187],
+              [-38.4792657, -12.8627012],
+              [-38.4792599, -12.862718],
+              [-38.4792763, -12.8627233],
+              [-38.4792708, -12.8627392],
+              [-38.4793087, -12.8627511]
+            ]
+          ],
+          [
+            [
+              [-38.4792663, -12.8627524],
+              [-38.4793041, -12.8627645],
+              [-38.4792988, -12.8627801],
+              [-38.4792937, -12.8627949],
+              [-38.4792397, -12.8627774],
+              [-38.4792445, -12.8627632],
+              [-38.4792608, -12.8627685],
+              [-38.4792663, -12.8627524]
+            ]
+          ],
+          [
+            [
+              [-38.4794791, -12.8628208],
+              [-38.4794733, -12.8628377],
+              [-38.4794887, -12.8628427],
+              [-38.479484, -12.8628566],
+              [-38.4793377, -12.8628091],
+              [-38.4793427, -12.8627945],
+              [-38.4793482, -12.8627787],
+              [-38.4794791, -12.8628208]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S09",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "D9",
+        "sobre": "EP",
+        "osm": "way/930822847",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4793942, -12.8630281],
+            [-38.4793643, -12.8631299],
+            [-38.4793084, -12.8631144],
+            [-38.4793383, -12.8630125],
+            [-38.4793942, -12.8630281]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "S10",
+        "tipo": "Usina solar no telhado",
+        "quadricula": "D9",
+        "sobre": "EP",
+        "osm": "way/930822848",
+        "osm_versao": 1,
+        "osm_data": "2021-04-14",
+        "tags": {
+          "layer": "1",
+          "plant:method": "photovoltaic",
+          "plant:output:electricity": "yes",
+          "plant:source": "solar",
+          "power": "plant"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-38.4793236, -12.8630077],
+            [-38.4792937, -12.8631095],
+            [-38.4792378, -12.863094],
+            [-38.4792677, -12.8629921],
+            [-38.4793236, -12.8630077]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "codigo": "V",
+        "tipo": "Rua",
+        "quadricula": "E7",
+        "sobre": null,
+        "osm": "way/391255114",
+        "osm_versao": 3,
+        "osm_data": "2026-02-09",
+        "tags": {
+          "highway": "residential",
+          "name": "Avenida Sububana"
+        }
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-38.4788056, -12.863248],
+          [-38.478876, -12.8630604],
+          [-38.4789865, -12.862717],
+          [-38.4790861, -12.862365],
+          [-38.4792064, -12.8620114],
+          [-38.4793326, -12.8615619],
+          [-38.4793794, -12.8612327],
+          [-38.4794288, -12.8609062]
+        ]
+      }
+    }
+  ]
+}
