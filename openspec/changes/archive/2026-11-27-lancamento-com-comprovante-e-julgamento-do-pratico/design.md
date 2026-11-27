@@ -52,6 +52,8 @@ por equipe na App 09; o lançamento por aula do Admin.
      aceita, legado sem forma) e então julga.
    A rota repete o que a rota de julgamento faz depois: `entregar_na_aprovacao` quando cumpriu.
    Tudo antes do `commit` único — a recusa de qualquer parte desfaz o lote.
+   Só o ato por atividade confere o prático: o lançamento **por aula**, do Admin (App 03),
+   segue como estava.
 5. **A declaração em nome reaproveita a mídia, sem cópia.** `comprovacao_referencia` aponta a
    mesma referência do Resultado; texto e link são copiados para `comprovacao`. A substituição
    da comprovação (`_substituir_comprovacao`) só anula colunas, nunca apaga o objeto, então a
@@ -61,7 +63,7 @@ por equipe na App 09; o lançamento por aula do Admin.
    com `exige_julgamento`), `GET /v1/aulas/{id}/resultados` (Mestre: só as atividades de que é
    autor; Admin: todas; nick do Guerreiro(a), sem nome civil) e
    `GET /v1/resultados/{id}/comprovante` (bytes). Permissão nova não: reusam
-   `lancamentos_e_pontuacao_negativa_das_suas_atividades` em leitura e a posse da trilha.
+   `suas_turmas` em leitura e a posse da trilha.
 7. **App 09.** O formulário entra em `TelaDaAula.tsx` no lugar da lista; ao escolher
    atividade e nick resolvido, busca a situação do prático. O envio do arquivo reusa o
    helper de envio retomável de `trilhas/api.ts`. `TelaDeLancamento.tsx` e a navegação até ela
