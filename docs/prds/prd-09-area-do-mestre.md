@@ -397,18 +397,19 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 
 ### 6.9 Responsáveis, perfil público e avisos
 
-| ID          | Requisito                                                                                                     | Prioridade |
-| ----------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
-| `RF-09-62`  | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos               | essencial  |
-| `RF-09-122` | Mestre consulta os responsáveis das comunidades em que atua e os que ele próprio cadastrou                    | essencial  |
-| `RF-09-63`  | Vínculo registra o grau de parentesco em texto livre                                                          | essencial  |
-| `RF-09-64`  | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                                    | essencial  |
-| `RF-09-65`  | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google                        | essencial  |
-| `RF-09-66`  | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade               | essencial  |
-| `RF-09-114` | Mestre define ou troca o próprio nick e avatar no card, sob a unicidade global e sem piso de moedas           | essencial  |
-| `RF-09-121` | Mestre cadastra e troca o próprio PIN de confirmação, de 4 dígitos, usado para confirmar identidade no App 01 | essencial  |
-| `RF-09-67`  | Aplicação não cadastra Mestre nem cria acesso de Mestre                                                       | essencial  |
-| `RF-09-68`  | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada                      | essencial  |
+| ID          | Requisito                                                                                                           | Prioridade |
+| ----------- | ------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `RF-09-62`  | Mestre cadastra responsável apresentado no encontro e vincula Guerreiros e Guerreiras já ativos                     | essencial  |
+| `RF-09-147` | Mestre informa no cadastro o e-mail opcional do responsável, e a lista mostra o acesso de cada um: e-mail e usuário | essencial  |
+| `RF-09-122` | Mestre consulta os responsáveis das comunidades em que atua e os que ele próprio cadastrou                          | essencial  |
+| `RF-09-63`  | Vínculo registra o grau de parentesco em texto livre                                                                | essencial  |
+| `RF-09-64`  | Aplicação recusa o quarto vínculo de responsável para o mesmo Guerreiro(a)                                          | essencial  |
+| `RF-09-65`  | Mestre cria credencial de usuário e senha provisória para responsável sem conta Google                              | essencial  |
+| `RF-09-66`  | Mestre publica currículo, portfólio, redes sociais e artefatos comprobatórios da sua habilidade                     | essencial  |
+| `RF-09-114` | Mestre define ou troca o próprio nick e avatar no card, sob a unicidade global e sem piso de moedas                 | essencial  |
+| `RF-09-121` | Mestre cadastra e troca o próprio PIN de confirmação, de 4 dígitos, usado para confirmar identidade no App 01       | essencial  |
+| `RF-09-67`  | Aplicação não cadastra Mestre nem cria acesso de Mestre                                                             | essencial  |
+| `RF-09-68`  | Toda tela que coleta dado traz aviso discreto do que coleta, com acesso à área detalhada                            | essencial  |
 
 ### 6.10 Catálogo avulso e troca por pontos extras
 
@@ -892,6 +893,7 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-119`                                        | 03 §11 (teto de 1 MB por pergunta, formatos da lista fechada)              |
 | `RF-09-121`                                        | 03 §1.1 (PIN de confirmação do adulto)                                     |
 | `RF-09-122`                                        | 02 §1 (consulta dos responsáveis cadastrados)                              |
+| `RF-09-147`                                        | 02 §1 (e-mail e acesso do responsável)                                     |
 | `RF-09-120` e `RN-09-44`                           | 03 §11 (a pergunta do quiz se grava uma a uma, completa)                   |
 | `RF-09-123` a `RF-09-126`, `RN-09-45` e `RN-09-46` | 03 §11 (o conteúdo se corrige, se remove, se exibe e se reordena)          |
 | `RF-09-127`, `RF-09-128` e `RN-09-47` a `RN-09-49` | 03 §11 (a atividade da missão se corrige e se remove)                      |

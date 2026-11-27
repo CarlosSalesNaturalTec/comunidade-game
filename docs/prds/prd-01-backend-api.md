@@ -176,6 +176,7 @@ Regra geral: **leitura pública dispensa login de pessoa, nunca a chave da aplic
 | `RF-01-67` | Admin ou o Mestre autor do desafio emite credencial de dispositivo para o sensor, vinculada ao Guerreiro(a) e à série, com o segredo devolvido uma única vez                                                             | essencial  |
 | `RF-01-68` | Admin ou o Mestre autor do desafio revoga a credencial de dispositivo com motivo e autoria, e ela também se encerra ao encerramento da série que alimenta                                                                | essencial  |
 | `RF-01-13` | Admin ou Mestre cadastra responsável e vincula a ele quem já está cadastrado, com grau de parentesco                                                                                                                     | essencial  |
+| `RF-01-92` | Núcleo aceita o e-mail opcional do responsável no cadastro e, só do Admin, a alteração de nome e e-mail; o e-mail cria, troca ou desativa o login social, e a lista de responsáveis traz e-mail e usuário, nunca a senha | essencial  |
 | `RF-01-14` | Núcleo recusa o vínculo que passaria de três responsáveis para o mesmo Guerreiro(a)                                                                                                                                      | essencial  |
 | `RF-01-15` | Responsável autentica com login próprio e enxerga apenas os Guerreiros e Guerreiras vinculados                                                                                                                           | essencial  |
 | `RF-01-16` | Núcleo aplica a matriz de permissões por papel em toda operação                                                                                                                                                          | essencial  |
@@ -447,7 +448,8 @@ Convenções válidas para todas as rotas:
 | POST   | `/v1/credenciais/senha`                                | autenticada                      | Troca a senha; obrigatória no primeiro acesso                                     |
 | POST   | `/v1/credenciais/dispositivo`                          | Admin ou Mestre                  | Emite a credencial do sensor e devolve o segredo uma única vez                    |
 | DELETE | `/v1/credenciais/dispositivo/{id}`                     | Admin ou Mestre                  | Revoga a credencial do sensor, com motivo e autoria                               |
-| POST   | `/v1/responsaveis`                                     | Admin ou Mestre                  | Cadastra responsável, sem criar acesso além dele                                  |
+| POST   | `/v1/responsaveis`                                     | Admin ou Mestre                  | Cadastra responsável; com e-mail, cria o login social (`RF-01-92`)                |
+| PATCH  | `/v1/responsaveis/{id}`                                | Admin                            | Altera nome e e-mail do responsável; o e-mail rege o login social (`RF-01-92`)    |
 | POST   | `/v1/responsaveis/{id}/vinculos`                       | Admin ou Mestre                  | Vincula Guerreiro(a) ao responsável, com grau de parentesco                       |
 | GET    | `/v1/eu`                                               | autenticada                      | Persona, papéis e permissões da sessão; do Guerreiro(a), também o nick e o avatar |
 | GET    | `/v1/vitrine/...`                                      | pública                          | Consultas públicas de vitrine e rankings                                          |
@@ -700,6 +702,7 @@ antes no documento 09.
 | `RF-01-09` a `RF-01-12`                          | 03 §1.1 (como o adulto entra)                                  |
 | `RF-01-61`                                       | 02 §1 (o fundador é o primeiro Admin)                          |
 | `RF-01-13` a `RF-01-15`                          | 02 §1 e 03 §§1.1, 5, 9, 11 (responsável)                       |
+| `RF-01-92`                                       | 02 §1 (e-mail, acesso e ficha do responsável)                  |
 | `RF-01-16` e `RF-01-17`                          | 03 §§5, 11 (fronteira App 03 × App 09)                         |
 | `RF-01-18`                                       | 03 §1 (instância única)                                        |
 | `RF-01-19`                                       | 03 §12 (LGPD e consentimentos)                                 |

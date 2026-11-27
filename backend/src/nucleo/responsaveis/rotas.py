@@ -14,6 +14,9 @@ from ..permissoes import Operacao, exigir_permissao
 from ..personas.modelo import Nick, Papel, Persona
 from .modelo import VinculoResponsavel
 from .regra import (
+    acesso_por_responsavel,
+    alterar_responsavel,
+    buscar_responsavel,
     cadastrar_responsavel,
     criar_vinculo,
     guerreiros_vinculados,
@@ -150,7 +153,32 @@ class VinculadoDoResponsavelSaida(BaseModel):
 class ResponsavelDaListaSaida(BaseModel):
     id: uuid.UUID
     nome: str
+    email: str
+    usuario: str
     vinculados: list[VinculadoDoResponsavelSaida]
+
+
+def _linha_da_lista(
+    responsavel: Persona,
+    vinculados: list[tuple[VinculoResponsavel, str, str]],
+    acesso: tuple[str, str],
+) -> ResponsavelDaListaSaida:
+    email, usuario = acesso
+    return ResponsavelDaListaSaida(
+        id=responsavel.id,
+        nome=responsavel.nome or "",
+        email=email,
+        usuario=usuario,
+        vinculados=[
+            VinculadoDoResponsavelSaida(
+                guerreiro_id=vinculo.guerreiro_id,
+                nick=nick,
+                nome=nome,
+                grau_de_parentesco=vinculo.grau_de_parentesco,
+            )
+            for vinculo, nick, nome in vinculados
+        ],
+    )
 
 
 @roteador.get("/responsaveis", response_model=PaginaDeResultado[ResponsavelDaListaSaida])
@@ -168,30 +196,20 @@ def listar_responsaveis_rota(
     próprio cadastrou, e o recorte é da regra (`RF-02-111`, `RF-09-122`,
     decisão do fundador, 2026-09-26).
 
-    Nome do responsável e, de cada vinculado, nick, nome e grau de
-    parentesco (decisão do fundador, 2026-11-26): nunca credencial, senha,
-    usuário ou contato do responsável, nem imagem real, nascimento ou
-    contato do Guerreiro(a) (`RN-09-18`, invariante 12 do documento 99 §6)."""
+    Nome e acesso do responsável — e-mail do login social e usuário, só das
+    credenciais ativas (decisão do fundador, 2026-11-27, `RF-01-92`) — e, de
+    cada vinculado, nick, nome e grau de parentesco (decisão de 2026-11-26):
+    nunca senha, nem imagem real, nascimento ou contato do Guerreiro(a)
+    (`RN-09-18`, invariante 12 do documento 99 §6)."""
     operador = sessao_bd.get(Persona, contexto.persona_id)
     responsaveis, proximo_cursor = responsaveis_visiveis(
         sessao_bd, operador=operador, parametros=parametros
     )
     vinculados = vinculados_por_responsavel(sessao_bd, responsaveis)
+    acesso = acesso_por_responsavel(sessao_bd, responsaveis)
     return PaginaDeResultado(
         itens=[
-            ResponsavelDaListaSaida(
-                id=responsavel.id,
-                nome=responsavel.nome or "",
-                vinculados=[
-                    VinculadoDoResponsavelSaida(
-                        guerreiro_id=vinculo.guerreiro_id,
-                        nick=nick,
-                        nome=nome,
-                        grau_de_parentesco=vinculo.grau_de_parentesco,
-                    )
-                    for vinculo, nick, nome in vinculados.get(responsavel.id, [])
-                ],
-            )
+            _linha_da_lista(responsavel, vinculados.get(responsavel.id, []), acesso[responsavel.id])
             for responsavel in responsaveis
         ],
         proximo_cursor=proximo_cursor,
@@ -202,6 +220,7 @@ class CadastrarResponsavelEntrada(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     nome: str = Field(min_length=1)
+    email: str | None = None
 
 
 class ResponsavelSaida(BaseModel):
@@ -221,9 +240,40 @@ def cadastrar_responsavel_rota(
     nome é o conteúdo mínimo do responsável (`RF-04-60`, design —
     decisão 1)."""
     criado_por = sessao_bd.get(Persona, contexto.persona_id)
-    responsavel = cadastrar_responsavel(sessao_bd, criado_por=criado_por, nome=entrada.nome)
+    responsavel = cadastrar_responsavel(
+        sessao_bd, criado_por=criado_por, nome=entrada.nome, email=entrada.email
+    )
     sessao_bd.commit()
     return ResponsavelSaida(id=responsavel.id, nome=responsavel.nome or "")
+
+
+class AlterarResponsavelEntrada(BaseModel):
+    """Só nome e e-mail (`RF-02-121`); `email` nulo ou vazio retira o acesso
+    pela conta Google."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    nome: str | None = None
+    email: str | None = None
+
+
+@roteador.patch("/responsaveis/{id}", response_model=ResponsavelDaListaSaida)
+def alterar_responsavel_rota(
+    id: uuid.UUID,
+    entrada: AlterarResponsavelEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_permissao(Operacao.tudo, "escreve"))],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> ResponsavelDaListaSaida:
+    """Só Admin, pelo mesmo portão de `PATCH /v1/mestres/{id}` — o Mestre
+    não edita a ficha (`RF-02-121`, `RF-01-92`, design — decisão 2)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    responsavel = buscar_responsavel(sessao_bd, id)
+    campos = {campo: getattr(entrada, campo) for campo in entrada.model_fields_set}
+    alterar_responsavel(sessao_bd, responsavel, campos=campos, operador=operador)
+    sessao_bd.commit()
+    vinculados = vinculados_por_responsavel(sessao_bd, [responsavel])
+    acesso = acesso_por_responsavel(sessao_bd, [responsavel])
+    return _linha_da_lista(responsavel, vinculados[responsavel.id], acesso[responsavel.id])
 
 
 class CriarVinculoEntrada(BaseModel):

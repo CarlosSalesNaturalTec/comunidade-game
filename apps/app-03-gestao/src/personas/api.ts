@@ -232,12 +232,38 @@ export interface ResponsavelCriado {
 
 // O nome é o conteúdo mínimo do responsável, e o núcleo o exige de toda
 // aplicação que cadastra: é sobre ele que se apoia o consentimento que
-// autoriza a captura da imagem da criança (`RF-02-06`, `RF-04-60`). E-mail e
-// credencial não entram aqui — a credencial é ato próprio, mais abaixo.
-export function cadastrarResponsavel(nome: string, token: string): Promise<ResponsavelCriado> {
+// autoriza a captura da imagem da criança (`RF-02-06`, `RF-04-60`). O e-mail é
+// opcional e, informado, abre o login pela conta Google (`RF-01-92`). A
+// credencial de usuário e senha é ato próprio, mais abaixo.
+export function cadastrarResponsavel(
+  nome: string,
+  token: string,
+  email?: string,
+): Promise<ResponsavelCriado> {
+  const corpo: { nome: string; email?: string } = { nome };
+  if (email?.trim()) corpo.email = email.trim();
   return chamarNucleo<ResponsavelCriado>("/v1/responsaveis", {
     metodo: "POST",
-    corpo: { nome },
+    corpo,
+    token,
+  });
+}
+
+export interface AlterarResponsavelEntrada {
+  nome?: string;
+  email?: string | null;
+}
+
+// Só o Admin altera a ficha: nome e e-mail. `email` nulo retira o acesso pela
+// conta Google, sem tocar a credencial de usuário e senha (`RF-02-121`).
+export function alterarResponsavel(
+  id: string,
+  entrada: AlterarResponsavelEntrada,
+  token: string,
+): Promise<ResponsavelDaLista> {
+  return chamarNucleo<ResponsavelDaLista>(`/v1/responsaveis/${id}`, {
+    metodo: "PATCH",
+    corpo: entrada,
     token,
   });
 }
@@ -299,6 +325,10 @@ export interface VinculadoDoResponsavel {
 export interface ResponsavelDaLista {
   id: string;
   nome: string;
+  // O acesso: e-mail do login social e usuário da credencial de usuário e
+  // senha, vazios quando não existem — nunca a senha (`RF-01-92`).
+  email: string;
+  usuario: string;
   vinculados: VinculadoDoResponsavel[];
 }
 
@@ -307,8 +337,8 @@ interface ListaDeResponsaveis {
   proximo_cursor: string | null;
 }
 
-// Nome do responsável e os vinculados dele por nick, nome e grau de
-// parentesco — nunca credencial, usuário ou contato, nem imagem real,
+// Nome e acesso do responsável e os vinculados dele por nick, nome e grau de
+// parentesco — nunca a senha, nem imagem real,
 // nascimento ou contato do Guerreiro(a). Responsável sem vínculo vem com `vinculados` vazio: é o
 // cadastro interrompido, e é para retomá-lo que a lista existe
 // (`RF-02-111`, `RN-09-18`).

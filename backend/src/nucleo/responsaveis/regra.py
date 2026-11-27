@@ -7,24 +7,124 @@ from ..comunidades.modelo import VinculoJogador
 from ..comunidades.regra import comunidades_do_mestre
 from ..erros import ErroDeValidacao, NaoEncontrado, PermissaoNegada
 from ..paginacao import ParametrosDeListagem, codificar_cursor, decodificar_cursor
-from ..personas.modelo import Nick, Papel, Persona
-from ..personas.regra import criar_persona
+from ..personas.modelo import Credencial, Nick, Papel, Persona, TipoDeCredencial
+from ..personas.regra import (
+    credencial_social_ativa,
+    criar_persona,
+    email_em_uso_por_outra,
+    gravar_credencial_de_login_social,
+)
 from .modelo import VinculoResponsavel
 
 # `RN-01-19`: cada Guerreiro(a) tem no máximo três responsáveis vigentes.
 TETO_DE_RESPONSAVEIS = 3
 
 
-def cadastrar_responsavel(sessao: Session, *, criado_por: Persona | None, nome: str) -> Persona:
+def _email_informado(email: str | None) -> str | None:
+    """E-mail vazio ou só de espaços equivale a ausente: no responsável o
+    e-mail é opcional (`RF-01-92`)."""
+    if email is None or not email.strip():
+        return None
+    return email.strip()
+
+
+def _recusar_email_de_outra(sessao: Session, *, email: str, persona: Persona | None) -> None:
+    if email_em_uso_por_outra(sessao, email=email, persona=persona):
+        raise ErroDeValidacao(mensagem="Este e-mail já é usado por outro cadastro.", campo="email")
+
+
+def cadastrar_responsavel(
+    sessao: Session, *, criado_por: Persona | None, nome: str, email: str | None = None
+) -> Persona:
     """O cadastro não dá, por si só, acesso a Guerreiro(a) algum — o que o
     responsável alcança vem do vínculo (`RF-01-13`). `criar_persona` já
     recusa quem não é Admin nem Mestre (`RN-01-01`). O nome é exigido: é
     sobre ele que se apoia o consentimento que autoriza a captura da imagem
-    da criança (`RF-04-60`, design — decisão 1).
+    da criança (`RF-04-60`). O e-mail é opcional e, informado, abre o login
+    social pela conta Google, como em Mestre e Apoiador (`RF-01-92`,
+    decisão do fundador de 2026-11-27).
     """
     if not nome or not nome.strip():
         raise ErroDeValidacao(mensagem="O responsável exige o nome.", campo="nome")
-    return criar_persona(sessao, papel=Papel.responsavel, criada_por=criado_por, nome=nome)
+    email = _email_informado(email)
+    if email is not None:
+        _recusar_email_de_outra(sessao, email=email, persona=None)
+    persona = criar_persona(
+        sessao, papel=Papel.responsavel, criada_por=criado_por, nome=nome, email=email
+    )
+    if email is not None:
+        gravar_credencial_de_login_social(
+            sessao, persona=persona, email=email, criada_por=criado_por
+        )
+        sessao.flush()
+    return persona
+
+
+def buscar_responsavel(sessao: Session, responsavel_id: uuid.UUID) -> Persona:
+    persona = sessao.get(Persona, responsavel_id)
+    if persona is None or persona.papel != Papel.responsavel:
+        raise NaoEncontrado(mensagem="Responsável não encontrado.")
+    return persona
+
+
+def alterar_responsavel(
+    sessao: Session, persona: Persona, *, campos: dict[str, str | None], operador: Persona
+) -> Persona:
+    """Nome e e-mail da ficha, só pelo Admin (`RF-02-121`). Campo ausente
+    mantém. Gravar e-mail onde não havia cria a credencial social; trocar
+    troca o identificador; retirar desativa a credencial, sem apagá-la, e a
+    de usuário e senha segue valendo (`RF-01-92`, design — decisão 3)."""
+    if "nome" in campos:
+        nome = campos["nome"]
+        if not nome or not nome.strip():
+            raise ErroDeValidacao(mensagem="O responsável exige o nome.", campo="nome")
+        persona.nome = nome
+    if "email" in campos:
+        email = _email_informado(campos["email"])
+        credencial = credencial_social_ativa(sessao, persona)
+        if email is None:
+            if credencial is not None:
+                credencial.ativa = False
+            persona.email = None
+        elif email != persona.email or credencial is None:
+            _recusar_email_de_outra(sessao, email=email, persona=persona)
+            if credencial is not None:
+                credencial.identificador = email
+            else:
+                gravar_credencial_de_login_social(
+                    sessao, persona=persona, email=email, criada_por=operador
+                )
+            persona.email = email
+    sessao.flush()
+    return persona
+
+
+def acesso_por_responsavel(
+    sessao: Session, responsaveis: list[Persona]
+) -> dict[uuid.UUID, tuple[str, str]]:
+    """O e-mail do login social e o usuário da credencial de usuário e senha,
+    só das credenciais ativas, numa consulta por página; nunca senha, hash
+    nem troca pendente (`RF-01-92`, design — decisão 5)."""
+    acesso: dict[uuid.UUID, tuple[str, str]] = {r.id: ("", "") for r in responsaveis}
+    if not responsaveis:
+        return acesso
+    credenciais = (
+        sessao.query(Credencial.persona_id, Credencial.tipo, Credencial.identificador)
+        .filter(
+            Credencial.persona_id.in_(acesso.keys()),
+            Credencial.ativa.is_(True),
+            Credencial.tipo.in_([TipoDeCredencial.login_social, TipoDeCredencial.usuario_e_senha]),
+        )
+        .all()
+    )
+    for persona_id, tipo, identificador in credenciais:
+        email, usuario = acesso[persona_id]
+        if tipo == TipoDeCredencial.login_social:
+            email = identificador or ""
+        else:
+            usuario = identificador or ""
+        acesso[persona_id] = (email, usuario)
+    return acesso
 
 
 def criar_vinculo(

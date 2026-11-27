@@ -400,7 +400,7 @@ def sugerir_variacoes_de_nick_com_alcance_total(sessao: Session, nick: str) -> l
 _PAPEIS_QUE_EXIGEM_ARTEFATO = (Papel.mestre, Papel.apoiador)
 
 
-def _gravar_credencial_de_login_social(
+def gravar_credencial_de_login_social(
     sessao: Session, *, persona: Persona, email: str, criada_por: Persona
 ) -> None:
     """O e-mail declarado no cadastro é o identificador que a rota de login
@@ -612,7 +612,7 @@ def cadastrar_adulto_com_artefatos(
             )
         )
 
-    _gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
+    gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
     sessao.flush()
     return persona
 
@@ -635,7 +635,7 @@ def incluir_admin(
     persona = criar_persona(
         sessao, papel=Papel.admin, criada_por=operador, nome=nome, email=email, whatsapp=whatsapp
     )
-    _gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
+    gravar_credencial_de_login_social(sessao, persona=persona, email=email, criada_por=operador)
     sessao.flush()
     return persona
 
@@ -664,7 +664,7 @@ def buscar_adulto_da_gestao(sessao: Session, *, persona_id: uuid.UUID, papel: Pa
     return persona
 
 
-def _credencial_social_ativa(sessao: Session, persona: Persona) -> Credencial | None:
+def credencial_social_ativa(sessao: Session, persona: Persona) -> Credencial | None:
     return (
         sessao.query(Credencial)
         .filter_by(persona_id=persona.id, tipo=TipoDeCredencial.login_social, ativa=True)
@@ -672,18 +672,17 @@ def _credencial_social_ativa(sessao: Session, persona: Persona) -> Credencial | 
     )
 
 
-def _email_em_uso_por_outra(sessao: Session, *, email: str, persona: Persona) -> bool:
-    return (
-        sessao.query(Credencial.id)
-        .filter(
-            Credencial.tipo == TipoDeCredencial.login_social,
-            Credencial.identificador == email,
-            Credencial.ativa.is_(True),
-            Credencial.persona_id != persona.id,
-        )
-        .first()
-        is not None
+def email_em_uso_por_outra(sessao: Session, *, email: str, persona: Persona | None) -> bool:
+    """Sem `persona`, confere contra todas — é o caso do cadastro, em que a
+    persona ainda não existe."""
+    consulta = sessao.query(Credencial.id).filter(
+        Credencial.tipo == TipoDeCredencial.login_social,
+        Credencial.identificador == email,
+        Credencial.ativa.is_(True),
     )
+    if persona is not None:
+        consulta = consulta.filter(Credencial.persona_id != persona.id)
+    return consulta.first() is not None
 
 
 def alterar_adulto(
@@ -709,11 +708,11 @@ def alterar_adulto(
                 mensagem=f"{persona.papel.value.capitalize()} precisa de e-mail.", campo="email"
             )
         if email != persona.email:
-            if _email_em_uso_por_outra(sessao, email=email, persona=persona):
+            if email_em_uso_por_outra(sessao, email=email, persona=persona):
                 raise ErroDeValidacao(
                     mensagem="Este e-mail já é usado por outro cadastro.", campo="email"
                 )
-            credencial = _credencial_social_ativa(sessao, persona)
+            credencial = credencial_social_ativa(sessao, persona)
             if credencial is not None:
                 credencial.identificador = email
             persona.email = email
@@ -881,7 +880,7 @@ def reativar_adulto(sessao: Session, persona: Persona) -> Persona:
         .first()
     )
     if credencial is not None and credencial.identificador == persona.email:
-        if _email_em_uso_por_outra(sessao, email=credencial.identificador, persona=persona):
+        if email_em_uso_por_outra(sessao, email=credencial.identificador, persona=persona):
             raise ErroDeValidacao(
                 mensagem="O e-mail deste cadastro passou a ser usado por outro.", campo="email"
             )

@@ -26,7 +26,9 @@ const TETO_DE_RESPONSAVEIS_POR_MENSAGEM =
   "Este Guerreiro(a) já tem três responsáveis vigentes — o teto por criança.";
 
 const DADO_COLETADO =
-  "o nome do responsável, o vínculo dele com o Guerreiro(a) e o usuário de acesso dele";
+  "o nome e o e-mail do responsável, o vínculo dele com o Guerreiro(a) e o usuário de acesso dele";
+
+const ROTULO_DO_EMAIL = "E-mail da conta Google (opcional)";
 
 const SEM_NICK = "Guerreiro(a) sem nick";
 
@@ -63,6 +65,8 @@ export function FormularioDeResponsavel({
   const { sessao, tratarRecusaDeSessao } = useSessao();
   const idDoCampoDeGuerreiro = useId();
   const [nome, definirNome] = useState("");
+  const [email, definirEmail] = useState("");
+  const [erroDoEmail, definirErroDoEmail] = useState<string | null>(null);
   const [responsavelId, definirResponsavelId] = useState<string | null>(
     responsavelExistente?.id ?? null,
   );
@@ -85,6 +89,7 @@ export function FormularioDeResponsavel({
   async function aoCadastrarResponsavel(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     definirErro(null);
+    definirErroDoEmail(null);
 
     if (!nome.trim()) {
       definirErro("Informe o nome do responsável.");
@@ -94,11 +99,16 @@ export function FormularioDeResponsavel({
 
     definirEnviando(true);
     try {
-      const criado = await cadastrarResponsavel(nome.trim(), sessao.token);
+      const criado = await cadastrarResponsavel(nome.trim(), sessao.token, email);
       definirResponsavelId(criado.id);
     } catch (erroCapturado) {
       if (ehRecusaDeSessao(erroCapturado)) {
         tratarRecusaDeSessao();
+        return;
+      }
+      // O e-mail já usado por outro cadastro é dito no campo (`RF-01-92`).
+      if (erroCapturado instanceof ErroDaApi && erroCapturado.campo === "email") {
+        definirErroDoEmail(erroCapturado.message);
         return;
       }
       definirErro("Não foi possível cadastrar o responsável. Tente novamente em instantes.");
@@ -179,6 +189,13 @@ export function FormularioDeResponsavel({
         <AvisoDeColeta dado={DADO_COLETADO} />
         <form onSubmit={aoCadastrarResponsavel} aria-label="Cadastrar responsável">
           <Campo rotulo="Nome do responsável" valor={nome} aoAlterar={definirNome} />
+          <Campo
+            rotulo={ROTULO_DO_EMAIL}
+            tipo="email"
+            valor={email}
+            aoAlterar={definirEmail}
+            erro={erroDoEmail}
+          />
           {erro && <Aviso tipo="erro">{erro}</Aviso>}
           <Botao tipo="submit" desabilitado={enviando}>
             Cadastrar responsável
