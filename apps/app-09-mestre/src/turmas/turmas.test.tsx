@@ -502,9 +502,7 @@ describe("presentes nesta aula (RF-09-145, RN-09-18)", () => {
   });
 
   it("presente sem nome cadastrado aparece com a marca sem nome", async () => {
-    vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([
-      presenca({ nome: null }),
-    ]);
+    vi.spyOn(turmasApi, "listarPresencasDaAula").mockResolvedValue([presenca({ nome: null })]);
 
     await abrir();
 
