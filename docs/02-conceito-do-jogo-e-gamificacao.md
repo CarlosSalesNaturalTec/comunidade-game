@@ -113,6 +113,9 @@ e revogam consentimentos, e têm acesso próprio à plataforma.
   livre.
 - A gestão **consulta os responsáveis cadastrados** e os vinculados de cada um: o Admin
   alcança todos; o Mestre, os das comunidades em que atua e os que ele próprio cadastrou.
+  A lista mostra como cada um entra — e-mail da conta Google e usuário —, nunca a senha.
+- O **e-mail é opcional no cadastro** e dá o acesso pela conta Google; só o **Admin edita a
+  ficha** — nome e e-mail —, e retirar o e-mail retira esse acesso.
 - **Qualquer um dos vinculados autoriza ou revoga**, e a **recusa prevalece**: divergindo os
   responsáveis, a autorização fica suspensa até a gestão tratar.
 - **Parentes e amigos além dos três responsáveis acompanham como Apoiador**, cadastrados pela

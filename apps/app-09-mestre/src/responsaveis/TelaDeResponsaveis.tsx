@@ -7,7 +7,8 @@ import { listarResponsaveis, type ResponsavelDaLista } from "./api";
 import { FormularioDeResponsavel } from "./FormularioDeResponsavel";
 import { ListaDeResponsaveis } from "./ListaDeResponsaveis";
 
-const DADO_COLETADO = "o nome do responsável e o vínculo dele com os Guerreiros e Guerreiras";
+const DADO_COLETADO =
+  "o nome, o e-mail e o usuário de acesso do responsável e o vínculo dele com os Guerreiros e Guerreiras";
 
 // A área abria direto no cadastro, e responsável cadastrado ficava
 // inalcançável — pior no Mestre, que cadastra presencialmente e é quem mais

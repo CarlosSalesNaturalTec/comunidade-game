@@ -701,7 +701,7 @@ describe("a gestão liga a linha da tabela à ficha", () => {
 });
 
 describe("cadastro de responsável", () => {
-  it("mostra o aviso de coleta do nome, do vínculo e do usuário de acesso", async () => {
+  it("mostra o aviso de coleta do nome, do e-mail, do vínculo e do usuário de acesso", async () => {
     configurarSessao(SESSAO_DE_ADMIN);
     vi.spyOn(personasApi, "cadastrarResponsavel").mockResolvedValue({
       id: "resp-1",
@@ -714,7 +714,7 @@ describe("cadastro de responsável", () => {
 
     render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
 
-    expect(screen.getByText(/nome do responsável, o vínculo/i)).toHaveAttribute(
+    expect(screen.getByText(/e-mail do responsável, o vínculo/i)).toHaveAttribute(
       "role",
       "status",
     );
@@ -723,7 +723,7 @@ describe("cadastro de responsável", () => {
     await usuario.type(screen.getByLabelText(/nome do responsável/i), "Dona Maria");
     await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
 
-    expect(await screen.findByText(/nome do responsável, o vínculo/i)).toBeInTheDocument();
+    expect(await screen.findByText(/e-mail do responsável, o vínculo/i)).toBeInTheDocument();
   });
 
   // O defeito que esta fatia corrige atravessou o CI porque o teste dublava
@@ -759,6 +759,58 @@ describe("cadastro de responsável", () => {
     expect(String(url)).toContain("/v1/responsaveis");
     expect(opcoes?.method).toBe("POST");
     expect(JSON.parse(String(opcoes?.body))).toEqual({ nome: "Dona Maria" });
+  });
+
+  it("o e-mail da conta Google, opcional, vai junto no cadastro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "listarGuerreiros").mockResolvedValue({
+      itens: [GUERREIRO],
+      proximo_cursor: null,
+    });
+    configurarAcessoAoNucleo({
+      chaveDeAplicacao: "chave-de-teste",
+      urlDoNucleo: "https://nucleo.teste",
+    });
+    const requisicao = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 201,
+      json: () => Promise.resolve({ id: "resp-1", nome: "Dona Maria" }),
+      headers: new Headers(),
+    } as Response);
+    vi.stubGlobal("fetch", requisicao);
+
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nome do responsável/i), "Dona Maria");
+    await usuario.type(screen.getByLabelText(/e-mail da conta google/i), "maria@example.org");
+    await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
+
+    await screen.findByText(/vincule os guerreiros/i);
+    const [, opcoes] = requisicao.mock.calls[0];
+    expect(JSON.parse(String(opcoes?.body))).toEqual({
+      nome: "Dona Maria",
+      email: "maria@example.org",
+    });
+  });
+
+  it("o e-mail já usado por outro cadastro é explicado no campo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(personasApi, "cadastrarResponsavel").mockRejectedValue(
+      new ErroDaApi(422, {
+        codigo: "erro_de_validacao",
+        mensagem: "Este e-mail já é usado por outro cadastro.",
+        campo: "email",
+      }),
+    );
+
+    render(<FormularioDeResponsavel onConcluido={vi.fn()} onCancelar={vi.fn()} />);
+    const usuario = userEvent.setup();
+    await usuario.type(screen.getByLabelText(/nome do responsável/i), "Tia");
+    await usuario.type(screen.getByLabelText(/e-mail da conta google/i), "a@example.org");
+    await usuario.click(screen.getByRole("button", { name: /cadastrar responsável/i }));
+
+    expect(await screen.findByText(/já é usado por outro cadastro/i)).toBeInTheDocument();
+    expect(screen.queryByText(/vincule os guerreiros/i)).not.toBeInTheDocument();
   });
 
   it("sem nome, o cadastro não chega ao núcleo", async () => {
@@ -875,6 +927,8 @@ describe("lista de responsáveis na gestão", () => {
   const COM_VINCULO: ResponsavelDaLista = {
     id: "resp-1",
     nome: "Dona Maria",
+    email: "maria@example.org",
+    usuario: "dona.maria",
     vinculados: [
       {
         guerreiro_id: GUERREIRO.id,
@@ -888,6 +942,8 @@ describe("lista de responsáveis na gestão", () => {
   const SEM_VINCULO: ResponsavelDaLista = {
     id: "resp-2",
     nome: "Seu João",
+    email: "",
+    usuario: "",
     vinculados: [],
   };
 
@@ -955,19 +1011,20 @@ describe("lista de responsáveis na gestão", () => {
 
     render(<TelaDeResponsaveis />);
 
-    expect(await screen.findByText(/nome do responsável e o vínculo/i)).toHaveAttribute(
-      "role",
-      "status",
-    );
+    expect(
+      await screen.findByText(/usuário de acesso do responsável e o vínculo/i),
+    ).toHaveAttribute("role", "status");
   });
 
-  it("não expõe credencial nem dado civil da criança", async () => {
-    // O nome do vinculado sai desde 2026-11-26; credencial e nascimento,
-    // nunca.
+  it("não expõe senha nem dado civil da criança", async () => {
+    // O nome do vinculado sai desde 2026-11-26, e o acesso desde 2026-11-27;
+    // senha e nascimento, nunca.
     configurarLista([
       {
         id: "resp-3",
         nome: "Dona Maria",
+        email: "maria@example.org",
+        usuario: "dona.maria",
         vinculados: [
           {
             guerreiro_id: GUERREIRO.id,
@@ -983,8 +1040,85 @@ describe("lista de responsáveis na gestão", () => {
     await screen.findByText("Dona Maria");
 
     const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
-    expect(tabela.textContent).not.toMatch(/senha|usuário|credencial/i);
+    expect(tabela.textContent).not.toMatch(/senha/i);
     expect(tabela.textContent).not.toContain(GUERREIRO.nascimento);
+  });
+
+  it("mostra como cada responsável entra, ou que está sem acesso", async () => {
+    configurarLista([COM_VINCULO, SEM_VINCULO]);
+
+    render(<TelaDeResponsaveis />);
+
+    await screen.findByText("Dona Maria");
+    const tabela = screen.getByRole("table", { name: /responsáveis cadastrados/i });
+    expect(
+      within(tabela).getByText("Google: maria@example.org · Usuário: dona.maria"),
+    ).toBeInTheDocument();
+    expect(within(tabela).getByText("Sem acesso")).toBeInTheDocument();
+  });
+
+  it("o Admin corrige o nome e dá o acesso pela conta Google na ficha", async () => {
+    const listar = configurarLista([SEM_VINCULO]);
+    const alterar = vi.spyOn(personasApi, "alterarResponsavel").mockResolvedValue({
+      ...SEM_VINCULO,
+      nome: "Seu João Silva",
+      email: "joao@example.org",
+    });
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: /editar ficha/i }));
+
+    const nome = screen.getByLabelText(/nome do responsável/i);
+    await usuario.clear(nome);
+    await usuario.type(nome, "Seu João Silva");
+    await usuario.type(screen.getByLabelText(/e-mail da conta google/i), "joao@example.org");
+    await usuario.click(screen.getByRole("button", { name: /^salvar$/i }));
+
+    await waitFor(() =>
+      expect(alterar).toHaveBeenCalledWith(
+        SEM_VINCULO.id,
+        { nome: "Seu João Silva", email: "joao@example.org" },
+        SESSAO_DE_ADMIN.token,
+      ),
+    );
+    await waitFor(() => expect(listar).toHaveBeenCalledTimes(2));
+  });
+
+  it("esvaziar o e-mail é declarado como retirada do acesso pela conta Google", async () => {
+    configurarLista([COM_VINCULO]);
+    const alterar = vi
+      .spyOn(personasApi, "alterarResponsavel")
+      .mockResolvedValue({ ...COM_VINCULO, email: "" });
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: /editar ficha/i }));
+    await usuario.clear(screen.getByLabelText(/e-mail da conta google/i));
+
+    expect(screen.getByText(/deixa de entrar pela conta google/i)).toBeInTheDocument();
+    await usuario.click(screen.getByRole("button", { name: /^salvar$/i }));
+    await waitFor(() =>
+      expect(alterar).toHaveBeenCalledWith(
+        COM_VINCULO.id,
+        { nome: "Dona Maria", email: null },
+        SESSAO_DE_ADMIN.token,
+      ),
+    );
+  });
+
+  it("na ficha, nome em branco não chega ao núcleo", async () => {
+    configurarLista([COM_VINCULO]);
+    const alterar = vi.spyOn(personasApi, "alterarResponsavel");
+
+    render(<TelaDeResponsaveis />);
+    const usuario = userEvent.setup();
+    await usuario.click(await screen.findByRole("button", { name: /editar ficha/i }));
+    await usuario.clear(screen.getByLabelText(/nome do responsável/i));
+    await usuario.click(screen.getByRole("button", { name: /^salvar$/i }));
+
+    expect(await screen.findByText(/informe o nome do responsável/i)).toBeInTheDocument();
+    expect(alterar).not.toHaveBeenCalled();
   });
 
   it("retoma um responsável e vincula outro Guerreiro(a), sem cadastrar ninguém", async () => {

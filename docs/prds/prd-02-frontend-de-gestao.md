@@ -225,6 +225,7 @@ aparelho em que a equipe é formada: o `RF-02-94` foi transferido para o PRD-04 
 | `RF-02-05`  | Admin inclui novo Admin manualmente                                                                                                                           | essencial  |
 | `RF-02-06`  | Admin cadastra responsável e vincula Guerreiros e Guerreiras já cadastrados, com grau de parentesco                                                           | essencial  |
 | `RF-02-111` | Gestão apresenta os responsáveis cadastrados, com os vinculados de cada um, e retoma o vínculo de um deles                                                    | essencial  |
+| `RF-02-121` | Admin edita a ficha do responsável — nome e e-mail —, e a lista mostra o acesso de cada um: e-mail e usuário, nunca a senha                                   | essencial  |
 | `RF-02-110` | Admin cadastra e troca o próprio PIN de confirmação, de 4 dígitos, usado para confirmar identidade no App 01                                                  | essencial  |
 | `RF-02-07`  | Admin cria credencial de usuário e senha provisória para adulto sem conta social                                                                              | essencial  |
 | `RF-02-08`  | Painel do dia lista as equipes formadas no App 01 naquela aula, pelo nome, com o nick e o papel de cada integrante                                            | essencial  |
@@ -453,7 +454,8 @@ do que espera, sem rota própria para a fila (`RF-02-101`).
 | POST   | `/v1/{papel}/{id}/desativacao`                         | Admin           | Desativa o adulto; reativação em `…/reativacao`                                   |
 | POST   | `/v1/{papel}/{id}/artefatos-da-gestao`                 | Admin           | Inclui artefato; `PATCH` e `DELETE` em `…/{artefato_id}`                          |
 | POST   | `/v1/admins`                                           | Admin           | Inclui novo Admin manualmente                                                     |
-| GET    | `/v1/responsaveis`                                     | Admin ou Mestre | Lista os responsáveis cadastrados, com os vinculados de cada um                   |
+| GET    | `/v1/responsaveis`                                     | Admin ou Mestre | Lista os responsáveis, com o acesso e os vinculados de cada um                    |
+| PATCH  | `/v1/responsaveis/{id}`                                | Admin           | Altera nome e e-mail do responsável (`RF-02-121`)                                 |
 | GET    | `/v1/aulas/{id}/equipes`                               | Admin ou Mestre | Lista as equipes formadas no App 01 naquela aula                                  |
 | GET    | `/v1/guerreiros/{id}/historico-de-pontuacao`           | Admin ou Mestre | Histórico de pontuação e saldos do Guerreiro(a) (PRD-01 §9)                       |
 | GET    | `/v1/provedores/{id}/aportes`                          | Admin           | Aportes, Poder Sustentador e declarações pendentes do provedor                    |
@@ -710,6 +712,7 @@ freio por origem: 3 envios por hora, com atraso progressivo e sem CAPTCHA (docum
 | `RF-02-109`               | 03 §3.3 (limiar medido por ponto de apoio)                            |
 | `RF-02-110`               | 03 §1.1 (PIN de confirmação do adulto)                                |
 | `RF-02-111`               | 02 §1 (consulta dos responsáveis cadastrados pela gestão)             |
+| `RF-02-121`               | 02 §1 (ficha e acesso do responsável)                                 |
 | `RF-02-57` e `RF-02-58`   | 04 §1 e PRD-07 (aportes e necessidades)                               |
 | `RF-02-59` a `RF-02-62`   | 05 §5 (Quiz ao Vivo)                                                  |
 | `RF-02-72` e `RF-02-73`   | 05 §5 e 11 §5 (regras e pontuação da partida)                         |

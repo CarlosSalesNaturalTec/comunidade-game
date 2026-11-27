@@ -22,6 +22,18 @@ function textoDosVinculados(responsavel: ResponsavelDaLista): string {
     .join(" · ");
 }
 
+// Como o responsável entra: o e-mail da conta Google e o usuário da credencial
+// de usuário e senha, ou a falta dos dois — nunca a senha. A ficha não se
+// edita aqui: é do Admin, na App 03 (`RF-09-122`, `RF-01-92`, decisão do
+// fundador de 2026-11-27).
+function textoDoAcesso(responsavel: ResponsavelDaLista): string {
+  const partes = [
+    responsavel.email && `Google: ${responsavel.email}`,
+    responsavel.usuario && `Usuário: ${responsavel.usuario}`,
+  ].filter(Boolean);
+  return partes.length > 0 ? partes.join(" · ") : "Sem acesso";
+}
+
 // A linha abre a retomada do vínculo, e o cadastro sem vínculo é sinalizado.
 // É o caso que mais alcança o Mestre, que cadastra presencialmente no
 // encontro e é justamente quem interrompe o cadastro antes de vincular
@@ -55,6 +67,11 @@ export function ListaDeResponsaveis({ responsaveis, onRetomar }: Props) {
         ) : (
           textoDosVinculados(responsavel)
         ),
+    },
+    {
+      chave: "acesso",
+      rotulo: "Acesso",
+      renderizar: (responsavel) => textoDoAcesso(responsavel),
     },
   ];
 

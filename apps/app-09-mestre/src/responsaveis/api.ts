@@ -31,10 +31,18 @@ export interface ResponsavelCriado {
 
 // O nome é o conteúdo mínimo do responsável, e o cadastro pressupõe que
 // ele se apresentou pessoalmente no encontro (`RF-09-62`, `RN-09-15`).
-export function cadastrarResponsavel(nome: string, token: string): Promise<ResponsavelCriado> {
+// O e-mail é opcional e, informado, abre o login pela conta Google na App 07
+// (`RF-09-147`, `RF-01-92`).
+export function cadastrarResponsavel(
+  nome: string,
+  token: string,
+  email?: string,
+): Promise<ResponsavelCriado> {
+  const corpo: { nome: string; email?: string } = { nome };
+  if (email?.trim()) corpo.email = email.trim();
   return chamarNucleo<ResponsavelCriado>("/v1/responsaveis", {
     metodo: "POST",
-    corpo: { nome },
+    corpo,
     token,
   });
 }
@@ -101,6 +109,10 @@ export interface VinculadoDoResponsavel {
 export interface ResponsavelDaLista {
   id: string;
   nome: string;
+  // O acesso: e-mail do login social e usuário da credencial de usuário e
+  // senha, vazios quando não existem — nunca a senha (`RF-01-92`).
+  email: string;
+  usuario: string;
   vinculados: VinculadoDoResponsavel[];
 }
 
