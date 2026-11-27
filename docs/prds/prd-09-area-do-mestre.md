@@ -184,10 +184,11 @@ Guerreiras que percorrem as suas trilhas.
 
 1. O Mestre abre **Minhas atividades** e vê apenas as suas turmas e as atividades on-line que
    propôs; as **presenciais** do encontro e os **presentes** aparecem ao abrir a aula.
-2. Lança a atividade realizada com data, participantes e equipes. Na atividade em equipe, lança
-   a equipe inteira de uma vez, preservando o papel de cada integrante.
-3. Atribui o resultado de cada um: **realizada**, **com mérito** ou **mérito extra por auxílio
-   aos colegas**.
+2. Na tela da aula, lança o resultado de uma atividade sua, um Guerreiro(a) por envio: escolhe
+   a atividade, digita o nick e anexa o **comprovante** do que ele produziu.
+3. Atribui o resultado: **realizada**, **com mérito** ou **mérito extra por auxílio aos
+   colegas** — e, se a missão tem desafio prático que ele ainda não cumpriu, julga-o no mesmo
+   envio.
 4. Registra a presença do seu encontro e ajusta o que o App 01 não capturou.
 5. Alcançado um **marco** com recompensa declarada, a entrega aparece como pendência do
    Mestre e a baixa vai para o livro-razão quando ele confirma. Se o marco é o prático que ele
@@ -354,13 +355,17 @@ Guerreiras que percorrem as suas trilhas.
 | `RF-09-49`  | Aplicação recusa lançamento de atividade que não é do Mestre autenticado                                                                                                                                                | essencial  |
 | `RF-09-50`  | Aplicação leva o Mestre ao painel do dia da sua aula, operado na App 03                                                                                                                                                 | desejável  |
 | `RF-09-73`  | Minhas turmas lista as atividades on-line entre encontros; as presenciais do encontro aparecem só dentro da aula, para lançamento                                                                                       | essencial  |
-| `RF-09-74`  | Mestre lança a equipe inteira de uma vez, preservando o papel de cada integrante                                                                                                                                        | essencial  |
+| `RF-09-74`  | Na App 09, o Mestre lança um Guerreiro(a) por envio; o lançamento da equipe inteira de uma vez segue na API, que a App 03 usa (revisto em 2026-11-27)                                                                   | essencial  |
 | `RF-09-75`  | Marco alcançado com recompensa declarada vira pendência de entrega para o Mestre: na App 09 a fila é da **comunidade**; na App 01, a do **encontro** — só quem tem presença registrada naquela aula                     | essencial  |
 | `RF-09-76`  | Mestre confirma a entrega da recompensa do marco, gerando a baixa no livro-razão: no encontro, o recurso sai do **ponto de apoio da aula**; fora dele, da **aula imediatamente anterior** da comunidade do Guerreiro(a) | essencial  |
 | `RF-09-113` | Mestre valida a conservação de cada bem recebido a pedido do Guerreiro(a), creditando 1 ponto extra por item, uma vez por encontro, no aparelho do encontro (PRD-04 `RF-04-84`), e não nesta aplicação                  | essencial  |
 | `RF-09-143` | Mestre abre a ficha de cada Guerreiro(a) ativo das comunidades do seu vínculo vigente, por nick e avatar                                                                                                                | essencial  |
 | `RF-09-144` | A ficha exibe o histórico de pontuação — data, origem, valor, trilha ou poder e motivo da conduta — e os saldos regular e extra                                                                                         | essencial  |
 | `RF-09-145` | Na aula, o Mestre vê os presentes — presença não anulada, por nick, nome e avatar, com hora e modo de comprovação                                                                                                       | essencial  |
+| `RF-09-148` | Na tela da aula, o Mestre lança o resultado de uma atividade presencial sua num formulário: a atividade num _select_ e o Guerreiro(a) pelo nick, sem lista de atividades com botão nem identificador técnico            | essencial  |
+| `RF-09-149` | O lançamento exige o comprovante do que o Guerreiro(a) produziu, numa das seis formas — texto, imagem, áudio, vídeo, arquivo ou link —, com a mídia enviada antes do lançamento                                         | essencial  |
+| `RF-09-150` | No mesmo envio, o Mestre registra o julgamento do desafio prático da missão da atividade — cumpriu, publicável e motivo                                                                                                 | essencial  |
+| `RF-09-151` | A tela da aula lista os resultados lançados nela, com o comprovante, ao Mestre autor e ao Admin                                                                                                                         | essencial  |
 
 ### 6.7 Validações, filas e propostas
 
@@ -500,6 +505,9 @@ outras duas frentes já entregues — tombamento (PRD-07) e ficha de vida —, s
 | `RN-09-61` | Os materiais da missão são lista só de nomes, opcional; não travam a publicação e se corrigem em qualquer situação da trilha, só pelo Mestre autor (`RN-09-56`)                                                                        | —                      | 11 §2.2        |
 | `RN-09-62` | A conservação do `RF-09-113` e a customização do kit recebido não pontuam o mesmo item no mesmo encontro: é uma ou outra                                                                                                               | —                      | 11 §5          |
 | `RN-09-63` | A aprovação do prático não espera lastro: sem disponível, a missão seguinte abre e só a entrega fica pendente                                                                                                                          | —                      | 02 §8.1        |
+| `RN-09-64` | O comprovante é obrigatório e é a produção do Resultado; a produção em texto, sem forma declarada, vale como comprovante em texto                                                                                                      | —                      | 11 §4          |
+| `RN-09-65` | O julgamento é exigido quando a missão tem prático que o Guerreiro(a) não cumpriu, e recusado quando não há o que julgar — quiz, sem desafio, avulsa ou prático cumprido                                                               | —                      | 11 §4          |
+| `RN-09-66` | Com declaração aguardando, o julgamento recai sobre ela; sem declaração, ou com a recusada, o Mestre declara em nome do Guerreiro(a) com o comprovante, recusado fora da forma aceita                                                  | —                      | 11 §4          |
 
 ## 8. Modelo de dados
 
@@ -608,7 +616,11 @@ PRD-08 e as de recurso (`/necessidades/minhas`, `/aportes/absorcao`,
 | POST   | `/v1/perguntas`                                           | Mestre       | Cadastra pergunta com quatro alternativas e uma correta                                                                                           |
 | GET    | `/v1/perguntas/minhas`                                    | Mestre       | Banco do Mestre, filtrável por trilha e missão                                                                                                    |
 | GET    | `/v1/minhas-turmas`                                       | Mestre       | Turmas e atividades do próprio Mestre                                                                                                             |
-| POST   | `/v1/atividades/{id}/lancamentos`                         | Mestre       | Lança a atividade que propôs, com participantes e resultados                                                                                      |
+| POST   | `/v1/atividades/{id}/lancamentos`                         | Mestre       | Lança a atividade que propôs, com o comprovante e, quando exigido, o julgamento do prático                                                        |
+| POST   | `/v1/atividades/{id}/lancamentos/comprovantes`            | Mestre       | Abre o envio do comprovante em mídia, antes do lançamento                                                                                         |
+| GET    | `/v1/missoes/{id}/desbloqueios/{guerreiro_id}`            | Mestre       | Situação do prático de um Guerreiro(a) e se o lançamento exige julgamento                                                                         |
+| GET    | `/v1/aulas/{id}/resultados`                               | Mestre       | Resultados lançados na aula nas atividades do Mestre, por nick, com o comprovante                                                                 |
+| GET    | `/v1/resultados/{id}/comprovante`                         | Mestre       | Bytes do comprovante em mídia, ao Mestre autor e ao Admin                                                                                         |
 | POST   | `/v1/aulas/{id}/presencas`                                | Mestre       | Registra e ajusta presença do próprio encontro                                                                                                    |
 | GET    | `/v1/aulas/{id}/presencas`                                | Mestre       | Presentes da aula das suas comunidades, por nick e avatar, com hora e modo                                                                        |
 | POST   | `/v1/criacoes-originais/{id}/validacao`                   | Mestre       | Valida ou devolve a criação, creditando autoria e badge                                                                                           |
@@ -824,6 +836,15 @@ comunidade e há lastro, e sem lastro só a entrega espera (`RF-09-146`, `RN-09-
 encontro, o recurso sai da aula imediatamente anterior da comunidade, sem escolha do Mestre
 (`RF-09-76`); e o Mestre vê também a necessidade da recompensa (`RF-09-56`).
 
+### Decisões de 2026-11-27
+
+Decisão do fundador de 2026-11-27, em `/opsx:propose` (linha "Lançamento do resultado com
+comprovante e julgamento do prático" do documento 09): o lançamento sai da tela própria e vai
+para a tela da aula, um Guerreiro(a) por envio (`RF-09-148`, `RF-09-74` revisto); a produção
+vira o comprovante obrigatório (`RF-09-149`, `RN-09-64`); o julgamento do prático vem no mesmo
+envio, com a declaração em nome do Guerreiro(a) (`RF-09-150`, `RN-09-65`, `RN-09-66`); e a
+aula lista os lançados (`RF-09-151`).
+
 ## 14. Pendências que permanecem
 
 - **Valores da tabela de preços do catálogo avulso**: a tabela de referência e o piso de 25
@@ -906,3 +927,4 @@ a que alguma submissão já respondeu (documento 03 §11).
 | `RF-09-142`                                        | 15 §6.1 (a missão inteira recolhe na etapa)                                |
 | `RF-09-143` e `RF-09-144`                          | 11 §5 (histórico de pontuação do Guerreiro(a))                             |
 | `RF-09-145`                                        | 03 §11 (os presentes da aula)                                              |
+| `RF-09-148` a `RF-09-151`, `RN-09-64` a `RN-09-66` | 11 §4 (o comprovante do Resultado e o julgamento no lançamento)            |

@@ -7,6 +7,7 @@ import { AvisoDeColeta } from "../direitos/AvisoDeColeta";
 import { listarGuerreirosVinculaveis } from "../responsaveis/api";
 import type { AtividadeDoMestre, AulaDaTurma, PresencaDaAula } from "./api";
 import { confirmarPresenca, lancarOcorrenciaDeConduta, listarPresencasDaAula } from "./api";
+import { LancamentoNaAula, type ResolucaoDoNick } from "./LancamentoNaAula";
 
 const ROTULO_DO_MODO: Record<string, string> = {
   reconhecimento: "Reconhecimento",
@@ -25,26 +26,18 @@ function normalizarNick(nick: string): string {
   return nick.trim().toLocaleLowerCase("pt-BR");
 }
 
-type ResolucaoDoNick = { id: string } | { erro: string };
-
 interface Props {
   aula: AulaDaTurma;
   atividadesPresenciais: AtividadeDoMestre[];
   aoVoltar: () => void;
-  aoAbrirLancamento: (atividade: AtividadeDoMestre) => void;
 }
 
 // A confirmação de presença que o App 01 não capturou e o lançamento da
-// ocorrência de conduta — as duas escritas do encontro que o Mestre alcança
-// nesta aula, junto com o atalho para lançar o resultado de uma atividade
-// presencial dele (`RF-09-43`, `RF-09-45`, `RF-09-46`). Abre com os presentes
-// da aula, por nick e avatar (`RF-09-145`, `RN-09-18`).
-export function TelaDaAula({
-  aula,
-  atividadesPresenciais,
-  aoVoltar,
-  aoAbrirLancamento,
-}: Props) {
+// ocorrência de conduta, com o lançamento do resultado de uma atividade
+// presencial dele no mesmo molde — as escritas do encontro que o Mestre
+// alcança nesta aula (`RF-09-43`, `RF-09-45`, `RF-09-46`, `RF-09-148`). Abre
+// com os presentes da aula, por nick e avatar (`RF-09-145`, `RN-09-18`).
+export function TelaDaAula({ aula, atividadesPresenciais, aoVoltar }: Props) {
   const { sessao, tratarRecusaDeSessao } = useSessao();
 
   const [presentes, definirPresentes] = useState<PresencaDaAula[] | null>(null);
@@ -262,20 +255,11 @@ export function TelaDaAula({
         )}
       </section>
 
-      <section aria-label="Atividades presenciais desta aula">
-        <h2>Lançar resultado de uma atividade</h2>
-        {atividadesPresenciais.length === 0 && <p>Nenhuma atividade presencial sua.</p>}
-        <ul className="lista-de-turmas" aria-label="Atividades para lançamento">
-          {atividadesPresenciais.map((atividade) => (
-            <li key={atividade.id} className="lista-de-turmas__item">
-              <span>{atividade.titulo}</span>
-              <Botao variante="secundaria" onClick={() => aoAbrirLancamento(atividade)}>
-                Lançar
-              </Botao>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <LancamentoNaAula
+        aula={aula}
+        atividadesPresenciais={atividadesPresenciais}
+        resolverNick={resolverNick}
+      />
 
       <section aria-label="Confirmação de presença">
         <h2>Confirmar presença</h2>

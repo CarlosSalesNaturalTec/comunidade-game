@@ -73,6 +73,7 @@ from .regra import (
     kit_apresentado_da_missao,
     ler_arquivo_da_comprovacao,
     ler_imagem_da_pergunta,
+    ler_situacao_do_pratico,
     listar_desbloqueios_praticos_pendentes,
     missoes_desbloqueadas_pelo_guerreiro,
     mover_missao,
@@ -1681,6 +1682,54 @@ def julgar_desafio_pratico_rota(
     assert saida is not None  # acabou de ser julgada
     saida.recompensas_entregues = [entrega.recompensa_de_marco_id for entrega in entregues]
     return saida
+
+
+class SituacaoDoPraticoSaida(BaseModel):
+    """A situação do desafio da missão para um Guerreiro(a), que a tela do
+    lançamento lê para saber se pede o julgamento (`RF-09-150`, `RN-09-65`).
+    `estado` é `sem_declaracao`, `aguardando`, `nao_cumpriu` ou `cumpriu`."""
+
+    missao_id: uuid.UUID
+    tipo_do_desafio: str | None
+    forma_aceita: TipoDeProducaoDaCriacaoOriginal | None
+    criterio_de_aceite: str | None
+    estado: str
+    motivo_do_julgamento: str | None
+    comprovacao_entregue: ComprovacaoDoPraticoSaida | None
+    exige_julgamento: bool
+
+
+@roteador.get("/missoes/{id_da_missao}/desbloqueios/{id_do_guerreiro}")
+def ler_situacao_do_pratico_rota(
+    id_da_missao: uuid.UUID,
+    id_do_guerreiro: uuid.UUID,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> SituacaoDoPraticoSaida:
+    """`RF-09-150`: ao Mestre autor da trilha e ao Admin — a posse é de
+    `ler_situacao_do_pratico`, a mesma do julgamento."""
+    missao = sessao_bd.get(Missao, id_da_missao)
+    situacao = ler_situacao_do_pratico(
+        sessao_bd,
+        missao=missao,
+        guerreiro_id=id_do_guerreiro,
+        operador=sessao_bd.get(Persona, contexto.persona_id),
+    )
+    tipo = missao.tipo_do_desafio_de_desbloqueio
+    return SituacaoDoPraticoSaida(
+        missao_id=missao.id,
+        tipo_do_desafio=tipo.value if tipo is not None else None,
+        forma_aceita=missao.desafio_pratico_forma_de_comprovacao,
+        criterio_de_aceite=missao.desafio_pratico_criterio_de_aceite,
+        estado=situacao.estado,
+        motivo_do_julgamento=situacao.desbloqueio.motivo_do_julgamento
+        if situacao.desbloqueio is not None
+        else None,
+        comprovacao_entregue=_saida_da_comprovacao(missao, situacao.desbloqueio)
+        if situacao.tem_pratico
+        else None,
+        exige_julgamento=situacao.exige_julgamento,
+    )
 
 
 class ProgressoDaTrilhaSaida(BaseModel):

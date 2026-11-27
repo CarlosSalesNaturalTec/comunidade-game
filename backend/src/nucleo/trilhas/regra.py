@@ -2201,6 +2201,183 @@ def julgar_desafio_pratico(
     return desbloqueio
 
 
+@dataclass
+class SituacaoDoPratico:
+    """O que a tela do lançamento precisa saber do desafio da missão para um
+    Guerreiro(a): se há prático, em que estado está a declaração dele e se o
+    lançamento **exige o julgamento** (`RF-09-150`, `RN-09-65`)."""
+
+    missao: Missao | None
+    desbloqueio: DesbloqueioDaMissao | None
+    exige_julgamento: bool
+
+    @property
+    def tem_pratico(self) -> bool:
+        return (
+            self.missao is not None
+            and self.missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico
+        )
+
+    @property
+    def estado(self) -> str:
+        """`sem_declaracao`, `aguardando`, `nao_cumpriu` ou `cumpriu`."""
+        if self.desbloqueio is None:
+            return "sem_declaracao"
+        if self.desbloqueio.cumpriu is None:
+            return "aguardando"
+        return "cumpriu" if self.desbloqueio.cumpriu else "nao_cumpriu"
+
+
+def situacao_do_pratico(
+    sessao: Session, *, missao: Missao | None, guerreiro_id: uuid.UUID
+) -> SituacaoDoPratico:
+    """O julgamento é exigido quando a missão tem desafio **prático** que o
+    Guerreiro(a) ainda **não cumpriu** — sem declaração, aguardando o Mestre ou
+    julgada que não cumpriu (`RN-09-65`, decisão do fundador de 2026-11-27).
+    Quiz, missão sem desafio e atividade avulsa (sem missão) não têm o que
+    julgar."""
+    if missao is None:
+        return SituacaoDoPratico(missao=None, desbloqueio=None, exige_julgamento=False)
+    desbloqueio = (
+        sessao.query(DesbloqueioDaMissao)
+        .filter_by(guerreiro_id=guerreiro_id, missao_id=missao.id)
+        .first()
+    )
+    e_pratico = missao.tipo_do_desafio_de_desbloqueio == TipoDeDesafioDeDesbloqueio.pratico
+    exige = e_pratico and (desbloqueio is None or desbloqueio.cumpriu is not True)
+    return SituacaoDoPratico(missao=missao, desbloqueio=desbloqueio, exige_julgamento=exige)
+
+
+def ler_situacao_do_pratico(
+    sessao: Session, *, missao: Missao | None, guerreiro_id: uuid.UUID, operador: Persona
+) -> SituacaoDoPratico:
+    """Só o Mestre autor da trilha, ou o Admin, leem a situação do prático de
+    um Guerreiro(a): é a mesma posse do julgamento (`RF-09-150`, `RF-09-117`)."""
+    if missao is None:
+        raise NaoEncontrado(mensagem="Missão não encontrada.")
+    conferir_posse_da_trilha(sessao.get(Trilha, missao.trilha_id), operador)
+    return situacao_do_pratico(sessao, missao=missao, guerreiro_id=guerreiro_id)
+
+
+@dataclass
+class ComprovanteDoLancamento:
+    """O comprovante do Resultado, como a declaração em nome do Guerreiro(a) o
+    recebe — primitivo, para que esta regra não dependa de `resultados`."""
+
+    tipo: TipoDeProducaoDaCriacaoOriginal
+    texto: str | None
+    referencia: str | None
+    tamanho: int | None
+    tipo_do_arquivo: str | None
+
+
+def _declarar_em_nome_do_guerreiro(
+    sessao: Session,
+    *,
+    missao: Missao,
+    guerreiro_id: uuid.UUID,
+    existente: DesbloqueioDaMissao | None,
+    comprovante: ComprovanteDoLancamento,
+) -> DesbloqueioDaMissao:
+    """Sem declaração do Guerreiro(a), ou com a dele recusada, o Mestre declara
+    o prático **em nome dele** com o comprovante do lançamento (`RN-09-66`). A
+    forma tem de ser a aceita — outra é recusada nomeando a esperada —, e o
+    prático anterior à forma aceita nasce sem comprovação, como nasceria a do
+    Guerreiro(a) (design da fatia 26 — decisão 7). A mídia **não é copiada**: a
+    declaração aponta a mesma referência do Resultado, e substituir a
+    comprovação só anula colunas, nunca apaga o objeto (design — decisão 5).
+    A recusada é **reaberta**, sem segundo registro (`RN-09-54`)."""
+    _conferir_inscricao(sessao, guerreiro_id=guerreiro_id, trilha_id=missao.trilha_id)
+
+    forma = missao.desafio_pratico_forma_de_comprovacao
+    if forma is not None and forma != comprovante.tipo:
+        raise ErroDeValidacao(
+            mensagem=f"Este desafio prático aceita comprovação em {forma.value}; o comprovante "
+            "do lançamento precisa estar nessa forma.",
+            campo="comprovante",
+        )
+
+    if existente is None:
+        _gravar_submissao(
+            sessao,
+            guerreiro_id=guerreiro_id,
+            missao_id=missao.id,
+            perguntas=[],
+            escolhas={},
+            faladas={},
+            acertos=0,
+        )
+        existente = DesbloqueioDaMissao(
+            guerreiro_id=guerreiro_id, missao_id=missao.id, cumpriu=None
+        )
+        sessao.add(existente)
+    else:
+        _reabrir_julgamento(existente)
+
+    _substituir_comprovacao(existente, texto=None, presencial=False)
+    if forma is not None:
+        if forma in _FORMAS_DE_COMPROVACAO_EM_TEXTO:
+            existente.comprovacao = comprovante.texto
+        else:
+            existente.comprovacao_referencia = comprovante.referencia
+            existente.comprovacao_tamanho = comprovante.tamanho
+            existente.comprovacao_tipo_do_arquivo = comprovante.tipo_do_arquivo
+    sessao.flush()
+    return existente
+
+
+def julgar_pratico_no_lancamento(
+    sessao: Session,
+    *,
+    operador: Persona,
+    missao: Missao | None,
+    guerreiro_id: uuid.UUID,
+    comprovante: ComprovanteDoLancamento,
+    julgamento: tuple[bool, bool, str | None] | None,
+) -> DesbloqueioDaMissao | None:
+    """O julgamento do prático que vem no lançamento da atividade (`RF-09-150`):
+    exigido quando a missão tem prático não cumprido, recusado quando não há o
+    que julgar (`RN-09-65`). Havendo declaração **aguardando** o Mestre, ele
+    julga a dela, com a comprovação que ela entregou; sem declaração, ou com a
+    recusada, ele declara em nome do Guerreiro(a) e julga no mesmo ato
+    (`RN-09-66`). O julgamento é o de `julgar_desafio_pratico` — dois
+    vereditos, motivo e os 5 pontos — e roda na transação do Resultado, então
+    a recusa de um desfaz o outro. Devolve a declaração julgada, ou `None`."""
+    situacao = situacao_do_pratico(sessao, missao=missao, guerreiro_id=guerreiro_id)
+    if not situacao.exige_julgamento:
+        if julgamento is not None:
+            raise ErroDeValidacao(
+                mensagem="Esta atividade não tem desafio prático a julgar para este Guerreiro(a).",
+                campo="julgamento_do_pratico",
+            )
+        return None
+    if julgamento is None:
+        raise ErroDeValidacao(
+            mensagem="A missão desta atividade tem um desafio prático que este Guerreiro(a) "
+            "ainda não cumpriu: registre o julgamento junto do lançamento.",
+            campo="julgamento_do_pratico",
+        )
+
+    desbloqueio = situacao.desbloqueio
+    if desbloqueio is None or desbloqueio.cumpriu is False:
+        desbloqueio = _declarar_em_nome_do_guerreiro(
+            sessao,
+            missao=missao,
+            guerreiro_id=guerreiro_id,
+            existente=desbloqueio,
+            comprovante=comprovante,
+        )
+    cumpriu, publicavel, motivo = julgamento
+    return julgar_desafio_pratico(
+        sessao,
+        operador=operador,
+        desbloqueio=desbloqueio,
+        cumpriu=cumpriu,
+        publicavel=publicavel,
+        motivo=motivo,
+    )
+
+
 def _tem_comprovacao_gravada(desbloqueio: DesbloqueioDaMissao) -> bool:
     """Há o que publicar: o corpo escrito ou o endereço, ou o arquivo cujo
     envio **concluiu** — a entrega presencial nasce sem mídia, e a declaração em
