@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Any
 from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, Response
@@ -24,6 +24,7 @@ from ..configuracao import Configuracao, obter_configuracao
 from ..erros import ErroDeValidacao, NaoEncontrado
 from ..paginacao import ParametrosDeListagem, contrato_de_listagem
 from ..personas.modelo import Persona
+from .contorno import ContornoSaida, gravar_contorno, saida_do_contorno
 from .modelo import ComunidadeVirtual
 from .regra import ComunidadePublicaSaida, consultar_comunidade_publica, criar_comunidade
 
@@ -121,6 +122,32 @@ def comunidade_publica(
     `RF-01-02`, `RN-01-32`, PRD-08 §9)."""
     comunidade = _obter_comunidade(sessao_bd, id_da_comunidade)
     return consultar_comunidade_publica(sessao_bd, comunidade=comunidade)
+
+
+class GravarContornoEntrada(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    geometria: dict[str, Any]
+    origem_osm: str = Field(min_length=1)
+
+
+@roteador.put("/comunidades/{id_da_comunidade}/contorno", response_model=ContornoSaida)
+def gravar_contorno_rota(
+    id_da_comunidade: uuid.UUID,
+    entrada: GravarContornoEntrada,
+    contexto: Annotated[ContextoDaSessao, Depends(exigir_persona)],
+    sessao_bd: Annotated[Session, Depends(obter_sessao)],
+) -> ContornoSaida:
+    """Restrita ao Admin — a recusa de qualquer outro papel é 403, devolvida
+    por `gravar_contorno`. Cadastra ou substitui o contorno copiado do OSM
+    (`RF-08-33`, `RN-08-32`, PRD-08 §9)."""
+    operador = sessao_bd.get(Persona, contexto.persona_id)
+    comunidade = _obter_comunidade(sessao_bd, id_da_comunidade)
+    gravar_contorno(
+        comunidade, operador=operador, geometria=entrada.geometria, origem_osm=entrada.origem_osm
+    )
+    sessao_bd.commit()
+    return saida_do_contorno(comunidade)
 
 
 def _analisar_momento(bruto: str, campo: str) -> datetime:

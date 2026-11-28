@@ -9,6 +9,7 @@ from ..coletas.modelo import DesafioDeColeta, SerieDeColeta, TipoDeColeta
 from ..erros import ErroDeValidacao, PermissaoNegada
 from ..locais.modelo import Local, NivelDoLocal
 from ..personas.modelo import Papel, Persona
+from .contorno import ContornoSaida, saida_do_contorno
 from .modelo import ComunidadeVirtual, VinculoDoMestre, VinculoJogador
 
 
@@ -237,6 +238,7 @@ class ComunidadePublicaSaida(BaseModel):
     locais: list[LocalPublicoSaida]
     tipos_de_coleta: list[TipoDeColetaPublicoSaida]
     guerreiros_vinculados: int
+    contorno: ContornoSaida | None
 
 
 def consultar_comunidade_publica(
@@ -279,4 +281,5 @@ def consultar_comunidade_publica(
         ],
         tipos_de_coleta=[TipoDeColetaPublicoSaida(id=tipo.id, nome=tipo.nome) for tipo in tipos],
         guerreiros_vinculados=contar_guerreiros_vinculados(sessao, comunidade.id),
+        contorno=saida_do_contorno(comunidade),
     )

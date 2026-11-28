@@ -20,7 +20,7 @@ Nenhum dos quatro é repetido aqui.
 
 | PRD                                       | Assunto                                | Aplicação | Onda | Situação     |
 | ----------------------------------------- | -------------------------------------- | --------- | ---- | ------------ |
-| [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | aprovado     |
+| [PRD-08](prd-08-comunidades-virtuais.md)  | Comunidades Virtuais e território      | —         | 1    | implementado |
 | [PRD-07](prd-07-economia-e-ledger.md)     | Economia de recursos e ledger          | —         | 1    | implementado |
 | [PRD-01](prd-01-backend-api.md)           | Backend API (núcleo)                   | —         | 1    | aprovado     |
 | [PRD-02](prd-02-frontend-de-gestao.md)    | Frontend de gestão                     | App 03    | 2    | aprovado     |

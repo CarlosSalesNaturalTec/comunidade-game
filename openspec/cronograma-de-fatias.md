@@ -73,7 +73,7 @@ A do documento 99 §9, com o piso de dependência de cada PRD. Os cinco PRDs em 
 | —     | Customização do kit recebido no núcleo | `2026-11-12-customizacao-do-kit-recebido-no-nucleo` — Decisão do fundador de 2026-11-12, registrada no documento 09 §1 ("Customização do kit recebido"). `RF-01-84` a `RF-01-86`, `RN-01-66`, mais a gravação do kit declarado no prático (`RF-09-141`) e a exclusão da `RN-09-62`. O registro (mídia só do kit e descrição) só é aceito para kit cujo prático declarante foi aprovado; a aprovação do Mestre da aula credita 1 extra e leva o registro ao acervo, na trilha em que o kit foi recebido; o não julgado expira no fim do ciclo, e o próprio Guerreiro(a) cancela. Todas as fatias da customização dependem desta. O núcleo não separa kit de camisa e livro: quem diz o que é kit é a declaração do Mestre autor no prático (decisão do fundador, 2026-11-12). Leva também o crédito da conservação do bem recebido (`RF-01-87`), que não existia no núcleo, para a `RN-01-66` valer nos dois sentidos (decisão do fundador, 2026-11-12) | implementado |
 | — | Consumo do encontro e recompensa de marco | `RF-01-91` (aula realizada pelo horário) entra na fatia 12 do PRD-07 | implementado |
 
-## PRD-08 — Comunidades Virtuais e território — aprovado
+## PRD-08 — Comunidades Virtuais e território — implementado
 
 | Fatia | Entrega                                    | Recorte                                              | Situação     |
 | ----- | ------------------------------------------ | ---------------------------------------------------- | ------------ |
@@ -85,7 +85,7 @@ A do documento 99 §9, com o piso de dependência de cada PRD. Os cinco PRDs em 
 | —     | Exportação do território e ODS das séries  | `2026-08-15-exportacao-do-territorio-e-ods-das-series` | implementado |
 | —     | Leitura pública do território              | `2026-08-15-leitura-publica-do-territorio`           | implementado |
 | —     | Lista pública de comunidades               | `2026-08-17-lista-publica-de-comunidades`            | implementado |
-| 1     | Contorno da comunidade                     | `RF-08-33`, `RF-08-34`, `RN-08-31`, `RN-08-32` — atributo e rota `PUT` de Admin; decisão do fundador de 2026-11-27 | em aberto |
+| 1     | Contorno da comunidade                     | `2026-11-27-contorno-da-comunidade` — `RF-08-33`, `RF-08-34`, `RN-08-31`, `RN-08-32`; geometria em coluna JSON, sem PostGIS | implementado |
 
 ## PRD-07 — Economia de recursos e ledger — implementado
 

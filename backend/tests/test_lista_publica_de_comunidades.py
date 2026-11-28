@@ -324,6 +324,9 @@ def test_lista_de_comunidades_nao_identifica_coletor(
         # A vitalidade do card do documento 11 §8.2 — contagem agregada, não
         # indicador do documento 02 §1 (`RF-03-02`).
         "guerreiros_vinculados",
+        # O contorno copiado do OSM: só geometria, origem, data e atribuição,
+        # nunca coletor (`RF-08-34`, `RN-08-32`).
+        "contorno",
     }
     for item in resposta.json()["itens"]:
         assert set(item.keys()) == campos_esperados
