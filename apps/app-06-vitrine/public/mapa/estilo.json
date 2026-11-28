@@ -1,0 +1,45 @@
+{
+  "version": 8,
+  "name": "Comunidade Game — fundo do mapa das Comunidades Virtuais",
+  "sources": {
+    "recorte": {
+      "type": "vector",
+      "url": "pmtiles:///mapa/salvador.pmtiles",
+      "attribution": "© colaboradores do OpenStreetMap · ODbL"
+    }
+  },
+  "layers": [
+    { "id": "mar", "type": "background", "paint": { "background-color": "#dce8fb" } },
+    {
+      "id": "municipio",
+      "type": "fill",
+      "source": "recorte",
+      "source-layer": "municipio",
+      "paint": { "fill-color": "#f7f5f0" }
+    },
+    {
+      "id": "verde",
+      "type": "fill",
+      "source": "recorte",
+      "source-layer": "verde",
+      "paint": { "fill-color": "#4ecb80", "fill-opacity": 0.25 }
+    },
+    {
+      "id": "agua",
+      "type": "fill",
+      "source": "recorte",
+      "source-layer": "agua",
+      "paint": { "fill-color": "#dce8fb" }
+    },
+    {
+      "id": "ruas",
+      "type": "line",
+      "source": "recorte",
+      "source-layer": "ruas",
+      "paint": {
+        "line-color": "#cfd6e3",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.5, 15, 3]
+      }
+    }
+  ]
+}

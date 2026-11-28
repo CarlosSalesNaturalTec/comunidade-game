@@ -11,7 +11,9 @@ import {
 } from "../api/leituras";
 import { ChamadaDeParticipacao } from "../convite/ChamadaDeParticipacao";
 import { useLeitura } from "../leitura/useLeitura";
+import { MapaDeComunidades } from "../mapa/MapaDeComunidades";
 import { navegarPara } from "../navegacao/navegar";
+import { caminhoDaComunidade } from "../navegacao/recortes";
 import { DestaqueDaMeta1718 } from "./DestaqueDaMeta1718";
 
 // A página da comunidade: as séries históricas do território **agregadas até
@@ -200,6 +202,23 @@ export function PaginaDaComunidade({ comunidadeId, irPara = navegarPara }: Props
         bairrosPublicados={bairrosPublicados}
         camadas={[...camadasPorTipo].map(([tipo, dados]) => ({ tipo, ...dados }))}
       />
+      {/* O mapa com o contorno dela em destaque, junto da representação
+          genérica, que fica (`RF-03-91`, `RF-03-20`, `RN-03-46`). */}
+      {comunidade.contorno && (
+        <MapaDeComunidades
+          modo="destaque"
+          rotulo={`Mapa de ${comunidade.nome}`}
+          irPara={() => {}}
+          comunidades={[
+            {
+              id: comunidade.id,
+              nome: comunidade.nome,
+              destino: caminhoDaComunidade(comunidade.id),
+              contorno: comunidade.contorno,
+            },
+          ]}
+        />
+      )}
       <p className="cg-territorio-painel__vitalidade">
         {comunidade.guerreiros_vinculados} Guerreiros e Guerreiras vinculados
       </p>

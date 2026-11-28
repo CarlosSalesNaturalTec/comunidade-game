@@ -1,5 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// O jsdom não tem WebGL: o motor do mapa é substituído (design — Decisão 4).
+const montarMapa = vi.fn(() => () => {});
+vi.mock("../mapa/motorDoMapa", () => ({ montarMapa: () => montarMapa() }));
+
 import type {
   CoberturaDeOds,
   ComunidadeNaLista,
@@ -62,10 +67,12 @@ function comLeituras({
       ciclo: "Ciclo 01",
     } satisfies CoberturaDeOds,
   ],
+  fichaParcial = {},
 }: {
   comunidades?: ComunidadeNaLista[];
   recortes?: MetodologiaDoRecorte[];
   cobertura?: CoberturaDeOds[];
+  fichaParcial?: Partial<ComunidadePublica>;
 } = {}) {
   const serie: SeriePublica = {
     itens: recortes.map((item) => ({
@@ -91,7 +98,8 @@ function comLeituras({
     proximo_cursor: null,
     ciclo_rotulo: "Ciclo 01",
   });
-  vi.spyOn(leituras, "obterComunidade").mockResolvedValue(ficha);
+  vi.spyOn(leituras, "listarTodasAsComunidades").mockResolvedValue(comunidades);
+  vi.spyOn(leituras, "obterComunidade").mockResolvedValue({ ...ficha, ...fichaParcial });
   vi.spyOn(leituras, "lerSerieDaComunidade").mockResolvedValue(serie);
   vi.spyOn(leituras, "lerCoberturaDeOds").mockResolvedValue(cobertura);
   vi.spyOn(leituras, "listarCriacoes").mockResolvedValue({ itens: [], proximo_cursor: null });
@@ -314,5 +322,64 @@ describe("o recorte de gestores públicos", () => {
 
     expect(await screen.findByText("Objetivos cobertos: 6, 11, 13")).toBeVisible();
     expect(screen.getByText("Ciclo Ciclo 01")).toBeVisible();
+  });
+});
+
+const CONTORNO = {
+  geometria: {
+    type: "Polygon",
+    coordinates: [
+      [
+        [-38.5, -12.9],
+        [-38.4, -12.9],
+        [-38.4, -12.8],
+        [-38.5, -12.9],
+      ],
+    ],
+  },
+  origem_osm: "relation/12582832",
+  copiado_em: "2026-11-27T15:00:00-03:00",
+  credito: "© colaboradores do OpenStreetMap",
+  licenca: "ODbL",
+};
+
+describe("o mapa na página da comunidade (RF-03-91, RN-03-46)", () => {
+  beforeEach(() => {
+    window.history.pushState(null, "", `/comunidades/${ID_DA_COMUNIDADE}`);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    montarMapa.mockClear();
+  });
+
+  it("com contorno, mostra o mapa e segue com a representação visual", async () => {
+    comLeituras({ fichaParcial: { contorno: CONTORNO } });
+    render(<App />);
+
+    expect(
+      await screen.findByRole("region", { name: "Mapa de Guerreira Zeferina" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: /Território de Guerreira Zeferina/ }),
+    ).toBeVisible();
+    expect(screen.getByText("© colaboradores do OpenStreetMap · ODbL")).toBeInTheDocument();
+  });
+
+  it("recém-criada mostra o território vazio e o mapa com o contorno (RF-03-20)", async () => {
+    comLeituras({ recortes: [], fichaParcial: { contorno: CONTORNO } });
+    render(<App />);
+
+    expect(await screen.findByText(/Território ainda vazio/)).toBeVisible();
+    expect(
+      screen.getByRole("region", { name: "Mapa de Guerreira Zeferina" }),
+    ).toBeInTheDocument();
+  });
+
+  it("sem contorno, a página fica como antes, sem mapa", async () => {
+    comLeituras({ fichaParcial: { contorno: null } });
+    render(<App />);
+
+    await screen.findByRole("img", { name: /Território de Guerreira Zeferina/ });
+    expect(screen.queryByRole("region", { name: /Mapa de/ })).not.toBeInTheDocument();
   });
 });
