@@ -239,3 +239,217 @@ describe("cadastro de Comunidade Virtual", () => {
     expect(screen.getByRole("button", { name: /nova comunidade/i })).toHaveFocus();
   });
 });
+
+const POLIGONO = {
+  type: "Polygon",
+  coordinates: [
+    [
+      [-38.5, -12.9],
+      [-38.4, -12.9],
+      [-38.4, -12.8],
+      [-38.5, -12.9],
+    ],
+  ],
+};
+
+const CONTORNO = {
+  geometria: POLIGONO,
+  origem_osm: "relation/12582832",
+  copiado_em: "2026-11-27T15:00:00-03:00",
+  credito: "© colaboradores do OpenStreetMap",
+  licenca: "ODbL",
+};
+
+function comunidade(contorno: typeof CONTORNO | null) {
+  return {
+    id: "c1",
+    nome: "Comunidade Zeferina",
+    localizacao: "Salvador",
+    series_abertas: null,
+    series_ativas: null,
+    registros_validos: null,
+    continuidade: null,
+    contorno,
+  };
+}
+
+function listaCom(contorno: typeof CONTORNO | null) {
+  return { itens: [comunidade(contorno)], proximo_cursor: null, ciclo_rotulo: "2026" };
+}
+
+async function abrirFormulario(rotulo: RegExp) {
+  const usuario = userEvent.setup();
+  await usuario.click(await screen.findByRole("button", { name: rotulo }));
+  return usuario;
+}
+
+function colar(usuario: ReturnType<typeof userEvent.setup>, texto: string) {
+  return usuario
+    .click(screen.getByLabelText(/geojson do contorno/i))
+    .then(() => usuario.paste(texto));
+}
+
+describe("situação do contorno na lista (RF-02-122, RN-08-31)", () => {
+  it("comunidade sem contorno o informa sem aviso de erro", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(null));
+
+    render(<TelaDeComunidades />);
+
+    const situacao = await screen.findByText(/ainda sem contorno/i);
+    expect(situacao).toHaveAttribute("role", "status");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("comunidade com contorno mostra origem, data, crédito e licença do núcleo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(CONTORNO));
+
+    render(<TelaDeComunidades />);
+
+    const situacao = await screen.findByText(/contorno de relation\/12582832/i);
+    expect(situacao).toHaveTextContent("27/11/2026");
+    expect(situacao).toHaveTextContent("© colaboradores do OpenStreetMap");
+    expect(situacao).toHaveTextContent("ODbL");
+  });
+
+  it("Mestre vê a situação, sem a ação de cadastrar ou substituir", async () => {
+    configurarSessao(SESSAO_DE_MESTRE);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(null));
+
+    render(<TelaDeComunidades />);
+
+    await screen.findByText(/ainda sem contorno/i);
+    expect(screen.queryByRole("button", { name: /contorno/i })).not.toBeInTheDocument();
+  });
+});
+
+describe("cadastro e substituição do contorno (RF-02-122, RF-08-33)", () => {
+  it("Admin cadastra o contorno e a lista recarrega com ele", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades")
+      .mockResolvedValueOnce(listaCom(null))
+      .mockResolvedValueOnce(listaCom(CONTORNO));
+    const gravar = vi.spyOn(comunidadesApi, "gravarContorno").mockResolvedValue(CONTORNO);
+
+    render(<TelaDeComunidades />);
+    const usuario = await abrirFormulario(/^cadastrar contorno$/i);
+    await colar(usuario, JSON.stringify(POLIGONO));
+    await usuario.type(screen.getByLabelText(/elemento de origem/i), "relation/12582832");
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+
+    await waitFor(() =>
+      expect(gravar).toHaveBeenCalledWith(
+        "c1",
+        { geometria: POLIGONO, origem_osm: "relation/12582832" },
+        "token-do-admin",
+      ),
+    );
+    expect(await screen.findByText(/contorno de relation\/12582832/i)).toBeInTheDocument();
+  });
+
+  it("comunidade com contorno oferece a substituição", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(CONTORNO));
+
+    render(<TelaDeComunidades />);
+    await abrirFormulario(/^substituir contorno$/i);
+
+    expect(screen.getByRole("button", { name: /^substituir$/i })).toBeInTheDocument();
+  });
+
+  it.each([
+    ["Feature", { type: "Feature", properties: {}, geometry: POLIGONO }],
+    [
+      "FeatureCollection de uma feição",
+      {
+        type: "FeatureCollection",
+        features: [{ type: "Feature", properties: {}, geometry: POLIGONO }],
+      },
+    ],
+  ])("%s colado envia só a geometria", async (_nome, colado) => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(null));
+    const gravar = vi.spyOn(comunidadesApi, "gravarContorno").mockResolvedValue(CONTORNO);
+
+    render(<TelaDeComunidades />);
+    const usuario = await abrirFormulario(/^cadastrar contorno$/i);
+    await colar(usuario, JSON.stringify(colado));
+    await usuario.type(screen.getByLabelText(/elemento de origem/i), "way/123");
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+
+    await waitFor(() =>
+      expect(gravar).toHaveBeenCalledWith(
+        "c1",
+        { geometria: POLIGONO, origem_osm: "way/123" },
+        "token-do-admin",
+      ),
+    );
+  });
+
+  it("JSON malformado e campo vazio são apontados sem chamar o núcleo", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(null));
+    const gravar = vi.spyOn(comunidadesApi, "gravarContorno");
+
+    render(<TelaDeComunidades />);
+    const usuario = await abrirFormulario(/^cadastrar contorno$/i);
+
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+    expect(await screen.findByText(/cole o geojson do contorno/i)).toBeInTheDocument();
+
+    await colar(usuario, "{ não é json");
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+    expect(await screen.findByText(/não é um geojson válido/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/geojson do contorno/i)).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
+
+    await usuario.clear(screen.getByLabelText(/geojson do contorno/i));
+    await colar(usuario, JSON.stringify(POLIGONO));
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+    expect(await screen.findByText(/informe o elemento de origem/i)).toBeInTheDocument();
+
+    expect(gravar).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["geometria", /geojson do contorno/i, "O contorno precisa ser um polígono."],
+    ["origem_osm", /elemento de origem/i, "A origem precisa ser uma via ou relação do OSM."],
+  ])("recusa 422 em %s aparece no campo certo", async (campo, rotulo, mensagem) => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(null));
+    vi.spyOn(comunidadesApi, "gravarContorno").mockRejectedValue(
+      new ErroDaApi(422, { codigo: "erro_de_validacao", mensagem, campo }),
+    );
+
+    render(<TelaDeComunidades />);
+    const usuario = await abrirFormulario(/^cadastrar contorno$/i);
+    await colar(usuario, JSON.stringify(POLIGONO));
+    await usuario.type(screen.getByLabelText(/elemento de origem/i), "node/1");
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+
+    expect(await screen.findByText(mensagem)).toBeInTheDocument();
+    expect(screen.getByLabelText(rotulo)).toHaveAccessibleDescription(mensagem);
+    expect(screen.getByText(/ainda sem contorno/i)).toBeInTheDocument();
+  });
+
+  it("recusa por papel aparece em aviso do formulário", async () => {
+    configurarSessao(SESSAO_DE_ADMIN);
+    vi.spyOn(comunidadesApi, "listarComunidades").mockResolvedValue(listaCom(null));
+    vi.spyOn(comunidadesApi, "gravarContorno").mockRejectedValue(
+      new ErroDaApi(403, { codigo: "permissao_negada", mensagem: "Negado." }),
+    );
+
+    render(<TelaDeComunidades />);
+    const usuario = await abrirFormulario(/^cadastrar contorno$/i);
+    await colar(usuario, JSON.stringify(POLIGONO));
+    await usuario.type(screen.getByLabelText(/elemento de origem/i), "way/1");
+    await usuario.click(screen.getByRole("button", { name: /^cadastrar$/i }));
+
+    expect(
+      await screen.findByText(/só o admin grava o contorno da comunidade/i),
+    ).toBeInTheDocument();
+  });
+});
