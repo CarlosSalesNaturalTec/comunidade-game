@@ -1,4 +1,5 @@
 import { lerArquivoDoNucleo } from "comum/api";
+import type { ContornoPublico } from "../mapa/tipos";
 import { configurarAcessoUmaVez, lerDoNucleo } from "./nucleo";
 
 // As leituras públicas que esta fatia consome. Todas passam por
@@ -253,6 +254,8 @@ export interface ComunidadeNaLista {
   registros_validos: number | null;
   continuidade: number | null;
   guerreiros_vinculados: number;
+  /** Nulo enquanto o Admin não cadastra (`RF-08-34`). */
+  contorno?: ContornoPublico | null;
 }
 
 export interface ListaDeComunidades {
@@ -277,6 +280,8 @@ export interface ComunidadePublica {
   locais: LocalPublico[];
   tipos_de_coleta: { id: string; nome: string }[];
   guerreiros_vinculados: number;
+  /** Nulo enquanto o Admin não cadastra (`RF-08-34`). */
+  contorno?: ContornoPublico | null;
 }
 
 export interface RecortePublicado {
@@ -325,6 +330,27 @@ export interface CoberturaDeOds {
 
 export function listarComunidades(cursor: string | null = null) {
   return lerDoNucleo<ListaDeComunidades>(`/v1/comunidades${paginaDe(cursor)}`);
+}
+
+/** O teto do contrato de listagem: o mapa lê todas as comunidades em poucas
+ * páginas — no Ciclo 01, uma (design — Decisão 5). */
+const TAMANHO_DA_PAGINA_DO_MAPA = 100;
+
+/** Todas as comunidades, percorridas pelo cursor, para o mapa da listagem
+ * (`RF-03-89`). A lista segue com a própria paginação. */
+export async function listarTodasAsComunidades(): Promise<ComunidadeNaLista[]> {
+  const itens: ComunidadeNaLista[] = [];
+  let cursor: string | null = null;
+  do {
+    const parametros = new URLSearchParams({ tamanho: String(TAMANHO_DA_PAGINA_DO_MAPA) });
+    if (cursor) parametros.set("cursor", cursor);
+    const pagina: ListaDeComunidades = await lerDoNucleo<ListaDeComunidades>(
+      `/v1/comunidades?${parametros.toString()}`,
+    );
+    itens.push(...pagina.itens);
+    cursor = pagina.proximo_cursor;
+  } while (cursor);
+  return itens;
 }
 
 export function obterComunidade(id: string): Promise<ComunidadePublica> {

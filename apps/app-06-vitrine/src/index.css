@@ -603,3 +603,35 @@ textarea {
 .cg-necessidades__item p {
   margin: 0;
 }
+
+/* Mapa das Comunidades Virtuais (`RF-03-89` a `RF-03-92`): a tela do mapa e,
+ * fora dela, o crédito e a licença do OSM em texto. */
+.cg-mapa {
+  margin: 0 0 var(--espaco-16);
+}
+
+.cg-mapa__tela {
+  width: 100%;
+  height: 18rem;
+  border-radius: var(--raio-8, 8px);
+  overflow: hidden;
+}
+
+.cg-mapa--destaque .cg-mapa__tela {
+  height: 14rem;
+}
+
+.cg-mapa__nome {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font-weight: var(--peso-rotulo);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.cg-mapa__credito {
+  font-size: 0.75rem;
+  color: var(--cor-texto-secundario);
+}

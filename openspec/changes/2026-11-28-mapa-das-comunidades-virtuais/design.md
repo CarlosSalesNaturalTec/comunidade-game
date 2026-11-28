@@ -19,20 +19,19 @@ rotina de atualização do recorte (a frequência é pendência do documento 09)
 
 ## Decisions
 
-1. **Origem do recorte: `pmtiles extract` do mapa-base do Protomaps.** O script
-   `apps/app-06-vitrine/scripts/gerar-recorte-do-osm.sh` recorta de uma compilação diária datada
-   do mapa-base Protomaps (derivado do OSM, ODbL) só a caixa do município de Salvador, até o zoom
-   15, com a CLI `pmtiles` em **versão exata**. A caixa é o envoltório da relação do município no
-   OSM, fixada no script com o identificador da relação; a data da compilação fica no script e no
-   nome do commit. Roda só na geração — em tempo de execução nada sai para terceiro (`RN-03-45`).
-   _Descartada:_ Planetiler local — baixa o extrato regional inteiro e exige Java para um recorte
-   municipal.
+1. **Origem do recorte: o próprio OSM, pela Overpass.** O script
+   `apps/app-06-vitrine/scripts/gerar-recorte-do-osm.sh` consulta a Overpass pela área do município
+   de Salvador (relação 362362), converte com `osmtogeojson` em versão exata e monta o PMTiles com
+   o tippecanoe, até o zoom 15, em quatro camadas — município, água, verde e ruas —, só com a
+   geometria e a classe da via. Roda só na geração — em tempo de execução nada sai para terceiro
+   (`RN-03-45`). _Descartada:_ `pmtiles extract` do mapa-base Protomaps — o fundador negou liberar
+   `build.protomaps.com` no ambiente em 2026-11-28 e autorizou a Overpass.
 2. **O arquivo vai versionado em `apps/app-06-vitrine/public/mapa/salvador.pmtiles`.** O Astro o
    copia para `dist/`, e o deploy existente o publica na mesma origem. Atualizar o recorte é rodar
    o script e abrir PR — ato revisado. _Descartada:_ gerar no deploy — a compilação datada do
    Protomaps não fica disponível para sempre, e o deploy quebraria sem revisão.
-3. **Estilo próprio, sem rótulo de texto.** `public/mapa/estilo.json` desenha só fundo, água,
-   áreas verdes, quadras e ruas, com cores dos tokens do documento 15. Sem camada de texto não há
+3. **Estilo próprio, sem rótulo de texto.** `public/mapa/estilo.json` desenha só o mar, o
+   município, a água, as áreas verdes e as ruas — as quadras aparecem entre as ruas —, com cores dos tokens do documento 15. Sem camada de texto não há
    glifo nem sprite a hospedar. O **nome** da comunidade sai como marcador HTML do MapLibre no
    centro do envoltório do contorno, que é também um link para a página — caminho acessível por
    teclado e leitor de tela.
@@ -53,6 +52,9 @@ rotina de atualização do recorte (a frequência é pendência do documento 09)
 
 ## Risks / Trade-offs
 
+- **Overpass fora do ar para este ambiente.** Em 2026-11-28 a Overpass recusou a conexão em toda
+  tentativa, e o recorte ficou por gerar: a tarefa 1.2 segue aberta e a fatia não fecha sem ela.
+  Sem o arquivo, o mapa desenha os contornos sobre o fundo liso.
 - **Firebase Hosting e requisição parcial (Range).** O PMTiles lê o arquivo por faixas de bytes. Se
   o Hosting responder 200 sem faixa, o fundo não carrega: a tarefa de verificação confere `206` na
   homologação; falhando, a hospedagem volta ao fundador (a opção de Cloud Storage foi preterida).

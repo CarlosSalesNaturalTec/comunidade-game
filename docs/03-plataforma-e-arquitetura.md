@@ -783,7 +783,8 @@ Web App de acesso público e **sem login** — a chave da API é da aplicação,
   da própria comunidade em destaque (documento 02 §1). O fundo de ruas e quadras é um **recorte
   do OSM hospedado no Google Cloud da plataforma**, sem requisição a servidor de mapas de
   terceiros, com o crédito "© colaboradores do OpenStreetMap". O mapa **nunca** mostra ponto
-  de coleta.
+  de coleta. O fundo é desenhado com **MapLibre GL** sobre um recorte em **PMTiles** do
+  município de Salvador, publicado com a App 06 no Firebase Hosting.
 
   > **A definir:** de quanto em quanto tempo o recorte do OSM é atualizado.
 
