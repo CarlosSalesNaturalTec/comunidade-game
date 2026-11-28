@@ -27,3 +27,11 @@
 .lista-de-comunidades__indicadores {
   color: var(--cor-texto-secundario);
 }
+
+.lista-de-comunidades__contorno {
+  color: var(--cor-texto-secundario);
+}
+
+.lista-de-comunidades__formulario {
+  flex-basis: 100%;
+}

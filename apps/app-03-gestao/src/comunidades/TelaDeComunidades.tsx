@@ -55,7 +55,13 @@ export function TelaDeComunidades() {
         />
       )}
 
-      <ListaDeComunidades comunidades={comunidades} />
+      {/* O mesmo papel que cria a comunidade grava o contorno dela
+          (`RF-02-122`, PRD-02 §4). */}
+      <ListaDeComunidades
+        comunidades={comunidades}
+        podeGravarContorno={podeCriar}
+        onContornoGravado={carregar}
+      />
     </Moldura>
   );
 }
